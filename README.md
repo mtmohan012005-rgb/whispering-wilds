@@ -1,6 +1,8 @@
 # 🌿 The Whispering Wilds (காட்டு வழி / Thadam)
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/8bf47382-70b8-4c74-a5e2-2e825ba83c27/deploy-status)](https://app.netlify.com/start/deploy?repository=https://github.com/mtmohan012005-rgb/whispering-wilds)
+### 🌐 [Play Live Online Now (GitHub Pages)](https://mtmohan012005-rgb.github.io/whispering-wilds/)
+
+[![Live Demo](https://img.shields.io/badge/Play%20Live-GitHub%20Pages-2ecc71?style=for-the-badge&logo=github)](https://mtmohan012005-rgb.github.io/whispering-wilds/)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mtmohan012005-rgb/whispering-wilds)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mtmohan012005-rgb/whispering-wilds)
 
