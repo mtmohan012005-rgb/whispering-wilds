@@ -13,7 +13,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const journalBtn = document.getElementById('journal-toggle-btn');
   const cameraBtn = document.getElementById('camera-toggle-btn');
   const lanternBtn = document.getElementById('lantern-toggle-btn');
-  const shopBtn = document.getElementById('shop-toggle-btn');
   const campfireBtn = document.getElementById('campfire-btn');
   const tentBtn = document.getElementById('tent-btn');
 
@@ -22,8 +21,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const closeJournalBtn = document.getElementById('close-journal-btn');
   const teaModal = document.getElementById('tea-modal');
   const closeTeaBtn = document.getElementById('close-tea-btn');
-  const shopModal = document.getElementById('shop-modal');
-  const closeShopBtn = document.getElementById('btn-close-shop');
   const puzzleModal = document.getElementById('puzzle-modal');
   const closePuzzleBtn = document.getElementById('close-puzzle-btn');
 
@@ -44,7 +41,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const biomeTitle = document.getElementById('biome-title');
   const compassNeedle = document.getElementById('compass-needle');
   const rupeeCount = document.getElementById('rupee-count');
-  const hudMaterials = document.getElementById('hud-materials');
 
   // 2. Initialize Game Systems
   const audio = window.gameAudio;
@@ -59,59 +55,15 @@ window.addEventListener('DOMContentLoaded', () => {
   const quests = new window.QuestManager();
   const entities = new window.EntityManager();
   const player = new window.Player(220, 630);
-
-  // Global game instance container for cross-system communication
-  const gameInstance = {
-    player,
-    renderer,
-    lightingEngine: lighting,
-    particles,
-    tracksManager,
-    weather,
-    survival,
-    camera: explorerCamera,
-    journal,
-    quests,
-    entities,
-    audioEngine: audio,
-    currentRegion: window.WORLD_DATA.regions ? window.WORLD_DATA.regions[0] : null,
-    showToast: (msg, duration) => quests.showQuestNotification(msg)
-  };
-  window.gameInstance = gameInstance;
-
-  // Initialize Barter Economy, Dynamic Climate & Diegetic Save Systems
-  const tradeSystem = new window.TradeSystem(gameInstance);
-  const climateEngine = new window.DynamicClimateEngine(gameInstance);
-  const saveSystem = new window.SaveSystem(gameInstance);
-
-  gameInstance.tradeSystem = tradeSystem;
-  gameInstance.climateEngine = climateEngine;
-  gameInstance.saveSystem = saveSystem;
+  const saveManager = new window.SaveManager();
 
   // Attach global references
   window.gameQuests = quests;
   window.gameJournal = journal;
   window.gameSurvival = survival;
   window.gamePlayer = player;
-  window.gameTradeSystem = tradeSystem;
-  window.gameClimateEngine = climateEngine;
-  window.gameSaveSystem = saveSystem;
-  window.testRef = {
-    player,
-    renderer,
-    lighting,
-    particles,
-    tracksManager,
-    weather,
-    survival,
-    camera: explorerCamera,
-    journal,
-    quests,
-    entities,
-    tradeSystem,
-    climateEngine,
-    saveSystem
-  };
+  window.gameSaveManager = saveManager;
+  window.testRef = { player, renderer, lighting, particles, tracksManager, weather, survival, camera: explorerCamera, journal, quests, entities, saveManager };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
   // Initialize 3D World Engine
@@ -125,7 +77,6 @@ window.addEventListener('DOMContentLoaded', () => {
       threeWorld = new window.ThreeWorld(threeCanvas);
       window.threeWorld = threeWorld;
       window.testRef.threeWorld = threeWorld;
-      gameInstance.threeWorld = threeWorld;
       threeWorld.onTelemetryUpdate = (data) => {
         player.x = data.x2D;
         player.y = data.y2D;
@@ -215,19 +166,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const olaiBtn = document.getElementById('toggle-olai-chuvadi');
     if (olaiBtn) olaiBtn.innerHTML = '📔 Leather Journal';
     journal.render();
-  } else if (window.location.search.includes('showRecords=true')) {
-    titleScreen.style.display = 'none';
-    titleScreen.classList.add('hidden');
-    hudContainer.classList.remove('hidden');
-    journal.isOpen = true;
-    journalModal.classList.remove('hidden');
-    journal.currentTab = 'records';
-    journal.render();
-  } else if (window.location.search.includes('openShop=true')) {
-    titleScreen.style.display = 'none';
-    titleScreen.classList.add('hidden');
-    hudContainer.classList.remove('hidden');
-    tradeSystem.openShop();
   } else if (window.location.search.includes('gameplay=true')) {
     titleScreen.style.display = 'none';
     titleScreen.classList.add('hidden');
@@ -269,9 +207,6 @@ window.addEventListener('DOMContentLoaded', () => {
     input.keys[e.code] = true;
 
     // Hotkeys
-    if (e.code === 'KeyO') {
-      tradeSystem.toggleShop();
-    }
     if (e.code === 'KeyV') {
       toggle3DMode();
     }
@@ -357,6 +292,8 @@ window.addEventListener('DOMContentLoaded', () => {
     } else if (item.type === 'tent') {
       survival.sleepInTent(lighting, audio);
       quests.showQuestNotification('Rested until dawn! Gained Stamina Recovery Buff.');
+      // Diegetic save: slept in tent
+      saveManager.saveGame('auto', 'tent_sleep');
     }
   }
 
@@ -419,6 +356,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (success) {
       audio.playPinTap();
       quests.showQuestNotification('Campfire built! Sit near to warm up.');
+      // Diegetic save: campfire warmth
+      saveManager.saveGame('auto', 'campfire_rest');
     } else {
       quests.showQuestNotification('Need at least 2 Wood to build a campfire!');
     }
@@ -446,9 +385,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const optionsContainer = document.getElementById('tea-options');
     optionsContainer.innerHTML = '';
 
-    // Diegetic safe zone save checkpoint
-    saveSystem.triggerAutosave("Murugan's Tea Kadai Bench");
-
     dialogData.options.forEach(opt => {
       const btn = document.createElement('button');
       btn.className = 'tea-choice-btn';
@@ -458,6 +394,8 @@ window.addEventListener('DOMContentLoaded', () => {
           const res = window.tradeOrBuyClothing(player, 'cloth_veshti', 'Chennai Plains');
           if (res.success) {
             document.getElementById('tea-dialogue-text').textContent = opt.response;
+            // Diegetic save: trade complete
+            saveManager.saveGame('auto', 'trade_complete');
           } else {
             document.getElementById('tea-dialogue-text').textContent = "Aiyo thala! Kaasu pathala! Need ₹50 for the cotton veshti.";
           }
@@ -482,18 +420,6 @@ window.addEventListener('DOMContentLoaded', () => {
       };
       optionsContainer.appendChild(btn);
     });
-
-    const shopOptionBtn = document.createElement('button');
-    shopOptionBtn.className = 'tea-choice-btn';
-    shopOptionBtn.style.background = 'linear-gradient(135deg, #d4af37, #b8860b)';
-    shopOptionBtn.style.color = '#0b0f19';
-    shopOptionBtn.style.fontWeight = 'bold';
-    shopOptionBtn.textContent = '🏪 Visit Tailor & Barter Trader (வஸ்திர கடை)';
-    shopOptionBtn.onclick = () => {
-      teaModal.classList.add('hidden');
-      tradeSystem.openShop();
-    };
-    optionsContainer.appendChild(shopOptionBtn);
   }
 
   // 7. Chola Waterwheel Puzzle
@@ -516,6 +442,8 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('puzzle-status').textContent = '✓ MECHANISM ALIGNED: Sluice gates open! Western Ghats unlocked!';
       quests.completeObjective('main_delta', 'solve_waterwheel', audio);
       window.WORLD_DATA.biomes.western_ghats.unlocked = true;
+      // Diegetic save: puzzle solved
+      saveManager.saveGameImmediate('auto', 'puzzle_solved');
     } else {
       document.getElementById('puzzle-status').textContent = 'Rotate granite gears to align the Chola Tiger with the Lotus rune.';
     }
@@ -573,6 +501,14 @@ window.addEventListener('DOMContentLoaded', () => {
       audio.playEnfieldRoar();
       audio.playThunder();
       quests.showQuestNotification('THIEF ON ROYAL ENFIELD STOLE YOUR BLUEPRINT! Track the skids in the rain!');
+
+      // Diegetic load: check for existing save
+      const existingSave = saveManager.loadGame('auto');
+      if (existingSave) {
+        saveManager.restoreState(existingSave);
+        quests.showQuestNotification(`📓 Journey resumed from ${existingSave.formattedTime}`);
+        console.log('[Main] Restored save from', existingSave.formattedTime);
+      }
     }, 900);
   });
 
@@ -593,8 +529,6 @@ window.addEventListener('DOMContentLoaded', () => {
     player.toggleLantern(audio);
     lanternBtn.classList.toggle('active', player.isLanternOn);
   });
-  shopBtn?.addEventListener('click', () => tradeSystem.toggleShop());
-  closeShopBtn?.addEventListener('click', () => tradeSystem.closeShop());
   campfireBtn.addEventListener('click', handleDeployCampfire);
   tentBtn.addEventListener('click', handleDeployTent);
 
@@ -613,6 +547,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 10. Main Game Loop
   let lastTime = performance.now();
+  let lastBiomeName = null; // Track biome transitions for autosave
 
   function gameLoop(now) {
     const deltaTime = Math.min(0.1, (now - lastTime) / 1000);
@@ -620,8 +555,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const currentBiome = getCurrentBiome(player.x);
 
+    // Diegetic autosave on biome transition
+    if (lastBiomeName && currentBiome.name !== lastBiomeName) {
+      saveManager.saveGame('auto', 'biome_enter');
+    }
+    lastBiomeName = currentBiome.name;
+
     // Update Systems
-    climateEngine.tick(deltaTime);
     weather.update(deltaTime, player.x, audio);
     lighting.update(deltaTime, weather);
 

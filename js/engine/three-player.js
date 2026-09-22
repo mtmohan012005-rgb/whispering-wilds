@@ -217,20 +217,6 @@ class ThreePlayer {
         this.lanternLight.intensity = Math.max(1.8, 2.6 + flicker);
     }
 
-    updateAttireColors(itemId) {
-        if (!this.torso || !this.dhoti) return;
-        if (itemId === 'cloth_veshti') {
-            this.dhoti.material.color.setHex(0xf5f6fa); // Handloom white veshti
-            this.torso.material.color.setHex(0xe8ecef);
-        } else if (itemId === 'cloth_cargo') {
-            this.dhoti.material.color.setHex(0x535c68); // Tough cargo khaki
-            this.torso.material.color.setHex(0x2f3542);
-        } else if (itemId === 'cloth_woolen') {
-            this.dhoti.material.color.setHex(0x303952);
-            this.torso.material.color.setHex(0x786fa6); // Toda mountain wool
-        }
-    }
-
     setPosition(x, z, terrain) {
         this.x = x;
         this.z = z;

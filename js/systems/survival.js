@@ -30,30 +30,6 @@ class SurvivalSystem {
     // Placed structures
     this.campfires = [];
     this.tents = [];
-
-    // Environmental Thermal Modifiers
-    this.tempModifier = 0.0;
-    this.thirstDrainModifier = 1.0;
-    this.staminaEfficiency = 1.0;
-    this.coldDefense = 0;
-  }
-
-  recalculateThermalEquilibrium() {
-    if (this.tempModifier !== undefined) {
-      this.coreTemp = Math.max(34.0, Math.min(38.5, 36.5 + this.tempModifier));
-    }
-    this.updateHUD();
-  }
-
-  updateHUD() {
-    const hungerBar = document.getElementById('hunger-fill');
-    const thirstBar = document.getElementById('thirst-fill');
-    const energyBar = document.getElementById('energy-fill');
-    const tempGauge = document.getElementById('temp-value');
-    if (hungerBar) hungerBar.style.width = `${Math.round(this.hunger)}%`;
-    if (thirstBar) thirstBar.style.width = `${Math.round(this.thirst)}%`;
-    if (energyBar) energyBar.style.width = `${Math.round(this.energy)}%`;
-    if (tempGauge) tempGauge.innerText = `${this.coreTemp.toFixed(1)}°C`;
   }
 
   update(deltaTime, playerX, weatherSystem, isNearFire = false) {

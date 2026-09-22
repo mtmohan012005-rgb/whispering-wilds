@@ -1,0 +1,124 @@
+/* ============================================================================
+   THE WHISPERING WILDS (KAATTU VAZHI) - SAVE FEEDBACK TOAST
+   Diegetic save notification — ink splash shimmer with fade animation
+   ============================================================================ */
+
+/* Save toast container — fixed bottom-center, above HUD */
+#save-toast {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9500;
+  pointer-events: none;
+}
+
+#save-toast.hidden {
+  display: none;
+}
+
+.save-toast-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px 10px 16px;
+  background: linear-gradient(135deg, rgba(20, 18, 12, 0.92), rgba(40, 32, 18, 0.88));
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 10px;
+  box-shadow:
+    0 0 18px rgba(212, 175, 55, 0.15),
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-family: 'Cinzel', 'Georgia', serif;
+  white-space: nowrap;
+}
+
+.save-toast-icon {
+  font-size: 1.35rem;
+  animation: quill-write 0.6s ease-out;
+}
+
+.save-toast-msg {
+  font-size: 0.88rem;
+  color: #d4af37;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.25);
+}
+
+/* Slide-up entrance */
+#save-toast.toast-show {
+  display: block;
+  animation: toast-slide-in 0.45s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+/* Fade-out exit */
+#save-toast.toast-hide {
+  display: block;
+  animation: toast-slide-out 0.55s ease-in forwards;
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12px) scale(0.95);
+  }
+}
+
+@keyframes quill-write {
+  0% {
+    transform: rotate(-20deg) translateX(-6px);
+    opacity: 0.3;
+  }
+  50% {
+    transform: rotate(5deg) translateX(2px);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(0deg) translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Subtle ink shimmer on the toast border */
+.save-toast-inner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 55, 0.1),
+    transparent
+  );
+  animation: ink-shimmer 1.6s ease-out 0.3s;
+  pointer-events: none;
+}
+
+@keyframes ink-shimmer {
+  from {
+    left: -60%;
+  }
+  to {
+    left: 120%;
+  }
+}
