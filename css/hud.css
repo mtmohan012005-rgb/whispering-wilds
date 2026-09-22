@@ -166,6 +166,46 @@
   gap: 6px;
 }
 
+/* 3D Mode & Macro Map Switcher */
+.hud-top-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.hud-mode-btn {
+  background: rgba(18, 14, 20, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: #f1f2f6;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.hud-mode-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: var(--primary-gold);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.hud-mode-btn.active {
+  background: linear-gradient(135deg, rgba(85, 239, 196, 0.3), rgba(0, 184, 148, 0.4));
+  border-color: #55efc4;
+  color: #55efc4;
+  box-shadow: 0 0 15px rgba(85, 239, 196, 0.4);
+}
+
 /* --- BOTTOM-LEFT: SURVIVAL VITALS --- */
 .hud-bottom-bar {
   display: flex;

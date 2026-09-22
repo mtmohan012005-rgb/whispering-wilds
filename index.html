@@ -12,12 +12,20 @@
   <link rel="stylesheet" href="css/camera.css">
   <link rel="stylesheet" href="css/journal.css">
   <link rel="stylesheet" href="css/modals.css">
+
+  <!-- Three.js 3D Graphics Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-  <!-- Game Canvas Viewport -->
+  <!-- Game Canvas Viewport (2D) -->
   <div id="canvas-wrapper">
     <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <!-- Three.js 3D Open-World Viewport -->
+  <div id="three-canvas-container" class="hidden">
+    <canvas id="threeCanvas"></canvas>
   </div>
 
   <!-- Quest & Discovery Toast Notification -->
@@ -64,6 +72,18 @@
         <span class="compass-cardinal compass-e">E</span>
         <span class="compass-cardinal compass-w">W</span>
         <div id="compass-needle"></div>
+      </div>
+
+      <!-- 3D Open-World Mode & Macro-Map Controls -->
+      <div class="hud-top-actions">
+        <button id="toggle-3d-view-btn" class="hud-mode-btn" title="Toggle between 2D View and 3D Open-World [V]">
+          <span id="view-mode-label">🌐 3D World (3D வரைபடம்)</span>
+          <span class="key-hint">V</span>
+        </button>
+        <button id="toggle-macro-map-btn" class="hud-mode-btn hidden" title="Toggle Macro-Map Bird's-Eye View [M]">
+          <span id="macro-map-label">🗺️ Macro View</span>
+          <span class="key-hint">M</span>
+        </button>
       </div>
 
       <!-- Economy Rupee Badge -->
@@ -274,6 +294,15 @@
   <script src="js/systems/camera.js"></script>
   <script src="js/systems/journal.js"></script>
   <script src="js/systems/quests.js"></script>
+
+  <!-- Three.js 3D Open-World Engine Modules -->
+  <script src="js/engine/three-terrain.js"></script>
+  <script src="js/engine/three-player.js"></script>
+  <script src="js/engine/three-camera.js"></script>
+  <script src="js/engine/three-weather.js"></script>
+  <script src="js/engine/three-lighting.js"></script>
+  <script src="js/engine/three-world.js"></script>
+
   <script src="js/main.js"></script>
   <script src="js/test-runner.js"></script>
 

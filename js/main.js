@@ -64,6 +64,73 @@ window.addEventListener('DOMContentLoaded', () => {
   window.testRef = { player, renderer, lighting, particles, tracksManager, weather, survival, camera: explorerCamera, journal, quests, entities };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
+  // Initialize 3D World Engine
+  const threeCanvas = document.getElementById('threeCanvas');
+  const toggle3dBtn = document.getElementById('toggle-3d-view-btn');
+  const toggleMacroBtn = document.getElementById('toggle-macro-map-btn');
+
+  let threeWorld = null;
+  if (threeCanvas && window.ThreeWorld) {
+    try {
+      threeWorld = new window.ThreeWorld(threeCanvas);
+      window.threeWorld = threeWorld;
+      window.testRef.threeWorld = threeWorld;
+      threeWorld.onTelemetryUpdate = (data) => {
+        player.x = data.x2D;
+        player.y = data.y2D;
+        if (data.isMoving) {
+          survival.consumeEnergy(0.035);
+        }
+      };
+    } catch (e) {
+      console.warn("ThreeWorld initialization error:", e);
+    }
+  }
+
+  function toggle3DMode(forceState) {
+    if (!threeWorld) return;
+    const newState = (forceState !== undefined) ? forceState : !threeWorld.isActive;
+    if (newState) {
+      threeWorld.syncPlayerFrom2D(player);
+      threeWorld.setActive(true);
+      if (toggle3dBtn) {
+        toggle3dBtn.innerHTML = '🗺️ 2D Canvas [V]';
+        toggle3dBtn.classList.add('active');
+      }
+    } else {
+      threeWorld.syncPlayerTo2D(player);
+      threeWorld.setActive(false);
+      if (toggle3dBtn) {
+        toggle3dBtn.innerHTML = '🌐 3D World [V]';
+        toggle3dBtn.classList.remove('active');
+      }
+      if (toggleMacroBtn) {
+        toggleMacroBtn.innerHTML = '🗺️ Macro View [M]';
+        toggleMacroBtn.classList.remove('active');
+      }
+    }
+  }
+
+  function toggleMacroView() {
+    if (!threeWorld) return;
+    if (!threeWorld.isActive) {
+      toggle3DMode(true);
+    }
+    const newMode = threeWorld.toggleMacroView();
+    if (toggleMacroBtn) {
+      if (newMode === 'macro') {
+        toggleMacroBtn.innerHTML = '🎯 Player View [M]';
+        toggleMacroBtn.classList.add('active');
+      } else {
+        toggleMacroBtn.innerHTML = '🗺️ Macro View [M]';
+        toggleMacroBtn.classList.remove('active');
+      }
+    }
+  }
+
+  toggle3dBtn?.addEventListener('click', () => toggle3DMode());
+  toggleMacroBtn?.addEventListener('click', () => toggleMacroView());
+
   // Auto-run test runner or visual modes if requested via URL
   if (window.location.search.includes('runTests=true')) {
     setTimeout(() => {
@@ -73,7 +140,18 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  if (window.location.search.includes('showWardrobe=true')) {
+  if (window.location.search.includes('view=3d')) {
+    titleScreen.style.display = 'none';
+    titleScreen.classList.add('hidden');
+    hudContainer.classList.remove('hidden');
+    toggle3DMode(true);
+  } else if (window.location.search.includes('view=macro')) {
+    titleScreen.style.display = 'none';
+    titleScreen.classList.add('hidden');
+    hudContainer.classList.remove('hidden');
+    toggle3DMode(true);
+    toggleMacroView();
+  } else if (window.location.search.includes('showWardrobe=true')) {
     titleScreen.style.display = 'none';
     titleScreen.classList.add('hidden');
     hudContainer.classList.remove('hidden');
@@ -127,6 +205,9 @@ window.addEventListener('DOMContentLoaded', () => {
     input.keys[e.code] = true;
 
     // Hotkeys
+    if (e.code === 'KeyV') {
+      toggle3DMode();
+    }
     if (e.code === 'KeyF') {
       const active = explorerCamera.toggle();
       if (active) audio.playCameraShutter();
@@ -148,8 +229,12 @@ window.addEventListener('DOMContentLoaded', () => {
       handleInteraction();
     }
     if (e.code === 'KeyM') {
-      const muted = audio.toggleMute();
-      audioBtn.textContent = muted ? '🔇 Unmute' : '🔊 Audio';
+      if (threeWorld && threeWorld.isActive) {
+        toggleMacroView();
+      } else {
+        const muted = audio.toggleMute();
+        audioBtn.textContent = muted ? '🔇 Unmute' : '🔊 Audio';
+      }
     }
   });
 
@@ -542,6 +627,11 @@ window.addEventListener('DOMContentLoaded', () => {
     // 7. Screen-space Weather Rain Streaks
     particles.drawWeather(ctx, canvas.width, canvas.height);
 
+    // Sync 3D lightning flash if active
+    if (weather.isLightning && threeWorld && threeWorld.isActive) {
+      threeWorld.triggerLightning(1.0);
+    }
+
     // 8. Interaction Prompt overlay
     renderer.drawInteractionPrompt(ctx, player, renderer.camera);
 
@@ -561,7 +651,13 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if (timeDisplay) timeDisplay.textContent = lighting.getFormattedTime();
     if (weatherBadge) weatherBadge.textContent = weather.getDisplayName();
-    if (biomeTitle) biomeTitle.textContent = biome.name;
+    if (biomeTitle) {
+      if (threeWorld && threeWorld.isActive && threeWorld.isMacroView()) {
+        biomeTitle.textContent = 'TAMIL NADU REGIONAL SURVEY (மேக்ரோ வரைபடம்)';
+      } else {
+        biomeTitle.textContent = biome.name;
+      }
+    }
     if (rupeeCount) rupeeCount.textContent = `₹${survival.currency}`;
 
     // Real Tamil Nadu GPS Telemetry

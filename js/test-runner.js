@@ -283,6 +283,72 @@ window.runStepByStepFeatureTests = async function() {
     log(11, 'Cultural Wardrobe System & Olai Chuvadi Palm-Leaf Manuscript UI', false, err.message);
   }
 
+  // --- STEP 12: Three.js 3D Real Tamil Nadu Terrain & Procedural Landmarks ---
+  try {
+    const threeWorld = window.threeWorld || (window.testRef && window.testRef.threeWorld);
+    if (!threeWorld) throw new Error('threeWorld engine instance not found on window');
+
+    const terrain = threeWorld.terrain;
+    const elevChennai = terrain.getElevation(-250, 0);
+    const elevDelta = terrain.getElevation(0, 0);
+    const elevGhats = terrain.getElevation(220, -15);
+
+    const isFlatLowlands = Math.abs(elevChennai) < 5;
+    const isSteepMountains = elevGhats > 18;
+
+    // Verify landmarks
+    const landmarks = terrain.landmarksGroup.children;
+    const hasHighCourt = landmarks.some(c => c.name === 'MadrasHighCourt');
+    const hasTeaKadai = landmarks.some(c => c.name === 'MuruganTeaKadai');
+    const hasWaterwheel = landmarks.some(c => c.name === 'CholaWaterwheel');
+    const hasTodaHut = landmarks.some(c => c.name === 'TodaHut');
+    const hasEcoPortal = landmarks.some(c => c.name === 'EcoSanctuaryPortal');
+    const hasWater = !!terrain.waterMesh;
+
+    const terrainValid = isFlatLowlands && isSteepMountains && hasHighCourt && hasTeaKadai && hasWaterwheel && hasTodaHut && hasEcoPortal && hasWater;
+
+    log(12, 'Three.js 3D Tamil Nadu Terrain & Procedural Landmarks', terrainValid,
+      `Chennai elev: ${elevChennai.toFixed(1)}m, Ghats peak: ${elevGhats.toFixed(1)}m, Landmarks: HighCourt(${hasHighCourt}), TeaKadai(${hasTeaKadai}), Waterwheel(${hasWaterwheel}), TodaHut(${hasTodaHut}), EcoPortal(${hasEcoPortal}), Water(${hasWater})`);
+  } catch (err) {
+    log(12, 'Three.js 3D Tamil Nadu Terrain & Procedural Landmarks', false, err.message);
+  }
+
+  // --- STEP 13: 3D Player Controller, Macro-Map View & Atmospheric Weather ---
+  try {
+    const threeWorld = window.threeWorld || (window.testRef && window.testRef.threeWorld);
+    if (!threeWorld) throw new Error('threeWorld engine instance not found on window');
+
+    // 1. Activate 3D Mode
+    threeWorld.setActive(true);
+    await wait(200);
+
+    // 2. Test Player locomotion & height snapping
+    const initialPos = threeWorld.player.getPosition();
+    threeWorld.player.setPosition(-230, 10, threeWorld.terrain);
+    const updatedPos = threeWorld.player.getPosition();
+    const correctHeight = Math.abs(updatedPos.y - threeWorld.terrain.getElevation(updatedPos.x, updatedPos.z)) < 0.01;
+    const lanternShadow = threeWorld.player.lanternLight.castShadow === true;
+
+    // 3. Test Macro-Map View Toggle
+    const mode1 = threeWorld.cameraController.toggleMacroView();
+    const isMacro = threeWorld.cameraController.isMacro();
+    await wait(200);
+    const mode2 = threeWorld.cameraController.toggleMacroView(); // back to gameplay
+    await wait(100);
+
+    // 4. Test Weather particle system & lighting shadows
+    const rainStreakCount = threeWorld.weather.rainCount;
+    const hasShadowMap = threeWorld.renderer.shadowMap.enabled === true;
+    const moonShadow = threeWorld.lighting.moonLight.castShadow === true;
+
+    const step13Success = correctHeight && lanternShadow && isMacro && rainStreakCount >= 3000 && hasShadowMap && moonShadow;
+
+    log(13, '3D Player Controller, Macro-Map Zoom & Thunderstorm Weather', step13Success,
+      `Height Snapped: ${correctHeight}, Lantern Shadows: ${lanternShadow}, Macro-Map View: ${isMacro}, Rain Streaks: ${rainStreakCount}, PCF Shadows: ${hasShadowMap}`);
+  } catch (err) {
+    log(13, '3D Player Controller, Macro-Map Zoom & Thunderstorm Weather', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 
