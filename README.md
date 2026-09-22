@@ -42,7 +42,9 @@ An atmospheric open-world exploration, light survival, and narrative mystery adv
 | **L** | Toggle Brass Belt Lantern for night exploration |
 | **B** | Deploy Campfire (requires Wood) |
 | **T** | Pitch Canvas Tent (sleep to gain **Well Rested** buff) |
-| **M** | Toggle Synthesized Audio / Music Mute |
+| **V** | Toggle 2D Canvas vs. 3D Photorealistic Open-World Engine |
+| **P** | Open / Close Co-op Expedition Lobby (Host/Join Max 5 Players) |
+| **M** | Toggle Macro-Map Survey (in 3D) or Audio Mute (in 2D) |
 
 ---
 
@@ -105,6 +107,32 @@ The game includes a full Three.js WebGL skeletal animation pipeline loading rigg
    ```javascript
    window.CHARACTER_MODEL_URL = './assets/models/tamil_explorer.glb';
    ```
+
+---
+
+## 👥 6. Multiplayer Co-op Expedition Engine (Max 5 Players)
+
+*The Whispering Wilds* features real-time 5-player cooperative networking powered by **Node.js, Express, and Socket.io**:
+
+* **Host / Explorer Roles**: The first player to create or join a room code becomes the **Expedition Host** (crowned with gold visual trim and warm amber lantern `#d4af37`), while subsequent joiners become **Explorers** (azure blue trim and cyan lantern `#3498db`).
+* **Strict 5-Player Room Cap**: Servers reject extra join requests with a descriptive `Room full (Max 5 players)` response once capacity is reached.
+* **Dynamic Host Reassignment**: If the host disconnects, the server automatically promotes the next senior player to Expedition Host and updates all player visuals and telemetry in real time.
+* **20Hz Interpolated Synchronization**: 3D positions, horizontal rotations, and movement states (`idle`, `walk`, `sprint`) are broadcast at 20Hz and smoothly lerped on connected clients.
+* **Billboard Name Tags**: Remote avatars feature in-world floating canvas sprites indicating name and role.
+* **Solo Offline Play**: No backend server is required to enjoy the full game—offline exploration and all survival systems remain 100% playable.
+
+### Running the Multiplayer Server Locally
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Launch server (serves web client + Socket.io on Port 3000)
+npm start
+
+# 3. Open in browser:
+# Player 1 (Host): http://localhost:3000
+# Player 2 (Explorer): http://localhost:3000 (enter same room code, e.g. CHENNAI_EXP)
+```
 
 ---
 

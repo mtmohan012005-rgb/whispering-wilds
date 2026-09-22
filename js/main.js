@@ -24,6 +24,19 @@ window.addEventListener('DOMContentLoaded', () => {
   const puzzleModal = document.getElementById('puzzle-modal');
   const closePuzzleBtn = document.getElementById('close-puzzle-btn');
 
+  // Lobby elements (Multiplayer Co-op)
+  const lobbyModal = document.getElementById('lobbyUI');
+  const closeLobbyBtn = document.getElementById('close-lobby-btn');
+  const playSoloBtn = document.getElementById('play-solo-btn');
+  const enterServerBtn = document.getElementById('enter-server-btn');
+  const multiplayerTitleBtn = document.getElementById('multiplayer-title-btn');
+  const toggleMultiplayerBtn = document.getElementById('toggle-multiplayer-btn');
+  const multiplayerBtnLabel = document.getElementById('multiplayer-btn-label');
+  const lobbyStatus = document.getElementById('lobbyStatus');
+  const nameInput = document.getElementById('nameInput');
+  const roomInput = document.getElementById('roomInput');
+  const serverUrlInput = document.getElementById('serverUrlInput');
+
   // Camera elements
   const cameraOverlay = document.getElementById('camera-overlay');
   const cameraSubjectTag = document.getElementById('camera-subject-tag');
@@ -56,6 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const entities = new window.EntityManager();
   const player = new window.Player(220, 630);
   const saveManager = new window.SaveManager();
+  const multiplayer = window.MultiplayerManager ? new window.MultiplayerManager() : null;
 
   // Attach global references
   window.gameQuests = quests;
@@ -63,7 +77,8 @@ window.addEventListener('DOMContentLoaded', () => {
   window.gameSurvival = survival;
   window.gamePlayer = player;
   window.gameSaveManager = saveManager;
-  window.testRef = { player, renderer, lighting, particles, tracksManager, weather, survival, camera: explorerCamera, journal, quests, entities, saveManager };
+  window.multiplayerManager = multiplayer;
+  window.testRef = { player, renderer, lighting, particles, tracksManager, weather, survival, camera: explorerCamera, journal, quests, entities, saveManager, multiplayer };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
   // Initialize 3D World Engine
@@ -209,6 +224,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // Hotkeys
     if (e.code === 'KeyV') {
       toggle3DMode();
+    }
+    if (e.code === 'KeyP') {
+      toggleLobby();
     }
     if (e.code === 'KeyF') {
       const active = explorerCamera.toggle();
@@ -537,6 +555,85 @@ window.addEventListener('DOMContentLoaded', () => {
   campfireBtn.addEventListener('click', handleDeployCampfire);
   tentBtn.addEventListener('click', handleDeployTent);
 
+  // Multiplayer Expedition Lobby Controls & Callbacks
+  function toggleLobby(forceState) {
+    if (!lobbyModal) return;
+    const isHidden = lobbyModal.classList.contains('hidden') || lobbyModal.style.display === 'none';
+    const show = (forceState !== undefined) ? forceState : isHidden;
+    if (show) {
+      lobbyModal.classList.remove('hidden');
+      lobbyModal.style.display = 'flex';
+      if (lobbyStatus) {
+        lobbyStatus.textContent = multiplayer && multiplayer.isConnected ? `Connected to server (${multiplayer.currentRoom || 'No room joined'})` : 'Ready to connect.';
+        lobbyStatus.style.color = '#bdc3c7';
+      }
+    } else {
+      lobbyModal.classList.add('hidden');
+      lobbyModal.style.display = 'none';
+    }
+  }
+
+  multiplayerTitleBtn?.addEventListener('click', () => toggleLobby(true));
+  toggleMultiplayerBtn?.addEventListener('click', () => toggleLobby());
+  closeLobbyBtn?.addEventListener('click', () => toggleLobby(false));
+  playSoloBtn?.addEventListener('click', () => toggleLobby(false));
+
+  if (multiplayer) {
+    multiplayer.onStatusChange = (msg, isError) => {
+      if (lobbyStatus) {
+        lobbyStatus.textContent = msg;
+        lobbyStatus.style.color = isError ? '#e74c3c' : '#2ecc71';
+      }
+    };
+    multiplayer.onRoleChange = (role, isHost) => {
+      if (multiplayerBtnLabel) {
+        multiplayerBtnLabel.textContent = isHost ? '👑 Co-op Host' : '🧭 Explorer';
+      }
+    };
+    multiplayer.onPlayerCountChange = (count, max) => {
+      if (multiplayerBtnLabel) {
+        multiplayerBtnLabel.textContent = `👥 Co-op (${count}/${max})`;
+      }
+    };
+  }
+
+  enterServerBtn?.addEventListener('click', () => {
+    if (!multiplayer) {
+      if (lobbyStatus) {
+        lobbyStatus.textContent = 'Multiplayer system not initialized.';
+        lobbyStatus.style.color = '#e74c3c';
+      }
+      return;
+    }
+
+    const name = nameInput ? nameInput.value.trim() : 'Explorer';
+    const room = roomInput ? roomInput.value.trim() : 'CHENNAI_EXP';
+    const serverUrl = serverUrlInput ? serverUrlInput.value.trim() : '';
+
+    if (!room) {
+      if (lobbyStatus) {
+        lobbyStatus.textContent = 'Please enter a valid Expedition Room Code.';
+        lobbyStatus.style.color = '#e74c3c';
+      }
+      return;
+    }
+
+    if (lobbyStatus) {
+      lobbyStatus.textContent = 'Connecting to expedition room...';
+      lobbyStatus.style.color = '#f39c12';
+    }
+
+    multiplayer.joinRoom(room, name, serverUrl || undefined);
+
+    // If starting from title screen, launch the game
+    setTimeout(() => {
+      if (titleScreen && !titleScreen.classList.contains('hidden')) {
+        startBtn.click();
+      }
+      toggleLobby(false);
+    }, 800);
+  });
+
   // Journal tab switcher buttons
   document.querySelectorAll('.journal-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -708,6 +805,17 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // 8. Interaction Prompt overlay
     renderer.drawInteractionPrompt(ctx, player, renderer.camera);
+
+    // 9. Sync 2D position with multiplayer room if 3D engine is inactive
+    if ((!threeWorld || !threeWorld.isActive) && multiplayer && multiplayer.isConnected && multiplayer.currentRoom) {
+      const pos3D = threeWorld ? threeWorld.world2DTo3D(player.x, player.y) : { x: (player.x / 10.0) - 300.0, z: (player.y - 600.0) / 5.0 };
+      const isSprint = input.keys['ShiftLeft'] || input.keys['ShiftRight'];
+      multiplayer.emitMyTransform(
+        { x: pos3D.x, y: 0, z: pos3D.z },
+        player.angle || 0,
+        player.isMoving ? (isSprint ? 'sprint' : 'walk') : 'idle'
+      );
+    }
 
     // --- UPDATE HUD ---
     updateHUD(currentBiome);

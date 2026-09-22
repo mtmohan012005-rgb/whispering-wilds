@@ -17,6 +17,9 @@
   <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Socket.io Client for Multiplayer Co-op -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 
@@ -51,6 +54,7 @@
 
       <div class="title-actions">
         <button id="start-game-btn" class="btn-primary">▶ Begin Journey (George Town, Chennai)</button>
+        <button id="multiplayer-title-btn" class="btn-secondary">👥 Co-op Expedition (Max 5P)</button>
         <button id="toggle-audio-btn" class="btn-secondary">🔊 Enable Acoustic Audio</button>
       </div>
     </div>
@@ -88,6 +92,10 @@
         <button id="toggle-macro-map-btn" class="hud-mode-btn hidden" title="Toggle Macro-Map Bird's-Eye View [M]">
           <span id="macro-map-label">🗺️ Macro View</span>
           <span class="key-hint">M</span>
+        </button>
+        <button id="toggle-multiplayer-btn" class="hud-mode-btn" title="Open Expedition Co-op Lobby [P]">
+          <span id="multiplayer-btn-label">👥 Co-op Lobby</span>
+          <span class="key-hint">P</span>
         </button>
       </div>
 
@@ -284,6 +292,36 @@
     </div>
   </div>
 
+  <!-- Multiplayer Expedition Lobby Modal (Max 5 Players) -->
+  <div id="lobbyUI" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(7,10,15,0.88); backdrop-filter:blur(10px); display:flex; justify-content:center; align-items:center; z-index:999; font-family:'Segoe UI', Tahoma, sans-serif; color:#fff;">
+    <div style="background:linear-gradient(145deg, #161e2e, #0d121c); padding:32px; border-radius:14px; border:2px solid #d4af37; width:90%; max-width:420px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.85); position:relative;">
+      <button id="close-lobby-btn" style="position:absolute; top:12px; right:16px; background:none; border:none; color:#aaa; font-size:22px; cursor:pointer;">✕</button>
+      <div style="font-size:11px; color:#d4af37; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; font-weight:bold;">காட்டு வழி • குழு பயணம்</div>
+      <h2 style="color:#f39c12; margin:0 0 6px 0; font-size:22px; letter-spacing:1px;">EXPEDITION LOBBY</h2>
+      <p style="font-size:13px; color:#bdc3c7; margin-bottom:18px;">Host a server or join with a room code (Max 5 Explorers)</p>
+
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-size:11px; color:#d4af37; text-transform:uppercase; font-weight:bold;">Explorer Name</label>
+        <input id="nameInput" placeholder="Your Explorer Name" value="Explorer" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;" />
+      </div>
+
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-size:11px; color:#d4af37; text-transform:uppercase; font-weight:bold;">Expedition Room Code</label>
+        <input id="roomInput" placeholder="Room Code (e.g. TN_CHENNAI_1)" value="CHENNAI_EXP" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;" />
+      </div>
+
+      <div style="text-align:left; margin-bottom:18px;">
+        <label style="font-size:11px; color:#888; text-transform:uppercase;">Multiplayer Server URL</label>
+        <input id="serverUrlInput" placeholder="http://localhost:3000 (leave blank for auto)" style="width:100%; box-sizing:border-box; padding:8px 12px; margin-top:4px; background:#131822; border:1px solid #333; color:#aaa; border-radius:6px; font-size:12px;" />
+      </div>
+
+      <button id="enter-server-btn" style="width:100%; padding:13px; background:linear-gradient(135deg, #27ae60, #2ecc71); color:#fff; font-weight:bold; font-size:15px; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 15px rgba(46,204,113,0.3); transition:transform 0.1s ease;">ENTER EXPEDITION</button>
+      <button id="play-solo-btn" style="width:100%; margin-top:10px; padding:10px; background:transparent; border:1px solid #555; color:#ccc; border-radius:8px; cursor:pointer; font-size:13px;">Continue Solo (Offline)</button>
+
+      <div id="lobbyStatus" style="font-size:12px; color:#e74c3c; margin-top:14px; min-height:16px;"></div>
+    </div>
+  </div>
+
   <!-- Game Scripts -->
   <script src="js/engine/audio.js"></script>
   <script src="js/data/world-data.js"></script>
@@ -302,6 +340,7 @@
   <script src="js/systems/journal.js"></script>
   <script src="js/systems/quests.js"></script>
   <script src="js/systems/saveManager.js"></script>
+  <script src="js/systems/multiplayer.js"></script>
 
   <!-- Three.js 3D Open-World Engine Modules -->
   <script src="js/engine/three-terrain.js"></script>

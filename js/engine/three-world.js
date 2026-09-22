@@ -161,6 +161,13 @@ class ThreeWorld {
         // 4. Update Lighting (Directional shadow camera tracks player)
         this.lighting.update(playerPos, dt);
 
+        // 4b. Update Multiplayer Remote Players & Broadcast 3D Transform (20Hz)
+        if (window.multiplayerManager) {
+            window.multiplayerManager.updateRemotePlayers(dt);
+            const anim = this.player.isMoving ? (this.inputState.shift ? 'sprint' : 'walk') : 'idle';
+            window.multiplayerManager.emitMyTransform(playerPos, this.player.currentRotation, anim);
+        }
+
         // 5. Render Scene
         this.renderer.render(this.scene, this.cameraController.camera);
 

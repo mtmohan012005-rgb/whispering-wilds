@@ -124,9 +124,10 @@
         }
     </style>
 
-    <!-- Import Three.js and GLTFLoader -->
+    <!-- Import Three.js, GLTFLoader, and Socket.io -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 
@@ -135,11 +136,42 @@
             <h3><span>🌿</span> CHENNAI & RED SOIL PLAINS (மதராஸ் & செம்மண் நிலம்)</h3>
             <p>📍 13.0827° N, 80.2707° E • Madras High Court Grounds</p>
             <div id="telemetry" class="hud-telemetry">State: IDLE | Speed: 0.0 m/s | Surface: Red Soil</div>
+            <div id="multiplayer-status-badge" style="font-size:11px; color:#2ecc71; margin-top:4px;">Multiplayer: Offline / Solo</div>
         </div>
     </div>
 
-    <div class="back-nav">
+    <div class="back-nav" style="display:flex; gap:10px;">
+        <button id="toggleLobbyBtn" style="background:rgba(15, 18, 28, 0.88); border:1px solid #d4af37; color:#f39c12; padding:9px 18px; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer; backdrop-filter:blur(8px);">👥 Co-op Lobby (Max 5P)</button>
         <a href="index.html">⬅ Return to Full Game</a>
+    </div>
+
+    <!-- Multiplayer Lobby Overlay Modal -->
+    <div id="lobbyUI" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(7,10,15,0.88); backdrop-filter:blur(10px); display:none; justify-content:center; align-items:center; z-index:999; font-family:'Segoe UI', Tahoma, sans-serif; color:#fff;">
+        <div style="background:linear-gradient(145deg, #161e2e, #0d121c); padding:32px; border-radius:14px; border:2px solid #d4af37; width:90%; max-width:400px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.85); position:relative;">
+            <button id="closeLobbyBtn" style="position:absolute; top:12px; right:16px; background:none; border:none; color:#aaa; font-size:22px; cursor:pointer;">✕</button>
+            <div style="font-size:11px; color:#d4af37; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; font-weight:bold;">குழு பயணம் • MULTIPLAYER</div>
+            <h2 style="color:#f39c12; margin:0 0 6px 0; font-size:22px; letter-spacing:1px;">EXPEDITION LOBBY</h2>
+            <p style="font-size:13px; color:#bdc3c7; margin-bottom:18px;">Host a server or join with a room code (Max 5 Players)</p>
+            
+            <div style="text-align:left; margin-bottom:12px;">
+                <label style="font-size:11px; color:#d4af37; text-transform:uppercase; font-weight:bold;">Explorer Name</label>
+                <input id="nameInput" placeholder="Your Name" value="Explorer" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;" />
+            </div>
+
+            <div style="text-align:left; margin-bottom:12px;">
+                <label style="font-size:11px; color:#d4af37; text-transform:uppercase; font-weight:bold;">Room Code</label>
+                <input id="roomInput" placeholder="Room Code (e.g. TN_WILD_1)" value="CHENNAI_EXP" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;" />
+            </div>
+
+            <div style="text-align:left; margin-bottom:18px;">
+                <label style="font-size:11px; color:#888; text-transform:uppercase;">Server URL</label>
+                <input id="serverUrlInput" placeholder="http://localhost:3000 (leave blank for auto)" style="width:100%; box-sizing:border-box; padding:8px 12px; margin-top:4px; background:#131822; border:1px solid #333; color:#aaa; border-radius:6px; font-size:12px;" />
+            </div>
+            
+            <button id="enterServerBtn" style="width:100%; padding:13px; background:linear-gradient(135deg, #27ae60, #2ecc71); color:#fff; font-weight:bold; font-size:15px; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 15px rgba(46,204,113,0.3);">ENTER EXPEDITION</button>
+            <button id="cancelLobbyBtn" style="width:100%; margin-top:10px; padding:10px; background:transparent; border:1px solid #555; color:#ccc; border-radius:8px; cursor:pointer; font-size:13px;">Continue Solo (Offline)</button>
+            <p id="lobbyStatus" style="font-size:12px; color:#e74c3c; margin-top:12px; min-height:16px;"></p>
+        </div>
     </div>
 
     <div id="loading-indicator">Loading 3D Skeletal Rigged Avatar...</div>
@@ -504,10 +536,193 @@
             if (telemEl) {
                 telemEl.textContent = `State: ${playerState.gaitState.toUpperCase()} | Speed: ${playerState.currentSpeed.toFixed(1)} m/s | Pos: (${characterMesh.position.x.toFixed(1)}, ${characterMesh.position.z.toFixed(1)})`;
             }
+
+            // Sync with multiplayer room if connected (20Hz)
+            if (typeof emitMyTransform === 'function') {
+                emitMyTransform(characterMesh.position, characterMesh.rotation.y, playerState.gaitState);
+            }
         }
 
         // ----------------------------------------------------
-        // 8. MAIN ENGINE LOOP
+        // 8. MULTIPLAYER CO-OP NETWORKING (MAX 5 PLAYERS)
+        // ----------------------------------------------------
+        let socket = null;
+        let currentRoom = "";
+        let myId = "";
+        let isHost = false;
+        const remotePlayers = {};
+        let lastEmitTime = 0;
+
+        const lobbyUI = document.getElementById('lobbyUI');
+        const toggleLobbyBtn = document.getElementById('toggleLobbyBtn');
+        const closeLobbyBtn = document.getElementById('closeLobbyBtn');
+        const cancelLobbyBtn = document.getElementById('cancelLobbyBtn');
+        const enterServerBtn = document.getElementById('enterServerBtn');
+        const lobbyStatus = document.getElementById('lobbyStatus');
+        const mpBadge = document.getElementById('multiplayer-status-badge');
+
+        toggleLobbyBtn.addEventListener('click', () => { lobbyUI.style.display = 'flex'; });
+        closeLobbyBtn.addEventListener('click', () => { lobbyUI.style.display = 'none'; });
+        cancelLobbyBtn.addEventListener('click', () => { lobbyUI.style.display = 'none'; });
+
+        enterServerBtn.addEventListener('click', () => {
+            const roomCode = document.getElementById('roomInput').value.trim();
+            const playerName = document.getElementById('nameInput').value.trim();
+            let serverUrl = document.getElementById('serverUrlInput').value.trim();
+
+            if (!serverUrl) {
+                serverUrl = (window.location.protocol.startsWith('http') && window.location.port === '3000') ? window.location.origin : 'http://localhost:3000';
+            }
+
+            if (!roomCode) {
+                lobbyStatus.innerText = "Please enter a Room Code";
+                return;
+            }
+
+            lobbyStatus.innerText = "Connecting to expedition server...";
+            lobbyStatus.style.color = "#f39c12";
+
+            try {
+                if (!socket) {
+                    socket = io(serverUrl, { timeout: 6000, transports: ['websocket', 'polling'] });
+
+                    socket.on('connect', () => {
+                        myId = socket.id;
+                        socket.emit('joinRoom', { roomCode, playerName });
+                    });
+
+                    socket.on('connect_error', (err) => {
+                        lobbyStatus.innerText = `Cannot reach ${serverUrl}. Is 'node server.js' running?`;
+                        lobbyStatus.style.color = "#e74c3c";
+                    });
+
+                    socket.on('roomFull', (data) => {
+                        lobbyStatus.innerText = data.message;
+                        lobbyStatus.style.color = "#e74c3c";
+                    });
+
+                    socket.on('joinedSuccess', (data) => {
+                        currentRoom = data.roomCode;
+                        myId = data.playerId;
+                        isHost = data.isHost;
+                        lobbyUI.style.display = 'none';
+                        const count = Object.keys(data.currentPlayers).length;
+                        mpBadge.innerText = `Multiplayer: ${isHost ? '👑 HOST' : '🧭 EXPLORER'} | Room: ${currentRoom} (${count}/5)`;
+                        mpBadge.style.color = isHost ? '#ffd700' : '#3498db';
+
+                        // Spawn existing players in room
+                        for (let id in data.currentPlayers) {
+                            if (id !== myId) spawnRemotePlayer(data.currentPlayers[id]);
+                        }
+                    });
+
+                    socket.on('playerJoined', (playerData) => {
+                        spawnRemotePlayer(playerData);
+                        const count = Object.keys(remotePlayers).length + 1;
+                        mpBadge.innerText = `Multiplayer: ${isHost ? '👑 HOST' : '🧭 EXPLORER'} | Room: ${currentRoom} (${count}/5)`;
+                    });
+
+                    socket.on('playerMoved', (data) => {
+                        if (remotePlayers[data.id]) {
+                            remotePlayers[data.id].targetPos.set(data.position.x, data.position.y, data.position.z);
+                            remotePlayers[data.id].targetRotY = data.rotationY;
+                        }
+                    });
+
+                    socket.on('playerLeft', (data) => {
+                        if (remotePlayers[data.id]) {
+                            scene.remove(remotePlayers[data.id].mesh);
+                            delete remotePlayers[data.id];
+                            const count = Object.keys(remotePlayers).length + 1;
+                            mpBadge.innerText = `Multiplayer: ${isHost ? '👑 HOST' : '🧭 EXPLORER'} | Room: ${currentRoom} (${count}/5)`;
+                        }
+                    });
+
+                    socket.on('newHostAssigned', (data) => {
+                        if (data.hostId === myId) {
+                            isHost = true;
+                            mpBadge.innerText = `Multiplayer: 👑 HOST | Room: ${currentRoom} (${Object.keys(remotePlayers).length + 1}/5)`;
+                            mpBadge.style.color = '#ffd700';
+                            alert("The previous expedition host left. You are now the expedition HOST!");
+                        }
+                    });
+                } else {
+                    socket.emit('joinRoom', { roomCode, playerName });
+                }
+            } catch (e) {
+                lobbyStatus.innerText = "Error: " + e.message;
+            }
+        });
+
+        function spawnRemotePlayer(playerData) {
+            if (remotePlayers[playerData.id]) return;
+
+            const isRemoteHost = playerData.role === 'HOST';
+            const group = new THREE.Group();
+
+            const remoteGeo = new THREE.CylinderGeometry(0.4, 0.45, 1.8, 12);
+            const remoteMat = new THREE.MeshStandardMaterial({
+                color: isRemoteHost ? 0xd4af37 : 0x3498db,
+                roughness: 0.7,
+                metalness: isRemoteHost ? 0.4 : 0.1
+            });
+            const bodyMesh = new THREE.Mesh(remoteGeo, remoteMat);
+            bodyMesh.position.y = 0.9;
+            bodyMesh.castShadow = true;
+            group.add(bodyMesh);
+
+            // Light
+            const pLight = new THREE.PointLight(isRemoteHost ? 0xffbb33 : 0x66ccff, 1.4, 14);
+            pLight.position.set(0, 1.4, 0);
+            group.add(pLight);
+
+            // Name tag
+            const nameCanvas = document.createElement('canvas');
+            nameCanvas.width = 256;
+            nameCanvas.height = 64;
+            const nctx = nameCanvas.getContext('2d');
+            nctx.fillStyle = 'rgba(15, 20, 30, 0.8)';
+            nctx.roundRect(8, 8, 240, 48, [10]);
+            nctx.fill();
+            nctx.strokeStyle = isRemoteHost ? '#ffd700' : '#3498db';
+            nctx.lineWidth = 2;
+            nctx.stroke();
+            nctx.font = 'bold 20px sans-serif';
+            nctx.fillStyle = '#fff';
+            nctx.textAlign = 'center';
+            nctx.textBaseline = 'middle';
+            nctx.fillText((isRemoteHost ? '👑 ' : '🧭 ') + playerData.name, 128, 32);
+
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(nameCanvas), transparent: true }));
+            sprite.scale.set(3, 0.75, 1);
+            sprite.position.y = 2.4;
+            group.add(sprite);
+
+            group.position.set(playerData.position.x || 0, playerData.position.y || 0, playerData.position.z || 0);
+            scene.add(group);
+
+            remotePlayers[playerData.id] = {
+                mesh: group,
+                targetPos: new THREE.Vector3(playerData.position.x || 0, playerData.position.y || 0, playerData.position.z || 0),
+                targetRotY: playerData.rotationY || 0
+            };
+        }
+
+        function emitMyTransform(pos, rotY, anim) {
+            if (!socket || !currentRoom || !myId) return;
+            const now = performance.now();
+            if (now - lastEmitTime < 50) return; // 20Hz limit
+            lastEmitTime = now;
+            socket.emit('playerMove', {
+                roomCode: currentRoom,
+                position: { x: pos.x, y: pos.y, z: pos.z },
+                rotationY: rotY,
+                currentAnim: anim
+            });
+        }
+
+        // ----------------------------------------------------
+        // 9. MAIN ENGINE LOOP
         // ----------------------------------------------------
         function animate() {
             requestAnimationFrame(animate);
@@ -515,6 +730,18 @@
 
             updateCharacterPhysics(delta);
             updateThirdPersonCamera(delta);
+
+            // Interpolate remote players smoothly
+            for (let id in remotePlayers) {
+                const rp = remotePlayers[id];
+                if (rp && rp.mesh) {
+                    rp.mesh.position.lerp(rp.targetPos, Math.min(1.0, delta * 12.0));
+                    let diff = rp.targetRotY - rp.mesh.rotation.y;
+                    while (diff < -Math.PI) diff += Math.PI * 2;
+                    while (diff > Math.PI) diff -= Math.PI * 2;
+                    rp.mesh.rotation.y += diff * Math.min(1.0, delta * 12.0);
+                }
+            }
 
             renderer.render(scene, camera);
         }

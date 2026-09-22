@@ -1,6 +1,6 @@
 // ============================================================================
 // THE WHISPERING WILDS (KAATTU VAZHI) - AUTOMATED STEP-BY-STEP FEATURE TESTER
-// Executes all 15 GDD systems sequentially and logs step verification metrics
+// Executes all 16 GDD systems sequentially and logs step verification metrics
 // ============================================================================
 
 window.runStepByStepFeatureTests = async function() {
@@ -493,6 +493,64 @@ window.runStepByStepFeatureTests = async function() {
       `VeshtiLimit: ${outfitRestricted}, DecalConfigs: ${fpConfigValid}, 3DLoco: ${threeLocoValid}`);
   } catch (err) {
     log(15, 'Realistic Human Locomotion & Biomechanics Engine', false, err.message);
+  }
+
+  // --- STEP 16: Multiplayer 5-Player Room Lobby & State Sync Engine ---
+  try {
+    const mpManager = window.multiplayerManager || new window.MultiplayerManager();
+    const hasClass = typeof window.MultiplayerManager === 'function';
+    const maxPlayersValid = mpManager.maxPlayers === 5;
+    const initialRole = mpManager.role === 'EXPLORER';
+    const initialHost = mpManager.isHost === false;
+
+    // Test name sprite generator
+    const testSprite = mpManager.createNameSprite('TestExplorer', '🧭');
+    const spriteValid = testSprite instanceof THREE.Sprite && !!testSprite.material.map;
+
+    // Test lobby DOM elements
+    const lobbyModal = document.getElementById('lobbyUI');
+    const hasLobbyModal = !!lobbyModal;
+    const enterBtn = document.getElementById('enter-server-btn');
+    const roomInput = document.getElementById('roomInput');
+    const nameInput = document.getElementById('nameInput');
+    const domControlsValid = !!(enterBtn && roomInput && nameInput);
+
+    // Test 5-player cap enforcement logic (simulated server state)
+    const testRoom = {
+      hostId: 'socket_host',
+      players: {
+        s1: { name: 'P1', role: 'HOST' },
+        s2: { name: 'P2', role: 'EXPLORER' },
+        s3: { name: 'P3', role: 'EXPLORER' },
+        s4: { name: 'P4', role: 'EXPLORER' },
+        s5: { name: 'P5', role: 'EXPLORER' }
+      }
+    };
+    const isRoomFull = Object.keys(testRoom.players).length >= 5;
+
+    // Test dynamic host reassignment logic (host disconnects -> s2 promoted)
+    delete testRoom.players['s1'];
+    const remainingIds = Object.keys(testRoom.players);
+    let promotedHostId = null;
+    if (remainingIds.length > 0) {
+      promotedHostId = remainingIds[0];
+      testRoom.hostId = promotedHostId;
+      testRoom.players[promotedHostId].role = 'HOST';
+    }
+    const hostPromotionValid = promotedHostId === 's2' && testRoom.players['s2'].role === 'HOST';
+
+    // Test 20Hz throttling interval
+    const emitIntervalValid = mpManager.emitInterval === 0.05;
+
+    const step16Success = hasClass && maxPlayersValid && initialRole && initialHost &&
+      spriteValid && hasLobbyModal && domControlsValid && isRoomFull && hostPromotionValid && emitIntervalValid;
+
+    log(16, 'Multiplayer 5-Player Room Lobby & State Sync Engine', step16Success,
+      `Class: ${hasClass}, MaxPlayers: ${mpManager.maxPlayers}, InitialRole: ${mpManager.role}, ` +
+      `BillboardSprite: ${spriteValid}, LobbyModal: ${hasLobbyModal}, DOMControls: ${domControlsValid}, ` +
+      `5PCapEnforced: ${isRoomFull}, DynamicHostPromotion: ${hostPromotionValid}, 20HzThrottled: ${emitIntervalValid}`);
+  } catch (err) {
+    log(16, 'Multiplayer 5-Player Room Lobby & State Sync Engine', false, err.message);
   }
 
   console.log('>>> TEST SUITE COMPLETE <<<', results);

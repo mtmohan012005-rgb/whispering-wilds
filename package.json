@@ -4,8 +4,14 @@
   "description": "The Whispering Wilds (Kaattu Vazhi / Thadam) - An Open-World Narrative Exploration Game across Tamil Nadu",
   "main": "index.html",
   "scripts": {
-    "start": "npx -y serve .",
+    "start": "node server.js",
+    "server": "node server.js",
     "serve": "npx -y serve ."
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
   },
   "keywords": [
     "game",
