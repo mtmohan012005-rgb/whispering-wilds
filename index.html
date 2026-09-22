@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Whispering Wilds (காட்டு வழி / Thadam) - Open-World Tamil Nadu Exploration</title>
+  <meta name="description" content="Open-world exploration, light survival, and mystery adventure across authentic Tamil Nadu landscapes from Madras High Court to Pichavaram and Nilgiris.">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/hud.css">
+  <link rel="stylesheet" href="css/camera.css">
+  <link rel="stylesheet" href="css/journal.css">
+  <link rel="stylesheet" href="css/tea-stall.css">
+</head>
+<body>
+
+  <!-- Game Canvas Viewport -->
+  <div id="canvas-wrapper">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <!-- Quest & Discovery Toast Notification -->
+  <div id="quest-toast" class="hidden"></div>
+
+  <!-- Cinematic Title Screen -->
+  <div id="title-screen">
+    <div class="title-card-container">
+      <div class="tamil-title">காட்டு வழி • தடம்</div>
+      <h1 class="main-title">The Whispering Wilds</h1>
+      <div class="subtitle">An Open-World Narrative Exploration of Tamil Nadu</div>
+
+      <div class="prologue-synopsis">
+        <p><strong>Prologue: The Inciting Incident at Madras High Court</strong></p>
+        <p>As you review a century-old inherited blueprint outside the red-brick gates of George Town during a sudden downpour, a mysterious rider on a vintage Royal Enfield speeds past, splashes through the mud, and steals critical records.</p>
+        <p style="margin-top: 8px; color: #a4b0be; font-size: 0.88rem;">Follow tyre tracks across red-clay plains, navigate Pichavaram mangrove canals, and unlock the lost underground eco-sanctuary high in the Western Ghats.</p>
+      </div>
+
+      <div class="title-actions">
+        <button id="start-game-btn" class="btn-primary">▶ Begin Journey (George Town, Chennai)</button>
+        <button id="toggle-audio-btn" class="btn-secondary">🔊 Enable Acoustic Audio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Minimalist In-Game HUD -->
+  <div id="hud-container" class="hidden">
+    <!-- Top Bar -->
+    <div class="hud-top-bar">
+      <div class="hud-location-card">
+        <h2 id="biome-title">Chennai & Red Soil Plains</h2>
+        <div class="time-weather-row">
+          <span id="time-display">5:30 PM</span>
+          <span>•</span>
+          <span id="weather-badge">Chennai Downpour</span>
+        </div>
+      </div>
+
+      <!-- Vintage Brass Compass -->
+      <div class="hud-compass-widget">
+        <span class="compass-cardinal compass-n">N</span>
+        <span class="compass-cardinal compass-s">S</span>
+        <span class="compass-cardinal compass-e">E</span>
+        <span class="compass-cardinal compass-w">W</span>
+        <div id="compass-needle"></div>
+      </div>
+
+      <!-- Economy Rupee Badge -->
+      <div class="hud-currency-chip">
+        <span id="rupee-count">₹75</span>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="hud-bottom-bar">
+      <!-- Survival Vitals Card -->
+      <div class="hud-vitals-card">
+        <div class="vital-row">
+          <div class="vital-label">
+            <span>Hunger (பசி)</span>
+          </div>
+          <div class="progress-track">
+            <div id="hunger-fill" class="progress-fill hunger-bar" style="width: 85%;"></div>
+          </div>
+        </div>
+
+        <div class="vital-row">
+          <div class="vital-label">
+            <span>Thirst (தாகம்)</span>
+          </div>
+          <div class="progress-track">
+            <div id="thirst-fill" class="progress-fill thirst-bar" style="width: 90%;"></div>
+          </div>
+        </div>
+
+        <div class="vital-row">
+          <div class="vital-label">
+            <span>Stamina / Energy (ஆற்றல்)</span>
+          </div>
+          <div class="progress-track">
+            <div id="energy-fill" class="progress-fill energy-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="temp-row">
+          <span>Core Body Temp:</span>
+          <span id="temp-value">37.0°C</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions Hotbar -->
+      <div class="hud-hotbar">
+        <button id="camera-toggle-btn" class="hotbar-btn" title="Explorer Camera [F]">
+          <span>📷 Camera</span>
+          <span class="key-hint">F</span>
+        </button>
+        <button id="journal-toggle-btn" class="hotbar-btn" title="Field Journal & Clue Board [J]">
+          <span>📔 Journal</span>
+          <span class="key-hint">J</span>
+        </button>
+        <button id="lantern-toggle-btn" class="hotbar-btn" title="Belt Lantern [L]">
+          <span>🏮 Lantern</span>
+          <span class="key-hint">L</span>
+        </button>
+        <button id="campfire-btn" class="hotbar-btn" title="Build Campfire [B]">
+          <span>🔥 Campfire</span>
+          <span class="key-hint">B</span>
+        </button>
+        <button id="tent-btn" class="hotbar-btn" title="Pitch Canvas Tent [T]">
+          <span>⛺ Pitch Tent</span>
+          <span class="key-hint">T</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mechanical Explorer Camera Viewfinder Overlay -->
+  <div id="camera-overlay" class="hidden">
+    <div class="viewfinder-frame">
+      <div class="corner-bracket bracket-tl"></div>
+      <div class="corner-bracket bracket-tr"></div>
+      <div class="corner-bracket bracket-bl"></div>
+      <div class="corner-bracket bracket-br"></div>
+
+      <div class="camera-telemetry">
+        <span>KODAK RETINA 35mm • EXP 1/250s f/4</span>
+        <span id="camera-subject-tag">[SEARCHING LANDSCAPE...]</span>
+      </div>
+
+      <div class="center-focus-ring">
+        <div class="center-crosshair"></div>
+      </div>
+
+      <!-- Camera Bottom Controls -->
+      <div class="camera-controls-bar">
+        <div class="zoom-control-group">
+          <label for="zoom-slider">Zoom:</label>
+          <input type="range" id="zoom-slider" min="1.0" max="3.5" step="0.1" value="1.0">
+        </div>
+        <button id="snap-photo-btn" class="snap-btn" title="Take Snapshot">📸</button>
+        <button id="close-camera-btn" class="exit-cam-btn">Close [F]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diegetic Leather-Bound Field Journal Modal -->
+  <div id="journal-modal" class="hidden">
+    <div class="journal-book-wrapper">
+      <div class="journal-header">
+        <div class="journal-title-group">
+          <h2>காட்டு வழி களக் குறிப்பேடு</h2>
+          <span>The Whispering Wilds • Field Journal & Investigation Board</span>
+        </div>
+        <button id="close-journal-btn" class="close-btn" title="Close Journal">&times;</button>
+      </div>
+
+      <!-- Journal Tabs -->
+      <div class="journal-tabs-bar">
+        <button class="journal-tab-btn active" data-tab="photolog">📷 Field Photolog</button>
+        <button class="journal-tab-btn" data-tab="bestiary">🐾 Bestiary & Guide</button>
+        <button class="journal-tab-btn" data-tab="clueboard">📌 Clue Board & Syndicate</button>
+        <button class="journal-tab-btn" data-tab="quests">📜 Active Quests</button>
+      </div>
+
+      <!-- Inner Content Area -->
+      <div class="journal-content-area">
+        <div id="panel-photolog" class="journal-panel"></div>
+        <div id="panel-bestiary" class="journal-panel hidden"></div>
+        <div id="panel-clueboard" class="journal-panel hidden"></div>
+        <div id="panel-quests" class="journal-panel hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Murugan Annan's Tea Kadai Dialogue & Hub Modal -->
+  <div id="tea-modal" class="hidden">
+    <div class="tea-kadai-card">
+      <div class="tea-kadai-banner">
+        <h3>முருகன் டீ ஸ்டால் • Murugan Annan's Roadside Tea Kadai</h3>
+        <button id="close-tea-btn" class="close-btn" style="color: #fff;">&times;</button>
+      </div>
+
+      <div style="width: 100%; height: 160px; overflow: hidden; position: relative;">
+        <img src="assets/tea_kadai.jpg" alt="Murugan Tea Kadai" style="width: 100%; height: 100%; object-fit: cover; filter: contrast(1.05);">
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(transparent, #2b1a0e);"></div>
+      </div>
+
+      <div class="tea-dialogue-body">
+        <div class="npc-avatar-box">
+          <div class="npc-avatar-circle">👨🏽‍🍳</div>
+          <div class="npc-meta">
+            <h4>Murugan Annan</h4>
+            <span>Tea Kadai Master & Local Informant (Villupuram Road)</span>
+          </div>
+        </div>
+
+        <div id="tea-dialogue-text" class="dialogue-bubble">
+          "Enna thala! Vango vango! Sudden downpour-la nananjiteenga pola? First-u indha hot cutting chai-ah kudinga!"
+        </div>
+
+        <div id="tea-options" class="tea-options-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chola Waterwheel Hydro-Mechanism Puzzle Modal -->
+  <div id="puzzle-modal" class="hidden">
+    <div class="puzzle-card">
+      <div class="puzzle-header">
+        <h3>சோழர் கால நீர் சுழல் சக்கரம் (Chola Hydro-Mechanism)</h3>
+        <button id="close-puzzle-btn" class="close-btn" style="color: #fff;">&times;</button>
+      </div>
+
+      <p class="puzzle-desc">
+        A millennium-old carved granite waterwheel regulating the Pichavaram tidal canals. Rotate the granite gear dials until the Royal Chola Tiger crest aligns with the Solar Lotus glyph to drain the mountain pass.
+      </p>
+
+      <div class="puzzle-dials-stage">
+        <div class="dial-column">
+          <div id="puzzle-dial-1" class="granite-dial">🪷</div>
+          <button id="rotate-dial-1-btn" class="dial-rotate-btn">Rotate Lotus Dial (90°)</button>
+        </div>
+
+        <div class="dial-column">
+          <div id="puzzle-dial-2" class="granite-dial">🐅</div>
+          <button id="rotate-dial-2-btn" class="dial-rotate-btn">Rotate Tiger Dial (90°)</button>
+        </div>
+      </div>
+
+      <div id="puzzle-status">
+        Rotate granite gears to align the Chola Tiger with the Lotus rune.
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/engine/audio.js"></script>
+  <script src="js/data/world-data.js"></script>
+  <script src="js/data/dialogue.js"></script>
+  <script src="js/engine/terrain-tracks.js"></script>
+  <script src="js/engine/particles.js"></script>
+  <script src="js/engine/lighting.js"></script>
+  <script src="js/engine/renderer.js"></script>
+  <script src="js/entities/player.js"></script>
+  <script src="js/entities/npc.js"></script>
+  <script src="js/systems/weather.js"></script>
+  <script src="js/systems/survival.js"></script>
+  <script src="js/systems/camera.js"></script>
+  <script src="js/systems/journal.js"></script>
+  <script src="js/systems/quests.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/test-runner.js"></script>
+
+</body>
+</html>

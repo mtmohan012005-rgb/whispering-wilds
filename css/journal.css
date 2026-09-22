@@ -1,0 +1,432 @@
+/* ==========================================================================
+   THE WHISPERING WILDS (KAATTU VAZHI) - DIEGETIC FIELD JOURNAL & CLUE BOARD
+   ========================================================================== */
+
+#journal-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 120;
+  background: rgba(8, 6, 10, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.journal-book-wrapper {
+  width: 90vw;
+  max-width: 1050px;
+  height: 82vh;
+  max-height: 720px;
+  background: #3e2717; /* Rich dark brown leather */
+  border: 4px solid #23150b;
+  border-radius: 16px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stitched leather edges */
+.journal-book-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border: 1.5px dashed rgba(212, 175, 55, 0.35);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* Header bar with Tamil Gold Leaf Title */
+.journal-header {
+  padding: 16px 28px;
+  background: #2b1a0e;
+  border-bottom: 2px solid #5a3d24;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.journal-title-group h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.35rem;
+  color: var(--primary-gold);
+  letter-spacing: 2px;
+}
+.journal-title-group span {
+  font-size: 0.8rem;
+  color: #c5a059;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: #c5a059;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.close-btn:hover {
+  transform: scale(1.2);
+  color: #ff4757;
+}
+
+/* Navigation Tabs */
+.journal-tabs-bar {
+  display: flex;
+  background: #342012;
+  border-bottom: 2px solid #4a301c;
+  padding: 0 20px;
+  gap: 8px;
+}
+
+.journal-tab-btn {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #bfa888;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.journal-tab-btn:hover {
+  color: #f7eed7;
+}
+.journal-tab-btn.active {
+  color: var(--primary-gold);
+  border-bottom-color: var(--primary-gold);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+/* Journal Inner Parchment Page Area */
+.journal-content-area {
+  flex: 1;
+  background: var(--parchment-bg);
+  color: #2b1f14;
+  overflow-y: auto;
+  padding: 28px;
+  box-shadow: inset 0 0 40px rgba(78, 52, 28, 0.2);
+}
+
+/* --- TAB 1: PHOTOLOG GRID --- */
+.polaroid-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.polaroid-card {
+  background: #ffffff;
+  padding: 12px 12px 18px 12px;
+  border-radius: 3px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18), 0 2px 5px rgba(0, 0, 0, 0.12);
+  transform: rotate(-1deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.polaroid-card:nth-child(even) {
+  transform: rotate(1.5deg);
+}
+.polaroid-card:hover {
+  transform: rotate(0deg) scale(1.03);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+.polaroid-frame {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #222;
+}
+.polaroid-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.polaroid-caption {
+  margin-top: 10px;
+}
+.polaroid-caption h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  color: #1e272e;
+  margin-bottom: 2px;
+}
+.polaroid-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #808e9b;
+}
+.polaroid-desc {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #485460;
+  margin-top: 6px;
+}
+
+/* Empty state */
+.empty-journal-msg {
+  text-align: center;
+  padding: 80px 20px;
+  color: #654d37;
+}
+.empty-journal-msg p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.sub-msg {
+  font-size: 0.95rem !important;
+  font-weight: normal !important;
+  margin-top: 10px;
+  color: #8c735d;
+}
+
+/* --- TAB 2: BESTIARY & REGIONAL GUIDE --- */
+.bestiary-header {
+  margin-bottom: 24px;
+}
+.bestiary-header h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  color: #3e2717;
+  margin-bottom: 12px;
+}
+
+.progress-bar-container {
+  position: relative;
+  height: 22px;
+  background: #e0d0b4;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2b582b, #4caf50);
+  transition: width 0.4s ease;
+}
+.progress-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.bestiary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.lore-entry {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid #dcd1be;
+  border-radius: 8px;
+}
+.lore-entry.locked {
+  opacity: 0.6;
+  filter: grayscale(0.8);
+}
+.lore-icon {
+  font-size: 2rem;
+}
+.lore-content h4 {
+  font-size: 0.95rem;
+  color: #2c1d11;
+  margin-bottom: 2px;
+}
+.lore-biome {
+  font-size: 0.75rem;
+  color: #83674b;
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+}
+.lore-content p {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #4a3828;
+  margin-top: 4px;
+}
+
+/* --- TAB 3: CLUE BOARD WITH CORK & RED YARN --- */
+.clueboard-container {
+  width: 100%;
+  height: 100%;
+}
+
+.clueboard-cork {
+  position: relative;
+  background: #bf8d5e url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" opacity="0.12"><rect width="20" height="20" fill="%23000"/></svg>');
+  border: 6px solid #4a2f19;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 480px;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.clueboard-title h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  color: #2c1d11;
+}
+.clueboard-title p {
+  font-size: 0.85rem;
+  color: #4a3422;
+  margin-top: 4px;
+  margin-bottom: 20px;
+}
+
+.clue-pins-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+.cork-pin-item {
+  background: #fffdf2;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cork-pin-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.35);
+}
+.cork-pin-item.pinned {
+  border: 2px solid #d63031;
+}
+
+.pushpin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #d63031;
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+}
+
+.cork-pin-item h4 {
+  font-size: 0.9rem;
+  color: #1e272e;
+  margin-top: 8px;
+}
+.clue-tag {
+  font-size: 0.72rem;
+  color: #d63031;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: bold;
+}
+.cork-pin-item p {
+  font-size: 0.78rem;
+  color: #485460;
+  line-height: 1.35;
+  margin: 6px 0;
+}
+.pin-status {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #0984e3;
+}
+
+.clue-yarn-svg {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  width: 100%;
+  height: 280px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- TAB 4: QUEST LOG --- */
+.quest-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quest-item {
+  background: rgba(255, 255, 255, 0.75);
+  border-left: 4px solid var(--primary-gold);
+  padding: 16px 20px;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+.quest-item.completed {
+  border-left-color: #2ed573;
+  opacity: 0.75;
+}
+
+.quest-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  background: #2c1d11;
+  color: var(--primary-gold);
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.quest-item h4 {
+  font-size: 1.05rem;
+  color: #1e272e;
+}
+.quest-desc {
+  font-size: 0.85rem;
+  color: #57606f;
+  margin: 6px 0 12px 0;
+  line-height: 1.4;
+}
+
+.quest-objectives {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.obj-item {
+  font-size: 0.82rem;
+  color: #2f3542;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.obj-item.done {
+  text-decoration: line-through;
+  color: #747d8c;
+}
+.obj-check {
+  font-weight: bold;
+  color: #2ed573;
+}
+
+.quest-reward {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  font-weight: bold;
+  color: #d63031;
+}

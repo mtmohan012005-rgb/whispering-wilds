@@ -1,0 +1,216 @@
+/* ==========================================================================
+   THE WHISPERING WILDS (KAATTU VAZHI) - TEA KADAI & WATERWHEEL PUZZLE MODALS
+   ========================================================================== */
+
+/* Murugan Annan's Tea Kadai Modal */
+#tea-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 130;
+  background: rgba(10, 8, 6, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tea-kadai-card {
+  width: 90vw;
+  max-width: 650px;
+  background: linear-gradient(145deg, #2b1a0e, #1c1109);
+  border: 2px solid var(--warm-brass);
+  border-radius: 16px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tea-kadai-banner {
+  background: #d63031;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #ff7675;
+}
+
+.tea-kadai-banner h3 {
+  font-family: 'Cinzel', serif;
+  color: #ffeaa7;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+}
+
+.tea-dialogue-body {
+  padding: 24px;
+}
+
+.npc-avatar-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.npc-avatar-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #4a2f19;
+  border: 2px solid var(--primary-gold);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+.npc-meta h4 {
+  font-size: 1.1rem;
+  color: #ffeaa7;
+}
+.npc-meta span {
+  font-size: 0.8rem;
+  color: #a4b0be;
+}
+
+.dialogue-bubble {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 12px;
+  padding: 16px;
+  color: #f1f2f6;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.tea-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tea-choice-btn {
+  padding: 12px 16px;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 8px;
+  color: #f1f2f6;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tea-choice-btn:hover {
+  background: rgba(212, 175, 55, 0.25);
+  border-color: var(--primary-gold);
+  color: #ffeaa7;
+  transform: translateX(4px);
+}
+
+/* --- CHOLA WATERWHEEL PUZZLE MODAL --- */
+#puzzle-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 130;
+  background: rgba(10, 8, 6, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.puzzle-card {
+  width: 90vw;
+  max-width: 620px;
+  background: #252b28;
+  border: 2px solid #55efc4;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+  color: #f1f2f6;
+}
+
+.puzzle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.puzzle-header h3 {
+  font-family: 'Cinzel', serif;
+  color: #55efc4;
+  font-size: 1.25rem;
+}
+
+.puzzle-desc {
+  font-size: 0.88rem;
+  color: #a4b0be;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.puzzle-dials-stage {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 24px;
+}
+
+.dial-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.granite-dial {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #555 30%, #333 90%);
+  border: 4px solid #c5a059;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.2rem;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.dial-rotate-btn {
+  padding: 8px 18px;
+  background: rgba(85, 239, 196, 0.15);
+  border: 1px solid #55efc4;
+  border-radius: 8px;
+  color: #55efc4;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dial-rotate-btn:hover {
+  background: #55efc4;
+  color: #1e272e;
+}
+
+#puzzle-status {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #ffeaa7;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+}
