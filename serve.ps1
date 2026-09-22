@@ -14,6 +14,17 @@ try {
         $response = $context.Response
 
         $localPath = $request.Url.LocalPath
+        if ($localPath -eq "/save-test-results" -and $request.HttpMethod -eq "POST") {
+            $reader = New-Object System.IO.StreamReader($request.InputStream, [System.Text.Encoding]::UTF8)
+            $body = $reader.ReadToEnd()
+            [System.IO.File]::WriteAllText((Join-Path $baseDir "test_results.json"), $body, [System.Text.Encoding]::UTF8)
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes("OK")
+            $response.ContentType = "text/plain"
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            continue
+        }
+
         if ($localPath -eq "/" -or [string]::IsNullOrEmpty($localPath)) {
             $localPath = "/index.html"
         }

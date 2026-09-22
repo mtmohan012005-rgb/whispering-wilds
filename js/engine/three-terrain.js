@@ -9,6 +9,9 @@ class ThreeTerrain {
     this.terrainMesh = null;
     this.waterMesh = null;
     this.landmarks = [];
+    this.landmarksGroup = new THREE.Group();
+    this.landmarksGroup.name = "LandmarksGroup";
+    this.scene.add(this.landmarksGroup);
     this.trees = [];
 
     // Terrain world bounds: X from -300 to +300, Z from -110 to +110
@@ -251,7 +254,9 @@ class ThreeTerrain {
     courtLight.castShadow = true;
     group.add(courtLight);
 
+    group.name = 'MadrasHighCourt';
     this.scene.add(group);
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'high_court', mesh: group, name: 'Madras High Court Gate' });
   }
 
@@ -310,7 +315,9 @@ class ThreeTerrain {
     teaLight.castShadow = true;
     group.add(teaLight);
 
+    group.name = 'MuruganTeaKadai';
     this.scene.add(group);
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'tea_kadai', mesh: group, name: "Murugan Annan's Tea Kadai" });
   }
 
@@ -347,7 +354,9 @@ class ThreeTerrain {
       group.add(paddle);
     }
 
+    group.name = 'CholaWaterwheel';
     this.scene.add(group);
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'chola_wheel', mesh: group, name: 'Chola Hydro-Mechanism' });
   }
 
@@ -382,7 +391,9 @@ class ThreeTerrain {
     door.position.set(-7.1, 1.25, 0);
     group.add(door);
 
+    group.name = 'TodaHut';
     this.scene.add(group);
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'toda_hut', mesh: group, name: 'Toda Indigenous Buffalo Mund' });
   }
 
@@ -421,7 +432,9 @@ class ThreeTerrain {
     portalGlow.position.set(0, 8, 2);
     group.add(portalGlow);
 
+    group.name = 'EcoSanctuaryPortal';
     this.scene.add(group);
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'eco_portal', mesh: group, name: 'Pasumai Thadam Eco-Sanctuary' });
   }
 

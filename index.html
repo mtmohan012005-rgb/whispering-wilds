@@ -86,7 +86,10 @@
         </button>
       </div>
 
-      <!-- Economy Rupee Badge -->
+      <!-- Barter Materials & Economy Badges -->
+      <div class="hud-currency-chip" id="hud-materials" style="margin-right: 8px;">
+        <span>🍃 Tea: 4 | 🐚 Shells: 6</span>
+      </div>
       <div class="hud-currency-chip">
         <span id="rupee-count">₹75</span>
       </div>
@@ -127,6 +130,10 @@
           <span>Core Body Temp:</span>
           <span id="temp-value">36.1°C</span>
         </div>
+
+        <div style="font-size: 11px; margin-top: 8px; color: var(--primary-gold); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;">
+          Equipped: <span id="equippedDisplay" style="color: #ffffff; font-weight: bold;">Casual Attire</span>
+        </div>
       </div>
 
       <!-- Quick Actions Hotbar -->
@@ -142,6 +149,10 @@
         <button id="lantern-toggle-btn" class="hotbar-btn active" title="Belt Lantern [L]">
           <span>🏮 Lantern</span>
           <span class="key-hint">L</span>
+        </button>
+        <button id="shop-toggle-btn" class="hotbar-btn" title="Village Kadai & Barter Trader [O]">
+          <span>🏪 Kadai</span>
+          <span class="key-hint">O</span>
         </button>
         <button id="campfire-btn" class="hotbar-btn" title="Build Campfire [B]">
           <span>🔥 Campfire</span>
@@ -205,6 +216,7 @@
         <button class="journal-tab-btn" data-tab="clueboard">📌 Clue Board & Syndicate</button>
         <button class="journal-tab-btn" data-tab="quests">📜 Active Quests</button>
         <button class="journal-tab-btn" data-tab="wardrobe">👕 Attire & Wardrobe (ஆடைகள்)</button>
+        <button class="journal-tab-btn" data-tab="records">💾 Records & Saves (சேமிப்பு)</button>
       </div>
 
       <!-- Inner Content Area -->
@@ -214,6 +226,7 @@
         <div id="panel-clueboard" class="journal-panel hidden"></div>
         <div id="panel-quests" class="journal-panel hidden"></div>
         <div id="panel-wardrobe" class="journal-panel hidden"></div>
+        <div id="panel-records" class="journal-panel hidden"></div>
       </div>
     </div>
   </div>
@@ -279,6 +292,32 @@
     </div>
   </div>
 
+  <!-- Village Kadai & Barter Trader (பண்டமாற்று கடை) Modal -->
+  <div id="shop-modal" class="shop-modal hidden">
+    <div class="shop-card">
+      <div class="shop-card-header">
+        <div>
+          <h3>🏪 கிராமத்துக் கடை & வஸ்திர வியாபாரி</h3>
+          <span class="shop-card-subtitle">Village Kadai • Barter Economy & Regional Weather Attire</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button id="btn-haggle" class="btn-haggle-action" title="Try your luck to negotiate a 15% discount">🗣️ Bargain (பேரம் பேசு)</button>
+          <button id="btn-close-shop" class="close-btn" style="color: #fff; font-size: 1.4rem; padding: 0 8px; line-height: 1;">&times;</button>
+        </div>
+      </div>
+
+      <!-- Merchant Speech Bubble with Localized Tamil Dialogues -->
+      <div class="npc-speech-box" id="npc-speech-bubble">
+        "வணக்கம் தம்பி! வெயில் தாங்காது, வேட்டி இல்லாம நடந்தா கஷ்டம்!"
+      </div>
+
+      <!-- Scrollable Catalog of Clothing Items with Dual Cash / Barter Action -->
+      <div class="shop-items-list" id="shop-items-container">
+        <!-- Dynamically rendered by TradeSystem -->
+      </div>
+    </div>
+  </div>
+
   <!-- Game Scripts -->
   <script src="js/engine/audio.js"></script>
   <script src="js/data/world-data.js"></script>
@@ -295,6 +334,11 @@
   <script src="js/systems/camera.js"></script>
   <script src="js/systems/journal.js"></script>
   <script src="js/systems/quests.js"></script>
+
+  <!-- Expanded Barter Economy, Climate & Diegetic Save Systems -->
+  <script src="js/systems/trade-system.js"></script>
+  <script src="js/systems/climate-engine.js"></script>
+  <script src="js/systems/save-system.js"></script>
 
   <!-- Three.js 3D Open-World Engine Modules -->
   <script src="js/engine/three-terrain.js"></script>

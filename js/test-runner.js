@@ -89,8 +89,9 @@ window.runStepByStepFeatureTests = async function() {
 
     const initialRupees = window.testRef.survival.currency;
     const options = document.querySelectorAll('.tea-choice-btn');
-    if (options.length > 0) {
-      options[0].click(); // Order Cutting Chai (₹12)
+    const chaiBtn = Array.from(options).find(b => b.textContent.includes('Cutting Chai')) || options[0];
+    if (chaiBtn) {
+      chaiBtn.click(); // Order Cutting Chai (₹12)
     }
     await wait(300);
 
@@ -363,6 +364,132 @@ window.runStepByStepFeatureTests = async function() {
     log(13, '3D Player Controller, Macro-Map Zoom & Thunderstorm Weather', false, err.message);
   }
 
+  // --- STEP 14: Advanced Barter Economy, Dual Currency & Haggling System ---
+  try {
+    const trade = window.gameTradeSystem || (window.testRef && window.testRef.tradeSystem) || new window.TradeSystem(window.gameInstance);
+    if (!trade) throw new Error('TradeSystem instance not found');
+
+    // 1. Initial State Check
+    const initialWallet = trade.playerState.wallet;
+    const initialShells = trade.playerState.materials.shells;
+
+    // 2. Test Haggling / Bargain Roll
+    trade.playerState.discountApplied = false;
+    trade.haggleDiscount();
+    const hasDiscount = trade.playerState.discountApplied === true || trade.playerState.haggleAttempts > 0;
+    const bubbleUpdated = trade.speechEl && trade.speechEl.innerText.length > 5;
+
+    // 3. Test Barter Trade (Cotton Veshti for 3 River Shells)
+    trade.playerState.materials.shells = 6;
+    trade.barterItem('cloth_veshti');
+    const veshtiOwned = trade.playerState.inventory.includes('cloth_veshti');
+    const veshtiEquipped = trade.playerState.equipped === 'cloth_veshti';
+    const shellsDeducted = trade.playerState.materials.shells === 3;
+
+    // 4. Test Cash Purchase (Cargo Suit)
+    trade.playerState.wallet = 300;
+    trade.buyWithCash('cloth_cargo', 150);
+    const cargoOwned = trade.playerState.inventory.includes('cloth_cargo');
+    const cashDeducted = trade.playerState.wallet === 150;
+
+    // 5. Test Live Survival Buff Linkage
+    let buffLinked = true;
+    if (window.gameSurvival) {
+      buffLinked = window.gameSurvival.staminaEfficiency < 1.0 || window.gameSurvival.thirstDrainModifier !== undefined;
+    }
+
+    const step14Valid = hasDiscount && bubbleUpdated && veshtiOwned && veshtiEquipped && shellsDeducted && cargoOwned && cashDeducted && buffLinked;
+
+    log(14, 'Village Kadai Barter Economy & Localized Tamil Dialogue', step14Valid,
+      `Haggling Attempted: ${hasDiscount}, Speech Bubble: ${bubbleUpdated}, Barter (Veshti for Shells): ${veshtiOwned && shellsDeducted}, Cash Buy (Cargo): ${cargoOwned && cashDeducted}, Survival Buffs Linked: ${buffLinked}`);
+  } catch (err) {
+    log(14, 'Village Kadai Barter Economy & Localized Tamil Dialogue', false, err.message);
+  }
+
+  // --- STEP 15: Dynamic Climate & Celestial Astronomical Engine ---
+  try {
+    const climate = window.gameClimateEngine || (window.testRef && window.testRef.climateEngine) || new window.DynamicClimateEngine(window.gameInstance);
+    if (!climate) throw new Error('DynamicClimateEngine instance not found');
+
+    // 1. Test Dawn Mist State (06:00 AM)
+    climate.currentTimeInHours = 6.5;
+    climate.tick(0.1);
+    const isDawn = climate.currentPhase === 'DAWN_MIST';
+    const dawnElevation = climate.sunElevation > 0;
+
+    // 2. Test Scorching Sun State (12:00 PM)
+    climate.currentTimeInHours = 12.0;
+    climate.tick(0.1);
+    const isScorching = climate.currentPhase === 'SCORCHING_HEAT';
+    const peakHeat = climate.heatIndex >= 35.0; // Up to 38.5°C
+    const zenithElevation = climate.sunElevation > 0.9;
+    const peakHeatVal = climate.heatIndex;
+    const zenithVal = climate.sunElevation;
+
+    // 3. Test Monsoon Thunderstorm State (08:00 PM)
+    climate.currentTimeInHours = 20.0;
+    climate.tick(0.1);
+    const isStorm = climate.currentPhase === 'MONSOON_THUNDERSTORM';
+    const wetnessAccumulates = climate.groundWetness > 0;
+
+    // 4. Test Cold Night Dampness (02:00 AM)
+    climate.currentTimeInHours = 2.0;
+    climate.tick(0.1);
+    const isNight = climate.currentPhase === 'NIGHT_DAMP';
+    const nightCool = climate.heatIndex <= 22.0;
+
+    const step15Valid = isDawn && dawnElevation && isScorching && peakHeat && zenithElevation && isStorm && wetnessAccumulates && isNight && nightCool;
+
+    log(15, 'Dynamic Climate & Real-Time Celestial Astronomical Engine', step15Valid,
+      `Dawn (6:30am): ${isDawn}, Scorching Heat (12pm, ${peakHeatVal.toFixed(1)}°C, Elev: ${zenithVal.toFixed(2)}): ${isScorching && peakHeat}, Monsoon Storm (8pm): ${isStorm}, Cold Night (2am, ${climate.heatIndex.toFixed(1)}°C): ${isNight}`);
+  } catch (err) {
+    log(15, 'Dynamic Climate & Real-Time Celestial Astronomical Engine', false, err.message);
+  }
+
+  // --- STEP 16: Diegetic Save/Load & Autosave Checkpoint System ---
+  try {
+    const saveSys = window.gameSaveSystem || (window.testRef && window.testRef.saveSystem) || new window.SaveSystem(window.gameInstance);
+    if (!saveSys) throw new Error('SaveSystem instance not found');
+
+    // 1. Test Manual Save to Slot 1 in Safe Conditions
+    if (window.gameSurvival) window.gameSurvival.coreTemp = 36.8;
+    const save1Success = saveSys.saveToSlot('slot_1', 'George Town Outpost Test');
+
+    // 2. Verify Saved Payload Structure in localStorage
+    const rawSaved = localStorage.getItem('whispering_wilds_save_slot_1');
+    const parsed = JSON.parse(rawSaved);
+    const hasPlayer = !!(parsed && parsed.player && parsed.player.gps);
+    const hasSurvival = !!(parsed && parsed.survival && parsed.survival.coreTemp);
+    const hasWardrobe = !!(parsed && parsed.wardrobeAndTrade && parsed.wardrobeAndTrade.materials);
+
+    // 3. Test Autosave Checkpoint
+    const autoSuccess = saveSys.triggerAutosave('Rare Neelakurinji Bloom Discovered');
+    const rawAuto = localStorage.getItem('whispering_wilds_save_autosave');
+    const hasAuto = !!rawAuto;
+
+    // 4. Test Hazard Lockout Rule (Hypothermia < 34.5°C blocks manual saving)
+    if (window.gameSurvival) {
+      window.gameSurvival.coreTemp = 33.8; // Extreme hypothermia
+      const hazardCheck = saveSys.canSaveManual();
+      const hazardBlocked = hazardCheck.allowed === false && hazardCheck.reason.includes('Hypothermia');
+
+      // Restore temp
+      window.gameSurvival.coreTemp = 36.8;
+
+      // 5. Test Load and Restore Integrity
+      const loadSuccess = saveSys.loadFromSlot('slot_1');
+
+      const step16Valid = save1Success && hasPlayer && hasSurvival && hasWardrobe && autoSuccess && hasAuto && hazardBlocked && loadSuccess;
+
+      log(16, 'Diegetic Save/Load, Autosave Checkpoints & Hazard Validation', step16Valid,
+        `Slot 1 Saved: ${save1Success}, Payload Integrity (GPS/Vitals/Materials): ${hasPlayer && hasSurvival && hasWardrobe}, Autosave Triggered: ${hasAuto}, Hazard Lockout Enforced: ${hazardBlocked}, Restore OK: ${loadSuccess}`);
+    } else {
+      log(16, 'Diegetic Save/Load, Autosave Checkpoints & Hazard Validation', save1Success && hasPlayer, 'Basic payload verified');
+    }
+  } catch (err) {
+    log(16, 'Diegetic Save/Load, Autosave Checkpoints & Hazard Validation', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 
@@ -374,6 +501,16 @@ window.runStepByStepFeatureTests = async function() {
     document.body.appendChild(outDiv);
   }
   outDiv.textContent = JSON.stringify(results);
+
+  try {
+    fetch('/save-test-results', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(results)
+    }).catch(() => {});
+  } catch (e) {
+    console.warn('Could not post test results:', e);
+  }
 
   return results;
 };

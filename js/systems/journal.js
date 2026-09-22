@@ -121,6 +121,8 @@ class FieldJournal {
       this.renderQuests(activePanel);
     } else if (this.currentTab === 'wardrobe') {
       this.renderWardrobe(activePanel);
+    } else if (this.currentTab === 'records') {
+      this.renderRecords(activePanel);
     }
   }
 
@@ -399,16 +401,126 @@ class FieldJournal {
     html += `</div>`;
     container.innerHTML = html;
   }
+
+  renderRecords(container) {
+    const saveSys = (window.gameInstance && window.gameInstance.saveSystem) ? window.gameInstance.saveSystem : (new SaveSystem(window.gameInstance));
+    const summaries = saveSys.getSlotSummaries();
+    const hazardCheck = saveSys.canSaveManual();
+
+    let html = `
+      <div class="roster-section-header">
+        <h4 style="font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--primary-gold); margin-bottom: 2px;">
+          களப் பதிவேடு • Expedition Daybook & Save Archive
+        </h4>
+        <p style="font-size: 0.8rem; color: #a4b0be; margin-bottom: 12px;">
+          Diegetic records saved during quiet moments at Tea Kadais, campfires, or resting stops.
+        </p>
+        ${!hazardCheck.allowed ? `
+          <div style="background: rgba(192, 57, 43, 0.25); border-left: 3px solid #e74c3c; padding: 8px 12px; border-radius: 4px; font-size: 0.82rem; color: #ff7675; margin-bottom: 14px;">
+            ⚠️ <strong>Active Hazard:</strong> ${hazardCheck.reason}
+          </div>
+        ` : `
+          <div style="background: rgba(39, 174, 96, 0.2); border-left: 3px solid #2ecc71; padding: 8px 12px; border-radius: 4px; font-size: 0.82rem; color: #55efc4; margin-bottom: 14px;">
+            ✅ <strong>Safe Zone:</strong> Conditions are peaceful. You may write in your daybook.
+          </div>
+        `}
+      </div>
+
+      <div class="save-slots-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+    `;
+
+    summaries.forEach(slot => {
+      const isAutosave = slot.slotId === 'autosave';
+      html += `
+        <div class="save-slot-card" style="background: #141724; border: 1px solid ${isAutosave ? '#f39c12' : '#33384a'}; border-radius: 8px; padding: 14px; position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h5 style="margin: 0; color: ${isAutosave ? '#f39c12' : '#d4af37'}; font-size: 0.95rem;">
+              ${isAutosave ? '⚡ Autosave Checkpoint' : `Expedition Note (${slot.slotId.toUpperCase()})`}
+            </h5>
+            <span style="font-size: 0.72rem; color: #7f8c8d; text-transform: uppercase;">${isAutosave ? 'AUTO' : 'MANUAL'}</span>
+          </div>
+
+          ${slot.isEmpty ? `
+            <div style="padding: 16px 0; text-align: center; color: #7f8c8d; font-size: 0.85rem; font-style: italic;">
+              [Empty Journal Page]
+            </div>
+            ${!isAutosave ? `
+              <button class="btn-save-slot" onclick="window.saveSlotAction('${slot.slotId}')" ${!hazardCheck.allowed ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="width: 100%; background: #27ae60; color: #fff; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">
+                ✍️ Write Note (Save)
+              </button>
+            ` : ''}
+          ` : `
+            <div style="font-size: 0.8rem; color: #dfe6e9; margin-bottom: 10px; line-height: 1.5;">
+              <div>📍 <strong>Location:</strong> ${slot.regionName}</div>
+              <div>🕒 <strong>Time:</strong> ${slot.timestamp}</div>
+              <div>💰 <strong>Rupees:</strong> ₹${slot.rupees} | 🌡️ <strong>Temp:</strong> ${slot.coreTemp}</div>
+              <div>👕 <strong>Attire:</strong> ${slot.equipped}</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              ${!isAutosave ? `
+                <button class="btn-save-slot" onclick="window.saveSlotAction('${slot.slotId}')" ${!hazardCheck.allowed ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''} style="flex: 1; background: #27ae60; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">
+                  ✍️ Overwrite
+                </button>
+              ` : ''}
+              <button class="btn-load-slot" onclick="window.loadSlotAction('${slot.slotId}')" style="flex: 1; background: #2980b9; color: #fff; border: none; padding: 6px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">
+                📖 Load
+              </button>
+              ${!isAutosave ? `
+                <button class="btn-del-slot" onclick="window.deleteSlotAction('${slot.slotId}')" style="background: #c0392b; color: #fff; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">
+                  🗑️
+                </button>
+              ` : ''}
+            </div>
+          `}
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+  }
 }
 
+window.saveSlotAction = function(slotId) {
+  if (window.gameInstance && window.gameInstance.saveSystem) {
+    const success = window.gameInstance.saveSystem.saveToSlot(slotId);
+    if (success && window.gameInstance.journal) {
+      window.gameInstance.journal.render();
+    }
+  }
+};
+
+window.loadSlotAction = function(slotId) {
+  if (window.gameInstance && window.gameInstance.saveSystem) {
+    const success = window.gameInstance.saveSystem.loadFromSlot(slotId);
+    if (success && window.gameInstance.journal) {
+      window.gameInstance.journal.toggle(window.gameAudio);
+    }
+  }
+};
+
+window.deleteSlotAction = function(slotId) {
+  if (confirm("Delete this expedition record?")) {
+    if (window.gameInstance && window.gameInstance.saveSystem) {
+      window.gameInstance.saveSystem.deleteSlot(slotId);
+      if (window.gameInstance.journal) {
+        window.gameInstance.journal.render();
+      }
+    }
+  }
+};
+
 window.equipPlayerAttire = function(outfitId) {
-  const wardrobe = window.culturalWardrobeSystem;
+  const p = window.gamePlayer || (window.testRef && window.testRef.player);
   let itemId = 'cloth_veshti';
   if (outfitId === 'farmlandGear') itemId = 'cloth_cargo';
   else if (outfitId === 'mountainGear') itemId = 'cloth_woolen_set';
 
-  // Use tradeOrBuyClothing logic
-  window.tradeOrBuyClothing(null, itemId);
+  if (p) {
+    p.currentOutfit = outfitId;
+    p.outfitId = outfitId;
+  }
+  window.tradeOrBuyClothing(p, itemId);
 };
 
 window.FieldJournal = FieldJournal;
