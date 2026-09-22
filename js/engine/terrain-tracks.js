@@ -11,11 +11,23 @@ class TerrainTracksManager {
     this.lastPlayerPos = { x: 0, y: 0 };
   }
 
-  addFootprint(x, y, angle, isLeft = true, surface = 'mud') {
+  addFootprint(x, y, angle, isLeft = true, surface = 'mud', fpConfig = null) {
     // Offset left or right foot relative to forward angle
     const lateralOffset = isLeft ? -5 : 5;
     const px = x + Math.cos(angle + Math.PI / 2) * lateralOffset;
     const py = y + Math.sin(angle + Math.PI / 2) * lateralOffset;
+
+    const defaultColor = surface === 'shallow_water' ? 'rgba(30, 60, 70, ' : 
+                         surface === 'asphalt' ? 'rgba(60, 55, 50, ' : 
+                         surface === 'grass' ? 'rgba(30, 45, 20, ' : 'rgba(40, 20, 10, ';
+
+    const cfg = fpConfig || {
+      depth: surface === 'asphalt' ? 0.3 : (surface === 'shallow_water' ? 0.2 : 0.7),
+      soleWidth: 3.5,
+      heelDepth: 0.75,
+      splashRing: surface === 'shallow_water',
+      color: defaultColor
+    };
 
     this.tracks.push({
       type: 'footprint',
@@ -24,6 +36,7 @@ class TerrainTracksManager {
       angle: angle,
       isLeft: isLeft,
       surface: surface,
+      fpConfig: cfg,
       alpha: 0.65,
       createdAt: Date.now()
     });
@@ -92,17 +105,31 @@ class TerrainTracksManager {
       ctx.rotate(t.angle);
 
       if (t.type === 'footprint') {
-        // Deep clay footprint impression
-        ctx.fillStyle = `rgba(40, 20, 10, ${t.alpha * 0.75})`;
+        const cfg = t.fpConfig || { depth: 0.75, soleWidth: 3.5, heelDepth: 0.75, splashRing: false, color: 'rgba(40, 20, 10, ' };
+        const baseColor = cfg.color || 'rgba(40, 20, 10, ';
+        const soleW = cfg.soleWidth || 3.5;
+        const depth = cfg.depth || 0.65;
+
+        // Footprint sole impression
+        ctx.fillStyle = `${baseColor}${t.alpha * (0.4 + 0.45 * depth)})`;
         ctx.beginPath();
-        // Boot sole
-        ctx.ellipse(0, 0, 3.5, 6, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, soleW, 6 * (0.8 + 0.3 * depth), 0, 0, Math.PI * 2);
         ctx.fill();
+
         // Heel indentation
-        ctx.fillStyle = `rgba(25, 12, 5, ${t.alpha * 0.85})`;
+        ctx.fillStyle = `${baseColor}${t.alpha * (0.5 + 0.45 * cfg.heelDepth)})`;
         ctx.beginPath();
-        ctx.ellipse(0, 5, 2.5, 2.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 5, soleW * 0.7, 2.5 * depth, 0, 0, Math.PI * 2);
         ctx.fill();
+
+        // Water ripple/splash ring for shallow water
+        if (cfg.splashRing) {
+          ctx.strokeStyle = `rgba(130, 180, 200, ${t.alpha * 0.45})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.ellipse(0, 1, soleW * 2.2, 8, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
       } else if (t.type === 'tyre') {
         // Royal Enfield Chevron tread
         ctx.fillStyle = `rgba(30, 15, 8, ${t.alpha * 0.8})`;

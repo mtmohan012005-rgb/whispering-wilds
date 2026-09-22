@@ -1,6 +1,6 @@
 // ============================================================================
 // THE WHISPERING WILDS (KAATTU VAZHI) - AUTOMATED STEP-BY-STEP FEATURE TESTER
-// Executes all 14 GDD systems sequentially and logs step verification metrics
+// Executes all 15 GDD systems sequentially and logs step verification metrics
 // ============================================================================
 
 window.runStepByStepFeatureTests = async function() {
@@ -410,6 +410,84 @@ window.runStepByStepFeatureTests = async function() {
       `Timestamp: ${hasTimestamp}, RoundTrip: ${loadedCorrectly}, Restore: ${hungerRestored}, Cleanup: ${cleared}`);
   } catch (err) {
     log(14, 'Diegetic Save System (SaveManager)', false, err.message);
+  }
+
+  // --- STEP 15: Realistic Human Locomotion & Biomechanics Engine ---
+  try {
+    const player = window.testRef.player;
+    const LocomotionEngine = window.LocomotionEngine;
+    if (!LocomotionEngine) throw new Error('LocomotionEngine class not found on window');
+
+    // 1. Instantiation & integration check
+    const hasPlayerLoco = player && player.locomotion instanceof LocomotionEngine;
+    const testLoco = new LocomotionEngine();
+
+    // 2. Surface resolver tests across Tamil Nadu geography
+    const surfAsphalt = testLoco.getSurfaceData(500, 500);
+    const surfClay = testLoco.getSurfaceData(1500, 500);
+    const surfWater = testLoco.getSurfaceData(2500, 700);
+    const surfSlope = testLoco.getSurfaceData(4500, 300);
+
+    const surfaceResolved = surfAsphalt.type === 'asphalt' && surfAsphalt.friction >= 0.9 &&
+      surfClay.type === 'wet_clay' && surfClay.friction <= 0.6 &&
+      surfWater.type === 'shallow_water' && surfWater.friction <= 0.45 &&
+      surfSlope.type === 'steep_slope' && surfSlope.slope >= 15;
+
+    // 3. Inertial velocity test (smooth ramp-up instead of instant speed snap)
+    const frame1 = testLoco.updateGait(0.016, 0, 1, 160, 500, 500, 80, 36.5, 'sunny', 0, 'baseOutfit');
+    const rampingUp = frame1.effectiveSpeed > 0 && frame1.effectiveSpeed < 50;
+
+    // Advance multiple frames to reach full walk speed
+    for (let f = 0; f < 30; f++) {
+      testLoco.updateGait(0.016, 0, 1, 160, 500, 500, 80, 36.5, 'sunny', 0, 'baseOutfit');
+    }
+    const reachedWalk = testLoco.currentSpeed > 100;
+
+    // Deceleration test (release input - smooth ramp-down)
+    const frameStop = testLoco.updateGait(0.016, 0, 0, 0, 500, 500, 80, 36.5, 'sunny', 0, 'baseOutfit');
+    const decelerating = testLoco.currentSpeed < 160 && testLoco.currentSpeed > 0;
+
+    // 4. Pivot turn detection (180 degree angle reversal while moving)
+    testLoco.currentSpeed = 150;
+    testLoco._prevAngle = 0;
+    testLoco._prevMoving = true;
+    testLoco.updateGait(0.016, Math.PI, 1, 160, 500, 500, 80, 36.5, 'sunny', 0, 'baseOutfit');
+    const pivotDetected = testLoco.gaitState === 'pivot' || testLoco.pivotLockTimer > 0;
+
+    // 5. Fatigue & weather modifiers
+    const fatiguedLoco = new LocomotionEngine();
+    const fatigueFrame = fatiguedLoco.updateGait(0.05, 0, 1, 160, 500, 500, 8, 36.5, 'sunny', 0, 'baseOutfit');
+    const hasFatigueDroop = fatigueFrame.headDroop > 0.05;
+
+    // Storm weather reaction (wind lean + rain shield arm pose)
+    const stormFrame = fatiguedLoco.updateGait(0.05, 0, 1, 160, 500, 500, 80, 36.5, 'storm', 0.9, 'baseOutfit');
+    const stormReact = stormFrame.armPose === 'rain_shield' || Math.abs(stormFrame.lean) > 0.01;
+
+    // 6. Cultural outfit constraints (Veshti vs Cargo trousers stride limit)
+    const veshtiConstraint = testLoco.getOutfitConstraints('baseOutfit');
+    const cargoConstraint = testLoco.getOutfitConstraints('farmlandGear');
+    const outfitRestricted = veshtiConstraint.maxStrideAngle < cargoConstraint.maxStrideAngle;
+
+    // 7. Surface-adaptive footprint configuration
+    testLoco.currentSurface = 'wet_clay';
+    const clayConfig = testLoco.getFootprintConfig();
+    testLoco.currentSurface = 'shallow_water';
+    const waterConfig = testLoco.getFootprintConfig();
+    const fpConfigValid = clayConfig.depth > 0.6 && waterConfig.splashRing === true;
+
+    // 8. 3D Player locomotion integration
+    const threeWorld = window.threeWorld || (window.testRef && window.testRef.threeWorld);
+    const threeLocoValid = !!(threeWorld && threeWorld.player && threeWorld.player.locomotion);
+
+    const step15Success = hasPlayerLoco && surfaceResolved && rampingUp && reachedWalk &&
+      decelerating && pivotDetected && hasFatigueDroop && stormReact && outfitRestricted && fpConfigValid && threeLocoValid;
+
+    log(15, 'Realistic Human Locomotion & Biomechanics Engine', step15Success,
+      `PlayerLoco: ${hasPlayerLoco}, Surfaces: ${surfaceResolved}, InertiaRamp: ${rampingUp}, WalkReach: ${reachedWalk}, ` +
+      `Decel: ${decelerating}, Pivot180: ${pivotDetected}, FatigueDroop: ${hasFatigueDroop}, StormShield: ${stormReact}, ` +
+      `VeshtiLimit: ${outfitRestricted}, DecalConfigs: ${fpConfigValid}, 3DLoco: ${threeLocoValid}`);
+  } catch (err) {
+    log(15, 'Realistic Human Locomotion & Biomechanics Engine', false, err.message);
   }
 
   console.log('>>> TEST SUITE COMPLETE <<<', results);

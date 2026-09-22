@@ -571,7 +571,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Update Player & Entities
     const worldBounds = { minX: 0, maxX: 6000, minY: 100, maxY: 1100 };
-    player.update(input, deltaTime, worldBounds, tracksManager, audio, survival);
+    player.update(input, deltaTime, worldBounds, tracksManager, audio, survival, weather);
     entities.update(deltaTime);
     tracksManager.update(weather.current, deltaTime);
     particles.update(weather.current, deltaTime, canvas.width, canvas.height, renderer.camera);
