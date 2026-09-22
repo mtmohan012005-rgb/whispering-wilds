@@ -6,8 +6,8 @@
 class LightingEngine {
   constructor() {
     this.lights = [];
-    this.timeOfDay = 17.5; // Starts at 5:30 PM (Dusk / Inciting Incident)
-    this.timeSpeed = 0.05; // 1 real second = a few game minutes
+    this.timeOfDay = 21.0167; // Starts at 9:01 PM (Atmospheric Night Thunderstorm)
+    this.timeSpeed = 0.04; // 1 real second = a few game minutes
     this.ambientColor = 'rgba(0, 0, 0, 0)';
     this.lightCanvas = document.createElement('canvas');
     this.lightCtx = this.lightCanvas.getContext('2d');

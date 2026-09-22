@@ -9,7 +9,7 @@ class SurvivalSystem {
     this.hunger = 85;
     this.thirst = 90;
     this.energy = 100;
-    this.coreTemp = 37.0; // Celsius
+    this.coreTemp = 36.1; // Celsius (Chennai thunderstorm at night)
 
     // Base Progression (1: Tent & Fire, 2: Woodland Cabin, 3: Upgraded Outpost)
     this.baseTier = 1;

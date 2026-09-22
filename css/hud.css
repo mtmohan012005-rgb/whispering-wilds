@@ -21,15 +21,17 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  position: relative;
 }
 
+/* 1. TOP-LEFT REGION & WEATHER HUD */
 .hud-location-card {
   background: rgba(18, 14, 20, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.45);
   border-radius: 12px;
-  padding: 12px 20px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  padding: 14px 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
   pointer-events: auto;
 }
 
@@ -39,84 +41,129 @@
   font-weight: 700;
   color: var(--primary-gold);
   letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
 .time-weather-row {
   display: flex;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 10px;
+  align-items: center;
+  margin-top: 6px;
   font-size: 0.82rem;
-  color: #a4b0be;
+  color: #d1d8e0;
   font-family: 'JetBrains Mono', monospace;
 }
 
 #weather-badge {
   color: #70a1ff;
+  font-weight: 600;
 }
 
 .gps-telemetry-badge {
-  margin-top: 6px;
+  margin-top: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #55efc4;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(85, 239, 196, 0.3);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(85, 239, 196, 0.35);
   border-radius: 6px;
-  padding: 3px 8px;
+  padding: 4px 10px;
   display: inline-block;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
-/* Brass Compass */
+/* 2. TOP-RIGHT NAVIGATION & CURRENCY HUD */
+/* Circular Radar-Style Compass Widget (Top Center) */
 .hud-compass-widget {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  background: radial-gradient(circle, #2a1f14 20%, #15100a 80%);
+  background: 
+    radial-gradient(circle at center, rgba(0, 255, 136, 0.08) 0%, rgba(12, 18, 14, 0.92) 70%),
+    repeating-radial-gradient(circle at center, transparent 0, transparent 9px, rgba(85, 239, 196, 0.18) 10px, transparent 11px);
   border: 2px solid var(--warm-brass);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.85), inset 0 0 15px rgba(85, 239, 196, 0.25), 0 0 12px rgba(212, 175, 55, 0.35);
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   pointer-events: auto;
+  overflow: hidden;
+}
+
+/* Radar Sweep Line Animation */
+.hud-compass-widget::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(85, 239, 196, 0.12) 330deg, rgba(85, 239, 196, 0.45) 360deg);
+  animation: radarSweep 3.5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Radar Center Crosshairs */
+.hud-compass-widget::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(to right, transparent 48%, rgba(85, 239, 196, 0.25) 49%, rgba(85, 239, 196, 0.25) 51%, transparent 52%),
+    linear-gradient(to bottom, transparent 48%, rgba(85, 239, 196, 0.25) 49%, rgba(85, 239, 196, 0.25) 51%, transparent 52%);
+  pointer-events: none;
 }
 
 .compass-cardinal {
   position: absolute;
   font-family: 'Cinzel', serif;
-  font-size: 8px;
-  font-weight: bold;
+  font-size: 9px;
+  font-weight: 800;
   color: var(--primary-gold);
+  z-index: 2;
+  text-shadow: 0 0 4px rgba(0,0,0,0.9);
 }
-.compass-n { top: 3px; }
-.compass-s { bottom: 3px; }
-.compass-e { right: 5px; }
-.compass-w { left: 5px; }
+.compass-n { top: 4px; color: #ff7675; }
+.compass-s { bottom: 4px; }
+.compass-e { right: 6px; }
+.compass-w { left: 6px; }
 
 #compass-needle {
-  width: 3px;
-  height: 44px;
+  width: 3.5px;
+  height: 48px;
   background: linear-gradient(to bottom, #ff4757 50%, #ffffff 50%);
   border-radius: 2px;
-  box-shadow: 0 0 5px rgba(255, 71, 87, 0.6);
+  box-shadow: 0 0 8px rgba(255, 71, 87, 0.8);
   transition: transform 0.15s ease-out;
+  z-index: 3;
 }
 
-/* Economy currency chip */
+/* Economy Currency Chip (Top Right) */
 .hud-currency-chip {
   background: rgba(18, 14, 20, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 20px;
-  padding: 8px 16px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 22px;
+  padding: 8px 18px;
   font-family: 'JetBrains Mono', monospace;
   font-weight: bold;
   color: #f7c948;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
   pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* --- BOTTOM-LEFT: SURVIVAL VITALS --- */
@@ -126,19 +173,20 @@
   align-items: flex-end;
 }
 
+/* 3. BOTTOM-LEFT SURVIVAL STATUS HUD */
 .hud-vitals-card {
   background: rgba(18, 14, 20, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 12px;
-  padding: 14px 18px;
-  width: 250px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 14px;
+  padding: 16px 20px;
+  width: 265px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.1);
   pointer-events: auto;
 }
 
 .vital-row {
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .vital-row:last-child {
   margin-bottom: 0;
@@ -147,25 +195,26 @@
 .vital-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #ced6e0;
-  margin-bottom: 4px;
-  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #dfe4ea;
+  margin-bottom: 5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 }
 
 .progress-track {
   width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .hunger-bar { background: linear-gradient(90deg, #ff793f, #ff5252); }
 .thirst-bar { background: linear-gradient(90deg, #34ace0, #706fd3); }
-.energy-bar { background: linear-gradient(90deg, #33d9b2, #218c74); }
+.energy-bar { background: linear-gradient(90deg, #33d9b2, #2ed573); }
 
 .progress-fill {
   height: 100%;
@@ -177,27 +226,31 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  font-size: 0.82rem;
-  color: #ced6e0;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.84rem;
+  color: #dfe4ea;
   font-weight: 600;
 }
 
 #temp-value {
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
+  color: #55efc4;
+  text-shadow: 0 0 8px rgba(85, 239, 196, 0.5);
 }
 
-/* --- BOTTOM-RIGHT: HOTBAR QUICK SLOTS --- */
+/* 4. BOTTOM-RIGHT ACTION TOOLBAR */
 .hud-hotbar {
   display: flex;
   gap: 12px;
   background: rgba(18, 14, 20, 0.85);
-  border: 1px solid rgba(212, 175, 55, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.45);
   border-radius: 14px;
-  padding: 8px 12px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  padding: 10px 14px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.1);
   pointer-events: auto;
 }
 

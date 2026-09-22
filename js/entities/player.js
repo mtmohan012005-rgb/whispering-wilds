@@ -23,7 +23,7 @@ class Player {
     this.isJumping = false;
     this.jumpHeight = 0;
     this.jumpVelocity = 0;
-    this.isLanternOn = false;
+    this.isLanternOn = true; // Illuminated for atmospheric night scene
     
     // Wardrobe & Attire System
     this.outfitId = 'baseOutfit'; // 'baseOutfit' | 'farmlandGear' | 'mountainGear'
@@ -43,6 +43,7 @@ class Player {
 
   setOutfit(outfitId) {
     this.outfitId = outfitId;
+    this.currentOutfit = outfitId;
     window.playerCharacter.currentOutfit = outfitId;
   }
 

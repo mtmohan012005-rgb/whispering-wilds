@@ -11,7 +11,7 @@ window.tamilNaduMap = {
         region: "Chennai",
         biome: "urban_concrete",
         unlocked: true,
-        coordinates: { lat: 13.0827, lng: 80.2707 },
+        coordinates: { lat: 13.0598, lng: 80.2550 },
         audioTheme: "urban_chaos_traffic.mp3",
         npcs: ["Tea Stall Annan", "Auto Driver Kumar", "Archivist"]
     },
@@ -52,10 +52,14 @@ window.tamilNaduMap = {
 
 window.getRealTamilNaduTelemetry = function(playerX) {
   let lat, lng, zone;
-  if (playerX < 1000) {
-    const t = playerX / 1000;
-    lat = 13.0827 + t * (11.9401 - 13.0827);
-    lng = 80.2707 + t * (79.4861 - 80.2707);
+  if (playerX <= 250) {
+    lat = 13.0598;
+    lng = 80.2550;
+    zone = window.tamilNaduMap.startingZone;
+  } else if (playerX < 1000) {
+    const t = (playerX - 250) / 750;
+    lat = 13.0598 + t * (11.9401 - 13.0598);
+    lng = 80.2550 + t * (79.4861 - 80.2550);
     zone = window.tamilNaduMap.startingZone;
   } else if (playerX < 2000) {
     const t = (playerX - 1000) / 1000;
