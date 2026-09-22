@@ -226,6 +226,63 @@ window.runStepByStepFeatureTests = async function() {
     log(9, 'Western Ghats Nilgiri Tahr & Eco-Sanctuary Portal', false, err.message);
   }
 
+  // --- STEP 10: Real Tamil Nadu Map Data Structure & GPS Telemetry ---
+  try {
+    const map = window.tamilNaduMap;
+    const hasZones = map && map.startingZone && map.phase1 && map.phase2 && map.phase3;
+    const coordsMatch = 
+      map.startingZone.coordinates.lat === 13.0827 &&
+      map.phase1.coordinates.lat === 11.9401 &&
+      map.phase2.coordinates.lat === 11.4287 &&
+      map.phase3.coordinates.lat === 11.4102;
+
+    const telChennai = window.getRealTamilNaduTelemetry(200);
+    const telNilgiris = window.getRealTamilNaduTelemetry(5500);
+    const gpsEl = document.getElementById('gps-coords');
+    const telemetryValid = hasZones && coordsMatch && telChennai.region === 'Chennai' && telNilgiris.region.includes('Nilgiri') && !!gpsEl;
+
+    log(10, 'Real Tamil Nadu Map Coordinates & Real-Time Telemetry', telemetryValid, 
+      `Verified George Town (${map.startingZone.coordinates.lat}, ${map.startingZone.coordinates.lng}) to Nilgiri Mist (${map.phase3.coordinates.lat}, ${map.phase3.coordinates.lng})`);
+  } catch (err) {
+    log(10, 'Real Tamil Nadu Map Coordinates & Real-Time Telemetry', false, err.message);
+  }
+
+  // --- STEP 11: Cultural Wardrobe System & Olai Chuvadi UI Skin ---
+  try {
+    const player = window.testRef.player;
+    const journal = window.testRef.journal;
+
+    // 1. Verify Player Character Wardrobe definition
+    const charData = window.playerCharacter;
+    const hasOutfits = charData && charData.baseOutfit && charData.upgradedOutfits.farmlandGear && charData.upgradedOutfits.mountainGear;
+
+    // 2. Test equipping Farmland Gear
+    window.equipPlayerAttire('farmlandGear');
+    const equippedFarmland = player.currentOutfit === 'farmlandGear';
+
+    // 3. Test equipping Mountain Gear
+    window.equipPlayerAttire('mountainGear');
+    const equippedMountain = player.currentOutfit === 'mountainGear';
+
+    // 4. Test Olai Chuvadi toggle
+    journal.toggleOlaiSkin();
+    const wrapper = document.querySelector('.journal-book-wrapper');
+    const isOlaiThemed = wrapper && wrapper.classList.contains('olai-chuvadi-theme');
+    journal.toggleOlaiSkin(); // toggle back
+
+    // 5. Switch to Wardrobe tab and verify DOM
+    journal.switchTab('wardrobe');
+    const wardrobePanel = document.getElementById('panel-wardrobe');
+    const cardsRendered = wardrobePanel && wardrobePanel.querySelectorAll('.wardrobe-card').length >= 3;
+
+    const wardrobeSuccess = hasOutfits && equippedFarmland && equippedMountain && isOlaiThemed && cardsRendered;
+
+    log(11, 'Cultural Wardrobe System & Olai Chuvadi Palm-Leaf Manuscript UI', wardrobeSuccess,
+      'Tested baseOutfit (Veshti/Jhola), farmlandGear (boots/canteen), mountainGear (sweater/poncho), and Olai Chuvadi theme.');
+  } catch (err) {
+    log(11, 'Cultural Wardrobe System & Olai Chuvadi Palm-Leaf Manuscript UI', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

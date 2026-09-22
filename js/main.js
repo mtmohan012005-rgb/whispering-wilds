@@ -60,16 +60,36 @@ window.addEventListener('DOMContentLoaded', () => {
   window.gameQuests = quests;
   window.gameJournal = journal;
   window.gameSurvival = survival;
+  window.gamePlayer = player;
   window.testRef = { player, renderer, lighting, particles, tracksManager, weather, survival, camera: explorerCamera, journal, quests, entities };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
-  // Auto-run test runner if requested via URL
+  // Auto-run test runner or visual modes if requested via URL
   if (window.location.search.includes('runTests=true')) {
     setTimeout(() => {
       if (window.runStepByStepFeatureTests) {
         window.runStepByStepFeatureTests();
       }
     }, 1000);
+  }
+
+  if (window.location.search.includes('showWardrobe=true')) {
+    titleScreen.style.display = 'none';
+    titleScreen.classList.add('hidden');
+    hudContainer.classList.remove('hidden');
+    journal.isOpen = true;
+    journalModal.classList.remove('hidden');
+    journal.currentTab = 'wardrobe';
+    journal.isOlaiSkin = true;
+    const wrapper = document.querySelector('.journal-book-wrapper');
+    if (wrapper) wrapper.classList.add('olai-chuvadi-theme');
+    const olaiBtn = document.getElementById('toggle-olai-chuvadi');
+    if (olaiBtn) olaiBtn.innerHTML = '📔 Leather Journal';
+    journal.render();
+  } else if (window.location.search.includes('gameplay=true')) {
+    titleScreen.style.display = 'none';
+    titleScreen.classList.add('hidden');
+    hudContainer.classList.remove('hidden');
   }
 
   // Pre-seed the tyre skids left by the fleeing Enfield
@@ -506,7 +526,7 @@ window.addEventListener('DOMContentLoaded', () => {
       } else if (item.type === 'tent') {
         renderer.drawCampItems(ctx, [], [item.obj], renderer.camera);
       } else if (item.type === 'player') {
-        player.draw(ctx, renderer.camera);
+        player.draw(ctx, renderer.camera, survival, explorerCamera);
       }
     });
 
@@ -543,6 +563,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if (weatherBadge) weatherBadge.textContent = weather.getDisplayName();
     if (biomeTitle) biomeTitle.textContent = biome.name;
     if (rupeeCount) rupeeCount.textContent = `₹${survival.currency}`;
+
+    // Real Tamil Nadu GPS Telemetry
+    if (window.getRealTamilNaduTelemetry) {
+      const telemetry = window.getRealTamilNaduTelemetry(player.x);
+      const gpsBadge = document.getElementById('gps-coords');
+      if (gpsBadge) {
+        gpsBadge.textContent = `📍 ${telemetry.lat}° N, ${telemetry.lng}° E • ${telemetry.region}`;
+      }
+    }
 
     // Compass heading
     if (compassNeedle) {

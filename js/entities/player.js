@@ -25,16 +25,30 @@ class Player {
     this.jumpVelocity = 0;
     this.isLanternOn = false;
     
+    // Wardrobe & Attire System
+    this.outfitId = 'baseOutfit'; // 'baseOutfit' | 'farmlandGear' | 'mountainGear'
+    
     // Dynamic equipment & cloth physics
     this.backpackSway = 0;
     this.capeSway = 0;
     this.walkCycle = 0;
     this.lastStepDist = 0;
     this.stepFoot = false;
+    this.isShivering = false;
     
     // Interaction
     this.nearbyInteractable = null;
     this.interactionRadius = 75;
+  }
+
+  setOutfit(outfitId) {
+    this.outfitId = outfitId;
+    window.playerCharacter.currentOutfit = outfitId;
+  }
+
+  getOutfitConfig() {
+    if (this.outfitId === 'baseOutfit') return window.playerCharacter.baseOutfit;
+    return window.playerCharacter.upgradedOutfits[this.outfitId] || window.playerCharacter.baseOutfit;
   }
 
   update(input, deltaTime, worldBounds, tracksManager, audio, survival) {
@@ -143,10 +157,55 @@ class Player {
     audio.playPinTap();
     return this.isLanternOn;
   }
+}
 
-  draw(ctx, camera) {
-    const screenX = this.x - camera.x;
-    const screenY = this.y - camera.y - this.jumpHeight;
+// Cultural Wardrobe System Data
+window.playerCharacter = {
+    name: "Explorer",
+    currentOutfit: "baseOutfit",
+    baseOutfit: {
+        id: "baseOutfit",
+        name: "Casual Cotton Shirt & Veshti (வழக்கமான ஆடை)",
+        clothing: "White cotton shirt & golden-bordered Veshti / Dhoti",
+        footwear: "Traditional leather sandals (Slower stamina recovery in mud)",
+        accessory: "Shoulder Jhola cloth sling bag",
+        staminaMultiplier: 1.25,
+        coldProtection: 0
+    },
+    upgradedOutfits: {
+        farmlandGear: {
+            id: "farmlandGear",
+            name: "Villupuram Farmland Trekker (செம்மண் பயண உடை)",
+            clothing: "Durable khaki canvas shirt & reinforced field trousers",
+            footwear: "Sturdy trekking boots (Firm mud grip)",
+            accessory: "Slung copper water canteen & canvas rucksack",
+            staminaMultiplier: 1.0,
+            coldProtection: 3
+        },
+        mountainGear: {
+            id: "mountainGear",
+            name: "Nilgiri Highland Expedition (நீலகிரி குளிர் கம்பளி உடை)",
+            clothing: "Thick knitted Ooty woolen sweater & storm poncho",
+            footwear: "Insulated mountain grip boots (Hypothermia defense)",
+            accessory: "Slung Explorer Camera & belt brass lantern",
+            staminaMultiplier: 0.9,
+            coldProtection: 9
+        }
+    }
+};
+
+window.Player = Player;
+
+  Player.prototype.draw = function(ctx, camera, survival, explorerCamera) {
+    let screenX = this.x - camera.x;
+    let screenY = this.y - camera.y - this.jumpHeight;
+
+    // 1. Shivering animation when cold in mountain fog (Core temp < 35.0°C)
+    const isCold = survival && survival.coreTemp < 35.0;
+    if (isCold) {
+      screenX += (Math.random() - 0.5) * 2.5;
+      screenY += (Math.random() - 0.5) * 2.5;
+    }
 
     ctx.save();
     ctx.translate(screenX, screenY);
@@ -161,65 +220,130 @@ class Player {
     // Rotate player body towards movement angle
     ctx.rotate(this.angle);
 
-    // 1. Weather Cloak / Poncho (Back)
-    ctx.fillStyle = '#3a4b35'; // Deep hunter green weather cape
-    ctx.beginPath();
-    ctx.moveTo(-10, -8);
-    ctx.lineTo(-24 + this.capeSway, -6);
-    ctx.lineTo(-24 + this.capeSway, 6);
-    ctx.lineTo(-10, 8);
-    ctx.closePath();
-    ctx.fill();
+    const outfit = this.outfitId;
+    const isAimingCamera = explorerCamera && explorerCamera.isActive;
 
-    // 2. Explorer Backpack with dynamic sway straps
-    ctx.save();
-    ctx.translate(-8, this.backpackSway);
-    ctx.fillStyle = '#654321'; // Leather rucksack
-    ctx.beginPath();
-    ctx.roundRect(-8, -9, 10, 18, [3]);
-    ctx.fill();
-    // Brass buckles
-    ctx.fillStyle = '#d4af37';
-    ctx.fillRect(-6, -6, 2, 3);
-    ctx.fillRect(-6, 3, 2, 3);
-    ctx.restore();
+    // --- 2. BACK ACCESSORIES (Jhola vs Backpack vs Mountain Poncho) ---
+    if (outfit === 'baseOutfit') {
+      // Traditional Terracotta Cotton Jhola Sling Bag
+      ctx.save();
+      ctx.translate(-7, this.backpackSway);
+      ctx.fillStyle = '#d35400'; // Terracotta orange cloth
+      ctx.beginPath();
+      ctx.ellipse(-4, 0, 7, 10, 0.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#b33939';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+    } else if (outfit === 'farmlandGear') {
+      // Canvas Explorer Backpack with side bedroll
+      ctx.save();
+      ctx.translate(-8, this.backpackSway);
+      ctx.fillStyle = '#654321';
+      ctx.beginPath();
+      ctx.roundRect(-8, -9, 11, 18, [3]);
+      ctx.fill();
+      // Copper water canteen on side
+      ctx.fillStyle = '#b87333';
+      ctx.beginPath();
+      ctx.arc(-2, 11, 4, 0, Math.PI * 2);
+      ctx.fill();
+      // Brass buckles
+      ctx.fillStyle = '#d4af37';
+      ctx.fillRect(-6, -6, 2, 3);
+      ctx.fillRect(-6, 3, 2, 3);
+      ctx.restore();
+    } else {
+      // Nilgiri Mountain Hooded Poncho & Cape
+      ctx.fillStyle = '#1e382b'; // Dark highland green
+      ctx.beginPath();
+      ctx.moveTo(-10, -9);
+      ctx.lineTo(-26 + this.capeSway, -7);
+      ctx.lineTo(-26 + this.capeSway, 7);
+      ctx.lineTo(-10, 9);
+      ctx.closePath();
+      ctx.fill();
+    }
 
-    // 3. Player Torso / Khaki Field Jacket
-    ctx.fillStyle = this.isCrouching ? '#a08a68' : '#bfa27b';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 11, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // --- 3. PLAYER TORSO & CLOTHING ---
+    if (outfit === 'baseOutfit') {
+      // White Cotton Kurta/Shirt & Folded Veshti (Dhoti)
+      ctx.fillStyle = '#f8f9fa';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 11, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Traditional Gold Kasavu Zari Border on Veshti
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.moveTo(-8, 8);
+      ctx.lineTo(8, 8);
+      ctx.stroke();
+    } else if (outfit === 'farmlandGear') {
+      // Khaki Canvas Shirt
+      ctx.fillStyle = this.isCrouching ? '#a08a68' : '#bfa27b';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 11, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Heavy Ooty Woolen Knitted Sweater (Deep Navy Blue)
+      ctx.fillStyle = '#2c3e50';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 12, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    // 4. Slung Explorer Camera Strap
-    ctx.strokeStyle = '#2b1d0c';
-    ctx.lineWidth = 1.8;
-    ctx.beginPath();
-    ctx.moveTo(-7, -8);
-    ctx.lineTo(8, 6);
-    ctx.stroke();
+    // --- 4. CAMERA & LANTERN POSES ---
+    if (isAimingCamera) {
+      // Explorer holding Camera up to Eye!
+      ctx.save();
+      ctx.translate(6, 0);
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, -5, 12, 10);
+      // Lens pointing forward with flash reflection
+      ctx.fillStyle = '#74b9ff';
+      ctx.beginPath();
+      ctx.arc(12, 0, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      // Slung Camera on Hip
+      ctx.strokeStyle = '#2b1d0c';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(-7, -8);
+      ctx.lineTo(8, 6);
+      ctx.stroke();
+      ctx.fillStyle = '#1c1c1c';
+      ctx.fillRect(4, 5, 7, 5);
+    }
 
-    // Small Vintage Camera body on hip
-    ctx.fillStyle = '#1c1c1c';
-    ctx.fillRect(4, 5, 8, 6);
-    ctx.fillStyle = '#silver';
-    ctx.beginPath();
-    ctx.arc(8, 8, 2, 0, Math.PI * 2);
-    ctx.fill();
+    // --- 5. HEAD & HEADGEAR ---
+    if (outfit === 'baseOutfit') {
+      // Natural dark hair with optional forehead Vibhuti / Sandalwood tilak
+      ctx.fillStyle = '#222';
+      ctx.beginPath();
+      ctx.arc(2, 0, 6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (outfit === 'farmlandGear') {
+      // Explorer Bush / Pith Hat
+      ctx.fillStyle = '#5a4632';
+      ctx.beginPath();
+      ctx.ellipse(2, 0, 8, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Warm Woolen Beanie / Hood
+      ctx.fillStyle = '#34495e';
+      ctx.beginPath();
+      ctx.arc(2, 0, 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    // 5. Head & Explorer Pith/Bush Hat
-    ctx.fillStyle = '#4a3828'; // Hat brim
-    ctx.beginPath();
-    ctx.ellipse(2, 0, 8, 7, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#685038'; // Crown
-    ctx.beginPath();
-    ctx.ellipse(2, 0, 5, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 6. Swing Brass Lantern on Belt (Right Side)
+    // --- 6. BELT LANTERN ---
     ctx.save();
     ctx.translate(6, -11);
-    ctx.fillStyle = '#8b6914'; // Brass housing
+    ctx.fillStyle = '#8b6914';
     ctx.fillRect(0, -2, 5, 7);
     if (this.isLanternOn) {
       ctx.fillStyle = '#fff4a3';
@@ -231,7 +355,4 @@ class Player {
     ctx.restore();
 
     ctx.restore();
-  }
-}
-
-window.Player = Player;
+  };

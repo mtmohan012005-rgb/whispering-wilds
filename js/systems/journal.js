@@ -6,6 +6,7 @@
 class FieldJournal {
   constructor() {
     this.isOpen = false;
+    this.isOlaiSkin = false;
     this.currentTab = 'photolog';
     this.photos = [];
     this.unlockedEntries = new Set(['high_court_gates']); // Starts with Chennai prologue
@@ -13,6 +14,27 @@ class FieldJournal {
     this.yarnConnections = [
       { from: 'clue_torn_blueprint', to: 'clue_enfield_tread' }
     ];
+
+    // Wire up Olai Chuvadi skin button if present in DOM
+    const olaiBtn = document.getElementById('toggle-olai-chuvadi');
+    if (olaiBtn) {
+      olaiBtn.onclick = () => this.toggleOlaiSkin(window.gameAudio);
+    }
+  }
+
+  toggleOlaiSkin(audio) {
+    this.isOlaiSkin = !this.isOlaiSkin;
+    const wrapper = document.querySelector('.journal-book-wrapper');
+    const olaiBtn = document.getElementById('toggle-olai-chuvadi');
+    if (wrapper) {
+      wrapper.classList.toggle('olai-chuvadi-theme', this.isOlaiSkin);
+    }
+    if (olaiBtn) {
+      olaiBtn.innerHTML = this.isOlaiSkin ? '📔 Leather Journal' : '📜 ஓலைச்சுவடி (Palm Leaf)';
+    }
+    if (audio) {
+      audio.playPageFlip();
+    }
   }
 
   toggle(audio) {
@@ -24,6 +46,11 @@ class FieldJournal {
     if (modal) {
       if (this.isOpen) {
         modal.classList.remove('hidden');
+        // Ensure Olai Chuvadi button is bound
+        const olaiBtn = document.getElementById('toggle-olai-chuvadi');
+        if (olaiBtn && !olaiBtn.onclick) {
+          olaiBtn.onclick = () => this.toggleOlaiSkin(audio);
+        }
         this.render();
       } else {
         modal.classList.add('hidden');
@@ -92,6 +119,8 @@ class FieldJournal {
       this.renderClueBoard(activePanel);
     } else if (this.currentTab === 'quests') {
       this.renderQuests(activePanel);
+    } else if (this.currentTab === 'wardrobe') {
+      this.renderWardrobe(activePanel);
     }
   }
 
@@ -239,6 +268,115 @@ class FieldJournal {
     html += '</div>';
     container.innerHTML = html;
   }
+
+  renderWardrobe(container) {
+    const player = window.gamePlayer || (window.testRef && window.testRef.player);
+    const currentOutfit = player ? player.currentOutfit : 'baseOutfit';
+
+    const outfits = [
+      {
+        id: 'baseOutfit',
+        name: 'George Town Cotton Veshti & Jhola',
+        tamilName: 'பாரம்பரிய பருத்தி வேஷ்டி & ஜோல்னா பை',
+        clothing: 'Casual breathable cotton shirt and traditional veshti / dhoti with gold zari border',
+        footwear: 'Handmade leather kolhapuri sandals (Low stamina drain on paved city streets)',
+        accessory: 'Khadhi shoulder Jhola bag for journal, blueprints & tools',
+        staminaEffect: 'Standard movement energy consumption',
+        coldProtection: '+0°C (Unprotected against mountain fog & high altitude winds)',
+        icon: '🥻'
+      },
+      {
+        id: 'farmlandGear',
+        name: 'Villupuram Plains Farmland Trekker',
+        tamilName: 'விழுப்புரம் பண்ணை & நடைபயண உடை',
+        clothing: 'Durable reinforced canvas shirt & tough field cargo trousers',
+        footwear: 'Sturdy high-traction trekking boots (Prevents muddy slips & reduces stamina cost by 25%)',
+        accessory: 'Pure copper groundwater canteen & heavy-duty canvas explorer backpack',
+        staminaEffect: '+25% stamina conservation across mud & farmlands',
+        coldProtection: '+2.0°C thermal retention against night humidity',
+        icon: '🥾'
+      },
+      {
+        id: 'mountainGear',
+        name: 'Nilgiri Shola Mist Expedition Attire',
+        tamilName: 'நீலகிரி சோலை குளிர் மலை மலையேற்ற உடை',
+        clothing: 'Pure Ooty mountain sheep wool sweater & waterproof oilskin storm poncho',
+        footwear: 'Insulated grip boots with spiked soles (Prevents slippage on wet mossy rocks)',
+        accessory: 'Explorer mechanical camera strap & brass kerosene hurricane lantern',
+        staminaEffect: 'Prevents hypothermic stamina drainage in high elevations',
+        coldProtection: '+5.0°C maximum thermal insulation (Stops body shivering)',
+        icon: '🧥'
+      }
+    ];
+
+    let html = `
+      <div style="padding: 10px 14px 6px;">
+        <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--primary-gold); margin-bottom: 4px;">
+          ஆடைகள் & உபகரணங்கள் • Wardrobe & Cultural Attire
+        </h3>
+        <p style="font-size: 0.85rem; color: #a4b0be; margin-bottom: 12px;">
+          Equip culturally authentic attire and gear tailored for Tamil Nadu’s distinct geographic biomes.
+        </p>
+      </div>
+      <div class="wardrobe-grid">
+    `;
+
+    outfits.forEach(outfit => {
+      const isEquipped = currentOutfit === outfit.id;
+      html += `
+        <div class="wardrobe-card ${isEquipped ? 'equipped' : ''}">
+          <div class="wardrobe-header-row">
+            <div>
+              <h3>${outfit.icon} ${outfit.name}</h3>
+              <span class="tamil-sub">${outfit.tamilName}</span>
+            </div>
+            <span class="wardrobe-status-tag ${isEquipped ? 'active' : ''}">
+              ${isEquipped ? '✓ EQUIPPED' : 'READY'}
+            </span>
+          </div>
+
+          <div class="wardrobe-items-list">
+            <div class="wardrobe-item-row">
+              <span class="icon">👕</span>
+              <span><strong>Attire:</strong> ${outfit.clothing}</span>
+            </div>
+            <div class="wardrobe-item-row">
+              <span class="icon">👞</span>
+              <span><strong>Footwear:</strong> ${outfit.footwear}</span>
+            </div>
+            <div class="wardrobe-item-row">
+              <span class="icon">🎒</span>
+              <span><strong>Accessory:</strong> ${outfit.accessory}</span>
+            </div>
+          </div>
+
+          <div class="wardrobe-stats-box">
+            <div>⚡ <strong>Stamina:</strong> <span class="stat-highlight">${outfit.staminaEffect}</span></div>
+            <div>❄️ <strong>Cold Protection:</strong> <span class="stat-highlight">${outfit.coldProtection}</span></div>
+          </div>
+
+          <button class="btn-equip-outfit" ${isEquipped ? 'disabled' : ''} onclick="window.equipPlayerAttire('${outfit.id}')">
+            ${isEquipped ? '✓ Currently Equipped' : 'Equip This Attire (அணியுங்கள்)'}
+          </button>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
 }
+
+window.equipPlayerAttire = function(outfitId) {
+  const player = window.gamePlayer || (window.testRef && window.testRef.player);
+  if (player && player.setOutfit) {
+    player.setOutfit(outfitId);
+    if (window.gameAudio) window.gameAudio.playPinTap();
+    if (window.gameJournal) window.gameJournal.render();
+    if (window.gameQuests) {
+      window.gameQuests.showQuestNotification(`Equipped: ${outfitId === 'baseOutfit' ? 'Traditional Cotton Veshti & Jhola' : (outfitId === 'farmlandGear' ? 'Villupuram Plains Farmland Trekker' : 'Nilgiri Shola Mist Expedition Attire')}`);
+    }
+  }
+};
 
 window.FieldJournal = FieldJournal;

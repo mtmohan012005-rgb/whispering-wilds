@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/hud.css">
   <link rel="stylesheet" href="css/camera.css">
   <link rel="stylesheet" href="css/journal.css">
-  <link rel="stylesheet" href="css/tea-stall.css">
+  <link rel="stylesheet" href="css/modals.css">
 </head>
 <body>
 
@@ -54,6 +54,7 @@
           <span>•</span>
           <span id="weather-badge">Chennai Downpour</span>
         </div>
+        <div id="gps-coords" class="gps-telemetry-badge">📍 13.0827° N, 80.2707° E • George Town, Chennai</div>
       </div>
 
       <!-- Vintage Brass Compass -->
@@ -171,7 +172,10 @@
           <h2>காட்டு வழி களக் குறிப்பேடு</h2>
           <span>The Whispering Wilds • Field Journal & Investigation Board</span>
         </div>
-        <button id="close-journal-btn" class="close-btn" title="Close Journal">&times;</button>
+        <div class="journal-header-actions">
+          <button id="toggle-olai-chuvadi" class="btn-olai-chuvadi" title="Switch between Leather Journal and Palm-Leaf Manuscript (ஓலைச்சுவடி)">📜 ஓலைச்சுவடி (Palm Leaf)</button>
+          <button id="close-journal-btn" class="close-btn" title="Close Journal">&times;</button>
+        </div>
       </div>
 
       <!-- Journal Tabs -->
@@ -180,6 +184,7 @@
         <button class="journal-tab-btn" data-tab="bestiary">🐾 Bestiary & Guide</button>
         <button class="journal-tab-btn" data-tab="clueboard">📌 Clue Board & Syndicate</button>
         <button class="journal-tab-btn" data-tab="quests">📜 Active Quests</button>
+        <button class="journal-tab-btn" data-tab="wardrobe">👕 Attire & Wardrobe (ஆடைகள்)</button>
       </div>
 
       <!-- Inner Content Area -->
@@ -188,6 +193,7 @@
         <div id="panel-bestiary" class="journal-panel hidden"></div>
         <div id="panel-clueboard" class="journal-panel hidden"></div>
         <div id="panel-quests" class="journal-panel hidden"></div>
+        <div id="panel-wardrobe" class="journal-panel hidden"></div>
       </div>
     </div>
   </div>

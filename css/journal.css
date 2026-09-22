@@ -62,6 +62,35 @@
   color: #c5a059;
 }
 
+.journal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.btn-olai-chuvadi {
+  background: linear-gradient(135deg, #d4a373, #bc6c25);
+  border: 1px solid #fefae0;
+  border-radius: 6px;
+  color: #283618;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-olai-chuvadi:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 15px rgba(212, 163, 115, 0.4);
+}
+
 .close-btn {
   background: transparent;
   border: none;
@@ -430,3 +459,237 @@
   font-weight: bold;
   color: #d63031;
 }
+
+/* ==========================================================================
+   WARDROBE & CULTURAL ATTIRE PANEL
+   ========================================================================== */
+.wardrobe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 12px;
+}
+
+.wardrobe-card {
+  background: rgba(35, 20, 10, 0.75);
+  border: 2px solid #5a3d24;
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.wardrobe-card:hover {
+  border-color: var(--primary-gold);
+  transform: translateY(-2px);
+}
+
+.wardrobe-card.equipped {
+  border-color: #55efc4;
+  background: rgba(18, 38, 30, 0.75);
+  box-shadow: 0 0 20px rgba(85, 239, 196, 0.35);
+}
+
+.wardrobe-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.wardrobe-header-row h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  color: var(--primary-gold);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.wardrobe-header-row .tamil-sub {
+  font-size: 0.8rem;
+  color: #c5a059;
+  display: block;
+  margin-top: 2px;
+}
+
+.wardrobe-status-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: #4a301c;
+  color: #c5a059;
+  white-space: nowrap;
+}
+
+.wardrobe-status-tag.active {
+  background: #00b894;
+  color: #fff;
+}
+
+.wardrobe-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.wardrobe-item-row {
+  font-size: 0.82rem;
+  color: #e4d5b7;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wardrobe-item-row .icon {
+  font-size: 1.05rem;
+}
+
+.wardrobe-stats-box {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.76rem;
+  color: #74b9ff;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wardrobe-stats-box .stat-highlight {
+  color: #55efc4;
+}
+
+.btn-equip-outfit {
+  margin-top: auto;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--primary-gold), #b8860b);
+  color: #1a0f07;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-equip-outfit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 15px rgba(212, 175, 55, 0.45);
+}
+
+.btn-equip-outfit:disabled {
+  background: #2d3436;
+  color: #8395a7;
+  cursor: default;
+}
+
+/* ==========================================================================
+   OLAI CHUVADI (ஓலைச்சுவடி) - PALM-LEAF MANUSCRIPT DIEGETIC THEME
+   Replicates ancient Tamil palm-leaf manuscripts with incised text & bindings
+   ========================================================================== */
+.journal-book-wrapper.olai-chuvadi-theme {
+  background: repeating-linear-gradient(
+    180deg,
+    #d4a373 0px,
+    #c99565 24px,
+    #a87140 25px,
+    #8f5c30 27px
+  ) !important;
+  border: 8px solid #4a2c11 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.95), inset 0 0 40px rgba(45, 20, 5, 0.85) !important;
+}
+
+/* Palm leaf bound cords */
+.journal-book-wrapper.olai-chuvadi-theme::before {
+  content: '';
+  position: absolute;
+  top: 10px; left: 10px; right: 10px; bottom: 10px;
+  border: 2px solid #3c2415 !important;
+  border-style: solid none solid none !important;
+  pointer-events: none;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .journal-header {
+  background: #46250e !important;
+  border-bottom: 3px solid #2e1707 !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .journal-title-group h2 {
+  color: #fefae0 !important;
+  text-shadow: 1px 1px 2px #000, 0 0 10px rgba(254, 250, 224, 0.4);
+  font-family: 'Cinzel', serif;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .journal-tabs-bar {
+  background: #361c09 !important;
+  border-bottom: 2px solid #201004 !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .journal-tab-btn {
+  color: #dfceab !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .journal-tab-btn.active {
+  background: #6a3c19 !important;
+  color: #fff !important;
+  border-bottom: 3px solid #dda15e !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .journal-content-area {
+  background: rgba(245, 235, 210, 0.96) !important;
+  color: #2b1704 !important;
+  background-image: 
+    repeating-linear-gradient(180deg, rgba(212, 163, 115, 0.15) 0px, rgba(212, 163, 115, 0.15) 28px, rgba(168, 113, 64, 0.3) 29px),
+    radial-gradient(#bc6c25 8%, transparent 9%) !important;
+  background-size: 100% 30px, 30px 30px !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .photolog-hero-meta,
+.journal-book-wrapper.olai-chuvadi-theme .lore-entry-card,
+.journal-book-wrapper.olai-chuvadi-theme .cork-pin-item,
+.journal-book-wrapper.olai-chuvadi-theme .quest-item,
+.journal-book-wrapper.olai-chuvadi-theme .wardrobe-card {
+  background: #fdf8eb !important;
+  border: 2px solid #a67c52 !important;
+  color: #261505 !important;
+  box-shadow: 0 4px 14px rgba(70, 40, 15, 0.25) !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme h4,
+.journal-book-wrapper.olai-chuvadi-theme h3,
+.journal-book-wrapper.olai-chuvadi-theme p {
+  color: #2c1606 !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .wardrobe-items-list {
+  background: rgba(212, 163, 115, 0.25) !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .wardrobe-item-row {
+  color: #3b220d !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .wardrobe-stats-box {
+  background: rgba(90, 55, 25, 0.15) !important;
+  color: #1a5276 !important;
+}
+
+.journal-book-wrapper.olai-chuvadi-theme .wardrobe-stats-box .stat-highlight {
+  color: #1e8449 !important;
+}
+

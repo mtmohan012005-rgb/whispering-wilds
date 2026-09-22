@@ -3,6 +3,85 @@
 // Locations, Landmarks, Flora, Fauna, and Interactive Entities across Tamil Nadu
 // ============================================================================
 
+// Real Tamil Nadu Map Data Structure (JSON / JavaScript)
+window.tamilNaduMap = {
+    startingZone: {
+        name: "George Town & Madras High Court",
+        tamilName: "ஜார்ஜ் டவுன் & மதராஸ் உயர் நீதிமன்றம்",
+        region: "Chennai",
+        biome: "urban_concrete",
+        unlocked: true,
+        coordinates: { lat: 13.0827, lng: 80.2707 },
+        audioTheme: "urban_chaos_traffic.mp3",
+        npcs: ["Tea Stall Annan", "Auto Driver Kumar", "Archivist"]
+    },
+    phase1: {
+        name: "Villupuram Farmlands",
+        tamilName: "விழுப்புரம் செம்மண் நிலங்கள்",
+        region: "Villupuram",
+        biome: "red_soil_plains",
+        unlocked: true,
+        unlockRequirement: "Get sturdy boots & bicycle",
+        coordinates: { lat: 11.9401, lng: 79.4861 },
+        audioTheme: "palmyra_wind.mp3",
+        wildlife: ["Stray Dogs", "Cows", "Egrets"]
+    },
+    phase2: {
+        name: "Pichavaram Mangroves & Delta",
+        tamilName: "பிச்சாவரம் அலையாத்திக்காடு & காவிரி கழிமுகம்",
+        region: "Chidambaram / Thanjavur",
+        biome: "wetland_mangrove",
+        unlocked: false,
+        unlockRequirement: "Secure Boat Access",
+        coordinates: { lat: 11.4287, lng: 79.7831 },
+        audioTheme: "delta_river_flow.mp3",
+        wildlife: ["Herons", "Water Snakes", "Crabs"]
+    },
+    phase3: {
+        name: "Nilgiri Mist Slopes",
+        tamilName: "நீலகிரி மூடுபனி சரிவுகள் & தேயிலை தோட்டங்கள்",
+        region: "Ooty / Valparai",
+        biome: "mountain_fog",
+        unlocked: false,
+        unlockRequirement: "Warm Weather Protection & Mountaineering Gear",
+        coordinates: { lat: 11.4102, lng: 76.6950 },
+        audioTheme: "cold_mountain_wind.mp3",
+        wildlife: ["Nilgiri Tahr", "Wild Boar", "Mountain Eagles"]
+    }
+};
+
+window.getRealTamilNaduTelemetry = function(playerX) {
+  let lat, lng, zone;
+  if (playerX < 1000) {
+    const t = playerX / 1000;
+    lat = 13.0827 + t * (11.9401 - 13.0827);
+    lng = 80.2707 + t * (79.4861 - 80.2707);
+    zone = window.tamilNaduMap.startingZone;
+  } else if (playerX < 2000) {
+    const t = (playerX - 1000) / 1000;
+    lat = 11.9401 + t * (11.4287 - 11.9401);
+    lng = 79.4861 + t * (79.7831 - 79.4861);
+    zone = window.tamilNaduMap.phase1;
+  } else if (playerX < 4000) {
+    const t = (playerX - 2000) / 2000;
+    lat = 11.4287 + t * (11.4102 - 11.4287);
+    lng = 79.7831 + t * (76.6950 - 79.7831);
+    zone = window.tamilNaduMap.phase2;
+  } else {
+    lat = 11.4102;
+    lng = 76.6950;
+    zone = window.tamilNaduMap.phase3;
+  }
+  return {
+    lat: lat.toFixed(4),
+    lng: lng.toFixed(4),
+    zoneName: zone.name,
+    tamilZoneName: zone.tamilName,
+    region: zone.region,
+    biome: zone.biome
+  };
+};
+
 window.WORLD_DATA = {
   biomes: {
     chennai_plains: {
