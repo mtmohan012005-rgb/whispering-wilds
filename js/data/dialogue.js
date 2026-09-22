@@ -8,8 +8,15 @@ window.DIALOGUE_DATA = {
     npcName: "Murugan Annan (முருகன் அண்ணன்)",
     role: "Tea Master & Local Informant",
     avatar: "👨🏽‍🍳",
-    greeting: "Enna thala! Vango vango! Sudden downpour-la nananjiteenga pola? First-u indha hot cutting chai-ah kudinga! (வாங்கோ தல! சூடா ஒரு கட்டிங் டீ அடிக்கிறீங்களா?)",
+    greeting: "Thambi, oru hot tea kudi, then pesalam! Sudden downpour-la nananjiteenga pola? First-u indha hot cutting chai-ah kudinga! (தம்பி, ஒரு ஹாட் டீ குடி, தென் பேசலாம்!)",
     options: [
+      {
+        id: "veshti_buy",
+        label: "🥻 Buy / Trade: Traditional Cotton Veshti (₹50) (+10 Heat Res)",
+        cost: 50,
+        response: "Aaha! Pure handloom cotton veshti thambi! Perfect for hot coastal Chennai weather.",
+        action: "buy_veshti"
+      },
       {
         id: "tea",
         label: "☕ Order Hot Cutting Chai (₹12) (+35 Thirst, +25 Energy, +15 Warmth)",
@@ -76,10 +83,10 @@ window.DIALOGUE_DATA = {
   },
 
   farmer_selvam: {
-    npcName: "Farmer Selvam (விவசாயி செல்வம்)",
-    role: "Kangayam Bull Breeder",
+    npcName: "Murugan / Farmer Selvam (விவசாயி செல்வம்)",
+    role: "Villupuram Farmer & Bull Breeder",
     avatar: "👳🏽‍♂️",
-    greeting: "Aiyya saamy! En kombu kaalai-ah paatheengala? (ஐயா சாமி, என் கொம்புக் காளையைப் பார்த்தீங்களா?) Morning thunder kettone katha tharavittu odi poiruchu!",
+    greeting: "Veyil romba adikkuthu, paathu nadanthu po! (வெயில் ரொம்ப அடிக்குது, பாத்து நடந்து போ!) Aiyya saamy, en kombu kaalai-ah paatheengala?",
     options: [
       {
         id: "bull_spotted",
@@ -91,6 +98,34 @@ window.DIALOGUE_DATA = {
         id: "comfort",
         label: "🌾 'Don't worry Selvam, I am mapping the plains with my explorer camera.'",
         response: "Romba nandri aiyya. Neenga High Court archivist thaaney? Andha Enfield kaaran unga bag-ah thookitu odunadha paathen. Avan pocket-la irundhu oru copper seal keela vizhundhuchu, indhanga eduthukonga! (Handed: Ancient Chola Sluice Seal)"
+      }
+    ]
+  },
+
+  hill_guide_karthik: {
+    npcName: "Karthik (மலையேற்ற வழிகாட்டி)",
+    role: "Nilgiri Mountain Guide",
+    avatar: "🧗🏽‍♂️",
+    greeting: "Ooty malai mists la thappi porathu kashtam thambi! (ஊட்டி மலை மூடுபனில தப்பிப் போறது கஷ்டம் தம்பி!) Need heavy woolen thermal gear before heading up into the shola ridges!",
+    options: [
+      {
+        id: "woolen_buy",
+        label: "🧥 Buy / Trade: Nilgiri Woolen Thermal Suit (₹350) (+50 Cold Res)",
+        cost: 350,
+        response: "Indhanga thambi! Genuine Nilgiri mountain wool. Freezing fog and frost will not penetrate your skin!",
+        action: "buy_woolen"
+      },
+      {
+        id: "cargo_buy",
+        label: "👖 Buy / Trade: Explorer Cargo Pants & Jacket (₹150) (+15 Cold Res)",
+        cost: 150,
+        response: "Durable reinforced field wear! Perfect for rough muddy trails.",
+        action: "buy_cargo"
+      },
+      {
+        id: "mist_lore",
+        label: "🏔️ 'How do I survive the freezing mountain fog and find the Eco-Sanctuary?'",
+        response: "Follow the ancient stone cairns past the Toda buffalo mund. Stay warm near the stone factory fireplace, and wear your woolen gear!"
       }
     ]
   },

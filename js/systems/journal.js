@@ -271,112 +271,144 @@ class FieldJournal {
 
   renderWardrobe(container) {
     const player = window.gamePlayer || (window.testRef && window.testRef.player);
+    const survival = window.gameSurvival || (window.testRef && window.testRef.survival);
     const currentOutfit = player ? player.currentOutfit : 'baseOutfit';
+    const currentRupees = (player && player.currency !== undefined) ? player.currency : (survival ? survival.currency : 0);
+    const wardrobe = window.culturalWardrobeSystem;
 
-    const outfits = [
-      {
-        id: 'baseOutfit',
-        name: 'George Town Cotton Veshti & Jhola',
-        tamilName: 'பாரம்பரிய பருத்தி வேஷ்டி & ஜோல்னா பை',
-        clothing: 'Casual breathable cotton shirt and traditional veshti / dhoti with gold zari border',
-        footwear: 'Handmade leather kolhapuri sandals (Low stamina drain on paved city streets)',
-        accessory: 'Khadhi shoulder Jhola bag for journal, blueprints & tools',
-        staminaEffect: 'Standard movement energy consumption',
-        coldProtection: '+0°C (Unprotected against mountain fog & high altitude winds)',
-        icon: '🥻'
-      },
-      {
-        id: 'farmlandGear',
-        name: 'Villupuram Plains Farmland Trekker',
-        tamilName: 'விழுப்புரம் பண்ணை & நடைபயண உடை',
-        clothing: 'Durable reinforced canvas shirt & tough field cargo trousers',
-        footwear: 'Sturdy high-traction trekking boots (Prevents muddy slips & reduces stamina cost by 25%)',
-        accessory: 'Pure copper groundwater canteen & heavy-duty canvas explorer backpack',
-        staminaEffect: '+25% stamina conservation across mud & farmlands',
-        coldProtection: '+2.0°C thermal retention against night humidity',
-        icon: '🥾'
-      },
-      {
-        id: 'mountainGear',
-        name: 'Nilgiri Shola Mist Expedition Attire',
-        tamilName: 'நீலகிரி சோலை குளிர் மலை மலையேற்ற உடை',
-        clothing: 'Pure Ooty mountain sheep wool sweater & waterproof oilskin storm poncho',
-        footwear: 'Insulated grip boots with spiked soles (Prevents slippage on wet mossy rocks)',
-        accessory: 'Explorer mechanical camera strap & brass kerosene hurricane lantern',
-        staminaEffect: 'Prevents hypothermic stamina drainage in high elevations',
-        coldProtection: '+5.0°C maximum thermal insulation (Stops body shivering)',
-        icon: '🧥'
-      }
-    ];
+    // Check player inventory
+    if (player && !player.inventory) {
+      player.inventory = [
+        wardrobe.tradeableClothingItems[0] // Starts with base veshti
+      ];
+    }
 
     let html = `
-      <div style="padding: 10px 14px 6px;">
-        <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--primary-gold); margin-bottom: 4px;">
-          ஆடைகள் & உபகரணங்கள் • Wardrobe & Cultural Attire
-        </h3>
-        <p style="font-size: 0.85rem; color: #a4b0be; margin-bottom: 12px;">
-          Equip culturally authentic attire and gear tailored for Tamil Nadu’s distinct geographic biomes.
-        </p>
+      <div style="padding: 10px 14px 6px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--primary-gold); margin-bottom: 4px;">
+            ஆடைகள் & வர்த்தகம் • Cultural Wardrobe & Merchant Trade
+          </h3>
+          <p style="font-size: 0.85rem; color: #a4b0be; margin-bottom: 0;">
+            Acquire and equip authentic regional attire tailored for Tamil Nadu’s heat, mud, and mountain cold.
+          </p>
+        </div>
+        <div class="wardrobe-price-tag" style="font-size: 0.95rem; padding: 6px 14px;">
+          💰 Player Funds: <span style="color: #55efc4; font-weight: 700;">₹${currentRupees}</span>
+        </div>
       </div>
+
       <div class="wardrobe-grid">
     `;
 
-    outfits.forEach(outfit => {
-      const isEquipped = currentOutfit === outfit.id;
+    // Render Tradeable Clothing Items
+    wardrobe.tradeableClothingItems.forEach(item => {
+      const isEquipped = currentOutfit === item.outfitKey;
+      const isOwned = player && player.inventory && player.inventory.some(i => i.itemId === item.itemId || i.outfitKey === item.outfitKey);
+
       html += `
         <div class="wardrobe-card ${isEquipped ? 'equipped' : ''}">
           <div class="wardrobe-header-row">
             <div>
-              <h3>${outfit.icon} ${outfit.name}</h3>
-              <span class="tamil-sub">${outfit.tamilName}</span>
+              <h3>${item.icon} ${item.name}</h3>
+              <span class="tamil-sub">${item.tamilName} • 📍 ${item.regionUnlocked}</span>
             </div>
-            <span class="wardrobe-status-tag ${isEquipped ? 'active' : ''}">
-              ${isEquipped ? '✓ EQUIPPED' : 'READY'}
-            </span>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+              <span class="wardrobe-status-tag ${isEquipped ? 'active' : ''}">
+                ${isEquipped ? '✓ EQUIPPED' : (isOwned ? 'OWNED' : `₹${item.price}`)}
+              </span>
+            </div>
           </div>
 
           <div class="wardrobe-items-list">
             <div class="wardrobe-item-row">
               <span class="icon">👕</span>
-              <span><strong>Attire:</strong> ${outfit.clothing}</span>
+              <span><strong>Attire:</strong> ${item.clothing}</span>
             </div>
             <div class="wardrobe-item-row">
               <span class="icon">👞</span>
-              <span><strong>Footwear:</strong> ${outfit.footwear}</span>
+              <span><strong>Footwear:</strong> ${item.footwear}</span>
             </div>
             <div class="wardrobe-item-row">
-              <span class="icon">🎒</span>
-              <span><strong>Accessory:</strong> ${outfit.accessory}</span>
+              <span class="icon">📜</span>
+              <span><strong>Lore:</strong> ${item.description}</span>
             </div>
           </div>
 
           <div class="wardrobe-stats-box">
-            <div>⚡ <strong>Stamina:</strong> <span class="stat-highlight">${outfit.staminaEffect}</span></div>
-            <div>❄️ <strong>Cold Protection:</strong> <span class="stat-highlight">${outfit.coldProtection}</span></div>
+            <div style="font-weight: 700; color: var(--primary-gold); margin-bottom: 2px;">⚡ SURVIVAL SPECIFICATIONS:</div>
+            <div class="stat-pills-row">
+              <span class="stat-pill heat">🔥 Heat Res: ${item.stats.heatResistance > 0 ? '+' : ''}${item.stats.heatResistance}</span>
+              <span class="stat-pill cold">❄️ Cold Res: +${item.stats.coldResistance}</span>
+              <span class="stat-pill mobility">🏃 Mobility: ${item.stats.mobility || item.stats.durability}</span>
+            </div>
           </div>
 
-          <button class="btn-equip-outfit" ${isEquipped ? 'disabled' : ''} onclick="window.equipPlayerAttire('${outfit.id}')">
-            ${isEquipped ? '✓ Currently Equipped' : 'Equip This Attire (அணியுங்கள்)'}
-          </button>
+          ${isEquipped ? `
+            <button class="btn-equip-outfit" disabled>
+              ✓ Currently Equipped
+            </button>
+          ` : (isOwned ? `
+            <button class="btn-equip-outfit" onclick="window.tradeOrBuyClothing(null, '${item.itemId}')">
+              Equip This Attire (அணியுங்கள்)
+            </button>
+          ` : `
+            <button class="btn-trade-outfit" onclick="window.tradeOrBuyClothing(null, '${item.itemId}')">
+              🛒 Buy / Trade for ₹${item.price} (வாங்க)
+            </button>
+          `)}
         </div>
       `;
     });
 
-    html += '</div>';
+    html += `
+      </div>
+
+      <!-- Regional Locals & Cultural Characters -->
+      <div class="roster-section-header">
+        <h4 style="font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--primary-gold); margin-bottom: 2px;">
+          உள்ளூர் ஆட்கள் & பாரம்பரிய உடை • Regional Characters & Attire
+        </h4>
+        <p style="font-size: 0.8rem; color: #a4b0be; margin: 0;">
+          Authentic attire and wisdom from locals across George Town, Villupuram, and the Nilgiris.
+        </p>
+      </div>
+
+      <div class="roster-grid">
+    `;
+
+    wardrobe.characters.forEach(char => {
+      html += `
+        <div class="character-card">
+          <div class="char-header">
+            <div class="char-avatar">${char.avatar}</div>
+            <div>
+              <div class="char-name">${char.name}</div>
+              <div class="char-region">📍 ${char.region}</div>
+            </div>
+          </div>
+          <div class="char-outfit-box">
+            <strong>Traditional Outfit:</strong> ${char.defaultOutfit}
+          </div>
+          <p class="char-quote">"${char.dialogue}"</p>
+          <div style="font-size: 0.75rem; color: #b2bec3; line-height: 1.3;">${char.lore}</div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
     container.innerHTML = html;
   }
 }
 
 window.equipPlayerAttire = function(outfitId) {
-  const player = window.gamePlayer || (window.testRef && window.testRef.player);
-  if (player && player.setOutfit) {
-    player.setOutfit(outfitId);
-    if (window.gameAudio) window.gameAudio.playPinTap();
-    if (window.gameJournal) window.gameJournal.render();
-    if (window.gameQuests) {
-      window.gameQuests.showQuestNotification(`Equipped: ${outfitId === 'baseOutfit' ? 'Traditional Cotton Veshti & Jhola' : (outfitId === 'farmlandGear' ? 'Villupuram Plains Farmland Trekker' : 'Nilgiri Shola Mist Expedition Attire')}`);
-    }
-  }
+  const wardrobe = window.culturalWardrobeSystem;
+  let itemId = 'cloth_veshti';
+  if (outfitId === 'farmlandGear') itemId = 'cloth_cargo';
+  else if (outfitId === 'mountainGear') itemId = 'cloth_woolen_set';
+
+  // Use tradeOrBuyClothing logic
+  window.tradeOrBuyClothing(null, itemId);
 };
 
 window.FieldJournal = FieldJournal;

@@ -597,6 +597,134 @@
   cursor: default;
 }
 
+.btn-trade-outfit {
+  margin-top: auto;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #00b894, #009472);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-trade-outfit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 6px 15px rgba(0, 184, 148, 0.45);
+}
+
+.wardrobe-price-tag {
+  background: rgba(212, 175, 55, 0.18);
+  border: 1px solid var(--primary-gold);
+  color: var(--primary-gold);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.stat-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.stat-pill {
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #dfe4ea;
+}
+
+.stat-pill.heat { color: #ff7675; border-color: rgba(255, 118, 117, 0.35); }
+.stat-pill.cold { color: #74b9ff; border-color: rgba(116, 185, 255, 0.35); }
+.stat-pill.mobility { color: #55efc4; border-color: rgba(85, 239, 196, 0.35); }
+
+/* Character Roster Section */
+.roster-section-header {
+  padding: 10px 14px 4px;
+  margin-top: 14px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  padding: 10px 14px 18px;
+}
+
+.character-card {
+  background: rgba(25, 15, 10, 0.7);
+  border: 1px solid #4a301c;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.character-card:hover {
+  border-color: var(--primary-gold);
+  background: rgba(35, 22, 14, 0.85);
+}
+
+.char-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.char-avatar {
+  font-size: 1.8rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.char-name {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary-gold);
+}
+
+.char-region {
+  font-size: 0.76rem;
+  color: #a4b0be;
+}
+
+.char-outfit-box {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #e4d5b7;
+}
+
+.char-quote {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: #ffeaa7;
+  border-left: 2px solid var(--primary-gold);
+  padding-left: 8px;
+  margin: 2px 0 0;
+}
+
 /* ==========================================================================
    OLAI CHUVADI (ஓலைச்சுவடி) - PALM-LEAF MANUSCRIPT DIEGETIC THEME
    Replicates ancient Tamil palm-leaf manuscripts with incised text & bindings

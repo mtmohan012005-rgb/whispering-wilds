@@ -249,6 +249,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (item.id === 'tea_kadai' || item.id === 'murugan') {
       openTeaKadai();
+    } else if (item.id === 'hill_guide_karthik' || item.id === 'karthik') {
+      openHillGuideDialogue();
     } else if (item.id === 'chennai_auto') {
       openAutoDialogue();
     } else if (item.id === 'elaneer_cart') {
@@ -310,6 +312,41 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function openHillGuideDialogue() {
+    teaModal.classList.remove('hidden');
+    audio.playPinTap();
+    const data = window.DIALOGUE_DATA.hill_guide_karthik;
+    document.querySelector('.tea-kadai-banner h3').textContent = 'கார்த்திக் • Nilgiri Mountain Guide';
+    document.getElementById('tea-dialogue-text').textContent = data.greeting;
+    const optContainer = document.getElementById('tea-options');
+    optContainer.innerHTML = '';
+    data.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'tea-choice-btn';
+      btn.textContent = opt.label;
+      btn.onclick = () => {
+        if (opt.action === 'buy_woolen') {
+          const res = window.tradeOrBuyClothing(player, 'cloth_woolen_set', 'Ooty Mountain Ghats');
+          if (res.success) {
+            document.getElementById('tea-dialogue-text').textContent = opt.response;
+          } else {
+            document.getElementById('tea-dialogue-text').textContent = "Aiyo thambi! Need ₹350 for the woolen suit. Complete missions to earn rupees!";
+          }
+        } else if (opt.action === 'buy_cargo') {
+          const res = window.tradeOrBuyClothing(player, 'cloth_cargo', 'Villupuram / Delta');
+          if (res.success) {
+            document.getElementById('tea-dialogue-text').textContent = opt.response;
+          } else {
+            document.getElementById('tea-dialogue-text').textContent = "Aiyo thambi! Need ₹150 for the cargo set.";
+          }
+        } else {
+          document.getElementById('tea-dialogue-text').textContent = opt.response;
+        }
+      };
+      optContainer.appendChild(btn);
+    });
+  }
+
   function handleDeployCampfire() {
     const success = survival.placeCampfire(player.x, player.y + 15);
     if (success) {
@@ -347,7 +384,14 @@ window.addEventListener('DOMContentLoaded', () => {
       btn.className = 'tea-choice-btn';
       btn.textContent = opt.label;
       btn.onclick = () => {
-        if (opt.cost) {
+        if (opt.action === 'buy_veshti') {
+          const res = window.tradeOrBuyClothing(player, 'cloth_veshti', 'Chennai Plains');
+          if (res.success) {
+            document.getElementById('tea-dialogue-text').textContent = opt.response;
+          } else {
+            document.getElementById('tea-dialogue-text').textContent = "Aiyo thala! Kaasu pathala! Need ₹50 for the cotton veshti.";
+          }
+        } else if (opt.cost) {
           if (survival.currency >= opt.cost) {
             survival.currency -= opt.cost;
             if (opt.effect.thirst) survival.thirst = Math.min(100, survival.thirst + opt.effect.thirst);

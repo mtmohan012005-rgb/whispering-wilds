@@ -54,6 +54,28 @@ class SurvivalSystem {
       targetTemp = Math.min(37.5, targetTemp + 5.0);
     }
 
+    // Cultural Wardrobe insulation & weather resistance
+    const player = window.gamePlayer || (window.testRef && window.testRef.player);
+    if (player) {
+      let coldBonus = 0;
+      let heatBonus = 0;
+      if (player.equippedOutfit && player.equippedOutfit.stats) {
+        coldBonus = (player.equippedOutfit.stats.coldResistance || 0) * 0.08;
+        heatBonus = (player.equippedOutfit.stats.heatResistance || 0) * 0.05;
+      } else if (player.currentOutfit === 'mountainGear') {
+        coldBonus = 4.0;
+      } else if (player.currentOutfit === 'farmlandGear') {
+        coldBonus = 1.5;
+        heatBonus = 0.5;
+      }
+
+      if (targetTemp < 37.0) {
+        targetTemp = Math.min(37.0, targetTemp + coldBonus);
+      } else if (targetTemp > 37.0) {
+        targetTemp = Math.max(37.0, targetTemp - heatBonus);
+      }
+    }
+
     // Interpolate core temperature toward target
     this.coreTemp += (targetTemp - this.coreTemp) * (0.04 * deltaTime);
 

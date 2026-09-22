@@ -247,40 +247,54 @@ window.runStepByStepFeatureTests = async function() {
     log(10, 'Real Tamil Nadu Map Coordinates & Real-Time Telemetry', false, err.message);
   }
 
-  // --- STEP 11: Cultural Wardrobe System & Olai Chuvadi UI Skin ---
+  // --- STEP 11: Cultural Wardrobe System, Merchant Trade & Character Roster ---
   try {
     const player = window.testRef.player;
     const journal = window.testRef.journal;
+    const wardrobeSys = window.culturalWardrobeSystem;
 
-    // 1. Verify Player Character Wardrobe definition
-    const charData = window.playerCharacter;
-    const hasOutfits = charData && charData.baseOutfit && charData.upgradedOutfits.farmlandGear && charData.upgradedOutfits.mountainGear;
+    // 1. Verify Cultural Wardrobe Data Structure (JSON / JavaScript)
+    const hasCharacters = wardrobeSys && wardrobeSys.characters && wardrobeSys.characters.length >= 3;
+    const hasItems = wardrobeSys && wardrobeSys.tradeableClothingItems && wardrobeSys.tradeableClothingItems.length >= 3;
 
-    // 2. Test equipping Farmland Gear
+    const charAnnan = wardrobeSys.characters.find(c => c.id === 'npc_tea_annan');
+    const charFarmer = wardrobeSys.characters.find(c => c.id === 'npc_farmer');
+    const charGuide = wardrobeSys.characters.find(c => c.id === 'npc_hill_guide');
+    const dialoguesCorrect = charAnnan && charAnnan.dialogue.includes('hot tea') &&
+                             charFarmer && charFarmer.dialogue.includes('Veyil romba') &&
+                             charGuide && charGuide.dialogue.includes('Ooty malai');
+
+    // 2. Test Merchant Trade Logic (tradeOrBuyClothing)
+    const initialFunds = window.testRef.survival.currency;
+    const tradeResult = window.tradeOrBuyClothing(player, 'cloth_veshti', 'Chennai Plains');
+    const tradeSuccess = tradeResult && tradeResult.success && player.equippedOutfit && player.equippedOutfit.itemId === 'cloth_veshti';
+
+    // 3. Test equipping Farmland Gear
     window.equipPlayerAttire('farmlandGear');
     const equippedFarmland = (player.currentOutfit === 'farmlandGear' || player.outfitId === 'farmlandGear');
 
-    // 3. Test equipping Mountain Gear
+    // 4. Test equipping Mountain Gear
     window.equipPlayerAttire('mountainGear');
     const equippedMountain = (player.currentOutfit === 'mountainGear' || player.outfitId === 'mountainGear');
 
-    // 4. Test Olai Chuvadi toggle
+    // 5. Test Olai Chuvadi toggle
     journal.toggleOlaiSkin();
     const wrapper = document.querySelector('.journal-book-wrapper');
     const isOlaiThemed = wrapper && wrapper.classList.contains('olai-chuvadi-theme');
     journal.toggleOlaiSkin(); // toggle back
 
-    // 5. Switch to Wardrobe tab and verify DOM
+    // 6. Switch to Wardrobe tab and verify DOM
     journal.switchTab('wardrobe');
     const wardrobePanel = document.getElementById('panel-wardrobe');
     const cardsRendered = wardrobePanel && wardrobePanel.querySelectorAll('.wardrobe-card').length >= 3;
+    const rosterRendered = wardrobePanel && wardrobePanel.querySelectorAll('.character-card').length >= 3;
 
-    const wardrobeSuccess = hasOutfits && equippedFarmland && equippedMountain && isOlaiThemed && cardsRendered;
+    const wardrobeSuccess = hasCharacters && hasItems && dialoguesCorrect && tradeSuccess && equippedFarmland && equippedMountain && isOlaiThemed && cardsRendered && rosterRendered;
 
-    log(11, 'Cultural Wardrobe System & Olai Chuvadi Palm-Leaf Manuscript UI', wardrobeSuccess,
-      'Tested baseOutfit (Veshti/Jhola), farmlandGear (boots/canteen), mountainGear (sweater/poncho), and Olai Chuvadi theme.');
+    log(11, 'Cultural Wardrobe System, Merchant Trade & Character Roster', wardrobeSuccess,
+      `Characters: ${wardrobeSys.characters.length}, Tradeable Items: ${wardrobeSys.tradeableClothingItems.length}, Trade Logic: OK, Roster DOM: ${rosterRendered}`);
   } catch (err) {
-    log(11, 'Cultural Wardrobe System & Olai Chuvadi Palm-Leaf Manuscript UI', false, err.message);
+    log(11, 'Cultural Wardrobe System, Merchant Trade & Character Roster', false, err.message);
   }
 
   // --- STEP 12: Three.js 3D Real Tamil Nadu Terrain & Procedural Landmarks ---

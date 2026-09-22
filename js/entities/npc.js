@@ -25,13 +25,23 @@ class EntityManager {
       },
       {
         id: 'selvam',
-        name: 'Farmer Selvam',
-        role: 'Bull Breeder',
+        name: 'Farmer Murugan / Selvam',
+        role: 'Village Farmer & Bull Breeder',
         x: 1350,
         y: 650,
         type: 'human',
         actionTime: 0,
         interactId: 'farmer_selvam'
+      },
+      {
+        id: 'karthik',
+        name: 'Karthik (மலை வழிகாட்டி)',
+        role: 'Nilgiri Trekking Guide',
+        x: 4350,
+        y: 480,
+        type: 'human',
+        actionTime: 0,
+        interactId: 'hill_guide_karthik'
       }
     ];
 
@@ -183,17 +193,47 @@ class EntityManager {
         ctx.fillStyle = '#e8d4a2'; // Cutting glass
         ctx.fillRect(10, -5 + teaArmOffset, 3, 5);
       } else if (npc.id === 'selvam') {
-        // Farmer Selvam with turban & dhoti
+        // Farmer Selvam / Murugan with turban & cotton dhoti
         ctx.fillStyle = '#c5a059';
         ctx.beginPath();
         ctx.ellipse(0, 0, 9, 8, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Turban
-        ctx.fillStyle = '#2d5a27'; // green farmer turban
+        // Green farmer turban
+        ctx.fillStyle = '#2d5a27';
         ctx.beginPath();
         ctx.ellipse(0, -3, 7, 5, 0, 0, Math.PI * 2);
         ctx.fill();
+      } else if (npc.id === 'karthik') {
+        // Mountain Guide Karthik - Woolen sweater & cargo trousers
+        ctx.fillStyle = '#1e3799'; // Woolen blue sweater
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 9, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cargo trousers
+        ctx.fillStyle = '#4a6572';
+        ctx.fillRect(-6, 2, 12, 6);
+
+        // Head with woolen beanie cap
+        ctx.fillStyle = '#6e4726';
+        ctx.beginPath();
+        ctx.arc(0, -1, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Beanie Cap
+        ctx.fillStyle = '#b71540';
+        ctx.beginPath();
+        ctx.ellipse(0, -4, 6, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Trekking Pole
+        ctx.strokeStyle = '#c8d6e5';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(8, -8);
+        ctx.lineTo(10, 8);
+        ctx.stroke();
       }
 
       ctx.restore();
