@@ -27,9 +27,20 @@ class ThreePlayer {
         this.leftFootAngle = 0;
         this.rightFootAngle = 0;
 
+        // Rigged Skeletal Character & Animation Mixer
+        this.gltfMesh = null;
+        this.mixer = null;
+        this.animations = {};
+        this.activeAction = null;
+        this.isRiggedModelLoaded = false;
+        this.modelUrl = window.CHARACTER_MODEL_URL || 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb';
+
         this.group = new THREE.Group();
         this.buildAvatarMesh();
         this.scene.add(this.group);
+
+        // Attempt asynchronous rigged GLTF character load
+        this.loadRiggedModel();
     }
 
     buildAvatarMesh() {
@@ -186,6 +197,84 @@ class ThreePlayer {
         this.lanternGroup.add(bulb);
     }
 
+    loadRiggedModel() {
+        if (typeof THREE.GLTFLoader === 'undefined') {
+            console.warn('GLTFLoader not found, using procedural biomechanical avatar');
+            return;
+        }
+
+        const loader = new THREE.GLTFLoader();
+        loader.load(this.modelUrl, (gltf) => {
+            this.gltfMesh = gltf.scene;
+            this.gltfMesh.scale.set(1.15, 1.15, 1.15);
+            this.gltfMesh.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    if (child.material) {
+                        child.material.roughness = 0.65;
+                    }
+                }
+            });
+
+            // Setup skeletal animation mixer
+            this.mixer = new THREE.AnimationMixer(this.gltfMesh);
+
+            // Map animation clips (idle, walk, sprint)
+            gltf.animations.forEach((clip) => {
+                const name = clip.name.toLowerCase();
+                if (name.includes('idle') || (!this.animations['idle'] && name.includes('0'))) {
+                    this.animations['idle'] = this.mixer.clipAction(clip);
+                }
+                if (name.includes('walk') || name.includes('walking')) {
+                    this.animations['walk'] = this.mixer.clipAction(clip);
+                }
+                if (name.includes('run') || name.includes('sprint')) {
+                    this.animations['sprint'] = this.mixer.clipAction(clip);
+                }
+            });
+
+            // Fallbacks for standard Xbot asset indices
+            if (!this.animations['idle'] && gltf.animations[0]) this.animations['idle'] = this.mixer.clipAction(gltf.animations[0]);
+            if (!this.animations['walk'] && gltf.animations[6]) this.animations['walk'] = this.mixer.clipAction(gltf.animations[6]);
+            if (!this.animations['walk'] && gltf.animations[3]) this.animations['walk'] = this.mixer.clipAction(gltf.animations[3]);
+            if (!this.animations['sprint'] && gltf.animations[3]) this.animations['sprint'] = this.mixer.clipAction(gltf.animations[3]);
+
+            if (this.animations['idle']) {
+                this.activeAction = this.animations['idle'];
+                this.activeAction.play();
+            }
+
+            // Hide procedural body meshes while keeping lantern
+            if (this.torso) this.torso.visible = false;
+            if (this.dhoti) this.dhoti.visible = false;
+            if (this.headGroup) this.headGroup.visible = false;
+            if (this.leftLegGroup) this.leftLegGroup.visible = false;
+            if (this.rightLegGroup) this.rightLegGroup.visible = false;
+            if (this.armLeft) this.armLeft.visible = false;
+            if (this.armRight) this.armRight.visible = false;
+            if (this.jholaGroup) this.jholaGroup.visible = false;
+
+            this.avatarMesh.add(this.gltfMesh);
+            this.isRiggedModelLoaded = true;
+            console.log('Photorealistic 3D Skeletal Rigged Character Loaded');
+        }, undefined, (err) => {
+            console.warn('Rigged GLTF character loading fallback to procedural avatar:', err);
+        });
+    }
+
+    transitionTo(name, duration = 0.25) {
+        if (!this.mixer) return;
+        const nextAction = this.animations[name];
+        if (this.activeAction !== nextAction && nextAction) {
+            nextAction.reset();
+            nextAction.weight = 1.0;
+            nextAction.crossFadeFrom(this.activeAction, duration, true);
+            nextAction.play();
+            this.activeAction = nextAction;
+        }
+    }
+
     update(inputState, deltaTime, terrain) {
         this.time += deltaTime;
 
@@ -219,13 +308,18 @@ class ThreePlayer {
         const coreTemp = (window.testRef && window.testRef.survival) ? window.testRef.survival.coreTemp : 36;
         const outfitId = (window.gamePlayer) ? window.gamePlayer.outfitId : 'baseOutfit';
 
+        // Sprint input handling
+        const isSprinting = !!(inputState.sprint || inputState.shift);
+        const sprintMultiplier = isSprinting ? 1.85 : 1.0;
+        const targetSpeed = this.speed * sprintMultiplier;
+
         // Run locomotion engine
         const inputAngle = this.targetRotation;
         const gait = this.locomotion.updateGait(
             deltaTime,
             inputAngle,
             length,
-            this.speed * 4.7, // scale 3D speed to 2D-equivalent for gait calc
+            targetSpeed * 4.7, // scale 3D speed to 2D-equivalent for gait calc
             equivalent2DX,
             equivalent2DY,
             energy,
@@ -236,7 +330,7 @@ class ThreePlayer {
         );
 
         // Apply inertial speed from locomotion engine
-        const effectiveSpeed3D = (gait.effectiveSpeed / (this.speed * 4.7)) * this.speed;
+        const effectiveSpeed3D = (gait.effectiveSpeed / (targetSpeed * 4.7)) * targetSpeed;
 
         if (length > 0) {
             this.x += dx * effectiveSpeed3D * deltaTime;
@@ -263,11 +357,26 @@ class ThreePlayer {
         this.currentRotation += rotDiff * Math.min(1.0, deltaTime * rotSpeed);
         this.avatarMesh.rotation.y = this.currentRotation;
 
-        // --- BIOMECHANICS-DRIVEN ANIMATION ---
+        // --- SKELETAL ANIMATION MIXER & CROSS-FADING ---
+        if (this.mixer) {
+            if (length > 0) {
+                this.transitionTo(isSprinting ? 'sprint' : 'walk', 0.2);
+                if (this.activeAction) {
+                    this.activeAction.timeScale = (gait.cadence / 92) * (isSprinting ? 1.25 : 1.0);
+                }
+            } else {
+                this.transitionTo('idle', 0.25);
+                if (this.activeAction) this.activeAction.timeScale = 1.0;
+            }
+            this.mixer.update(deltaTime);
+        }
 
-        // Leg swing from locomotion engine (outfit-constrained stride)
-        this.leftLegGroup.rotation.x = gait.leftLegSwing * 1.2;
-        this.rightLegGroup.rotation.x = gait.rightLegSwing * 1.2;
+        // --- PROCEDURAL BIOMECHANICS FALLBACK (Active when GLTF model is loading or procedural mode) ---
+        if (!this.isRiggedModelLoaded) {
+            // Leg swing from locomotion engine (outfit-constrained stride)
+            this.leftLegGroup.rotation.x = gait.leftLegSwing * 1.2;
+            this.rightLegGroup.rotation.x = gait.rightLegSwing * 1.2;
+        }
 
         // IK-approximated foot placement via terrain sampling
         if (terrain && typeof terrain.getElevation === 'function') {

@@ -37,9 +37,34 @@ class ThreeCamera {
         this.startLook = new THREE.Vector3();
         this.targetLook = new THREE.Vector3();
 
-        // Mouse pan / subtle angle adjustment
-        this.orbitOffsetX = 0;
-        this.orbitOffsetY = 0;
+        // Mouse pan / orbit controls
+        this.isMouseDown = false;
+        this.mousePrevX = 0;
+        this.mousePrevY = 0;
+        this.orbitAngleH = 0;
+        this.orbitAngleV = 0;
+
+        if (this.container) {
+            this.container.addEventListener('mousedown', (e) => {
+                if (e.button === 0) {
+                    this.isMouseDown = true;
+                    this.mousePrevX = e.clientX;
+                    this.mousePrevY = e.clientY;
+                }
+            });
+
+            window.addEventListener('mouseup', () => { this.isMouseDown = false; });
+            window.addEventListener('mousemove', (e) => {
+                if (!this.isMouseDown) return;
+                const dx = e.clientX - this.mousePrevX;
+                const dy = e.clientY - this.mousePrevY;
+                this.mousePrevX = e.clientX;
+                this.mousePrevY = e.clientY;
+
+                this.orbitAngleH -= dx * 0.006;
+                this.orbitAngleV = Math.max(-0.4, Math.min(0.6, this.orbitAngleV + dy * 0.005));
+            });
+        }
     }
 
     setMode(newMode) {
@@ -97,10 +122,15 @@ class ThreeCamera {
         } else {
             // Normal active mode tracking
             if (this.mode === 'gameplay') {
+                // Orbit-adjusted follow position
+                const rotatedOffset = this.gameplayOffset.clone();
+                rotatedOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.orbitAngleH);
+                rotatedOffset.y += this.orbitAngleV * 14.0;
+
                 const desiredPos = new THREE.Vector3(
-                    playerPos.x + this.gameplayOffset.x,
-                    playerPos.y + this.gameplayOffset.y,
-                    playerPos.z + this.gameplayOffset.z
+                    playerPos.x + rotatedOffset.x,
+                    playerPos.y + rotatedOffset.y,
+                    playerPos.z + rotatedOffset.z
                 );
                 const desiredTarget = new THREE.Vector3(
                     playerPos.x + this.gameplayTargetOffset.x,

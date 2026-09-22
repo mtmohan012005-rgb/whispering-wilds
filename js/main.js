@@ -509,6 +509,11 @@ window.addEventListener('DOMContentLoaded', () => {
         quests.showQuestNotification(`📓 Journey resumed from ${existingSave.formattedTime}`);
         console.log('[Main] Restored save from', existingSave.formattedTime);
       }
+
+      // Activate Photorealistic 3D Mode as primary view
+      if (threeWorld) {
+        toggle3DMode(true);
+      }
     }, 900);
   });
 

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Whispering Wilds - 3D Real Locomotion & Skeletal Animations</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #05070b;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            user-select: none;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        /* Modern 3D HUD Overlay */
+        .hud-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .hud-badge {
+            background: rgba(15, 18, 28, 0.88);
+            border: 1px solid #d4af37;
+            padding: 12px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+        }
+
+        .hud-badge h3 {
+            margin: 0;
+            color: #f39c12;
+            font-size: 15px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hud-badge p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #bdc3c7;
+        }
+
+        .hud-telemetry {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #f1c40f;
+            font-family: monospace;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 22, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            padding: 9px 24px;
+            border-radius: 24px;
+            color: #eee;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            display: flex;
+            gap: 16px;
+        }
+
+        .controls-hint span {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .back-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .back-nav a {
+            background: rgba(15, 18, 28, 0.85);
+            border: 1px solid #d4af37;
+            color: #ffeaa7;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+        }
+
+        .back-nav a:hover {
+            background: #d4af37;
+            color: #111;
+        }
+
+        #loading-indicator {
+            position: absolute;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #f39c12;
+            font-size: 12px;
+            font-style: italic;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+    </style>
+
+    <!-- Import Three.js and GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+
+    <div class="hud-layer">
+        <div class="hud-badge">
+            <h3><span>🌿</span> CHENNAI & RED SOIL PLAINS (மதராஸ் & செம்மண் நிலம்)</h3>
+            <p>📍 13.0827° N, 80.2707° E • Madras High Court Grounds</p>
+            <div id="telemetry" class="hud-telemetry">State: IDLE | Speed: 0.0 m/s | Surface: Red Soil</div>
+        </div>
+    </div>
+
+    <div class="back-nav">
+        <a href="index.html">⬅ Return to Full Game</a>
+    </div>
+
+    <div id="loading-indicator">Loading 3D Skeletal Rigged Avatar...</div>
+
+    <div class="controls-hint">
+        <div><span>W A S D</span> Walk</div>
+        <div><span>SHIFT</span> Sprint</div>
+        <div><span>Left Click + Drag</span> Orbit Camera</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        // ----------------------------------------------------
+        // 1. SCENE, CAMERA & RENDERER SETUP
+        // ----------------------------------------------------
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0b0e14);
+        scene.fog = new THREE.FogExp2(0x0b0e14, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        container.appendChild(renderer.domElement);
+
+        // ----------------------------------------------------
+        // 2. PHOTOREALISTIC LIGHTING (MOODY MONSOON NIGHT)
+        // ----------------------------------------------------
+        const ambientLight = new THREE.AmbientLight(0x223344, 0.9);
+        scene.add(ambientLight);
+
+        const moonLight = new THREE.DirectionalLight(0x88bbff, 1.8);
+        moonLight.position.set(35, 50, 25);
+        moonLight.castShadow = true;
+        moonLight.shadow.mapSize.width = 2048;
+        moonLight.shadow.mapSize.height = 2048;
+        moonLight.shadow.bias = -0.0001;
+        moonLight.shadow.camera.near = 10;
+        moonLight.shadow.camera.far = 150;
+        moonLight.shadow.camera.left = -40;
+        moonLight.shadow.camera.right = 40;
+        moonLight.shadow.camera.top = 40;
+        moonLight.shadow.camera.bottom = -40;
+        scene.add(moonLight);
+
+        // Warm street/hurricane lantern light attached to player
+        const lanternLight = new THREE.PointLight(0xffaa44, 2.6, 22, 1.8);
+        lanternLight.position.set(0, 2.5, 0);
+        lanternLight.castShadow = true;
+        lanternLight.shadow.bias = -0.002;
+        scene.add(lanternLight);
+
+        // ----------------------------------------------------
+        // 3. 3D TERRAIN (TAMIL NADU RED SOIL / SEMMAN)
+        // ----------------------------------------------------
+        const groundGeo = new THREE.PlaneGeometry(350, 350, 64, 64);
+        const groundMat = new THREE.MeshStandardMaterial({
+            color: 0x6e2c1d, // Red soil pigment
+            roughness: 0.88,
+            metalness: 0.08
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Visual Landmark: Madras High Court Red-Brick Entry Arch
+        const courtGroup = new THREE.Group();
+        courtGroup.position.set(0, 0, -28);
+
+        const archGeo = new THREE.BoxGeometry(10, 8, 2);
+        const brickMat = new THREE.MeshStandardMaterial({ color: 0x8b2518, roughness: 0.85, metalness: 0.1 });
+        const arch = new THREE.Mesh(archGeo, brickMat);
+        arch.position.y = 4;
+        arch.castShadow = true;
+        arch.receiveShadow = true;
+        courtGroup.add(arch);
+
+        // Archway cutout
+        const innerArchGeo = new THREE.CylinderGeometry(2.4, 2.4, 2.2, 16);
+        const darkMat = new THREE.MeshStandardMaterial({ color: 0x22110c, roughness: 0.9 });
+        const innerArch = new THREE.Mesh(innerArchGeo, darkMat);
+        innerArch.rotation.z = Math.PI / 2;
+        innerArch.position.y = 2.4;
+        courtGroup.add(innerArch);
+
+        // Gold finials atop arch
+        const domeGeo = new THREE.SphereGeometry(0.8, 12, 12);
+        const goldMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.3, metalness: 0.8 });
+        const domeL = new THREE.Mesh(domeGeo, goldMat);
+        domeL.position.set(-4.5, 8.5, 0);
+        const domeR = new THREE.Mesh(domeGeo, goldMat);
+        domeR.position.set(4.5, 8.5, 0);
+        courtGroup.add(domeL);
+        courtGroup.add(domeR);
+
+        scene.add(courtGroup);
+
+        // ----------------------------------------------------
+        // 4. REALISTIC HUMAN MODEL & LOCOMOTION CONTROLLER
+        // ----------------------------------------------------
+        let characterMesh = null;
+        let mixer = null;
+        let animations = {};
+        let activeAction = null;
+        let isUsingFallbackMesh = false;
+
+        const playerState = {
+            position: new THREE.Vector3(0, 0, 0),
+            walkSpeed: 3.4,
+            sprintSpeed: 7.2,
+            currentSpeed: 0,
+            gaitState: 'idle'
+        };
+
+        const keysPressed = {};
+        window.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', (e) => { keysPressed[e.key.toLowerCase()] = false; });
+
+        // Helper: create procedural Tamil Explorer mesh as instant fallback
+        function createProceduralAvatar() {
+            const group = new THREE.Group();
+            
+            const skinMat = new THREE.MeshLambertMaterial({ color: 0x8d5b4c });
+            const kurtaMat = new THREE.MeshLambertMaterial({ color: 0xf8f9fa });
+            const dhotiMat = new THREE.MeshLambertMaterial({ color: 0xecdcb9 });
+            const hairMat = new THREE.MeshLambertMaterial({ color: 0x1a1a1a });
+
+            // Torso (Kurta)
+            const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 1.2, 8), kurtaMat);
+            torso.position.y = 1.4;
+            torso.castShadow = true;
+            group.add(torso);
+
+            // Dhoti / Veshti
+            const dhoti = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.5, 1.0, 8), dhotiMat);
+            dhoti.position.y = 0.7;
+            dhoti.castShadow = true;
+            group.add(dhoti);
+
+            // Head
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.28, 12, 12), skinMat);
+            head.position.y = 2.2;
+            head.castShadow = true;
+            group.add(head);
+
+            // Hair
+            const hair = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 10), hairMat);
+            hair.position.set(0, 2.3, -0.05);
+            group.add(hair);
+
+            group.traverse((c) => { if (c.isMesh) c.castShadow = true; });
+            return group;
+        }
+
+        // Initialize with procedural avatar while GLTF loads
+        const fallbackMesh = createProceduralAvatar();
+        scene.add(fallbackMesh);
+        characterMesh = fallbackMesh;
+        isUsingFallbackMesh = true;
+
+        // Load 3D Human Model (GLTF format with skeletal animations)
+        const loader = new THREE.GLTFLoader();
+        const modelUrl = 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb';
+
+        loader.load(modelUrl, (gltf) => {
+            // Remove fallback mesh
+            if (fallbackMesh && fallbackMesh.parent) {
+                scene.remove(fallbackMesh);
+            }
+
+            const model = gltf.scene;
+            model.scale.set(1.15, 1.15, 1.15);
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = true;
+                    child.receiveShadow = true;
+                    // Boost skin & attire shader qualities
+                    if (child.material) {
+                        child.material.roughness = 0.65;
+                    }
+                }
+            });
+
+            scene.add(model);
+            characterMesh = model;
+            isUsingFallbackMesh = false;
+
+            // Setup skeletal animation mixer
+            mixer = new THREE.AnimationMixer(characterMesh);
+
+            // Match clips: Xbot animations array contains [idle, run, tpose, walk, ...]
+            gltf.animations.forEach((clip) => {
+                const name = clip.name.toLowerCase();
+                if (name.includes('idle') || (!animations['idle'] && name.includes('0'))) animations['idle'] = mixer.clipAction(clip);
+                if (name.includes('walk') || name.includes('walking')) animations['walk'] = mixer.clipAction(clip);
+                if (name.includes('run') || name.includes('sprint')) animations['sprint'] = mixer.clipAction(clip);
+            });
+
+            // Fallback indices if named clips differ
+            if (!animations['idle'] && gltf.animations[0]) animations['idle'] = mixer.clipAction(gltf.animations[0]);
+            if (!animations['walk'] && gltf.animations[6]) animations['walk'] = mixer.clipAction(gltf.animations[6]);
+            if (!animations['walk'] && gltf.animations[3]) animations['walk'] = mixer.clipAction(gltf.animations[3]);
+            if (!animations['sprint'] && gltf.animations[3]) animations['sprint'] = mixer.clipAction(gltf.animations[3]);
+
+            if (animations['idle']) {
+                activeAction = animations['idle'];
+                activeAction.play();
+            }
+
+            const loadingEl = document.getElementById('loading-indicator');
+            if (loadingEl) {
+                loadingEl.textContent = '3D Skeletal Rigged Avatar Loaded & Active';
+                setTimeout(() => { loadingEl.style.opacity = '0'; }, 2000);
+            }
+        }, undefined, (err) => {
+            console.warn('GLTF loading error, running procedural avatar:', err);
+            const loadingEl = document.getElementById('loading-indicator');
+            if (loadingEl) {
+                loadingEl.textContent = 'Active: Procedural Biomechanical Avatar';
+                setTimeout(() => { loadingEl.style.opacity = '0'; }, 2500);
+            }
+        });
+
+        // ----------------------------------------------------
+        // 5. ANIMATION BLENDING & WEIGHT CROSS-FADING
+        // ----------------------------------------------------
+        function transitionTo(name, duration = 0.25) {
+            if (!mixer) return;
+            const nextAction = animations[name];
+            if (activeAction !== nextAction && nextAction) {
+                nextAction.reset();
+                nextAction.weight = 1.0;
+                nextAction.crossFadeFrom(activeAction, duration, true);
+                nextAction.play();
+                activeAction = nextAction;
+            }
+        }
+
+        // ----------------------------------------------------
+        // 6. THIRD-PERSON CINEMATIC FOLLOW CAMERA & MOUSE ORBIT
+        // ----------------------------------------------------
+        const cameraOffset = new THREE.Vector3(0, 3.2, 6.2);
+        const currentCameraPos = new THREE.Vector3(0, 3.5, 7.5);
+        const currentTargetPos = new THREE.Vector3(0, 1.4, 0);
+
+        let isMouseDown = false;
+        let mousePrevX = 0;
+        let mousePrevY = 0;
+        let orbitAngleH = 0;
+        let orbitAngleV = 0;
+
+        window.addEventListener('mousedown', (e) => {
+            if (e.button === 0) {
+                isMouseDown = true;
+                mousePrevX = e.clientX;
+                mousePrevY = e.clientY;
+            }
+        });
+
+        window.addEventListener('mouseup', () => { isMouseDown = false; });
+        window.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+            const dx = e.clientX - mousePrevX;
+            const dy = e.clientY - mousePrevY;
+            mousePrevX = e.clientX;
+            mousePrevY = e.clientY;
+
+            orbitAngleH -= dx * 0.005;
+            orbitAngleV = Math.max(-0.4, Math.min(0.7, orbitAngleV + dy * 0.005));
+        });
+
+        function updateThirdPersonCamera(delta) {
+            if (!characterMesh) return;
+
+            const targetPosition = characterMesh.position.clone();
+            
+            // Apply orbit rotation to camera offset
+            const rotatedOffset = cameraOffset.clone();
+            rotatedOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), orbitAngleH);
+            rotatedOffset.y += orbitAngleV * 3.0;
+
+            const idealCameraPos = targetPosition.clone().add(rotatedOffset);
+
+            // Smooth damping
+            currentCameraPos.lerp(idealCameraPos, 0.08);
+            currentTargetPos.lerp(targetPosition.clone().add(new THREE.Vector3(0, 1.4, 0)), 0.1);
+
+            camera.position.copy(currentCameraPos);
+            camera.lookAt(currentTargetPos);
+
+            // Attach lantern light to character
+            lanternLight.position.set(targetPosition.x, targetPosition.y + 2.2, targetPosition.z);
+        }
+
+        // ----------------------------------------------------
+        // 7. REAL LOCOMOTION PHYSICS & INPUT TICK
+        // ----------------------------------------------------
+        const clock = new THREE.Clock();
+
+        function updateCharacterPhysics(delta) {
+            if (!characterMesh) return;
+
+            // Read Inputs
+            const forward = (keysPressed['w'] || keysPressed['arrowup']) ? 1 : (keysPressed['s'] || keysPressed['arrowdown']) ? -1 : 0;
+            const sideways = (keysPressed['a'] || keysPressed['arrowleft']) ? 1 : (keysPressed['d'] || keysPressed['arrowright']) ? -1 : 0;
+            const isSprinting = keysPressed['shift'];
+
+            // Camera-relative movement vector
+            let moveDir = new THREE.Vector3(-sideways, 0, -forward);
+            if (moveDir.length() > 0) {
+                moveDir.normalize();
+                moveDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), orbitAngleH);
+            }
+
+            if (moveDir.length() > 0) {
+                playerState.gaitState = isSprinting ? 'sprint' : 'walk';
+                const targetSpeed = isSprinting ? playerState.sprintSpeed : playerState.walkSpeed;
+                playerState.currentSpeed = THREE.MathUtils.lerp(playerState.currentSpeed, targetSpeed, delta * 7.0);
+
+                // Smooth turn rotation
+                const targetAngle = Math.atan2(moveDir.x, moveDir.z);
+                let diff = targetAngle - characterMesh.rotation.y;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                characterMesh.rotation.y += diff * Math.min(1.0, delta * 10.0);
+
+                // Translate position
+                const forwardVector = new THREE.Vector3(0, 0, 1).applyAxisAngle(new THREE.Vector3(0, 1, 0), characterMesh.rotation.y);
+                characterMesh.position.addScaledVector(forwardVector, playerState.currentSpeed * delta);
+
+                // Cross-fade skeletal animation
+                transitionTo(isSprinting ? 'sprint' : 'walk', 0.2);
+
+                // Procedural avatar leg-swing fallback
+                if (isUsingFallbackMesh) {
+                    characterMesh.position.y = Math.abs(Math.sin(clock.getElapsedTime() * 10)) * 0.1;
+                }
+            } else {
+                playerState.gaitState = 'idle';
+                playerState.currentSpeed = THREE.MathUtils.lerp(playerState.currentSpeed, 0, delta * 8.0);
+                transitionTo('idle', 0.25);
+                if (isUsingFallbackMesh) {
+                    characterMesh.position.y = 0;
+                }
+            }
+
+            // Update animation mixer
+            if (mixer) {
+                mixer.update(delta);
+            }
+
+            // Update telemetry UI
+            const telemEl = document.getElementById('telemetry');
+            if (telemEl) {
+                telemEl.textContent = `State: ${playerState.gaitState.toUpperCase()} | Speed: ${playerState.currentSpeed.toFixed(1)} m/s | Pos: (${characterMesh.position.x.toFixed(1)}, ${characterMesh.position.z.toFixed(1)})`;
+            }
+        }
+
+        // ----------------------------------------------------
+        // 8. MAIN ENGINE LOOP
+        // ----------------------------------------------------
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = Math.min(clock.getDelta(), 0.1);
+
+            updateCharacterPhysics(delta);
+            updateThirdPersonCamera(delta);
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

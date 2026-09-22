@@ -353,14 +353,19 @@ window.runStepByStepFeatureTests = async function() {
     // 4. Test Weather particle system & lighting shadows
     const rainStreakCount = threeWorld.weather.rainCount;
     const hasShadowMap = threeWorld.renderer.shadowMap.enabled === true;
-    const moonShadow = threeWorld.lighting.moonLight.castShadow === true;
+    // 5. Test GLTFLoader & Skeletal Animation Pipeline
+    const hasGLTFLoader = typeof THREE.GLTFLoader !== 'undefined';
+    const hasTransitionFn = typeof threeWorld.player.transitionTo === 'function';
+    const hasOrbitControls = typeof threeWorld.cameraController.orbitAngleH === 'number';
 
-    const step13Success = correctHeight && lanternShadow && isMacro && rainStreakCount >= 3000 && hasShadowMap && moonShadow;
+    const step13Success = correctHeight && lanternShadow && isMacro && rainStreakCount >= 3000 &&
+      hasShadowMap && moonShadow && hasGLTFLoader && hasTransitionFn && hasOrbitControls;
 
-    log(13, '3D Player Controller, Macro-Map Zoom & Thunderstorm Weather', step13Success,
-      `Height Snapped: ${correctHeight}, Lantern Shadows: ${lanternShadow}, Macro-Map View: ${isMacro}, Rain Streaks: ${rainStreakCount}, PCF Shadows: ${hasShadowMap}`);
+    log(13, '3D Photorealistic Skeletal Locomotion, Macro-Map & Weather', step13Success,
+      `Height Snapped: ${correctHeight}, Lantern Shadows: ${lanternShadow}, Macro-Map: ${isMacro}, ` +
+      `GLTFLoader: ${hasGLTFLoader}, SkeletalMixer: ${hasTransitionFn}, MouseOrbit: ${hasOrbitControls}, Rain Streaks: ${rainStreakCount}`);
   } catch (err) {
-    log(13, '3D Player Controller, Macro-Map Zoom & Thunderstorm Weather', false, err.message);
+    log(13, '3D Photorealistic Skeletal Locomotion, Macro-Map & Weather', false, err.message);
   }
 
   // --- STEP 14: Diegetic Save System (SaveManager) ---

@@ -1,12 +1,13 @@
 # 🌿 The Whispering Wilds (காட்டு வழி / Thadam)
 
-### 🌐 [Play Live Online Now (GitHub Pages)](https://mtmohan012005-rgb.github.io/whispering-wilds/)
+### 🌐 [Play Live Online (GitHub Pages)](https://mtmohan012005-rgb.github.io/whispering-wilds/) • 🚶 [Standalone 3D Skeletal Locomotion Demo](https://mtmohan012005-rgb.github.io/whispering-wilds/3d-locomotion.html)
 
-[![Live Demo](https://img.shields.io/badge/Play%20Live-GitHub%20Pages-2ecc71?style=for-the-badge&logo=github)](https://mtmohan012005-rgb.github.io/whispering-wilds/)
+[![Play Live Game](https://img.shields.io/badge/Play%20Live-GitHub%20Pages-2ecc71?style=for-the-badge&logo=github)](https://mtmohan012005-rgb.github.io/whispering-wilds/)
+[![3D Locomotion Demo](https://img.shields.io/badge/3D%20Real%20Locomotion-WebGL%20Demo-3498db?style=for-the-badge&logo=three.js)](https://mtmohan012005-rgb.github.io/whispering-wilds/3d-locomotion.html)
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mtmohan012005-rgb/whispering-wilds)
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mtmohan012005-rgb/whispering-wilds)
 
-An atmospheric open-world exploration, light survival, and narrative mystery adventure set across authentic Tamil Nadu landscapes—shifting from the Indo-Saracenic red-brick gates of the **Madras High Court** to rural red-soil palmyra groves, the tidal **Pichavaram mangrove delta**, and the misty **Nilgiri Western Ghats**.
+An atmospheric open-world exploration, light survival, and narrative mystery adventure set across authentic Tamil Nadu landscapes—featuring a true Three.js 3D WebGL skeletal animation pipeline loading rigged 3D human models (`.glb`/`.gltf`) with animation mixers, smooth weight blending, soft ground shadows, and third-person cinematic tracking.
 
 ---
 
@@ -84,6 +85,26 @@ python -m http.server 8080
 powershell -ExecutionPolicy Bypass -File .\serve.ps1 -Port 8080
 ```
 Then open `http://localhost:8080` in any web browser!
+
+---
+
+## 🚶 5. Photorealistic 3D Human Locomotion & Character Customization
+
+The game includes a full Three.js WebGL skeletal animation pipeline loading rigged 3D human models (`.glb`/`.gltf`) with dynamic animation mixers and cross-fading:
+
+- **Vector Math & Turn Smoothing**: Smoothly rotates character mesh toward movement vector.
+- **Animation Mixer & Cross-Fade**: Seamless blending between `Idle`, `Walk`, and `Sprint` without popping.
+- **Cinematic Third-Person Follow Camera**: Dampened camera tracking with interactive mouse drag orbit controls.
+
+### How to Plug in Your Custom Real Tamil Character (.glb)
+1. **Export an avatar** from MakeHuman, Ready Player Me, or Mixamo (with traditional cotton shirt, folded veshti, and boots).
+2. **Download animations** from Mixamo: `Idle.fbx`, `Walking.fbx`, and `Running.fbx`.
+3. **Bundle into a single `.glb` file** using Blender or `gltf-pipeline`.
+4. **Place in assets**: Copy your file to `assets/models/tamil_explorer.glb`.
+5. **Configure URL**: In `index.html` or before game start, set:
+   ```javascript
+   window.CHARACTER_MODEL_URL = './assets/models/tamil_explorer.glb';
+   ```
 
 ---
 

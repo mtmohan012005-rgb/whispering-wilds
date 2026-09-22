@@ -66,6 +66,7 @@ class ThreeWorld {
             if (['KeyS', 'ArrowDown'].includes(e.code)) this.inputState.down = true;
             if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = true;
             if (['KeyD', 'ArrowRight'].includes(e.code)) this.inputState.right = true;
+            if (['ShiftLeft', 'ShiftRight'].includes(e.code)) this.inputState.sprint = true;
         });
 
         window.addEventListener('keyup', (e) => {
@@ -74,6 +75,7 @@ class ThreeWorld {
             if (['KeyS', 'ArrowDown'].includes(e.code)) this.inputState.down = false;
             if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = false;
             if (['KeyD', 'ArrowRight'].includes(e.code)) this.inputState.right = false;
+            if (['ShiftLeft', 'ShiftRight'].includes(e.code)) this.inputState.sprint = false;
         });
     }
 
