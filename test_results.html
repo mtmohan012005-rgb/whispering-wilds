@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Whispering Wilds (காட்டு வழி / Thadam) - Open-World Tamil Nadu Exploration</title>
@@ -26,12 +25,12 @@
 
   <!-- Game Canvas Viewport (2D) -->
   <div id="canvas-wrapper">
-    <canvas id="gameCanvas"></canvas>
+    <canvas id="gameCanvas" width="756" height="488"></canvas>
   </div>
 
   <!-- Three.js 3D Open-World Viewport -->
   <div id="three-canvas-container" class="hidden">
-    <canvas id="threeCanvas"></canvas>
+    <canvas id="threeCanvas" width="756" height="488" style="width: 756px; height: 488px;"></canvas>
   </div>
 
   <!-- Quest & Discovery Toast Notification -->
@@ -66,11 +65,11 @@
     <!-- Top Bar -->
     <div class="hud-top-bar">
       <div class="hud-location-card">
-        <h2 id="biome-title">CHENNAI & RED SOIL PLAINS (மதராஸ் & செம்மண் நிலம்)</h2>
+        <h2 id="biome-title">Chennai &amp; Red Soil Plains (மதராஸ் &amp; செம்மண் நிலம்)</h2>
         <div class="time-weather-row">
-          <span id="time-display">9:01 PM</span>
+          <span id="time-display">9:00 PM</span>
           <span>•</span>
-          <span id="weather-badge">Thunderstorm & Gale (இடி மின்னல் புயல்)</span>
+          <span id="weather-badge">Thunderstorm &amp; Gale (இடி மின்னல் புயல்)</span>
         </div>
         <div id="gps-coords" class="gps-telemetry-badge">📍 13.0598° N, 80.2550° E • Chennai</div>
       </div>
@@ -81,7 +80,7 @@
         <span class="compass-cardinal compass-s">S</span>
         <span class="compass-cardinal compass-e">E</span>
         <span class="compass-cardinal compass-w">W</span>
-        <div id="compass-needle"></div>
+        <div id="compass-needle" style="transform: rotate(90deg);"></div>
       </div>
 
       <!-- 3D Open-World Mode & Macro-Map Controls -->
@@ -94,7 +93,7 @@
           <span id="macro-map-label">🗺️ Macro View</span>
           <span class="key-hint">M</span>
         </button>
-        <button id="toggle-customization-btn" class="hud-mode-btn" title="Open Player Customization & Wardrobe [P]">
+        <button id="toggle-customization-btn" class="hud-mode-btn" title="Open Player Customization &amp; Wardrobe [P]">
           <span id="customization-btn-label">🥻 Wardrobe</span>
           <span class="key-hint">P</span>
         </button>
@@ -119,7 +118,7 @@
             <span>Hunger (பசி)</span>
           </div>
           <div class="progress-track">
-            <div id="hunger-fill" class="progress-fill hunger-bar" style="width: 85%;"></div>
+            <div id="hunger-fill" class="progress-fill hunger-bar" style="width: 85.183%;"></div>
           </div>
         </div>
 
@@ -128,7 +127,7 @@
             <span>Thirst (தாகம்)</span>
           </div>
           <div class="progress-track">
-            <div id="thirst-fill" class="progress-fill thirst-bar" style="width: 90%;"></div>
+            <div id="thirst-fill" class="progress-fill thirst-bar" style="width: 90.2846%;"></div>
           </div>
         </div>
 
@@ -137,13 +136,13 @@
             <span>Stamina / Energy (ஆற்றல்)</span>
           </div>
           <div class="progress-track">
-            <div id="energy-fill" class="progress-fill energy-bar" style="width: 100%;"></div>
+            <div id="energy-fill" class="progress-fill energy-bar" style="width: 96.7472%;"></div>
           </div>
         </div>
 
         <div class="temp-row">
           <span>Core Body Temp:</span>
-          <span id="temp-value">36.1°C</span>
+          <span id="temp-value" style="color: rgb(85, 239, 196);">36.1°C</span>
         </div>
       </div>
 
@@ -153,7 +152,7 @@
           <span>📷 Camera</span>
           <span class="key-hint">F</span>
         </button>
-        <button id="journal-toggle-btn" class="hotbar-btn" title="Field Journal & Clue Board [J]">
+        <button id="journal-toggle-btn" class="hotbar-btn" title="Field Journal &amp; Clue Board [J]">
           <span>📔 Journal</span>
           <span class="key-hint">J</span>
         </button>
@@ -208,21 +207,21 @@
       <div class="journal-header">
         <div class="journal-title-group">
           <h2>காட்டு வழி களக் குறிப்பேடு</h2>
-          <span>The Whispering Wilds • Field Journal & Investigation Board</span>
+          <span>The Whispering Wilds • Field Journal &amp; Investigation Board</span>
         </div>
         <div class="journal-header-actions">
           <button id="toggle-olai-chuvadi" class="btn-olai-chuvadi" title="Switch between Leather Journal and Palm-Leaf Manuscript (ஓலைச்சுவடி)">📜 ஓலைச்சுவடி (Palm Leaf)</button>
-          <button id="close-journal-btn" class="close-btn" title="Close Journal">&times;</button>
+          <button id="close-journal-btn" class="close-btn" title="Close Journal">×</button>
         </div>
       </div>
 
       <!-- Journal Tabs -->
       <div class="journal-tabs-bar">
         <button class="journal-tab-btn active" data-tab="photolog">📷 Field Photolog</button>
-        <button class="journal-tab-btn" data-tab="bestiary">🐾 Bestiary & Guide</button>
-        <button class="journal-tab-btn" data-tab="clueboard">📌 Clue Board & Syndicate</button>
+        <button class="journal-tab-btn" data-tab="bestiary">🐾 Bestiary &amp; Guide</button>
+        <button class="journal-tab-btn" data-tab="clueboard">📌 Clue Board &amp; Syndicate</button>
         <button class="journal-tab-btn" data-tab="quests">📜 Active Quests</button>
-        <button class="journal-tab-btn" data-tab="wardrobe">👕 Attire & Wardrobe (ஆடைகள்)</button>
+        <button class="journal-tab-btn" data-tab="wardrobe">👕 Attire &amp; Wardrobe (ஆடைகள்)</button>
       </div>
 
       <!-- Inner Content Area -->
@@ -241,7 +240,7 @@
     <div class="tea-kadai-card">
       <div class="tea-kadai-banner">
         <h3>முருகன் டீ ஸ்டால் • Murugan Annan's Roadside Tea Kadai</h3>
-        <button id="close-tea-btn" class="close-btn" style="color: #fff;">&times;</button>
+        <button id="close-tea-btn" class="close-btn" style="color: #fff;">×</button>
       </div>
 
       <div style="width: 100%; height: 160px; overflow: hidden; position: relative;">
@@ -254,7 +253,7 @@
           <div class="npc-avatar-circle">👨🏽‍🍳</div>
           <div class="npc-meta">
             <h4>Murugan Annan</h4>
-            <span>Tea Kadai Master & Local Informant (Villupuram Road)</span>
+            <span>Tea Kadai Master &amp; Local Informant (Villupuram Road)</span>
           </div>
         </div>
 
@@ -272,7 +271,7 @@
     <div class="puzzle-card">
       <div class="puzzle-header">
         <h3>சோழர் கால நீர் சுழல் சக்கரம் (Chola Hydro-Mechanism)</h3>
-        <button id="close-puzzle-btn" class="close-btn" style="color: #fff;">&times;</button>
+        <button id="close-puzzle-btn" class="close-btn" style="color: #fff;">×</button>
       </div>
 
       <p class="puzzle-desc">
@@ -307,17 +306,17 @@
 
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-size:11px; color:#d4af37; text-transform:uppercase; font-weight:bold;">Explorer Name</label>
-        <input id="nameInput" placeholder="Your Explorer Name" value="Explorer" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;" />
+        <input id="nameInput" placeholder="Your Explorer Name" value="Explorer" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;">
       </div>
 
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-size:11px; color:#d4af37; text-transform:uppercase; font-weight:bold;">Expedition Room Code</label>
-        <input id="roomInput" placeholder="Room Code (e.g. TN_CHENNAI_1)" value="CHENNAI_EXP" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;" />
+        <input id="roomInput" placeholder="Room Code (e.g. TN_CHENNAI_1)" value="CHENNAI_EXP" style="width:100%; box-sizing:border-box; padding:10px 12px; margin-top:4px; background:#1c2434; border:1px solid #485460; color:#fff; border-radius:6px; font-size:14px;">
       </div>
 
       <div style="text-align:left; margin-bottom:18px;">
         <label style="font-size:11px; color:#888; text-transform:uppercase;">Multiplayer Server URL</label>
-        <input id="serverUrlInput" placeholder="http://localhost:3000 (leave blank for auto)" style="width:100%; box-sizing:border-box; padding:8px 12px; margin-top:4px; background:#131822; border:1px solid #333; color:#aaa; border-radius:6px; font-size:12px;" />
+        <input id="serverUrlInput" placeholder="http://localhost:3000 (leave blank for auto)" style="width:100%; box-sizing:border-box; padding:8px 12px; margin-top:4px; background:#131822; border:1px solid #333; color:#aaa; border-radius:6px; font-size:12px;">
       </div>
 
       <button id="enter-server-btn" style="width:100%; padding:13px; background:linear-gradient(135deg, #27ae60, #2ecc71); color:#fff; font-weight:bold; font-size:15px; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 15px rgba(46,204,113,0.3); transition:transform 0.1s ease;">ENTER EXPEDITION</button>
@@ -398,5 +397,222 @@
   <script src="js/test-player-customization.js"></script>
   <script src="js/test-audio-production.js"></script>
 
-</body>
-</html>
+
+
+<div id="customization-modal" class="customization-modal-overlay hidden">
+      <div class="customization-card">
+        <div class="custom-header">
+          <div class="custom-title-block">
+            <h2>👤 PLAYER CUSTOMIZATION</h2>
+            <div class="custom-subtitle">Culturally Authentic Tamil Nadu Explorer Wardrobe &amp; Progression</div>
+          </div>
+          <div class="custom-meter-badge ">
+            <div class="meter-label">CHANGES REMAINING</div>
+            <div class="meter-count">5 / 5</div>
+          </div>
+          <button class="custom-close-btn" id="custom-close-x">×</button>
+        </div>
+
+        
+          <div class="custom-info-banner">
+            💡 <strong>Progression Rule:</strong> You have a maximum of 5 permanent appearance changes. Use <em>Preview</em> freely without consuming changes. Confirming consumes exactly 1 change.
+          </div>
+        
+
+        <div class="custom-content-grid">
+          <!-- Left Column: Slot Selections -->
+          <div class="custom-column">
+            <!-- Presets -->
+            <div class="custom-section">
+              <label class="custom-section-title">🌟 REGIONAL PRESETS</label>
+              <div class="custom-preset-row">
+                
+                  <button class="preset-pill-btn active" data-preset="everyday_explorer">
+                    Preset A
+                  </button>
+                
+                  <button class="preset-pill-btn " data-preset="village_field_worker">
+                    Preset B
+                  </button>
+                
+                  <button class="preset-pill-btn " data-preset="urban_chennai_explorer">
+                    Preset C
+                  </button>
+                
+                  <button class="preset-pill-btn " data-preset="festival_formal">
+                    Preset D
+                  </button>
+                
+                  <button class="preset-pill-btn " data-preset="nilgiri_outdoor">
+                    Preset E
+                  </button>
+                
+              </div>
+            </div>
+
+            <!-- Outfits -->
+            <div class="custom-section">
+              <label class="custom-section-title">🥻 OUTFIT</label>
+              <div class="custom-options-list">
+                
+                  <div class="custom-option-card selected" data-outfit="everyday_veshti">
+                    <div class="opt-icon">🥻</div>
+                    <div class="opt-details">
+                      <div class="opt-name">Traditional Everyday Veshti (வேட்டி &amp; சட்டை)</div>
+                      <div class="opt-desc">Lightweight white cotton shirt, handloom dhoti/veshti with gold border, shoulder cotton thundu</div>
+                      <div class="opt-stat"> ☀️ Heat: +15 </div>
+                    </div>
+                  </div>
+                
+                  <div class="custom-option-card " data-outfit="village_workwear">
+                    <div class="opt-icon">🌾</div>
+                    <div class="opt-details">
+                      <div class="opt-name">Village Farmland Workwear (விவசாய கள உடை)</div>
+                      <div class="opt-desc">Faded blue cotton work shirt, knee-tucked checkered lungi/dhoti, reinforced head towel</div>
+                      <div class="opt-stat">❄️ Cold: +5 ☀️ Heat: +20 +15% Comfort</div>
+                    </div>
+                  </div>
+                
+                  <div class="custom-option-card " data-outfit="urban_explorer">
+                    <div class="opt-icon">🥾</div>
+                    <div class="opt-details">
+                      <div class="opt-name">Urban Chennai Explorer (சாகச பயண உடை)</div>
+                      <div class="opt-desc">Olive breathable utility T-shirt, durable multi-pocket cargo trousers, canvas expedition jacket</div>
+                      <div class="opt-stat">❄️ Cold: +15 ☀️ Heat: +10 </div>
+                    </div>
+                  </div>
+                
+                  <div class="custom-option-card " data-outfit="festival_veshti">
+                    <div class="opt-icon">✨</div>
+                    <div class="opt-details">
+                      <div class="opt-name">Kanchipuram Festival Silk Veshti (பட்டு வேஷ்டி)</div>
+                      <div class="opt-desc">Raw cream silk jubba/kurta with pure woven golden zari border veshti and angavasthram</div>
+                      <div class="opt-stat">❄️ Cold: +10 ☀️ Heat: +5 +25% Merchant Barter</div>
+                    </div>
+                  </div>
+                
+                  <div class="custom-option-card " data-outfit="nilgiri_warmwear">
+                    <div class="opt-icon">🧥</div>
+                    <div class="opt-details">
+                      <div class="opt-name">Nilgiri Mountain Woolen Suit (நீலகிரி குளிர் கம்பளி)</div>
+                      <div class="opt-desc">Hand-knit thick Ooty mountain sheep wool sweater, stormproof hooded poncho, insulated trekking trousers</div>
+                      <div class="opt-stat">❄️ Cold: +50 ☀️ Heat: +-10 </div>
+                    </div>
+                  </div>
+                
+              </div>
+            </div>
+
+            <!-- Hairstyles -->
+            <div class="custom-section">
+              <label class="custom-section-title">✂️ HAIRSTYLE</label>
+              <div class="custom-options-row">
+                
+                  <button class="hair-pill-btn active" data-hair="short_traditional_part">
+                    Classic Side Part 
+                  </button>
+                
+                  <button class="hair-pill-btn " data-hair="explorer_crop">
+                    Field Explorer Crop 
+                  </button>
+                
+                  <button class="hair-pill-btn " data-hair="wavy_coastal">
+                    Coastal Natural Waves 
+                  </button>
+                
+                  <button class="hair-pill-btn " data-hair="temple_topknot_crew">
+                    Heritage Kudumi Topknot 
+                  </button>
+                
+                  <button class="hair-pill-btn " data-hair="highland_messy">
+                    Nilgiri Mountain Windswept 
+                  </button>
+                
+              </div>
+            </div>
+
+            <!-- Accessories -->
+            <div class="custom-section">
+              <label class="custom-section-title">🎒 ACCESSORY</label>
+              <div class="custom-options-row">
+                
+                  <button class="acc-pill-btn active" data-acc="none">
+                    None 
+                  </button>
+                
+                  <button class="acc-pill-btn " data-acc="jhola_bag">
+                    Khadi Cotton Jhola Bag 
+                  </button>
+                
+                  <button class="acc-pill-btn " data-acc="rudraksha_wristlet">
+                    Pancha-Mukhi Rudraksha Wristlet 
+                  </button>
+                
+                  <button class="acc-pill-btn " data-acc="brass_pocket_watch">
+                    Chettinad Brass Hunter Watch 
+                  </button>
+                
+                  <button class="acc-pill-btn " data-acc="toda_amulet">
+                    Sacred Toda Horn Charm 
+                  </button>
+                
+              </div>
+            </div>
+
+            <!-- Footwear -->
+            <div class="custom-section">
+              <label class="custom-section-title">👞 FOOTWEAR</label>
+              <div class="custom-options-row">
+                
+                  <button class="foot-pill-btn active" data-foot="kolhapuri_sandals">
+                    Handcrafted Kolhapuri Sandals 
+                  </button>
+                
+                  <button class="foot-pill-btn " data-foot="rubber_field_chappals">
+                    Heavy-Duty Field Rubber Chappals 
+                  </button>
+                
+                  <button class="foot-pill-btn " data-foot="trekking_boots">
+                    All-Terrain Vibram Trekking Boots 
+                  </button>
+                
+                  <button class="foot-pill-btn " data-foot="heritage_sandals">
+                    Polished Heritage Zari Sandals 
+                  </button>
+                
+                  <button class="foot-pill-btn " data-foot="insulated_spiked_boots">
+                    Insulated Mountain Spiked Boots 
+                  </button>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: History & Actions -->
+          <div class="custom-column custom-summary-col">
+            <div class="custom-section">
+              <label class="custom-section-title">📜 CUSTOMIZATION HISTORY</label>
+              <div class="custom-history-box">
+                <div class="no-history-text">No permanent changes committed yet (0/5 used).</div>
+              </div>
+            </div>
+
+            <div class="custom-active-summary">
+              <label class="custom-section-title">CURRENT SELECTION</label>
+              <div class="summary-line"><strong>Outfit:</strong> Traditional Everyday Veshti (வேட்டி &amp; சட்டை)</div>
+              <div class="summary-line"><strong>Hair:</strong> Classic Side Part (பாரம்பரிய வெட்டு)</div>
+              <div class="summary-line"><strong>Accessory:</strong> None (எதுவுமில்லை)</div>
+              <div class="summary-line"><strong>Footwear:</strong> Handcrafted Kolhapuri Sandals (தோல் செருப்பு)</div>
+            </div>
+
+            <div class="custom-actions-bar">
+              <button class="custom-btn preview-btn" id="custom-preview-btn">👁️ Preview 3D</button>
+              <button class="custom-btn confirm-btn " id="custom-confirm-btn">
+                ✓ Confirm Change (5 Left)
+              </button>
+              <button class="custom-btn cancel-btn" id="custom-cancel-btn">✕ Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></body></html>

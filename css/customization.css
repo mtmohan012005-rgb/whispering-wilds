@@ -1,0 +1,388 @@
+/* ============================================================================
+   THE WHISPERING WILDS (KAATTU VAZHI) - PLAYER CUSTOMIZATION UI
+   Culturally tailored Tamil Nadu explorer wardrobe modal with progression limit
+   ============================================================================ */
+
+.customization-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  animation: customFadeIn 0.25s ease-out forwards;
+}
+
+.customization-modal-overlay.hidden {
+  display: none !important;
+}
+
+@keyframes customFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.customization-card {
+  background: linear-gradient(145deg, #161c2d, #0f1320);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 175, 55, 0.15);
+  width: 900px;
+  max-width: 95vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  color: #f0ede6;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Header */
+.custom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: rgba(20, 26, 42, 0.95);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.custom-title-block h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: #f5cf68;
+  letter-spacing: 0.5px;
+}
+
+.custom-subtitle {
+  font-size: 0.82rem;
+  color: #a0aec0;
+  margin-top: 2px;
+}
+
+.custom-meter-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid #d4af37;
+  border-radius: 6px;
+  padding: 4px 14px;
+}
+
+.custom-meter-badge.meter-locked {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+}
+
+.meter-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #cbd5e1;
+}
+
+.meter-count {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f5cf68;
+}
+
+.meter-locked .meter-count {
+  color: #ef4444;
+}
+
+.custom-close-btn {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 1.6rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.custom-close-btn:hover {
+  color: #ffffff;
+}
+
+/* Banners */
+.custom-lock-banner {
+  background: rgba(239, 68, 68, 0.12);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 10px 24px;
+  font-size: 0.82rem;
+  color: #fca5a5;
+}
+
+.custom-lock-banner p {
+  margin: 4px 0 0 0;
+  color: #e2e8f0;
+}
+
+.custom-info-banner {
+  background: rgba(59, 130, 246, 0.1);
+  border-bottom: 1px solid rgba(59, 130, 246, 0.25);
+  padding: 8px 24px;
+  font-size: 0.82rem;
+  color: #93c5fd;
+}
+
+/* Content Grid */
+.custom-content-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 16px;
+  padding: 18px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.custom-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.custom-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.custom-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #d4af37;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* Presets */
+.custom-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preset-pill-btn, .hair-pill-btn, .acc-pill-btn, .foot-pill-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: #e2e8f0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.preset-pill-btn:hover, .hair-pill-btn:hover, .acc-pill-btn:hover, .foot-pill-btn:hover {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #d4af37;
+}
+
+.preset-pill-btn.active, .hair-pill-btn.active, .acc-pill-btn.active, .foot-pill-btn.active {
+  background: #d4af37;
+  color: #0b0f19;
+  font-weight: 700;
+  border-color: #f5cf68;
+}
+
+.preset-pill-btn:disabled, .hair-pill-btn:disabled, .acc-pill-btn:disabled, .foot-pill-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Outfit list */
+.custom-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.custom-option-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(22, 28, 45, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.custom-option-card:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  background: rgba(30, 41, 65, 0.9);
+}
+
+.custom-option-card.selected {
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, 0.15);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.opt-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.opt-details {
+  flex: 1;
+}
+
+.opt-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.opt-desc {
+  font-size: 0.74rem;
+  color: #cbd5e1;
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+.opt-stat {
+  font-size: 0.72rem;
+  color: #38bdf8;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.custom-options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* History Box */
+.custom-summary-col {
+  background: rgba(15, 20, 32, 0.7);
+  border-radius: 8px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-history-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+  background: rgba(11, 15, 25, 0.6);
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-history-item {
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.custom-history-badge {
+  font-weight: 700;
+  color: #f5cf68;
+}
+
+.custom-history-time {
+  font-size: 0.65rem;
+  color: #94a3b8;
+}
+
+.custom-history-flow {
+  color: #e2e8f0;
+  margin-top: 2px;
+}
+
+.no-history-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 6px;
+}
+
+/* Current Selection Summary */
+.custom-active-summary {
+  background: rgba(22, 28, 45, 0.6);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.summary-line {
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  margin: 3px 0;
+}
+
+/* Actions Bar */
+.custom-actions-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.custom-btn {
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border: none;
+}
+
+.preview-btn {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid #3b82f6;
+  color: #93c5fd;
+}
+
+.preview-btn:hover {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #d4af37, #b89628);
+  color: #0b0f19;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f5cf68, #d4af37);
+  transform: translateY(-1px);
+}
+
+.confirm-btn.disabled, .confirm-btn:disabled {
+  background: #334155;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #cbd5e1;
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}

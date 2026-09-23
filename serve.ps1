@@ -19,6 +19,19 @@ try {
                 $localPath = "/index.html"
             }
 
+            if ($localPath -eq "/api/test-results" -and $request.HttpMethod -eq "POST") {
+                $reader = New-Object System.IO.StreamReader($request.InputStream)
+                $body = $reader.ReadToEnd()
+                [System.IO.File]::WriteAllText((Join-Path $baseDir "test_results.json"), $body)
+                Write-Host ">>> RECEIVED TEST RESULTS VIA POST API! <<<"
+                $ack = [System.Text.Encoding]::UTF8.GetBytes('{"status":"ok"}')
+                $response.ContentType = "application/json"
+                $response.ContentLength64 = $ack.Length
+                $response.OutputStream.Write($ack, 0, $ack.Length)
+                $response.Close()
+                continue
+            }
+
             $filePath = Join-Path $baseDir ($localPath.TrimStart('/').Replace('/', '\'))
 
             if (Test-Path $filePath -PathType Leaf) {

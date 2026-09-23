@@ -26,8 +26,15 @@ class Player {
     this.jumpVelocity = 0;
     this.isLanternOn = true;
     
-    // Wardrobe & Attire System
-    this.outfitId = 'baseOutfit';
+    // Authoritative Customization & Progression Limit (Max 5 Changes)
+    this.outfitId = 'everyday_veshti';
+    this.hairstyleId = 'short_traditional_part';
+    this.accessoryId = 'none';
+    this.footwearId = 'kolhapuri_sandals';
+    this.appearancePresetId = 'everyday_explorer';
+    this.customizationChangesUsed = 0;
+    this.maxCustomizationChanges = 5;
+    this.customizationHistory = [];
     
     // Locomotion Engine (biomechanics)
     this.locomotion = new window.LocomotionEngine();
@@ -63,15 +70,24 @@ class Player {
     this.interactionRadius = 75;
   }
 
+  get currentOutfit() {
+    return this.outfitId;
+  }
+
+  set currentOutfit(val) {
+    this.outfitId = val;
+  }
+
   setOutfit(outfitId) {
     this.outfitId = outfitId;
-    this.currentOutfit = outfitId;
-    window.playerCharacter.currentOutfit = outfitId;
+    if (window.playerCharacter) {
+      window.playerCharacter.currentOutfit = outfitId;
+    }
   }
 
   getOutfitConfig() {
-    if (this.outfitId === 'baseOutfit') return window.playerCharacter.baseOutfit;
-    return window.playerCharacter.upgradedOutfits[this.outfitId] || window.playerCharacter.baseOutfit;
+    if (this.outfitId === 'baseOutfit' || this.outfitId === 'everyday_veshti') return window.playerCharacter.baseOutfit;
+    return (window.playerCharacter.upgradedOutfits && window.playerCharacter.upgradedOutfits[this.outfitId]) || window.playerCharacter.baseOutfit;
   }
 
   update(input, deltaTime, worldBounds, tracksManager, audio, survival, weatherSystem) {

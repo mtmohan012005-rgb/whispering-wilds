@@ -57,6 +57,11 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 2. Initialize Game Systems
   const audio = window.gameAudio;
+  const worldUnlocks = typeof window.WorldUnlockSystem !== 'undefined' ? new window.WorldUnlockSystem() : null;
+  window.worldUnlockSystem = worldUnlocks;
+  const investigation = typeof window.InvestigationSystem !== 'undefined' ? new window.InvestigationSystem() : null;
+  window.investigationSystem = investigation;
+
   const renderer = new window.WorldRenderer(canvas);
   const lighting = new window.LightingEngine();
   const particles = new window.ParticleEngine();
@@ -71,6 +76,29 @@ window.addEventListener('DOMContentLoaded', () => {
   const saveManager = new window.SaveManager();
   const multiplayer = window.MultiplayerManager ? new window.MultiplayerManager() : null;
 
+  // Initialize Production Audio System
+  const audioManager = (typeof window.AudioManager !== 'undefined')
+    ? new window.AudioManager(window.AUDIO_DATA, audio)
+    : null;
+  window.audioManager = audioManager;
+  if (audioManager) {
+    audioManager.spatial = new window.AudioSpatialSystem(audioManager);
+    audioManager.ambient = new window.AmbientWorldAudioSystem(audioManager);
+    audioManager.footsteps = new window.FootstepAudioSystem(audioManager);
+    audioManager.dynamicMusic = new window.DynamicMusicSystem(audioManager);
+    audioManager.wildlife = new window.WildlifeAudioSystem(audioManager);
+  }
+
+  // Initialize Player Customization System & UI (5-Change Limit)
+  const customizationSystem = (typeof window.PlayerCustomizationSystem !== 'undefined')
+    ? new window.PlayerCustomizationSystem(window.PLAYER_CUSTOMIZATION_CONFIG)
+    : null;
+  window.playerCustomizationSystem = customizationSystem;
+  const customizationUI = (typeof window.PlayerCustomizationUI !== 'undefined')
+    ? new window.PlayerCustomizationUI(customizationSystem)
+    : null;
+  window.playerCustomizationUI = customizationUI;
+
   // Attach global references
   window.gameQuests = quests;
   window.gameJournal = journal;
@@ -78,7 +106,12 @@ window.addEventListener('DOMContentLoaded', () => {
   window.gamePlayer = player;
   window.gameSaveManager = saveManager;
   window.multiplayerManager = multiplayer;
-  window.testRef = { player, renderer, lighting, particles, tracksManager, weather, survival, camera: explorerCamera, journal, quests, entities, saveManager, multiplayer };
+  window.testRef = {
+    player, renderer, lighting, particles, tracksManager, weather,
+    survival, camera: explorerCamera, journal, quests, entities,
+    saveManager, multiplayer, audioManager, playerCustomization: customizationSystem,
+    playerCustomizationUI: customizationUI
+  };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
   // Initialize 3D World Engine
@@ -226,6 +259,9 @@ window.addEventListener('DOMContentLoaded', () => {
       toggle3DMode();
     }
     if (e.code === 'KeyP') {
+      if (customizationUI) customizationUI.toggle();
+    }
+    if (e.code === 'KeyO') {
       toggleLobby();
     }
     if (e.code === 'KeyF') {
@@ -264,6 +300,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 5. Interactions Logic
   function handleInteraction() {
+    // Prioritize explicit player nearby interactable target if set
+    if (player.nearbyInteractable) {
+      handleItemInteraction(player.nearbyInteractable);
+      return;
+    }
+
     // 1. Check for nearby 3D Living World NPCs if in 3D mode
     if (threeWorld && threeWorld.isActive && threeWorld.livingWorld) {
       const nearby3DNPC = threeWorld.livingWorld.getNearbyInteractableNPC(threeWorld.player.getPosition(), 4.0);
@@ -288,12 +330,14 @@ window.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
+  }
 
-    if (!player.nearbyInteractable) return;
-    const item = player.nearbyInteractable;
+  function handleItemInteraction(item) {
 
     if (item.id === 'tea_kadai' || item.id === 'murugan') {
       openTeaKadai();
+    } else if (item.id === 'farmer_selvam' || item.id === 'selvam') {
+      openFarmerSelvamDialogue();
     } else if (item.id === 'hill_guide_karthik' || item.id === 'karthik') {
       openHillGuideDialogue();
     } else if (item.id === 'chennai_auto') {
@@ -313,10 +357,12 @@ window.addEventListener('DOMContentLoaded', () => {
       quests.showQuestNotification('Documented rare Neelakurinji 12-year bloom! (+180 XP)');
     } else if (item.id === 'high_court_gates') {
       quests.completeObjective('main_prologue', 'inspect_heist', audio);
+      if (window.investigationSystem) window.investigationSystem.inspectObject('high_court_gates');
       journal.toggle(audio);
       journal.switchTab('quests', audio);
     } else if (item.id === 'enfield_tracks_site') {
       quests.completeObjective('main_prologue', 'follow_tracks', audio);
+      if (window.investigationSystem) window.investigationSystem.inspectObject('enfield_tracks_site');
       quests.showQuestNotification('Discovered: Deep tyre tracks curve towards Pichavaram!');
     } else if (item.id === 'panchayat_well') {
       survival.refillCanteen();
@@ -329,14 +375,33 @@ window.addEventListener('DOMContentLoaded', () => {
       quests.completeObjective('main_ghats', 'survive_cold', audio);
       quests.showQuestNotification('Warmed up by the stone cottage hearth! Core temp restored.');
     } else if (item.id === 'eco_sanctuary_portal') {
-      quests.completeObjective('main_ghats', 'unlock_portal', audio);
-      audio.playDiscoveryJingle();
-      alert('🌟 CONGRATULATIONS! You have unlocked the fabled subterranean Pasumai Thadam Eco-Sanctuary, preserving Tamil Nadu’s ancient botanical heritage from the corporate syndicate!');
+      // Validated entry check (Section 13 & 26)
+      const isSanctuaryUnlocked = window.worldUnlockSystem ? window.worldUnlockSystem.isUnlocked('final_sanctuary') : false;
+      const canUnlock = window.worldUnlockSystem ? window.worldUnlockSystem.canUnlock('final_sanctuary', window.questProgression) : true;
+      const hasWarmwear = (player.outfitId === 'nilgiri_warmwear');
+
+      if (isSanctuaryUnlocked || (canUnlock && hasWarmwear)) {
+        quests.completeObjective('main_ghats', 'unlock_portal', audio);
+        if (window.worldUnlockSystem) window.worldUnlockSystem.unlock('final_sanctuary', audio);
+        audio.playDiscoveryJingle();
+        alert('🌟 CONGRATULATIONS! You have unsealed the fabled subterranean Pasumai Thadam Eco-Sanctuary, preserving Tamil Nadu’s ancient botanical heritage!');
+      } else {
+        audio.playFootstep('dirt');
+        const reason = !hasWarmwear
+          ? 'Freezing mountain frost numbs your limbs! Equip Nilgiri Warmwear (கம்பளி சூட்) first.'
+          : 'The ancient stone portal remains sealed. Assemble the Chola relics and complete the previous chapters.';
+        quests.showQuestNotification(reason);
+      }
     } else if (item.type === 'tent') {
       survival.sleepInTent(lighting, audio);
       quests.showQuestNotification('Rested until dawn! Gained Stamina Recovery Buff.');
       // Diegetic save: slept in tent
       saveManager.saveGame('auto', 'tent_sleep');
+    }
+
+    // Event notification to quest progression
+    if (window.questProgression) {
+      window.questProgression.onInteraction(item.id, { audio });
     }
   }
 
@@ -484,6 +549,9 @@ window.addEventListener('DOMContentLoaded', () => {
     audio.playTeaPour();
     quests.completeObjective('main_prologue', 'talk_murugan', audio);
 
+    const bannerTitle = document.querySelector('.tea-kadai-banner h3');
+    if (bannerTitle) bannerTitle.textContent = "🍵 Murugan Annan's Tea Kadai (டீக்கடை)";
+
     const dialogData = window.DIALOGUE_DATA.tea_kadai;
     document.getElementById('tea-dialogue-text').textContent = dialogData.greeting;
 
@@ -527,9 +595,53 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 7. Chola Waterwheel Puzzle
-  let waterwheelDial1 = 0;
-  let waterwheelDial2 = 0;
+  // 6b. Farmer Selvam Dialogue UI (Fixes missing report_selvam branch)
+  function openFarmerSelvamDialogue() {
+    teaModal.classList.remove('hidden');
+    audio.playPinTap();
+
+    const bannerTitle = document.querySelector('.tea-kadai-banner h3');
+    if (bannerTitle) bannerTitle.textContent = "🌾 Murugan / Farmer Selvam (விவசாயி செல்வம்)";
+
+    const dialogData = window.DIALOGUE_DATA.farmer_selvam;
+    document.getElementById('tea-dialogue-text').textContent = dialogData.greeting;
+
+    const optionsContainer = document.getElementById('tea-options');
+    optionsContainer.innerHTML = '';
+
+    dialogData.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'tea-choice-btn';
+      btn.textContent = opt.label;
+      btn.onclick = () => {
+        if (opt.action === 'complete_report_selvam') {
+          quests.completeObjective('side_bull', 'report_selvam', audio);
+          if (window.investigationSystem) {
+            window.investigationSystem.addEvidence('clue_chola_seal');
+          }
+          if (window.worldUnlockSystem) {
+            window.worldUnlockSystem.unlock('pichavaram', audio);
+          }
+          document.getElementById('tea-dialogue-text').textContent = opt.response;
+          saveManager.saveGameImmediate('auto', 'selvam_report_complete');
+        } else {
+          document.getElementById('tea-dialogue-text').textContent = opt.response;
+        }
+      };
+      optionsContainer.appendChild(btn);
+    });
+  }
+  window.openFarmerSelvamDialogue = openFarmerSelvamDialogue;
+
+  // 7. Chola Waterwheel Puzzle (Reusable Delta Engine)
+  window.waterwheelDial1 = window.waterwheelDial1 !== undefined ? window.waterwheelDial1 : 0;
+  window.waterwheelDial2 = window.waterwheelDial2 !== undefined ? window.waterwheelDial2 : 0;
+  window.sluiceGateA = window.sluiceGateA !== undefined ? window.sluiceGateA : false;
+  window.sluiceGateB = window.sluiceGateB !== undefined ? window.sluiceGateB : false;
+  window.sluiceGateC = window.sluiceGateC !== undefined ? window.sluiceGateC : false;
+  window.deltaWaterLevel = window.deltaWaterLevel !== undefined ? window.deltaWaterLevel : 100;
+  window.deltaPathRevealed = window.deltaPathRevealed !== undefined ? window.deltaPathRevealed : false;
+
   function openWaterwheelPuzzle() {
     puzzleModal.classList.remove('hidden');
     audio.playPinTap();
@@ -539,35 +651,57 @@ window.addEventListener('DOMContentLoaded', () => {
   function renderWaterwheelPuzzle() {
     const dial1El = document.getElementById('puzzle-dial-1');
     const dial2El = document.getElementById('puzzle-dial-2');
-    if (dial1El) dial1El.style.transform = `rotate(${waterwheelDial1}deg)`;
-    if (dial2El) dial2El.style.transform = `rotate(${waterwheelDial2}deg)`;
+    if (dial1El) dial1El.style.transform = `rotate(${window.waterwheelDial1}deg)`;
+    if (dial2El) dial2El.style.transform = `rotate(${window.waterwheelDial2}deg)`;
 
     // Check solution (Lotus at 90 deg, Tiger at 270 deg)
-    if (waterwheelDial1 === 90 && waterwheelDial2 === 270) {
-      document.getElementById('puzzle-status').textContent = '✓ MECHANISM ALIGNED: Sluice gates open! Western Ghats unlocked!';
+    if (window.waterwheelDial1 === 90 && window.waterwheelDial2 === 270) {
+      window.sluiceGateA = true;
+      window.sluiceGateB = true;
+      window.deltaWaterLevel = 25;
+      window.deltaPathRevealed = true;
+
+      document.getElementById('puzzle-status').textContent = '✓ MECHANISM ALIGNED: Sluice gates open! Sunken route revealed!';
       quests.completeObjective('main_delta', 'solve_waterwheel', audio);
+
+      if (window.questProgression) {
+        window.questProgression.onPuzzleSolved('delta_waterwheel_gears');
+        window.questProgression.onPuzzleSolved('sluice_valve_system');
+      }
+      if (window.investigationSystem) {
+        window.investigationSystem.addEvidence('clue_waterwheel_glyph');
+      }
+      if (window.worldUnlockSystem) {
+        window.worldUnlockSystem.unlock('chettinad', audio);
+        window.worldUnlockSystem.unlock('thanjavur', audio);
+      }
       window.WORLD_DATA.biomes.western_ghats.unlocked = true;
+
       // Diegetic save: puzzle solved
       saveManager.saveGameImmediate('auto', 'puzzle_solved');
     } else {
-      document.getElementById('puzzle-status').textContent = 'Rotate granite gears to align the Chola Tiger with the Lotus rune.';
+      window.deltaPathRevealed = false;
+      document.getElementById('puzzle-status').textContent = 'Rotate granite gears to align the Chola Tiger (270°) with the Lotus rune (90°).';
     }
   }
 
   document.getElementById('rotate-dial-1-btn')?.addEventListener('click', () => {
-    waterwheelDial1 = (waterwheelDial1 + 90) % 360;
+    window.waterwheelDial1 = (window.waterwheelDial1 + 90) % 360;
     audio.playFootstep('dirt');
     renderWaterwheelPuzzle();
   });
 
   document.getElementById('rotate-dial-2-btn')?.addEventListener('click', () => {
-    waterwheelDial2 = (waterwheelDial2 + 90) % 360;
+    window.waterwheelDial2 = (window.waterwheelDial2 + 90) % 360;
     audio.playFootstep('dirt');
     renderWaterwheelPuzzle();
   });
 
-  // 8. Camera Capture Listener
+  // 8. Camera Capture Listener (Using 3D Canvas in 3D Mode, Fixes Bug #4)
   snapPhotoBtn.addEventListener('click', () => {
+    const is3D = !!(threeWorld && threeWorld.isActive);
+    const activeCanvas = is3D ? (threeWorld.renderer ? threeWorld.renderer.domElement : canvas) : canvas;
+
     const currentBiome = getCurrentBiome(player.x);
     const detected = explorerCamera.scanSubjects(player, window.WORLD_DATA, entities, renderer.camera);
     
@@ -581,7 +715,14 @@ window.addEventListener('DOMContentLoaded', () => {
       quests.showQuestNotification('Photo Taken: Endangered Nilgiri Tahr documented!');
     }
 
-    const snap = explorerCamera.captureSnapshot(canvas, detected, currentBiome.name, audio, journal);
+    if (detected && window.investigationSystem) {
+      window.investigationSystem.photographEvidence(detected.data.id);
+    }
+    if (detected && window.questProgression) {
+      window.questProgression.onPhotoCaptured(detected.data.id, { audio });
+    }
+
+    const snap = explorerCamera.captureSnapshot(activeCanvas, detected, currentBiome.name, audio, journal);
     quests.showQuestNotification(`Snapshot Saved to Journal: ${snap.subjectName}`);
   });
 
@@ -664,6 +805,9 @@ window.addEventListener('DOMContentLoaded', () => {
   toggleMultiplayerBtn?.addEventListener('click', () => toggleLobby());
   closeLobbyBtn?.addEventListener('click', () => toggleLobby(false));
   playSoloBtn?.addEventListener('click', () => toggleLobby(false));
+
+  const toggleCustomizationBtn = document.getElementById('toggle-customization-btn');
+  toggleCustomizationBtn?.addEventListener('click', () => customizationUI?.toggle());
 
   if (multiplayer) {
     multiplayer.onStatusChange = (msg, isError) => {
@@ -873,8 +1017,18 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 4. Living NPCs & Wildlife
+    // 4. Update and Draw Living Entities
+    entities.update(deltaTime, player, survival, lighting.timeOfDay, weather.current);
     entities.draw(ctx, renderer.camera);
+
+    // 4b. Update Footstep & Biomechanics Audio & Spatial Listener
+    if (audioManager && audioManager.footsteps) {
+      const activeP = (threeWorld && threeWorld.isActive && threeWorld.player) ? threeWorld.player : player;
+      audioManager.footsteps.update(deltaTime, activeP);
+    }
+    if (audioManager && audioManager.spatial && threeWorld && threeWorld.camera) {
+      audioManager.spatial.updateListener(threeWorld.camera);
+    }
 
     // 5. World particles (Ripples, Embers, Mountain Fog)
     particles.drawWorldParticles(ctx, renderer.camera, weather.current);

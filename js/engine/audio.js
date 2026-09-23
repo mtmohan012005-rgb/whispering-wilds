@@ -38,27 +38,39 @@ class SoundEngine {
   }
 
   init() {
-    if (this.ctx) return;
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    this.ctx = new AudioContext();
+    if (!this.ctx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      this.ctx = new AudioContext();
+    }
 
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
-    this.masterGain.connect(this.ctx.destination);
+    if (!this.masterGain && this.ctx) {
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+      this.masterGain.connect(this.ctx.destination);
+    }
 
-    this.musicGain = this.ctx.createGain();
-    this.musicGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
-    this.musicGain.connect(this.masterGain);
+    if (!this.musicGain && this.ctx && this.masterGain) {
+      this.musicGain = this.ctx.createGain();
+      this.musicGain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+      this.musicGain.connect(this.masterGain);
+    }
 
-    this.ambienceGain = this.ctx.createGain();
-    this.ambienceGain.gain.setValueAtTime(0.6, this.ctx.currentTime);
-    this.ambienceGain.connect(this.masterGain);
+    if (!this.ambienceGain && this.ctx && this.masterGain) {
+      this.ambienceGain = this.ctx.createGain();
+      this.ambienceGain.gain.setValueAtTime(0.6, this.ctx.currentTime);
+      this.ambienceGain.connect(this.masterGain);
+    }
 
-    this.sfxGain = this.ctx.createGain();
-    this.sfxGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
-    this.sfxGain.connect(this.masterGain);
+    if (!this.sfxGain && this.ctx && this.masterGain) {
+      this.sfxGain = this.ctx.createGain();
+      this.sfxGain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+      this.sfxGain.connect(this.masterGain);
+    }
 
-    this.setupAmbience();
+    if (!this.rainSource && this.ctx && this.ambienceGain) {
+      this.setupAmbience();
+    }
   }
 
   resume() {
@@ -217,7 +229,8 @@ class SoundEngine {
   }
 
   playPluckedNote(freq, time, duration = 1.6, velocity = 0.3) {
-    if (!this.ctx || this.isMuted) return;
+    if (!this.musicGain) this.init();
+    if (!this.ctx || this.isMuted || !this.musicGain) return;
     
     const osc1 = this.ctx.createOscillator();
     const osc2 = this.ctx.createOscillator();
@@ -293,7 +306,8 @@ class SoundEngine {
   }
 
   playFootstep(surface = 'dirt') {
-    if (!this.ctx || this.isMuted) return;
+    if (!this.sfxGain) this.init();
+    if (!this.ctx || this.isMuted || !this.sfxGain) return;
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
@@ -325,7 +339,8 @@ class SoundEngine {
   }
 
   playCameraShutter() {
-    if (!this.ctx || this.isMuted) return;
+    if (!this.sfxGain) this.init();
+    if (!this.ctx || this.isMuted || !this.sfxGain) return;
     const now = this.ctx.currentTime;
     
     // Shutter mirror snap
@@ -453,7 +468,8 @@ class SoundEngine {
   }
 
   playPinTap() {
-    if (!this.ctx || this.isMuted) return;
+    if (!this.sfxGain) this.init();
+    if (!this.ctx || this.isMuted || !this.sfxGain) return;
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
@@ -468,7 +484,8 @@ class SoundEngine {
   }
 
   playDiscoveryJingle() {
-    if (!this.ctx || this.isMuted) return;
+    if (!this.sfxGain) this.init();
+    if (!this.ctx || this.isMuted || !this.sfxGain) return;
     const notes = [440, 554.37, 659.25, 880];
     const now = this.ctx.currentTime;
     notes.forEach((freq, idx) => {

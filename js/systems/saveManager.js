@@ -39,8 +39,14 @@ class SaveManager {
         y: player.y,
         angle: player.angle || 0,
         isLanternOn: player.isLanternOn || false,
-        outfitId: player.outfitId || player.currentOutfit || 'everyday_veshti',
-        currentOutfit: player.currentOutfit || player.outfitId || 'everyday_veshti',
+        outfitId: player.outfitId || 'everyday_veshti',
+        hairstyleId: player.hairstyleId || 'short_traditional_part',
+        accessoryId: player.accessoryId || 'none',
+        footwearId: player.footwearId || 'kolhapuri_sandals',
+        appearancePresetId: player.appearancePresetId || 'everyday_explorer',
+        customizationChangesUsed: window.playerCustomizationSystem ? window.playerCustomizationSystem.customizationChangesUsed : (player.customizationChangesUsed || 0),
+        maxCustomizationChanges: 5,
+        customizationHistory: window.playerCustomizationSystem ? window.playerCustomizationSystem.history : (player.customizationHistory || []),
         equippedOutfit: player.equippedOutfit ? {
           itemId: player.equippedOutfit.itemId,
           outfitId: player.equippedOutfit.outfitId || player.equippedOutfit.outfitKey,
@@ -48,6 +54,19 @@ class SaveManager {
           stats: player.equippedOutfit.stats
         } : null,
         inventory: player.inventory || []
+      },
+
+      // Audio Settings
+      audioSettings: window.audioManager ? window.audioManager.getSettings() : {
+        masterVolume: 0.8,
+        musicVolume: 0.6,
+        ambienceVolume: 0.7,
+        sfxVolume: 0.8,
+        dialogueVolume: 0.9,
+        wildlifeVolume: 0.7,
+        isMuted: false,
+        language: 'tamil',
+        subtitleMode: 'bilingual'
       },
 
       // Survival vitals & supplies
@@ -74,12 +93,45 @@ class SaveManager {
         // Note: actual photo dataUrls are NOT persisted (too large).
       },
 
-      // Quest progress
+      // Quest progress (legacy compatibility)
       quests: quests ? quests.quests.map(q => ({
         id: q.id,
         status: q.status,
         objectives: q.objectives.map(o => ({ id: o.id, done: o.done }))
       })) : [],
+
+      // Authoritative Quest Progression
+      questProgression: window.questProgression ? window.questProgression.getState() : null,
+
+      // Investigation System & Evidence
+      investigation: window.investigationSystem ? window.investigationSystem.getState() : null,
+
+      // World Unlock System (8 Regions)
+      worldUnlocks: window.worldUnlockSystem ? window.worldUnlockSystem.getState() : null,
+
+      // Reusable Delta Puzzle States
+      puzzles: {
+        waterwheel: {
+          dial1: window.waterwheelDial1 !== undefined ? window.waterwheelDial1 : 0,
+          dial2: window.waterwheelDial2 !== undefined ? window.waterwheelDial2 : 0,
+          sluiceA: window.sluiceGateA !== undefined ? window.sluiceGateA : false,
+          sluiceB: window.sluiceGateB !== undefined ? window.sluiceGateB : false,
+          sluiceC: window.sluiceGateC !== undefined ? window.sluiceGateC : false,
+          waterLevel: window.deltaWaterLevel !== undefined ? window.deltaWaterLevel : 100,
+          pathRevealed: window.deltaPathRevealed !== undefined ? window.deltaPathRevealed : false
+        },
+        deltaWaterwheel: window.deltaWaterwheelPuzzleState ? { ...window.deltaWaterwheelPuzzleState } : {
+          waterwheelDial1: window.waterwheelDial1 !== undefined ? window.waterwheelDial1 : 0,
+          waterwheelDial2: window.waterwheelDial2 !== undefined ? window.waterwheelDial2 : 0,
+          sluiceGateA: window.sluiceGateA !== undefined ? window.sluiceGateA : false,
+          sluiceGateB: window.sluiceGateB !== undefined ? window.sluiceGateB : false,
+          deltaWaterLevel: window.deltaWaterLevel !== undefined ? window.deltaWaterLevel : 1.0,
+          deltaPathRevealed: window.deltaPathRevealed !== undefined ? window.deltaPathRevealed : false
+        }
+      },
+
+      // Story flags
+      storyFlags: window.STORY_FLAGS ? Array.from(window.STORY_FLAGS) : [],
 
       // Day/night & weather snapshot
       world: {
@@ -174,13 +226,42 @@ class SaveManager {
       player.isLanternOn = state.player.isLanternOn || false;
       const targetOutfit = state.player.outfitId || state.player.currentOutfit || 'everyday_veshti';
       player.outfitId = targetOutfit;
-      player.currentOutfit = targetOutfit;
+      player.hairstyleId = state.player.hairstyleId || 'short_traditional_part';
+      player.accessoryId = state.player.accessoryId || 'none';
+      player.footwearId = state.player.footwearId || 'kolhapuri_sandals';
+      player.appearancePresetId = state.player.appearancePresetId || 'everyday_explorer';
+
+      // Clamp changes used strictly between 0 and 5
+      const rawUsed = Number(state.player.customizationChangesUsed);
+      player.customizationChangesUsed = isNaN(rawUsed) ? 0 : Math.max(0, Math.min(5, Math.floor(rawUsed)));
+      player.maxCustomizationChanges = 5;
+      player.customizationHistory = Array.isArray(state.player.customizationHistory) ? state.player.customizationHistory.slice(0, 5) : [];
+
       if (player.setOutfit) player.setOutfit(targetOutfit);
       if (window.threeWorld && window.threeWorld.player) {
         window.threeWorld.player.setOutfit(targetOutfit);
       }
       player.equippedOutfit = state.player.equippedOutfit || null;
       player.inventory = state.player.inventory || [];
+
+      // Restore to PlayerCustomizationSystem
+      if (window.playerCustomizationSystem) {
+        window.playerCustomizationSystem.deserialize({
+          outfitId: player.outfitId,
+          hairstyleId: player.hairstyleId,
+          accessoryId: player.accessoryId,
+          footwearId: player.footwearId,
+          appearancePresetId: player.appearancePresetId,
+          customizationChangesUsed: player.customizationChangesUsed,
+          maxCustomizationChanges: 5,
+          history: player.customizationHistory
+        });
+      }
+    }
+
+    // --- Audio Settings ---
+    if (window.audioManager && state.audioSettings) {
+      window.audioManager.applySettings(state.audioSettings);
     }
 
     // --- Survival ---
@@ -205,7 +286,7 @@ class SaveManager {
       journal.yarnConnections = state.journal.yarnConnections || [];
     }
 
-    // --- Quests ---
+    // --- Quests (Legacy + Authoritative) ---
     if (quests && state.quests) {
       state.quests.forEach(sq => {
         const liveQuest = quests.quests.find(q => q.id === sq.id);
@@ -217,6 +298,47 @@ class SaveManager {
           });
         }
       });
+    }
+
+    // --- Authoritative Quest Progression Engine ---
+    if (window.questProgression && state.questProgression) {
+      window.questProgression.restoreState(state.questProgression);
+      if (quests && quests.syncLegacyQuests) {
+        quests.syncLegacyQuests();
+      }
+    }
+
+    // --- Investigation System & Clues ---
+    if (window.investigationSystem && state.investigation) {
+      window.investigationSystem.restoreState(state.investigation);
+    }
+
+    // --- World Unlock System ---
+    if (window.worldUnlockSystem && state.worldUnlocks) {
+      window.worldUnlockSystem.restoreState(state.worldUnlocks);
+    }
+
+    // --- Reusable Delta Puzzle States ---
+    if (state.puzzles) {
+      if (state.puzzles.waterwheel) {
+        const pw = state.puzzles.waterwheel;
+        window.waterwheelDial1 = pw.dial1 !== undefined ? pw.dial1 : 0;
+        window.waterwheelDial2 = pw.dial2 !== undefined ? pw.dial2 : 0;
+        window.sluiceGateA = pw.sluiceA !== undefined ? pw.sluiceA : false;
+        window.sluiceGateB = pw.sluiceB !== undefined ? pw.sluiceB : false;
+        window.sluiceGateC = pw.sluiceC !== undefined ? pw.sluiceC : false;
+        window.deltaWaterLevel = pw.waterLevel !== undefined ? pw.waterLevel : 100;
+        window.deltaPathRevealed = pw.pathRevealed !== undefined ? pw.pathRevealed : false;
+      }
+      if (state.puzzles.deltaWaterwheel) {
+        if (!window.deltaWaterwheelPuzzleState) window.deltaWaterwheelPuzzleState = {};
+        Object.assign(window.deltaWaterwheelPuzzleState, state.puzzles.deltaWaterwheel);
+      }
+    }
+
+    // --- Story Flags ---
+    if (state.storyFlags) {
+      window.STORY_FLAGS = new Set(state.storyFlags);
     }
 
     // --- Lighting (time of day) ---

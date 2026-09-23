@@ -149,7 +149,6 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
         // Equip directly if already purchased
         p.equippedOutfit = item;
         p.outfitId = targetOutfitId;
-        p.currentOutfit = targetOutfitId;
         if (p.setOutfit) p.setOutfit(targetOutfitId);
         if (window.threeWorld && window.threeWorld.player) {
             window.threeWorld.player.setOutfit(targetOutfitId);
@@ -170,7 +169,6 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
             p.inventory.push(item);
             p.equippedOutfit = item;
             p.outfitId = targetOutfitId;
-            p.currentOutfit = targetOutfitId;
             if (p.setOutfit) p.setOutfit(targetOutfitId);
             if (window.threeWorld && window.threeWorld.player) {
                 window.threeWorld.player.setOutfit(targetOutfitId);

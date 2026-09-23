@@ -126,6 +126,14 @@ class ThreePlayer {
     }
   }
 
+  setCustomization(config) {
+    if (!config) return;
+    if (config.outfitId) {
+      this.setOutfit(config.outfitId);
+    }
+    this.customization = { ...config };
+  }
+
   buildLantern() {
     const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.3, metalness: 0.7 });
     const glassMat = new THREE.MeshBasicMaterial({ color: 0xffe082, transparent: true, opacity: 0.85 });
