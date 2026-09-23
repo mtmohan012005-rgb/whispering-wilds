@@ -110,6 +110,13 @@ class QuestManager {
     return false;
   }
 
+  validateEnvironmentalAction(questId, objId, conditionMet, audio) {
+    if (conditionMet) {
+      return this.completeObjective(questId, objId, audio);
+    }
+    return false;
+  }
+
   showQuestNotification(msg) {
     const notif = document.getElementById('quest-toast');
     if (notif) {

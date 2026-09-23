@@ -130,6 +130,16 @@ class SaveManager {
         }
       },
 
+      // Reusable Puzzle System
+      puzzleSystem: window.puzzleSystem ? window.puzzleSystem.getState() : null,
+
+      // Exploration & Traversal State
+      exploration: window.explorationSystem ? window.explorationSystem.getState() : null,
+
+      // Cultural Life & Festival System
+      culturalLife: window.culturalLifeSystem ? window.culturalLifeSystem.getState() : null,
+      festival: window.festivalSystem ? window.festivalSystem.getState() : null,
+
       // Story flags
       storyFlags: window.STORY_FLAGS ? Array.from(window.STORY_FLAGS) : [],
 
@@ -334,6 +344,24 @@ class SaveManager {
         if (!window.deltaWaterwheelPuzzleState) window.deltaWaterwheelPuzzleState = {};
         Object.assign(window.deltaWaterwheelPuzzleState, state.puzzles.deltaWaterwheel);
       }
+    }
+
+    // --- Reusable Puzzle Engine State ---
+    if (window.puzzleSystem && state.puzzleSystem) {
+      window.puzzleSystem.applyState(state.puzzleSystem);
+    }
+
+    // --- Exploration & Traversal State ---
+    if (window.explorationSystem && state.exploration) {
+      window.explorationSystem.applyState(state.exploration);
+    }
+
+    // --- Cultural Life & Festival System ---
+    if (window.culturalLifeSystem && state.culturalLife) {
+      window.culturalLifeSystem.applyState(state.culturalLife);
+    }
+    if (window.festivalSystem && state.festival) {
+      window.festivalSystem.applyState(state.festival);
     }
 
     // --- Story Flags ---

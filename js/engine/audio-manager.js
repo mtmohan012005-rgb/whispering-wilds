@@ -122,10 +122,13 @@ class AudioManager {
    * Find audio definition from registered categories
    */
   findDefinition(id) {
-    if (!this.data) return null;
+    if (!this.data || !id) return null;
     for (const cat of Object.keys(this.data)) {
       if (this.data[cat] && this.data[cat][id]) {
-        return this.data[cat][id];
+        const def = this.data[cat][id];
+        if (!def.id) def.id = id;
+        if (!def.category) def.category = cat;
+        return def;
       }
     }
     return null;
@@ -135,9 +138,11 @@ class AudioManager {
    * Log missing audio per contract and trigger synthesized fallback
    */
   handleMissingAudio(id, expectedPath, category) {
-    if (!this.missingAssetLogged.has(id)) {
-      console.warn('[AUDIO MISSING]', id, expectedPath);
-      this.missingAssetLogged.add(id);
+    if (!id) return;
+    const safeId = String(id);
+    if (!this.missingAssetLogged.has(safeId)) {
+      console.warn('[AUDIO MISSING]', safeId, expectedPath);
+      this.missingAssetLogged.add(safeId);
     }
 
     // Trigger rich procedural synthesis fallback
@@ -146,13 +151,13 @@ class AudioManager {
         this.soundEngine.playFootstep('dirt');
       } else if (category === 'music') {
         this.soundEngine.playAcousticNote(220, 1.2, 0.4);
-      } else if (id.includes('shutter') || id.includes('camera')) {
+      } else if (safeId.includes('shutter') || safeId.includes('camera')) {
         this.soundEngine.playCameraSnap();
-      } else if (id.includes('tea')) {
+      } else if (safeId.includes('tea')) {
         this.soundEngine.playTeaPour();
-      } else if (id.includes('relic') || id.includes('pickup')) {
+      } else if (safeId.includes('relic') || safeId.includes('pickup')) {
         this.soundEngine.playPinTap();
-      } else if (id.includes('stinger') || id.includes('discovery')) {
+      } else if (safeId.includes('stinger') || safeId.includes('discovery')) {
         this.soundEngine.playDiscoveryJingle();
       }
     }

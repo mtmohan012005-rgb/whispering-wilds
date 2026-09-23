@@ -876,6 +876,104 @@ window.runStepByStepFeatureTests = async function() {
     log(25, 'Professional PC HUD, 8-Region Map, Journal, Satchel (20kg) & Photo Mode', false, err.message);
   }
 
+  // --- STEP 26: Advanced Exploration, Traversal & Environmental Interactions ---
+  try {
+    if (typeof window.runExplorationSystemTests === 'function') {
+      const expSuite = await window.runExplorationSystemTests();
+      const failed = expSuite.results.filter(r => !r.passed);
+      log(26, 'Advanced Exploration, Traversal & Environmental Interactions', expSuite.passed,
+        `Passed: ${expSuite.passed}, Sub-tests: ${expSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(26, 'Advanced Exploration, Traversal & Environmental Interactions', false, 'runExplorationSystemTests function not defined');
+    }
+  } catch (err) {
+    log(26, 'Advanced Exploration, Traversal & Environmental Interactions', false, err.message);
+  }
+
+  // --- STEP 27: Reusable Puzzle Engine & Cultural Environmental Puzzles ---
+  try {
+    if (typeof window.runPuzzleSystemTests === 'function') {
+      const puzSuite = await window.runPuzzleSystemTests();
+      const failed = puzSuite.results.filter(r => !r.passed);
+      log(27, 'Reusable Puzzle Engine & Cultural Environmental Puzzles', puzSuite.passed,
+        `Passed: ${puzSuite.passed}, Sub-tests: ${puzSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(27, 'Reusable Puzzle Engine & Cultural Environmental Puzzles', false, 'runPuzzleSystemTests function not defined');
+    }
+  } catch (err) {
+    log(27, 'Reusable Puzzle Engine & Cultural Environmental Puzzles', false, err.message);
+  }
+
+  // --- STEP 28: Authentic Tamil Nadu Cultural Life & Regional Profiles ---
+  try {
+    if (typeof window.runCulturalLifeTests === 'function') {
+      const cultSuite = await window.runCulturalLifeTests();
+      const failed = cultSuite.results.filter(r => !r.passed);
+      log(28, 'Authentic Tamil Nadu Cultural Life & Regional Profiles', cultSuite.passed,
+        `Passed: ${cultSuite.passed}, Sub-tests: ${cultSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(28, 'Authentic Tamil Nadu Cultural Life & Regional Profiles', false, 'runCulturalLifeTests function not defined');
+    }
+  } catch (err) {
+    log(28, 'Authentic Tamil Nadu Cultural Life & Regional Profiles', false, err.message);
+  }
+
+  // --- STEP 29: Dynamic Festival Lifecycle & Celebration Framework ---
+  try {
+    if (typeof window.runFestivalSystemTests === 'function') {
+      const festSuite = await window.runFestivalSystemTests();
+      const failed = festSuite.results.filter(r => !r.passed);
+      log(29, 'Dynamic Festival Lifecycle & Celebration Framework', festSuite.passed,
+        `Passed: ${festSuite.passed}, Sub-tests: ${festSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(29, 'Dynamic Festival Lifecycle & Celebration Framework', false, 'runFestivalSystemTests function not defined');
+    }
+  } catch (err) {
+    log(29, 'Dynamic Festival Lifecycle & Celebration Framework', false, err.message);
+  }
+
+  // --- STEP 30: Regional Market Life & Merchant Simulation ---
+  try {
+    if (typeof window.runMarketLifeTests === 'function') {
+      const marketSuite = await window.runMarketLifeTests();
+      const failed = marketSuite.results.filter(r => !r.passed);
+      log(30, 'Regional Market Life & Merchant Simulation', marketSuite.passed,
+        `Passed: ${marketSuite.passed}, Sub-tests: ${marketSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(30, 'Regional Market Life & Merchant Simulation', false, 'runMarketLifeTests function not defined');
+    }
+  } catch (err) {
+    log(30, 'Regional Market Life & Merchant Simulation', false, err.message);
+  }
+
+  // --- STEP 31: Kolam System & Morning Threshold Art ---
+  try {
+    if (typeof window.runKolamSystemTests === 'function') {
+      const kolamSuite = await window.runKolamSystemTests();
+      const failed = kolamSuite.results.filter(r => !r.passed);
+      log(31, 'Kolam System & Morning Threshold Art', kolamSuite.passed,
+        `Passed: ${kolamSuite.passed}, Sub-tests: ${kolamSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(31, 'Kolam System & Morning Threshold Art', false, 'runKolamSystemTests function not defined');
+    }
+  } catch (err) {
+    log(31, 'Kolam System & Morning Threshold Art', false, err.message);
+  }
+
+  // --- STEP 32: Food Culture, Preparation Loops & Survival Vitals ---
+  try {
+    if (typeof window.runFoodCultureTests === 'function') {
+      const foodSuite = await window.runFoodCultureTests();
+      const failed = foodSuite.results.filter(r => !r.passed);
+      log(32, 'Food Culture, Preparation Loops & Survival Vitals', foodSuite.passed,
+        `Passed: ${foodSuite.passed}, Sub-tests: ${foodSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(32, 'Food Culture, Preparation Loops & Survival Vitals', false, 'runFoodCultureTests function not defined');
+    }
+  } catch (err) {
+    log(32, 'Food Culture, Preparation Loops & Survival Vitals', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

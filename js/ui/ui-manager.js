@@ -140,6 +140,12 @@ class UIManager {
             case 'SETTINGS':
                 if (this.settingsUI) this.settingsUI.show();
                 break;
+            case 'PUZZLE':
+                if (window.puzzleUI && window.puzzleUI.modal) window.puzzleUI.modal.classList.remove('hidden');
+                break;
+            case 'INSPECT':
+                if (window.explorationUI) window.explorationUI.inspectModalEl && window.explorationUI.inspectModalEl.classList.remove('hidden');
+                break;
         }
     }
 
@@ -162,6 +168,12 @@ class UIManager {
                 break;
             case 'SETTINGS':
                 if (this.settingsUI) this.settingsUI.hide();
+                break;
+            case 'PUZZLE':
+                if (window.puzzleUI) window.puzzleUI.modal && window.puzzleUI.modal.classList.add('hidden');
+                break;
+            case 'INSPECT':
+                if (window.environmentInteraction) window.environmentInteraction.endInspection();
                 break;
         }
     }

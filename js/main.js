@@ -127,6 +127,19 @@ window.addEventListener('DOMContentLoaded', () => {
   const unifiedSettingsUI = (typeof window.UnifiedSettingsUI !== 'undefined') ? new window.UnifiedSettingsUI() : null;
   window.unifiedSettingsUI = unifiedSettingsUI;
 
+  // Initialize Puzzle, Exploration, and Cultural Life UIs
+  const puzzleUI = (typeof window.PuzzleUI !== 'undefined') ? new window.PuzzleUI() : null;
+  window.puzzleUI = puzzleUI;
+
+  const explorationUI = (typeof window.ExplorationUI !== 'undefined') ? new window.ExplorationUI() : null;
+  window.explorationUI = explorationUI;
+
+  const culturalDiscoveryUI = (typeof window.CulturalDiscoveryUI !== 'undefined') ? new window.CulturalDiscoveryUI() : null;
+  window.culturalDiscoveryUI = culturalDiscoveryUI;
+
+  const festivalUI = (typeof window.FestivalUI !== 'undefined') ? new window.FestivalUI() : null;
+  window.festivalUI = festivalUI;
+
   const uiManager = (typeof window.UIManager !== 'undefined') ? new window.UIManager() : null;
   window.uiManager = uiManager;
   if (uiManager) {
@@ -156,7 +169,11 @@ window.addEventListener('DOMContentLoaded', () => {
     uiManager: uiManager,
     hud: gameHUD,
     worldMapUI: worldMapUI,
-    photoUI: photoUI
+    photoUI: photoUI,
+    puzzleUI: puzzleUI,
+    explorationUI: explorationUI,
+    culturalDiscoveryUI: culturalDiscoveryUI,
+    festivalUI: festivalUI
   };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
@@ -375,6 +392,12 @@ window.addEventListener('DOMContentLoaded', () => {
           return;
         }
       }
+    }
+
+    // 1c. Check for Environmental Interaction System (doors, mechanisms, props, climbables, boats)
+    if (threeWorld && threeWorld.isActive && threeWorld.environmentInteraction) {
+      const res = threeWorld.environmentInteraction.triggerInteraction(player);
+      if (res) return;
     }
   }
 

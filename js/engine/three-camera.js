@@ -90,6 +90,40 @@ class ThreeCamera {
         return this.mode === 'macro';
     }
 
+    setClimbingMode(active) {
+        if (active) {
+            this.gameplayOffset.set(-14, 12, 14);
+        } else {
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
+        }
+    }
+
+    setSwimmingMode(active) {
+        if (active) {
+            this.gameplayOffset.set(-18, 9, 18);
+        } else {
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
+        }
+    }
+
+    setBoatMode(active) {
+        if (active) {
+            this.gameplayOffset.set(-28, 22, 28);
+        } else {
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
+        }
+    }
+
+    setInspectTarget(target) {
+        if (target) {
+            this.contextFraming = target;
+            this.gameplayOffset.set(-8, 5, 8);
+        } else {
+            this.contextFraming = null;
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
+        }
+    }
+
     update(playerPos, deltaTime) {
         if (this.isTransitioning) {
             this.transitionProgress += deltaTime / this.transitionDuration;

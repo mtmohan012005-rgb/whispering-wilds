@@ -77,6 +77,41 @@ class ThreeWorld {
         this.performanceManager = (typeof PerformanceManager !== 'undefined') ? new PerformanceManager(window.graphicsSettings, this) : null;
         window.performanceManager = this.performanceManager;
 
+        // 4f. World Collision & Traversal Physics
+        this.collision = (typeof WorldCollision !== 'undefined') ? new WorldCollision() : null;
+        window.worldCollision = this.collision;
+
+        this.traversal = (typeof TraversalSystem !== 'undefined') ? new TraversalSystem(this.player, this.cameraController, this.collision) : null;
+        window.traversalSystem = this.traversal;
+
+        this.exploration = (typeof ExplorationSystem !== 'undefined') ? new ExplorationSystem(this.scene, this.collision) : null;
+        window.explorationSystem = this.exploration;
+
+        this.environmentInteraction = (typeof EnvironmentInteractionSystem !== 'undefined') ? new EnvironmentInteractionSystem(this.scene, this.cameraController) : null;
+        window.environmentInteraction = this.environmentInteraction;
+
+        this.puzzle = (typeof PuzzleSystem !== 'undefined') ? new PuzzleSystem() : null;
+        window.puzzleSystem = this.puzzle;
+
+        // 4g. Authentic Tamil Nadu Cultural Simulation Systems
+        this.culturalLife = (typeof CulturalLifeSystem !== 'undefined') ? new CulturalLifeSystem() : null;
+        window.culturalLifeSystem = this.culturalLife;
+
+        this.dailyRoutine = (typeof DailyRoutineSystem !== 'undefined') ? new DailyRoutineSystem() : null;
+        window.dailyRoutineSystem = this.dailyRoutine;
+
+        this.festival = (typeof FestivalSystem !== 'undefined') ? new FestivalSystem(this.scene, this.collision) : null;
+        window.festivalSystem = this.festival;
+
+        this.marketLife = (typeof MarketLifeSystem !== 'undefined') ? new MarketLifeSystem(this.scene, this.collision) : null;
+        window.marketLifeSystem = this.marketLife;
+
+        this.kolam = (typeof KolamSystem !== 'undefined') ? new KolamSystem(this.scene) : null;
+        window.kolamSystem = this.kolam;
+
+        this.foodCulture = (typeof FoodCultureSystem !== 'undefined') ? new FoodCultureSystem() : null;
+        window.foodCultureSystem = this.foodCulture;
+
         this.isTabHidden = false;
 
         // Set initial player height on terrain
@@ -248,7 +283,31 @@ class ThreeWorld {
             this.livingWorld.update(dt, worldClockMinutes, playerPos);
         }
 
-        // 4d. Update Production World Assets (Region Streaming, Distance LOD & Culling)
+        // 4d. Update Traversal, Exploration & Environmental Interaction
+        if (this.traversal) {
+            this.traversal.update(this.inputState, dt, playerPos);
+        }
+        if (this.exploration) {
+            this.exploration.update(playerPos, dt);
+        }
+        if (this.environmentInteraction) {
+            this.environmentInteraction.update(playerPos, this.player.currentRotation, dt);
+        }
+
+        // 4e. Update Cultural Life & Markets
+        if (this.dailyRoutine) {
+            let worldHour = 9.0;
+            if (window.testRef && window.testRef.lighting) {
+                worldHour = window.testRef.lighting.timeOfDay;
+            }
+            const weather = (window.testRef && window.testRef.weather) ? window.testRef.weather.current.type : 'clear';
+            this.dailyRoutine.update(worldHour, weather);
+        }
+        if (this.marketLife) {
+            this.marketLife.update(playerPos, dt);
+        }
+
+        // 4f. Update Production World Assets (Region Streaming, Distance LOD & Culling)
         if (this.worldAssets) {
             this.worldAssets.update(playerPos, dt);
         }

@@ -42,16 +42,21 @@ class AudioSpatialSystem {
   }
 
   playSpatial(id, position = { x: 0, y: 0, z: 0 }, options = {}) {
-    if (!this.manager) return null;
+    if (!this.manager || !id) return null;
 
-    const def = this.manager.findDefinition(id) || { id, category: options.category || 'sfx', file: options.file || `assets/audio/${id}.mp3` };
+    const found = this.manager.findDefinition(id);
+    const def = found || { id, category: options.category || 'sfx', file: options.file || `assets/audio/${id}.mp3` };
+    if (!def.id) def.id = id;
+    if (!def.file) def.file = `assets/audio/${id}.mp3`;
+    if (!def.category) def.category = options.category || 'sfx';
+
     const maxDist = options.maxDistance || def.maxDistance || 60;
     const minDist = options.minDistance || def.minDistance || 5;
 
     // Calculate distance to listener
-    const dx = position.x - this.listenerPosition.x;
-    const dy = position.y - this.listenerPosition.y;
-    const dz = position.z - this.listenerPosition.z;
+    const dx = (position ? position.x : 0) - this.listenerPosition.x;
+    const dy = (position ? position.y : 0) - this.listenerPosition.y;
+    const dz = (position ? position.z : 0) - this.listenerPosition.z;
     const distance = Math.hypot(dx, dy, dz);
 
     // Distance attenuation
@@ -93,6 +98,10 @@ class AudioSpatialSystem {
         source.isOccluded = !!hit.collided;
       }
     });
+  }
+
+  playSpatialClip(id, position = { x: 0, y: 0, z: 0 }, volume = 1.0, options = {}) {
+    return this.playSpatial(id, position || { x: 0, y: 0, z: 0 }, { ...options, volume });
   }
 }
 

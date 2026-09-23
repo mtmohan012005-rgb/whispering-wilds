@@ -220,6 +220,12 @@ class ThreePlayer {
       return;
     }
 
+    // Skip standard ground locomotion if player is actively climbing an authored surface
+    if (window.traversalSystem && window.traversalSystem.isClimbing) {
+      if (this.characterLoader) this.characterLoader.update(deltaTime);
+      return;
+    }
+
     // Input vector calculation
     let dx = 0;
     let dz = 0;
@@ -283,7 +289,11 @@ class ThreePlayer {
     let targetClip = 'Player_Idle';
 
     if (this.isGrounded && this.landTimer <= 0) {
-      if (isCrouching) {
+      if (window.traversalSystem && window.traversalSystem.isSwimming) {
+        this.state = window.PLAYER_STATE.SWIM;
+        currentSpeed = this.speeds.walk * 0.48;
+        targetClip = 'Player_Swim';
+      } else if (isCrouching) {
         if (this.isMoving) {
           this.state = window.PLAYER_STATE.CROUCH_WALK;
           currentSpeed = this.speeds.crouch;
@@ -357,6 +367,13 @@ class ThreePlayer {
         const colResult = window.productionWorldAssets.resolveCollision(this.x, this.z, 0.65);
         this.x = colResult.x;
         this.z = colResult.z;
+      }
+
+      // WorldCollision resolution against doors, barriers, walls, and rocks
+      if (window.worldCollision && typeof window.worldCollision.resolveCircle === 'function') {
+        const wCol = window.worldCollision.resolveCircle(this.x, this.z, this.x, this.z, 0.65);
+        this.x = wCol.x;
+        this.z = wCol.z;
       }
     }
 

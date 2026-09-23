@@ -507,7 +507,17 @@ class ProductionNPC {
 
     // Select contextual dialogue
     let textPair = this.config.dialogue.greeting;
-    if (this.preInteractionState === 'WORKING') {
+
+    // Check if regional festival is actively celebrating
+    if (window.festivalSystem && window.festivalSystem.activeFestival && window.festivalSystem.currentPhaseKey === 'ACTIVE') {
+      const fest = window.festivalSystem.activeFestival;
+      if (fest.regions && fest.regions.includes(this.region)) {
+        textPair = {
+          tamil: `இனிய ${fest.tamilName}! நல்வரவு!`,
+          english: `Happy ${fest.name}! Welcome!`
+        };
+      }
+    } else if (this.preInteractionState === 'WORKING') {
       textPair = this.config.dialogue.work || this.config.dialogue.greeting;
     } else if (this.preInteractionState === 'SLEEPING' || this.preInteractionState === 'RETURNING_HOME') {
       textPair = this.config.dialogue.night || this.config.dialogue.greeting;
@@ -523,6 +533,10 @@ class ProductionNPC {
       dialogue: textPair,
       questHooks: this.config.questHooks || []
     };
+  }
+
+  setFestiveAttire(attireKey) {
+    this.currentAttire = attireKey;
   }
 
   endInteraction() {

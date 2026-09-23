@@ -329,16 +329,23 @@ window.AUDIO_DATA = {
   // 7. PLAYER INTERACTIONS & OBJECTS
   // -------------------------------------------------------------------------
   interactions: {
-    door_open: { file: "assets/audio/interaction/doors/chettinad_teak_door_open.mp3", volume: 0.7 },
-    door_close: { file: "assets/audio/interaction/doors/chettinad_teak_door_close.mp3", volume: 0.7 },
-    wood_pickup: { file: "assets/audio/interaction/wood/wood_stick_pickup.mp3", volume: 0.6 },
-    metal_pickup: { file: "assets/audio/interaction/metal/bronze_relic_pickup.mp3", volume: 0.75 },
-    stone_pickup: { file: "assets/audio/interaction/stone/granite_keystone_lift.mp3", volume: 0.7 },
-    water_fill: { file: "assets/audio/interaction/water/brass_chembu_fill.mp3", volume: 0.65 },
-    camera_capture: { file: "assets/audio/interaction/objects/mechanical_shutter_click.mp3", volume: 0.8 },
-    inventory_open: { file: "assets/audio/interaction/objects/canvas_satchel_open.mp3", volume: 0.5 },
-    inventory_close: { file: "assets/audio/interaction/objects/canvas_satchel_close.mp3", volume: 0.5 },
-    tea_kadai_pour: { file: "assets/audio/interaction/objects/samovar_chai_meter_pour.mp3", volume: 0.8 }
+    door_open: { id: "door_open", category: "sfx", file: "assets/audio/interaction/doors/chettinad_teak_door_open.mp3", volume: 0.7 },
+    door_close: { id: "door_close", category: "sfx", file: "assets/audio/interaction/doors/chettinad_teak_door_close.mp3", volume: 0.7 },
+    wood_pickup: { id: "wood_pickup", category: "sfx", file: "assets/audio/interaction/wood/wood_stick_pickup.mp3", volume: 0.6 },
+    metal_pickup: { id: "metal_pickup", category: "sfx", file: "assets/audio/interaction/metal/bronze_relic_pickup.mp3", volume: 0.75 },
+    stone_pickup: { id: "stone_pickup", category: "sfx", file: "assets/audio/interaction/stone/granite_keystone_lift.mp3", volume: 0.7 },
+    water_fill: { id: "water_fill", category: "sfx", file: "assets/audio/interaction/water/brass_chembu_fill.mp3", volume: 0.65 },
+    camera_capture: { id: "camera_capture", category: "sfx", file: "assets/audio/interaction/objects/mechanical_shutter_click.mp3", volume: 0.8 },
+    inventory_open: { id: "inventory_open", category: "sfx", file: "assets/audio/interaction/objects/canvas_satchel_open.mp3", volume: 0.5 },
+    inventory_close: { id: "inventory_close", category: "sfx", file: "assets/audio/interaction/objects/canvas_satchel_close.mp3", volume: 0.5 },
+    tea_kadai_pour: { id: "tea_kadai_pour", category: "sfx", file: "assets/audio/interaction/objects/samovar_chai_meter_pour.mp3", volume: 0.8 },
+    climb_grab: { id: "climb_grab", category: "sfx", file: "assets/audio/traversal/climb_grab_wood.mp3", volume: 0.75 },
+    metal_turn: { id: "metal_turn", category: "sfx", file: "assets/audio/puzzles/granite_waterwheel_turn.mp3", volume: 0.8 },
+    sluice_open: { id: "sluice_open", category: "sfx", file: "assets/audio/puzzles/chola_sluice_open.mp3", volume: 0.85 },
+    water_splash: { id: "water_splash", category: "sfx", file: "assets/audio/traversal/water_wade_splash.mp3", volume: 0.7 },
+    landmark_discover: { id: "landmark_discover", category: "sfx", file: "assets/audio/music/discovery/temple_chime_stinger.mp3", volume: 0.8 },
+    tea_preparation: { id: "tea_preparation", category: "sfx", file: "assets/audio/interaction/objects/samovar_chai_meter_pour.mp3", volume: 0.8 },
+    food_consume: { id: "food_consume", category: "sfx", file: "assets/audio/interaction/food/banana_leaf_serve.mp3", volume: 0.7 }
   },
 
   // -------------------------------------------------------------------------
