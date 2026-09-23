@@ -89,8 +89,9 @@ window.runStepByStepFeatureTests = async function() {
 
     const initialRupees = window.testRef.survival.currency;
     const options = document.querySelectorAll('.tea-choice-btn');
-    if (options.length > 0) {
-      options[0].click(); // Order Cutting Chai (₹12)
+    const chaiBtn = Array.from(options).find(b => b.textContent.includes('Cutting Chai') || b.textContent.includes('Chai')) || options[1] || options[0];
+    if (chaiBtn) {
+      chaiBtn.click(); // Order Cutting Chai (₹12)
     }
     await wait(300);
 
@@ -353,6 +354,7 @@ window.runStepByStepFeatureTests = async function() {
     // 4. Test Weather particle system & lighting shadows
     const rainStreakCount = threeWorld.weather.rainCount;
     const hasShadowMap = threeWorld.renderer.shadowMap.enabled === true;
+    const moonShadow = !!(threeWorld.lighting && threeWorld.lighting.moonLight && threeWorld.lighting.moonLight.castShadow);
     // 5. Test GLTFLoader & Skeletal Animation Pipeline
     const hasGLTFLoader = typeof THREE.GLTFLoader !== 'undefined';
     const hasTransitionFn = typeof threeWorld.player.transitionTo === 'function';
@@ -653,6 +655,118 @@ window.runStepByStepFeatureTests = async function() {
       `Perception: ${perceptionValid}, DistanceLOD: ${lodSimulationValid}, DialogueBilingual: ${interactionValid}`);
   } catch (err) {
     log(17, 'Production Living World System (NPC Schedules, Wildlife AI & Distance LOD)', false, err.message);
+  }
+
+  // --- STEP 18: Production World Assets, Regional Registry, Deterministic Placement, LOD & Streaming ---
+  try {
+    // 1. Asset Registry Validation across 7 Tamil Nadu Regions
+    const hasRegistry = typeof WORLD_ASSETS !== 'undefined';
+    const regions = ['chennai', 'cauvery_delta', 'pichavaram', 'chettinad', 'thanjavur', 'mamallapuram', 'nilgiris'];
+    const allRegionsPresent = hasRegistry && regions.every(r => !!WORLD_ASSETS[r]);
+
+    const chennaiValid = hasRegistry && WORLD_ASSETS.chennai.buildings.includes('tea_kadai') &&
+                         WORLD_ASSETS.chennai.vehicles.includes('auto_rickshaw');
+    const deltaValid = hasRegistry && WORLD_ASSETS.cauvery_delta.props.includes('bullock_cart') &&
+                       WORLD_ASSETS.cauvery_delta.props.includes('irrigation_sluice');
+    const thanjavurMeta = (typeof WORLD_ASSET_METADATA !== 'undefined') ? WORLD_ASSET_METADATA['stone_inscription'] : null;
+    const fictionalWritingValid = thanjavurMeta && thanjavurMeta.isFictionalWriting === true;
+
+    // 2. Production World Asset Engine & Class Methods
+    const hasEngineClass = typeof ProductionWorldAssets !== 'undefined';
+    const dummyScene = (window.threeWorld && window.threeWorld.scene) ? window.threeWorld.scene : new THREE.Scene();
+    const dummyTerrain = (window.threeWorld && window.threeWorld.terrain) ? window.threeWorld.terrain : { getElevation: () => 1.0 };
+    const pwa = new ProductionWorldAssets(dummyScene, dummyTerrain);
+
+    const methodsValid = typeof pwa.registerAsset === 'function' &&
+                         typeof pwa.loadAsset === 'function' &&
+                         typeof pwa.loadAssets === 'function' &&
+                         typeof pwa.instantiate === 'function' &&
+                         typeof pwa.removeInstance === 'function' &&
+                         typeof pwa.disposeInstance === 'function' &&
+                         typeof pwa.preloadRegion === 'function' &&
+                         typeof pwa.unloadRegion === 'function';
+
+    // 3. Deterministic PRNG Verification (WorldRNG)
+    const rng1 = new WorldRNG(12345);
+    const rng2 = new WorldRNG(12345);
+    let deterministic = true;
+    for (let i = 0; i < 25; i++) {
+      if (rng1.next() !== rng2.next()) {
+        deterministic = false;
+        break;
+      }
+    }
+
+    // 4. Missing Asset Contract (Section 21)
+    let missingAssetHandled = false;
+    let warnCaught = false;
+    const origWarn = console.warn;
+    console.warn = function(...args) {
+      const msg = args.join(' ');
+      if (msg.includes('[WORLD ASSET MISSING]') || msg.includes('[ProductionWorldAssets] Missing:')) {
+        warnCaught = true;
+      }
+      origWarn.apply(console, args);
+    };
+
+    const missingInstance = pwa.instantiate('tea_kadai', { x: 500, z: 500 });
+    console.warn = origWarn;
+    missingAssetHandled = warnCaught && missingInstance && missingInstance.userData.hasProductionMesh === false;
+
+    // 5. 3-Tier Distance LOD & Culling Verification (ProductionLOD)
+    const lodTest = new ProductionLOD({ lod0: 25, lod1: 70, lod2: 150 });
+    const lod0Check = lodTest.evaluateDistSq(15 * 15) === 0;    // 15m -> LOD0
+    const lod1Check = lodTest.evaluateDistSq(50 * 50) === 1;    // 50m -> LOD1
+    const lod2Check = lodTest.evaluateDistSq(110 * 110) === 2;  // 110m -> LOD2
+    const culledCheck = lodTest.evaluateDistSq(180 * 180) === -1; // 180m -> Culled
+    const lodTiersValid = lod0Check && lod1Check && lod2Check && culledCheck;
+
+    // 6. Regional Streaming Verification
+    pwa.preloadRegion('pichavaram');
+    const pichavaramLoaded = pwa.loadedRegions.has('pichavaram') && pwa.regionInstances.get('pichavaram').size > 0;
+    const initialInstanceCount = pwa.activeInstances.size;
+    pwa.unloadRegion('pichavaram');
+    const pichavaramUnloaded = !pwa.loadedRegions.has('pichavaram') && pwa.activeInstances.size < initialInstanceCount;
+    const streamingValid = pichavaramLoaded && pichavaramUnloaded;
+
+    // 7. Collision Proxy Registration & Resolution
+    const colBoxInst = pwa.instantiate('street_row', { x: 0, y: 0, z: 0 }, null, 1, {
+      collider: { type: 'box', size: [10, 4, 10] }
+    });
+    const colResolution = pwa.resolveCollision(1.0, 1.0, 0.6);
+    const collisionValid = colResolution.collided && (Math.abs(colResolution.x) > 3.0 || Math.abs(colResolution.z) > 3.0);
+    pwa.disposeInstance(colBoxInst);
+    pwa.disposeInstance(missingInstance);
+
+    // 8. Instanced Foliage Initialized
+    if (window.threeWorld && window.threeWorld.worldAssets) {
+      window.threeWorld.worldAssets.initInstancedVegetation();
+    }
+    const foliageValid = !!(window.threeWorld && window.threeWorld.worldAssets && window.threeWorld.worldAssets.instancedFoliage.size >= 4);
+
+    const step18Success = allRegionsPresent && chennaiValid && deltaValid && fictionalWritingValid &&
+                          methodsValid && deterministic && missingAssetHandled && lodTiersValid &&
+                          streamingValid && collisionValid;
+
+    log(18, 'Production World Assets (Local Registry, Deterministic PRNG, LOD, Streaming & Collision)', step18Success,
+      `Registry(7): ${allRegionsPresent}, Methods: ${methodsValid}, WorldRNG: ${deterministic}, ` +
+      `MissingContract: ${missingAssetHandled}, LODTiers(4): ${lodTiersValid}, Streaming: ${streamingValid}, ` +
+      `CollisionResolver: ${collisionValid}, InstancedFoliage: ${foliageValid}, FictionalWritingLabel: ${fictionalWritingValid}`);
+  } catch (err) {
+    log(18, 'Production World Assets (Local Registry, Deterministic PRNG, LOD, Streaming & Collision)', false, err.message);
+  }
+
+  // --- STEP 19: Production 3D Player Character (Rig, State Machine, Outfits & Missing-Asset Contract) ---
+  try {
+    if (typeof window.runPlayerProductionTests === 'function') {
+      const playerSuite = await window.runPlayerProductionTests();
+      log(19, 'Production 3D Player Character (Rig, 17-State Machine, Outfits & Missing Contract)', playerSuite.passed,
+        `Passed: ${playerSuite.passed}, Sub-tests: ${playerSuite.results.length} checks`);
+    } else {
+      log(19, 'Production 3D Player Character (Rig, 17-State Machine, Outfits & Missing Contract)', false, 'runPlayerProductionTests function not defined');
+    }
+  } catch (err) {
+    log(19, 'Production 3D Player Character (Rig, 17-State Machine, Outfits & Missing Contract)', false, err.message);
   }
 
   console.log('>>> TEST SUITE COMPLETE <<<', results);

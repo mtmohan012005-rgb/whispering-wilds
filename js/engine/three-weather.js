@@ -115,6 +115,17 @@ class ThreeWeather {
 
         this.rainLines.geometry.attributes.position.needsUpdate = true;
 
+        // Localized Highland Mist: Stronger in Nilgiris & Western Ghats (X > 100), clear in lowlands
+        if (this.scene.fog && centerPos) {
+            let targetFogDensity = 0.0035;
+            if (centerPos.x > 100) {
+                // Gradient increasing up the Western Ghats (up to 0.014 in high Nilgiris summits)
+                const highlandFactor = Math.min(1.0, (centerPos.x - 100) / 150);
+                targetFogDensity = 0.0035 + highlandFactor * 0.0105;
+            }
+            this.scene.fog.density += (targetFogDensity - this.scene.fog.density) * Math.min(1.0, deltaTime * 2.0);
+        }
+
         // Lightning flash decay
         if (this.isFlashing && this.flashIntensity > 0) {
             this.flashIntensity -= deltaTime * 4.5;
@@ -128,6 +139,14 @@ class ThreeWeather {
             }
         }
     }
+
+    /**
+     * Rain wetness multiplier for PBR materials (0.0 dry to 1.0 drenched)
+     */
+    getRainWetness() {
+        return 0.85; // Active monsoon thunderstorm
+    }
 }
 
 window.ThreeWeather = ThreeWeather;
+

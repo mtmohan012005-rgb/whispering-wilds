@@ -39,9 +39,11 @@ class SaveManager {
         y: player.y,
         angle: player.angle || 0,
         isLanternOn: player.isLanternOn || false,
-        currentOutfit: player.currentOutfit || 'baseOutfit',
+        outfitId: player.outfitId || player.currentOutfit || 'everyday_veshti',
+        currentOutfit: player.currentOutfit || player.outfitId || 'everyday_veshti',
         equippedOutfit: player.equippedOutfit ? {
           itemId: player.equippedOutfit.itemId,
+          outfitId: player.equippedOutfit.outfitId || player.equippedOutfit.outfitKey,
           outfitKey: player.equippedOutfit.outfitKey,
           stats: player.equippedOutfit.stats
         } : null,
@@ -170,7 +172,13 @@ class SaveManager {
       player.y = state.player.y;
       player.angle = state.player.angle || 0;
       player.isLanternOn = state.player.isLanternOn || false;
-      player.currentOutfit = state.player.currentOutfit || 'baseOutfit';
+      const targetOutfit = state.player.outfitId || state.player.currentOutfit || 'everyday_veshti';
+      player.outfitId = targetOutfit;
+      player.currentOutfit = targetOutfit;
+      if (player.setOutfit) player.setOutfit(targetOutfit);
+      if (window.threeWorld && window.threeWorld.player) {
+        window.threeWorld.player.setOutfit(targetOutfit);
+      }
       player.equippedOutfit = state.player.equippedOutfit || null;
       player.inventory = state.player.inventory || [];
     }

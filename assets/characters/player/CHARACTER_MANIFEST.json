@@ -1,0 +1,194 @@
+{
+  "characterId": "player_male_tamil",
+  "name": "Arun Kumar / Explorer",
+  "targetFile": "assets/characters/player/player.glb",
+  "version": "1.0.0",
+  "design": {
+    "gender": "male",
+    "age": "adult",
+    "region": "Tamil Nadu, India",
+    "proportions": "realistic_human",
+    "hair": {
+      "style": "short_medium_wavy_black",
+      "colorHex": "#12100e",
+      "specularResponse": "low_gloss"
+    },
+    "facialExpressions": [
+      "neutral",
+      "happy",
+      "concerned",
+      "surprised",
+      "focused"
+    ]
+  },
+  "rig": {
+    "type": "humanoid_production_rig",
+    "standardBones": [
+      "Root",
+      "Hips",
+      "Spine",
+      "Spine1",
+      "Spine2",
+      "Chest",
+      "Neck",
+      "Head",
+      "LeftShoulder",
+      "LeftArm",
+      "LeftForeArm",
+      "LeftHand",
+      "LeftHandThumb1",
+      "LeftHandThumb2",
+      "LeftHandThumb3",
+      "LeftHandIndex1",
+      "LeftHandIndex2",
+      "LeftHandIndex3",
+      "LeftHandMiddle1",
+      "LeftHandMiddle2",
+      "LeftHandMiddle3",
+      "LeftHandRing1",
+      "LeftHandRing2",
+      "LeftHandRing3",
+      "LeftHandPinky1",
+      "LeftHandPinky2",
+      "LeftHandPinky3",
+      "RightShoulder",
+      "RightArm",
+      "RightForeArm",
+      "RightHand",
+      "RightHandThumb1",
+      "RightHandThumb2",
+      "RightHandThumb3",
+      "RightHandIndex1",
+      "RightHandIndex2",
+      "RightHandIndex3",
+      "RightHandMiddle1",
+      "RightHandMiddle2",
+      "RightHandMiddle3",
+      "RightHandRing1",
+      "RightHandRing2",
+      "RightHandRing3",
+      "RightHandPinky1",
+      "RightHandPinky2",
+      "RightHandPinky3",
+      "LeftUpLeg",
+      "LeftLeg",
+      "LeftFoot",
+      "LeftToeBase",
+      "RightUpLeg",
+      "RightLeg",
+      "RightFoot",
+      "RightToeBase"
+    ],
+    "secondaryBones": [
+      "Cloth_Veshti_Front_01",
+      "Cloth_Veshti_Front_02",
+      "Cloth_Veshti_Back_01",
+      "Cloth_Veshti_Back_02",
+      "Cloth_Thundu_Front_01",
+      "Cloth_Thundu_Front_02",
+      "Cloth_Thundu_Back_01"
+    ]
+  },
+  "textures": {
+    "format": "webp",
+    "resolution": "2048x2048",
+    "maps": [
+      { "type": "albedo", "file": "assets/characters/player/textures/player_albedo.webp" },
+      { "type": "normal", "file": "assets/characters/player/textures/player_normal.webp" },
+      { "type": "roughness", "file": "assets/characters/player/textures/player_roughness.webp" },
+      { "type": "ao", "file": "assets/characters/player/textures/player_ao.webp" }
+    ]
+  },
+  "outfits": {
+    "authoritativeField": "outfitId",
+    "definitions": {
+      "everyday_veshti": {
+        "id": "everyday_veshti",
+        "name": "Everyday Cotton Veshti & Shirt",
+        "tamilName": "தினசரி பருத்தி வேஷ்டி & சட்டை",
+        "upper": "Handloom half-sleeve white cotton shirt",
+        "lower": "Authentic folded cotton veshti with thin gold border",
+        "additional": "Thundu (cotton towel) draped naturally over left shoulder",
+        "footwear": "Traditional practical leather strap sandals",
+        "recommendedBiomes": ["chennai", "cauvery_delta"],
+        "weatherSuitability": ["warm", "sunny", "humid"]
+      },
+      "village_workwear": {
+        "id": "village_workwear",
+        "name": "Village Field Workwear",
+        "tamilName": "கிராம பண்ணை வேலை உடை",
+        "upper": "Sun-faded breathable cotton roll-sleeve shirt",
+        "lower": "Knee-tucked agricultural lungi / veshti for muddy terrain",
+        "additional": "Head towel / angavasthram tied against heat",
+        "footwear": "Water-resistant rubberized work chappals",
+        "recommendedBiomes": ["cauvery_delta", "pichavaram"],
+        "weatherSuitability": ["mud", "rain", "humid"]
+      },
+      "urban_explorer": {
+        "id": "urban_explorer",
+        "name": "Urban Explorer Expedition Gear",
+        "tamilName": "நகர ஆய்வு நடைபயண உடை",
+        "upper": "Khaki field utility shirt with breast pockets",
+        "lower": "Reinforced cotton cargo trousers with knee articulation",
+        "additional": "Canvas explorer shoulder jhola bag with brass buckle",
+        "footwear": "Sturdy high-traction ankle trekking boots",
+        "recommendedBiomes": ["chennai", "mamallapuram", "thanjavur"],
+        "weatherSuitability": ["all_round"]
+      },
+      "festival_veshti": {
+        "id": "festival_veshti",
+        "name": "Festival Pattu Border Veshti",
+        "tamilName": "திருவிழா பட்டு பார்டர் வேஷ்டி",
+        "upper": "Raw silk / fine cotton full-sleeve cream shirt",
+        "lower": "Pure cream veshti with intricate zari border",
+        "additional": "Formal matching zari angavasthram",
+        "footwear": "Polished festive leather sandals",
+        "recommendedBiomes": ["chettinad", "thanjavur"],
+        "weatherSuitability": ["cultural_events", "temple"]
+      },
+      "nilgiri_warmwear": {
+        "id": "nilgiri_warmwear",
+        "name": "Nilgiri Mountain Thermal Wear",
+        "tamilName": "நீலகிரி குளிர் கம்பளி சூட்",
+        "upper": "Heavy cable-knit Ooty mountain woolen sweater & thermal base",
+        "lower": "Insulated wool-blend trousers",
+        "additional": "Woolen beanie cap & storm poncho",
+        "footwear": "Spike-soled insulated mountain boots",
+        "recommendedBiomes": ["nilgiris"],
+        "weatherSuitability": ["cold", "mist", "frost"]
+      }
+    }
+  },
+  "animations": [
+    "Player_Idle",
+    "Player_Walk",
+    "Player_Run",
+    "Player_Sprint",
+    "Player_Jump_Start",
+    "Player_Jump",
+    "Player_Fall",
+    "Player_Land",
+    "Player_Interact",
+    "Player_Pickup",
+    "Player_Inspect",
+    "Player_Use_Item",
+    "Player_Crouch_Idle",
+    "Player_Crouch_Walk",
+    "Player_Climb",
+    "Player_Swim",
+    "Player_Sit",
+    "Player_Stand",
+    "Player_Eat",
+    "Player_Drink",
+    "Player_Photo"
+  ],
+  "budget": {
+    "heroBodyTriangles": "40,000 - 80,000",
+    "clothingTriangles": "20,000 - 60,000",
+    "lodTiers": {
+      "lod0": "100% detail (0 - 25m)",
+      "lod1": "50% detail (25 - 70m)",
+      "lod2": "25% detail (70 - 150m)"
+    }
+  }
+}

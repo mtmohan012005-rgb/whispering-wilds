@@ -410,13 +410,20 @@ class FieldJournal {
 }
 
 window.equipPlayerAttire = function(outfitId) {
-  const wardrobe = window.culturalWardrobeSystem;
+  const p = window.gamePlayer || (window.testRef && window.testRef.player);
   let itemId = 'cloth_veshti';
   if (outfitId === 'farmlandGear') itemId = 'cloth_cargo';
   else if (outfitId === 'mountainGear') itemId = 'cloth_woolen_set';
 
-  // Use tradeOrBuyClothing logic
-  window.tradeOrBuyClothing(null, itemId);
+  const item = window.culturalWardrobeSystem.tradeableClothingItems.find(i => i.itemId === itemId);
+  if (p && item) {
+    if (!p.inventory) p.inventory = [];
+    if (!p.inventory.some(i => i.itemId === itemId)) p.inventory.push(item);
+    p.equippedOutfit = item;
+    p.currentOutfit = outfitId;
+    p.outfitId = outfitId;
+    if (p.setOutfit) p.setOutfit(outfitId);
+  }
 };
 
 window.FieldJournal = FieldJournal;

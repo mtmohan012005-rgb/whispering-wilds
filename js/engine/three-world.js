@@ -51,6 +51,19 @@ class ThreeWorld {
             this.livingWorld = null;
         }
 
+        // 4d. Production World Assets (Local Rights-Cleared Assets, LOD & Region Streaming)
+        if (typeof ProductionWorldAssets !== 'undefined') {
+            this.worldAssets = new ProductionWorldAssets(this.scene, this.terrain);
+            window.productionWorldAssets = this.worldAssets;
+            if (typeof productionAssetsAdapter !== 'undefined') {
+                productionAssetsAdapter.init(this.worldAssets);
+            }
+            this.worldAssets.initInstancedVegetation();
+            this.worldAssets.preloadRegion('chennai');
+        } else {
+            this.worldAssets = null;
+        }
+
         // Set initial player height on terrain
         this.player.setPosition(-250, 0, this.terrain);
 
@@ -67,7 +80,7 @@ class ThreeWorld {
             this.cameraController.handleResize(w, h);
         });
 
-        // Key bindings for WASD / Arrows
+        // Key bindings for WASD / Arrows / Jump / Crouch / Sprint
         window.addEventListener('keydown', (e) => {
             if (!this.isActive) return;
             if (['KeyW', 'ArrowUp'].includes(e.code)) this.inputState.up = true;
@@ -75,6 +88,11 @@ class ThreeWorld {
             if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = true;
             if (['KeyD', 'ArrowRight'].includes(e.code)) this.inputState.right = true;
             if (['ShiftLeft', 'ShiftRight'].includes(e.code)) this.inputState.sprint = true;
+            if (['Space'].includes(e.code)) {
+                this.inputState.jump = true;
+                e.preventDefault();
+            }
+            if (['ControlLeft', 'ControlRight', 'KeyC'].includes(e.code)) this.inputState.crouch = true;
         });
 
         window.addEventListener('keyup', (e) => {
@@ -84,6 +102,8 @@ class ThreeWorld {
             if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = false;
             if (['KeyD', 'ArrowRight'].includes(e.code)) this.inputState.right = false;
             if (['ShiftLeft', 'ShiftRight'].includes(e.code)) this.inputState.sprint = false;
+            if (['Space'].includes(e.code)) this.inputState.jump = false;
+            if (['ControlLeft', 'ControlRight', 'KeyC'].includes(e.code)) this.inputState.crouch = false;
         });
     }
 
@@ -183,6 +203,11 @@ class ThreeWorld {
                 worldClockMinutes = (window.testRef.lighting.timeOfDay * 60) % 1440;
             }
             this.livingWorld.update(dt, worldClockMinutes, playerPos);
+        }
+
+        // 4d. Update Production World Assets (Region Streaming, Distance LOD & Culling)
+        if (this.worldAssets) {
+            this.worldAssets.update(playerPos, dt);
         }
 
         // 5. Render Scene

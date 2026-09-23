@@ -7,25 +7,27 @@
  * Fast, deterministic seeded PRNG (Mulberry32)
  * Ensures reproducible spawning and route variations without Math.random() allocations
  */
-class WorldRNG {
-  constructor(seed = 133742) {
-    this.s = seed;
-  }
+if (typeof WorldRNG === 'undefined') {
+  var WorldRNG = class WorldRNG {
+    constructor(seed = 133742) {
+      this.s = seed;
+    }
 
-  next() {
-    let t = (this.s += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  }
+    next() {
+      let t = (this.s += 0x6d2b79f5);
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
 
-  range(min, max) {
-    return min + this.next() * (max - min);
-  }
+    range(min, max) {
+      return min + this.next() * (max - min);
+    }
 
-  choice(arr) {
-    return arr[Math.floor(this.next() * arr.length)];
-  }
+    choice(arr) {
+      return arr[Math.floor(this.next() * arr.length)];
+    }
+  };
 }
 
 class LivingWorldSystem {

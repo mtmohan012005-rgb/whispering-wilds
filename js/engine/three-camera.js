@@ -14,8 +14,12 @@ class ThreeCamera {
         this.mode = 'gameplay';
 
         // Camera offset relative to player in gameplay mode
-        this.gameplayOffset = new THREE.Vector3(-22, 19, 22);
-        this.gameplayTargetOffset = new THREE.Vector3(0, 2.0, 0);
+        this.defaultGameplayOffset = new THREE.Vector3(-22, 19, 22);
+        this.gameplayOffset = this.defaultGameplayOffset.clone();
+        this.gameplayTargetOffset = new THREE.Vector3(0, 1.35, 0); // Tracks player chest / root area per Section 20
+
+        // Contextual framing (PHOTO, INSPECT, INTERACT)
+        this.contextFraming = null;
 
         // Macro-map view surveying all Tamil Nadu (from Chennai to Nilgiris)
         this.macroPosition = new THREE.Vector3(0, 220, 160);
@@ -23,7 +27,7 @@ class ThreeCamera {
 
         // Current actual position and look target
         this.currentPos = new THREE.Vector3(-250 + this.gameplayOffset.x, 20, this.gameplayOffset.z);
-        this.currentTarget = new THREE.Vector3(-250, 2, 0);
+        this.currentTarget = new THREE.Vector3(-250, 1.35, 0);
 
         this.camera.position.copy(this.currentPos);
         this.camera.lookAt(this.currentTarget);
@@ -153,6 +157,17 @@ class ThreeCamera {
                 this.camera.position.copy(this.currentPos);
                 this.camera.lookAt(this.currentTarget);
             }
+        }
+    }
+
+    setContextFraming(mode) {
+        this.contextFraming = mode;
+        if (mode === 'PHOTO') {
+            this.gameplayOffset.set(-5, 1.4, 6);
+        } else if (mode === 'INSPECT' || mode === 'INTERACT') {
+            this.gameplayOffset.set(-8, 1.6, 9);
+        } else {
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
         }
     }
 

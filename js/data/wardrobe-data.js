@@ -41,7 +41,9 @@ window.culturalWardrobeSystem = {
     tradeableClothingItems: [
         {
             itemId: "cloth_veshti",
-            outfitKey: "baseOutfit",
+            outfitId: "everyday_veshti",
+            outfitKey: "everyday_veshti",
+            legacyKey: "baseOutfit",
             name: "Traditional Cotton Veshti (வேட்டி)",
             tamilName: "பாரம்பரிய பருத்தி வேஷ்டி & சட்டை",
             regionUnlocked: "Chennai Plains",
@@ -53,27 +55,61 @@ window.culturalWardrobeSystem = {
             icon: "🥻"
         },
         {
+            itemId: "cloth_farmer",
+            outfitId: "village_workwear",
+            outfitKey: "village_workwear",
+            legacyKey: "farmlandGear",
+            name: "Village Farmland Workwear (வேலை வேஷ்டி)",
+            tamilName: "விழுப்புரம் விவசாய கள உடை",
+            regionUnlocked: "Villupuram Farmlands",
+            price: 80,
+            stats: { heatResistance: 15, coldResistance: 5, mobility: "High" },
+            description: "Breathable tucked cotton lungi and light shirt adapted for dusty agricultural trails.",
+            clothing: "Faded blue cotton work shirt and folded red-soil checkered lungi",
+            footwear: "Reinforced rubber farmer chappals",
+            icon: "🌾"
+        },
+        {
             itemId: "cloth_cargo",
-            outfitKey: "farmlandGear",
-            name: "Explorer Cargo Pants & Jacket",
-            tamilName: "விழுப்புரம் பண்ணை & நடைபயண உடை",
+            outfitId: "urban_explorer",
+            outfitKey: "urban_explorer",
+            legacyKey: "farmlandGear",
+            name: "Explorer Utility Jacket & Cargo (பயண உடை)",
+            tamilName: "சாகச பயண கள உடை",
             regionUnlocked: "Villupuram / Delta",
             price: 150,
             stats: { heatResistance: 5, coldResistance: 15, durability: "Medium" },
-            description: "Sturdy fabric for rough terrain and thorny paths.",
-            clothing: "Durable reinforced khaki canvas jacket & field cargo trousers",
+            description: "Sturdy fabric for rough terrain and thorny jungle paths.",
+            clothing: "Durable reinforced khaki canvas jacket & olive cargo trousers",
             footwear: "Sturdy high-traction trekking boots",
             icon: "🥾"
         },
         {
+            itemId: "cloth_festival",
+            outfitId: "festival_veshti",
+            outfitKey: "festival_veshti",
+            legacyKey: "baseOutfit",
+            name: "Kanchipuram Silk Festival Veshti (பட்டு வேஷ்டி)",
+            tamilName: "காஞ்சிபுரம் திருவிழா பட்டு வேஷ்டி",
+            regionUnlocked: "Kanchipuram Heritage",
+            price: 250,
+            stats: { heatResistance: 5, coldResistance: 10, charisma: "+20% Merchant Barter" },
+            description: "Pure cream silk with intricate golden zari borders for ceremonial gatherings.",
+            clothing: "Raw silk cream kurta with pure gold zari handloom veshti",
+            footwear: "Polished brass-buckle heritage sandals",
+            icon: "✨"
+        },
+        {
             itemId: "cloth_woolen_set",
-            outfitKey: "mountainGear",
-            name: "Nilgiri Woolen Thermal Suit",
+            outfitId: "nilgiri_warmwear",
+            outfitKey: "nilgiri_warmwear",
+            legacyKey: "mountainGear",
+            name: "Nilgiri Woolen Thermal Suit (கம்பளி சூட்)",
             tamilName: "நீலகிரி குளிர் கம்பளி சூட்",
             regionUnlocked: "Ooty Mountain Ghats",
             price: 350,
             stats: { heatResistance: -10, coldResistance: 50, mobility: "Medium" },
-            description: "Essential heavy wear to survive freezing mountain fog and frost.",
+            description: "Essential heavy wear to survive freezing mountain fog, frost, and gale winds.",
             clothing: "Thick knitted Ooty mountain sheep wool sweater & storm poncho",
             footwear: "Insulated mountain grip boots with spiked soles",
             icon: "🧥"
@@ -100,9 +136,11 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
     // Initialize inventory if needed
     if (p && !p.inventory) {
         p.inventory = [
-            wardrobe.tradeableClothingItems[0] // Starts with base veshti
+            wardrobe.tradeableClothingItems[0] // Starts with everyday veshti
         ];
     }
+
+    const targetOutfitId = item.outfitId || item.outfitKey;
 
     // Check if already purchased
     const alreadyOwned = p && p.inventory && p.inventory.some(i => i.itemId === itemID);
@@ -110,10 +148,15 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
     if (alreadyOwned) {
         // Equip directly if already purchased
         p.equippedOutfit = item;
-        if (p.setOutfit) p.setOutfit(item.outfitKey);
+        p.outfitId = targetOutfitId;
+        p.currentOutfit = targetOutfitId;
+        if (p.setOutfit) p.setOutfit(targetOutfitId);
+        if (window.threeWorld && window.threeWorld.player) {
+            window.threeWorld.player.setOutfit(targetOutfitId);
+        }
         console.log(`Equipped owned attire: ${item.name}!`);
         if (audio) audio.playPinTap();
-        if (window.gameQuests) window.gameQuests.showQuestNotification(`Equipped: ${item.name} (${item.stats.mobility || item.stats.durability} mobility)`);
+        if (window.gameQuests) window.gameQuests.showQuestNotification(`Equipped: ${item.name} (${item.stats.mobility || item.stats.durability || 'Standard'} mobility)`);
         if (window.gameJournal && window.gameJournal.isOpen) window.gameJournal.render();
         return { success: true, alreadyOwned: true, item };
     }
@@ -126,7 +169,12 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
         if (p) {
             p.inventory.push(item);
             p.equippedOutfit = item;
-            if (p.setOutfit) p.setOutfit(item.outfitKey);
+            p.outfitId = targetOutfitId;
+            p.currentOutfit = targetOutfitId;
+            if (p.setOutfit) p.setOutfit(targetOutfitId);
+            if (window.threeWorld && window.threeWorld.player) {
+                window.threeWorld.player.setOutfit(targetOutfitId);
+            }
         }
 
         console.log(`Successfully purchased/traded for: ${item.name}! Stats updated.`);

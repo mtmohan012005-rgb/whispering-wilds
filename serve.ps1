@@ -1,49 +1,60 @@
-param([int]$Port = 8080)
-
+# Simple local HTTP server for testing The Whispering Wilds
+$port = 8080
 $listener = New-Object System.Net.HttpListener
-$listener.Prefixes.Add("http://localhost:$Port/")
+$listener.Prefixes.Add("http://localhost:$port/")
 $listener.Start()
-Write-Output "HTTP server started on http://localhost:$Port/"
 
+Write-Host "HTTP server started on http://localhost:$port/"
 $baseDir = $PSScriptRoot
 
 try {
     while ($listener.IsListening) {
         $context = $listener.GetContext()
-        $request = $context.Request
-        $response = $context.Response
+        try {
+            $request = $context.Request
+            $response = $context.Response
 
-        $localPath = $request.Url.LocalPath
-        if ($localPath -eq "/" -or [string]::IsNullOrEmpty($localPath)) {
-            $localPath = "/index.html"
-        }
-
-        $filePath = Join-Path $baseDir ($localPath.TrimStart('/').Replace('/', '\'))
-
-        if (Test-Path $filePath -PathType Leaf) {
-            $ext = [System.IO.Path]::GetExtension($filePath).ToLower()
-            $contentType = switch ($ext) {
-                ".html" { "text/html; charset=utf-8" }
-                ".css"  { "text/css; charset=utf-8" }
-                ".js"   { "application/javascript; charset=utf-8" }
-                ".json" { "application/json; charset=utf-8" }
-                ".png"  { "image/png" }
-                ".jpg"  { "image/jpeg" }
-                ".jpeg" { "image/jpeg" }
-                ".svg"  { "image/svg+xml" }
-                default { "application/octet-stream" }
+            $localPath = $request.Url.LocalPath
+            if ($localPath -eq "/" -or [string]::IsNullOrEmpty($localPath)) {
+                $localPath = "/index.html"
             }
 
-            $bytes = [System.IO.File]::ReadAllBytes($filePath)
-            $response.ContentType = $contentType
-            $response.ContentLength64 = $bytes.Length
-            $response.OutputStream.Write($bytes, 0, $bytes.Length)
-        } else {
-            $response.StatusCode = 404
-            $errBytes = [System.Text.Encoding]::UTF8.GetBytes("404 Not Found")
-            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $filePath = Join-Path $baseDir ($localPath.TrimStart('/').Replace('/', '\'))
+
+            if (Test-Path $filePath -PathType Leaf) {
+                $ext = [System.IO.Path]::GetExtension($filePath).ToLower()
+                $contentType = switch ($ext) {
+                    ".html" { "text/html; charset=utf-8" }
+                    ".css"  { "text/css; charset=utf-8" }
+                    ".js"   { "application/javascript; charset=utf-8" }
+                    ".json" { "application/json; charset=utf-8" }
+                    ".png"  { "image/png" }
+                    ".jpg"  { "image/jpeg" }
+                    ".jpeg" { "image/jpeg" }
+                    ".svg"  { "image/svg+xml" }
+                    ".glb"  { "model/gltf-binary" }
+                    ".gltf" { "model/gltf+json" }
+                    default { "application/octet-stream" }
+                }
+
+                $bytes = [System.IO.File]::ReadAllBytes($filePath)
+                $response.ContentType = $contentType
+                $response.ContentLength64 = $bytes.Length
+                if ($request.HttpMethod -ne "HEAD") {
+                    $response.OutputStream.Write($bytes, 0, $bytes.Length)
+                }
+            } else {
+                $response.StatusCode = 404
+                $errBytes = [System.Text.Encoding]::UTF8.GetBytes("404 Not Found")
+                $response.ContentLength64 = $errBytes.Length
+                if ($request.HttpMethod -ne "HEAD") {
+                    $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+                }
+            }
+            $response.Close()
+        } catch {
+            Write-Host "Request error: $_"
         }
-        $response.Close()
     }
 } finally {
     $listener.Stop()

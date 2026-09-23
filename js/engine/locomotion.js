@@ -318,7 +318,7 @@ class LocomotionEngine {
     }
 
     // 11. Head droop from fatigue
-    this.headDroop += (fatigue.headDroop - this.headDroop) * Math.min(1, dt * 3);
+    this.headDroop += (fatigue.headDroop - this.headDroop) * Math.min(1, dt * 10);
     this.spineCompensation = -this.lateralTilt * 0.6;
 
     // 12. Gear inertia (backpack/jhola sway)

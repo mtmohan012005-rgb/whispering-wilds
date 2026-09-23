@@ -274,6 +274,21 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // 1b. Check for nearby 3D Production World Assets
+    if (threeWorld && threeWorld.isActive && threeWorld.worldAssets) {
+      const pPos = threeWorld.player.getPosition();
+      for (const inst of threeWorld.worldAssets.activeInstances) {
+        if (!inst.userData || !inst.userData.interactable) continue;
+        const dx = inst.position.x - pPos.x;
+        const dz = inst.position.z - pPos.z;
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist < 5.0) {
+          handle3DAssetInteraction(inst.userData);
+          return;
+        }
+      }
+    }
+
     if (!player.nearbyInteractable) return;
     const item = player.nearbyInteractable;
 
@@ -322,6 +337,41 @@ window.addEventListener('DOMContentLoaded', () => {
       quests.showQuestNotification('Rested until dawn! Gained Stamina Recovery Buff.');
       // Diegetic save: slept in tent
       saveManager.saveGame('auto', 'tent_sleep');
+    }
+  }
+
+  function handle3DAssetInteraction(data) {
+    if (!data) return;
+    const type = data.interactionType;
+    if (type === 'tea_shop') {
+      openTeaKadai();
+    } else if (type === 'boat') {
+      quests.showQuestNotification('Boarded wooden boat! Navigating Pichavaram mangrove waterways.');
+      audio.playFootstep('water');
+    } else if (type === 'irrigation_sluice' || type === 'waterwheel') {
+      openWaterwheelPuzzle();
+    } else if (type === 'door') {
+      quests.showQuestNotification('Inspected heritage carved threshold. Entrance unlocked.');
+      audio.playDiscoveryJingle();
+    } else if (type === 'well') {
+      survival.refillCanteen();
+      audio.playFootstep('water');
+      quests.showQuestNotification('Refilled water pot with cool fresh water! (+100 Thirst)');
+    } else if (type === 'lamp') {
+      quests.showQuestNotification('Lit brass sacred kuthu vilakku lamp! (+10 Stamina)');
+      survival.energy = Math.min(100, survival.energy + 10);
+    } else if (type === 'craft_table') {
+      quests.showQuestNotification('Examined traditional artisan workshop craft table.');
+    } else if (type === 'paddy_field') {
+      quests.showQuestNotification('Inspected fertile green paddy fields in Cauvery Delta.');
+    } else if (type === 'bell') {
+      quests.showQuestNotification('Rung resonant bronze temple bell!');
+      audio.playDiscoveryJingle();
+    } else if (data.isFictionalWriting) {
+      quests.showQuestNotification('[Fictional Game-World Writing] Deciphered ancient stone inscription.');
+      journal.unlockEntry('stone_inscription');
+    } else {
+      quests.showQuestNotification(data.interactionPrompt || `Interacted with ${data.assetId || 'world object'}`);
     }
   }
 

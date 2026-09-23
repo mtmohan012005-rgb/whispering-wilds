@@ -42,6 +42,28 @@ class ThreeLighting {
         this.scene.add(this.lightningLight);
 
         this.flashIntensity = 0;
+        this.currentTimePhase = 'night';
+        this.timePresets = {
+            morning:   { sunCol: 0xffd194, sunInt: 1.3, ambCol: 0x78909c, ambInt: 0.8, hemiSky: 0xffd8a8, hemiGround: 0x3e2723 },
+            day:       { sunCol: 0xfff8e7, sunInt: 1.5, ambCol: 0xb0bec5, ambInt: 0.9, hemiSky: 0x90caf9, hemiGround: 0x4e342e },
+            afternoon: { sunCol: 0xffb74d, sunInt: 1.4, ambCol: 0x90a4ae, ambInt: 0.8, hemiSky: 0xffcc80, hemiGround: 0x3e2723 },
+            sunset:    { sunCol: 0xff7043, sunInt: 1.2, ambCol: 0x5c6bc0, ambInt: 0.6, hemiSky: 0xf4511e, hemiGround: 0x1a237e },
+            night:     { sunCol: 0x88bbff, sunInt: 1.0, ambCol: 0x404050, ambInt: 0.7, hemiSky: 0x2d4363, hemiGround: 0x0b0f19 },
+            rain:      { sunCol: 0x64b5f6, sunInt: 0.8, ambCol: 0x37474f, ambInt: 0.6, hemiSky: 0x455a64, hemiGround: 0x102027 },
+            mist:      { sunCol: 0x90a4ae, sunInt: 0.7, ambCol: 0x546e7a, ambInt: 0.8, hemiSky: 0x78909c, hemiGround: 0x263238 }
+        };
+    }
+
+    setTimePhase(phase) {
+        if (!this.timePresets[phase]) return;
+        this.currentTimePhase = phase;
+        const p = this.timePresets[phase];
+        this.moonLight.color.setHex(p.sunCol);
+        this.moonLight.intensity = p.sunInt;
+        this.ambientLight.color.setHex(p.ambCol);
+        this.ambientLight.intensity = p.ambInt;
+        this.hemiLight.color.setHex(p.hemiSky);
+        this.hemiLight.groundColor.setHex(p.hemiGround);
     }
 
     triggerLightning(intensity = 1.0) {
@@ -71,3 +93,4 @@ class ThreeLighting {
 }
 
 window.ThreeLighting = ThreeLighting;
+

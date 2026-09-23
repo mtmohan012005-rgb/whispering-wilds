@@ -68,6 +68,7 @@ class ThreeTerrain {
     this.createTerrainMesh();
     this.createDeltaWaterPlane();
     this.createLandmarks();
+    this.createRegionalEnvironmentDetails();
     this.scatterBiomeFlora();
   }
 
@@ -170,6 +171,10 @@ class ThreeTerrain {
   // PROCEDURAL 3D LANDMARKS
   // ==========================================================================
   createLandmarks() {
+    this.landmarksGroup = new THREE.Group();
+    this.landmarksGroup.name = 'LandmarksGroup';
+    this.scene.add(this.landmarksGroup);
+
     this.createMadrasHighCourt(-240, 15);
     this.createTeaKadai(-190, 25);
     this.createCholaWaterwheel(-15, -20);
@@ -251,7 +256,8 @@ class ThreeTerrain {
     courtLight.castShadow = true;
     group.add(courtLight);
 
-    this.scene.add(group);
+    group.name = 'MadrasHighCourt';
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'high_court', mesh: group, name: 'Madras High Court Gate' });
   }
 
@@ -310,7 +316,8 @@ class ThreeTerrain {
     teaLight.castShadow = true;
     group.add(teaLight);
 
-    this.scene.add(group);
+    group.name = 'MuruganTeaKadai';
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'tea_kadai', mesh: group, name: "Murugan Annan's Tea Kadai" });
   }
 
@@ -347,7 +354,8 @@ class ThreeTerrain {
       group.add(paddle);
     }
 
-    this.scene.add(group);
+    group.name = 'CholaWaterwheel';
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'chola_wheel', mesh: group, name: 'Chola Hydro-Mechanism' });
   }
 
@@ -382,7 +390,8 @@ class ThreeTerrain {
     door.position.set(-7.1, 1.25, 0);
     group.add(door);
 
-    this.scene.add(group);
+    group.name = 'TodaHut';
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'toda_hut', mesh: group, name: 'Toda Indigenous Buffalo Mund' });
   }
 
@@ -421,43 +430,129 @@ class ThreeTerrain {
     portalGlow.position.set(0, 8, 2);
     group.add(portalGlow);
 
-    this.scene.add(group);
+    group.name = 'EcoSanctuaryPortal';
+    this.landmarksGroup.add(group);
     this.landmarks.push({ id: 'eco_portal', mesh: group, name: 'Pasumai Thadam Eco-Sanctuary' });
   }
 
   // ==========================================================================
-  // PROCEDURAL FLORA SCATTERING (Palmyra, Mangroves, Shola Pines)
+  // REGIONAL ENVIRONMENT DETAILS (Cauvery Delta Bunds, Pichavaram Canal, Nilgiri Terraces)
+  // ==========================================================================
+  createRegionalEnvironmentDetails() {
+    const rng = (typeof WorldRNG !== 'undefined') ? new WorldRNG(918273) : { range: (a, b) => (a + b) / 2 };
+
+    // 1. CAUVERY DELTA: Raised Mud Bunds, Field Rows & Irrigation Feeder Channels
+    const bundMat = new THREE.MeshStandardMaterial({ color: 0x4a3728, roughness: 0.95 });
+    const paddyMat = new THREE.MeshStandardMaterial({ color: 0x3d7e26, roughness: 0.6, metalness: 0.1 });
+
+    // Grid of raised mud bunds across delta (X: -25 to +35, Z: -50 to +50)
+    for (let gx = -20; gx <= 30; gx += 16) {
+      const by = this.getElevation(gx, 0) + 0.25;
+      const bundZ = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 70), bundMat);
+      bundZ.position.set(gx, by, 0);
+      bundZ.receiveShadow = true;
+      this.scene.add(bundZ);
+
+      // Perpendicular bunds
+      for (let gz = -35; gz <= 35; gz += 24) {
+        const bx = gx + 8;
+        const bby = this.getElevation(bx, gz) + 0.25;
+        const bundX = new THREE.Mesh(new THREE.BoxGeometry(15, 0.45, 1.2), bundMat);
+        bundX.position.set(bx, bby, gz);
+        bundX.receiveShadow = true;
+        this.scene.add(bundX);
+
+        // Rectangular paddy field plot inside bunds
+        const plot = new THREE.Mesh(new THREE.PlaneGeometry(14.5, 23.5), paddyMat);
+        plot.rotateX(-Math.PI / 2);
+        plot.position.set(bx, bby - 0.1, gz);
+        plot.receiveShadow = true;
+        this.scene.add(plot);
+      }
+    }
+
+    // 2. PICHAVARAM: Wooden Boat Dock & Mud Banks along Waterways (X: -80 to -40)
+    const dockWoodMat = new THREE.MeshStandardMaterial({ color: 0x3d2817, roughness: 0.9 });
+    const mudMat = new THREE.MeshStandardMaterial({ color: 0x221a14, roughness: 0.95 });
+
+    const dock = new THREE.Mesh(new THREE.BoxGeometry(14, 0.6, 5), dockWoodMat);
+    dock.position.set(-60, 0.9, 5);
+    dock.receiveShadow = true;
+    dock.castShadow = true;
+    this.scene.add(dock);
+
+    // Dock support piles
+    const pileGeo = new THREE.CylinderGeometry(0.2, 0.2, 3, 6);
+    for (let px of [-65, -60, -55]) {
+      for (let pz of [3, 7]) {
+        const pile = new THREE.Mesh(pileGeo, dockWoodMat);
+        pile.position.set(px, 0.4, pz);
+        this.scene.add(pile);
+      }
+    }
+
+    // 3. MAMALLAPURAM: Coastal Granite Boulders & Weathered Rocks (X: -155 to -115)
+    const graniteMat = new THREE.MeshStandardMaterial({ color: 0x5a544d, roughness: 0.85 });
+    for (let i = 0; i < 8; i++) {
+      const rx = rng.range(-150, -120);
+      const rz = rng.range(-60, 60);
+      const ry = this.getElevation(rx, rz);
+      const s = rng.range(2.5, 5.5);
+      const boulder = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 1), graniteMat);
+      boulder.position.set(rx, ry + s * 0.4, rz);
+      boulder.rotation.set(rng.range(0, 3), rng.range(0, 3), rng.range(0, 3));
+      boulder.castShadow = true;
+      boulder.receiveShadow = true;
+      this.scene.add(boulder);
+    }
+
+    // 4. NILGIRIS: Terraced Tea Slopes & Stone Retaining Walls (X: +140 to +260)
+    const stoneWallMat = new THREE.MeshStandardMaterial({ color: 0x3a3835, roughness: 0.9 });
+    for (let tx = 145; tx <= 250; tx += 25) {
+      const ty = this.getElevation(tx, 0);
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.8, 80), stoneWallMat);
+      wall.position.set(tx, ty, 0);
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+      this.scene.add(wall);
+    }
+  }
+
+  // ==========================================================================
+  // DETERMINISTIC FLORA SCATTERING (Using WorldRNG - Zero Math.random())
   // ==========================================================================
   scatterBiomeFlora() {
+    const rng = (typeof WorldRNG !== 'undefined') ? new WorldRNG(884422) : { range: (a, b) => (a + b) / 2 };
+
     // 1. Palmyra Trees across Chennai & plains (X: -290 to -110)
     for (let i = 0; i < 45; i++) {
-      const px = -290 + Math.random() * 175;
-      const pz = -95 + Math.random() * 190;
+      const px = rng.range(-290, -115);
+      const pz = rng.range(-95, 95);
       // Skip immediate perimeter of High Court & Tea stall
       if (Math.hypot(px - (-240), pz - 15) < 18) continue;
       if (Math.hypot(px - (-190), pz - 25) < 14) continue;
-      this.createPalmyraTree(px, pz);
+      this.createPalmyraTree(px, pz, rng);
     }
 
     // 2. Low-Poly Mangrove Trees in Pichavaram Delta (X: -90 to +80)
     for (let i = 0; i < 50; i++) {
-      const px = -90 + Math.random() * 170;
-      const pz = -90 + Math.random() * 180;
-      this.createMangroveTree(px, pz);
+      const px = rng.range(-90, 80);
+      const pz = rng.range(-90, 90);
+      this.createMangroveTree(px, pz, rng);
     }
 
     // 3. Shola Pines & Tea Bushes in Western Ghats Highlands (X: +110 to +290)
     for (let i = 0; i < 65; i++) {
-      const px = 110 + Math.random() * 175;
-      const pz = -95 + Math.random() * 190;
+      const px = rng.range(110, 285);
+      const pz = rng.range(-95, 95);
       if (Math.hypot(px - 210, pz - 20) < 14) continue;
       if (Math.hypot(px - 275, pz - (-15)) < 16) continue;
-      this.createSholaPineTree(px, pz);
+      this.createSholaPineTree(px, pz, rng);
     }
   }
 
   // Palmyra Tree: Slender fibrous trunk + radiate fan fronds
-  createPalmyraTree(x, z) {
+  createPalmyraTree(x, z, rng = null) {
     const y = this.getElevation(x, z);
     const group = new THREE.Group();
     group.position.set(x, y, z);
@@ -466,7 +561,7 @@ class ThreeTerrain {
     const leafMat = new THREE.MeshStandardMaterial({ color: 0x274e13, roughness: 0.85 });
 
     // Trunk
-    const height = 14 + Math.random() * 5;
+    const height = 14 + (rng ? rng.range(0, 5) : 2.5);
     const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.55, height, 7), trunkMat);
     trunk.position.set(0, height / 2, 0);
     trunk.castShadow = true;
@@ -483,7 +578,7 @@ class ThreeTerrain {
   }
 
   // Mangrove Tree: Aerial stilt roots + twisted canopy
-  createMangroveTree(x, z) {
+  createMangroveTree(x, z, rng = null) {
     const y = Math.max(0.6, this.getElevation(x, z));
     const group = new THREE.Group();
     group.position.set(x, y, z);
@@ -513,7 +608,7 @@ class ThreeTerrain {
   }
 
   // Highland Shola Pine: Conical layered evergreen foliage
-  createSholaPineTree(x, z) {
+  createSholaPineTree(x, z, rng = null) {
     const y = this.getElevation(x, z);
     const group = new THREE.Group();
     group.position.set(x, y, z);
@@ -549,3 +644,4 @@ class ThreeTerrain {
 }
 
 window.ThreeTerrain = ThreeTerrain;
+
