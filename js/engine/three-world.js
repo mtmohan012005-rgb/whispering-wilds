@@ -64,6 +64,21 @@ class ThreeWorld {
             this.worldAssets = null;
         }
 
+        // 4e. PC Performance, Streaming, Instance & Occlusion Managers
+        this.instanceManager = (typeof InstanceManager !== 'undefined') ? new InstanceManager(this.scene, this.terrain) : null;
+        window.instanceManager = this.instanceManager;
+
+        this.occlusionManager = (typeof OcclusionManager !== 'undefined') ? new OcclusionManager(this.scene, this.cameraController.camera) : null;
+        window.occlusionManager = this.occlusionManager;
+
+        this.worldStreaming = (typeof WorldStreamingSystem !== 'undefined') ? new WorldStreamingSystem(this.scene, this.worldAssets) : null;
+        window.worldStreaming = this.worldStreaming;
+
+        this.performanceManager = (typeof PerformanceManager !== 'undefined') ? new PerformanceManager(window.graphicsSettings, this) : null;
+        window.performanceManager = this.performanceManager;
+
+        this.isTabHidden = false;
+
         // Set initial player height on terrain
         this.player.setPosition(-250, 0, this.terrain);
 
@@ -80,9 +95,27 @@ class ThreeWorld {
             this.cameraController.handleResize(w, h);
         });
 
+        // Visibility change handling to conserve battery & GPU when tab is inactive
+        document.addEventListener('visibilitychange', () => {
+            this.isTabHidden = document.hidden;
+            if (document.hidden) {
+                if (window.audioManager && typeof window.audioManager.setMasterVolume === 'function') {
+                    window.audioManager.setMasterVolume(0.1);
+                }
+            } else {
+                if (window.audioManager && typeof window.audioManager.setMasterVolume === 'function') {
+                    window.audioManager.setMasterVolume(1.0);
+                }
+                this.lastTime = performance.now();
+            }
+        });
+
         // Key bindings for WASD / Arrows / Jump / Crouch / Sprint
         window.addEventListener('keydown', (e) => {
             if (!this.isActive) return;
+            if (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked()) {
+                return;
+            }
             if (['KeyW', 'ArrowUp'].includes(e.code)) this.inputState.up = true;
             if (['KeyS', 'ArrowDown'].includes(e.code)) this.inputState.down = true;
             if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = true;
@@ -171,6 +204,16 @@ class ThreeWorld {
     renderLoop() {
         if (!this.isActive) return;
 
+        // Skip heavy frame rendering if browser tab is hidden
+        if (this.isTabHidden) {
+            this.animationFrameId = requestAnimationFrame(() => this.renderLoop());
+            return;
+        }
+
+        if (this.performanceManager) {
+            this.performanceManager.beginFrame();
+        }
+
         const now = performance.now();
         let dt = (now - this.lastTime) / 1000.0;
         this.lastTime = now;
@@ -210,8 +253,21 @@ class ThreeWorld {
             this.worldAssets.update(playerPos, dt);
         }
 
+        // 4e. Update PC World Streaming & Occlusion Frustum
+        if (this.worldStreaming) {
+            this.worldStreaming.update(playerPos, dt);
+        }
+        if (this.occlusionManager) {
+            this.occlusionManager.updateFrustum(this.cameraController.camera);
+        }
+
         // 5. Render Scene
         this.renderer.render(this.scene, this.cameraController.camera);
+
+        // 5b. End Performance Frame & Metrics
+        if (this.performanceManager) {
+            this.performanceManager.endFrame(this.renderer, this.scene);
+        }
 
         // 6. Telemetry Callback for HUD updates
         if (this.onTelemetryUpdate) {

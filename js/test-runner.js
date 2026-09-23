@@ -834,6 +834,48 @@ window.runStepByStepFeatureTests = async function() {
     log(22, 'Production Tamil Nadu Audio Engine (Ambience, Spatial, Music, Footsteps, Wildlife)', false, err.message);
   }
 
+  // --- STEP 23: PC Graphics, Performance, Quality Presets, Occlusion & World Streaming ---
+  try {
+    if (typeof window.runPCGraphicsTests === 'function') {
+      const graphicsSuite = await window.runPCGraphicsTests();
+      const failed = graphicsSuite.results.filter(r => !r.passed);
+      log(23, 'PC Graphics, Dynamic Performance, Occlusion & World Streaming', graphicsSuite.passed,
+        `Passed: ${graphicsSuite.passed}, Sub-tests: ${graphicsSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(23, 'PC Graphics, Dynamic Performance, Occlusion & World Streaming', false, 'runPCGraphicsTests function not defined');
+    }
+  } catch (err) {
+    log(23, 'PC Graphics, Dynamic Performance, Occlusion & World Streaming', false, err.message);
+  }
+
+  // --- STEP 24: Production Multiplayer Server, Rate Limiting & Client Synchronization ---
+  try {
+    if (typeof window.runProductionMultiplayerTests === 'function') {
+      const mpSuite = await window.runProductionMultiplayerTests();
+      const failed = mpSuite.results.filter(r => !r.passed);
+      log(24, 'Production Multiplayer Server, Rate Limiting & Client Synchronization', mpSuite.passed,
+        `Passed: ${mpSuite.passed}, Sub-tests: ${mpSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(24, 'Production Multiplayer Server, Rate Limiting & Client Synchronization', false, 'runProductionMultiplayerTests function not defined');
+    }
+  } catch (err) {
+    log(24, 'Production Multiplayer Server, Rate Limiting & Client Synchronization', false, err.message);
+  }
+
+  // --- STEP 25: Professional PC HUD, 8-Region Map, Journal, Satchel (20kg) & Photo Mode ---
+  try {
+    if (typeof window.runProfessionalUITests === 'function') {
+      const uiSuite = await window.runProfessionalUITests();
+      const failed = uiSuite.results.filter(r => !r.passed);
+      log(25, 'Professional PC HUD, 8-Region Map, Journal, Satchel (20kg) & Photo Mode', uiSuite.passed,
+        `Passed: ${uiSuite.passed}, Sub-tests: ${uiSuite.results.length} checks${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(25, 'Professional PC HUD, 8-Region Map, Journal, Satchel (20kg) & Photo Mode', false, 'runProfessionalUITests function not defined');
+    }
+  } catch (err) {
+    log(25, 'Professional PC HUD, 8-Region Map, Journal, Satchel (20kg) & Photo Mode', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

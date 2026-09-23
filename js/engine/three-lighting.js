@@ -90,6 +90,30 @@ class ThreeLighting {
             this.lightningLight.intensity = this.flashIntensity;
         }
     }
+
+    setShadowQuality(quality, distance) {
+        if (!this.moonLight) return;
+
+        if (quality === 'off') {
+            this.moonLight.castShadow = false;
+            return;
+        }
+
+        this.moonLight.castShadow = true;
+        const sizeMap = { low: 1024, medium: 2048, high: 2048, ultra: 4096 };
+        const sz = sizeMap[quality] || 2048;
+        this.moonLight.shadow.mapSize.width = sz;
+        this.moonLight.shadow.mapSize.height = sz;
+
+        if (distance && this.moonLight.shadow && this.moonLight.shadow.camera) {
+            const d = Math.max(30, Math.min(220, distance));
+            this.moonLight.shadow.camera.left = -d;
+            this.moonLight.shadow.camera.right = d;
+            this.moonLight.shadow.camera.top = d;
+            this.moonLight.shadow.camera.bottom = -d;
+            this.moonLight.shadow.camera.updateProjectionMatrix();
+        }
+    }
 }
 
 window.ThreeLighting = ThreeLighting;

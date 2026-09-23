@@ -99,6 +99,47 @@ window.addEventListener('DOMContentLoaded', () => {
     : null;
   window.playerCustomizationUI = customizationUI;
 
+  // Initialize Professional PC UI & Inventory Subsystems
+  const inventorySystem = (typeof window.InventorySystem !== 'undefined') ? new window.InventorySystem() : null;
+  window.inventorySystem = inventorySystem;
+
+  const gameHUD = (typeof window.GameHUD !== 'undefined') ? new window.GameHUD() : null;
+  window.gameHUD = gameHUD;
+
+  const pauseMenuUI = (typeof window.PauseMenuUI !== 'undefined') ? new window.PauseMenuUI() : null;
+  window.pauseMenuUI = pauseMenuUI;
+
+  const worldMapUI = (typeof window.WorldMapUI !== 'undefined') ? new window.WorldMapUI() : null;
+  window.worldMapUI = worldMapUI;
+
+  const journalUI = (typeof window.JournalUI !== 'undefined') ? new window.JournalUI() : null;
+  window.journalUI = journalUI;
+
+  const inventoryUI = (typeof window.InventoryUI !== 'undefined') ? new window.InventoryUI() : null;
+  window.inventoryUI = inventoryUI;
+
+  const dialogueUI = (typeof window.DialogueUI !== 'undefined') ? new window.DialogueUI() : null;
+  window.dialogueUI = dialogueUI;
+
+  const photoUI = (typeof window.PhotoModeUI !== 'undefined') ? new window.PhotoModeUI() : null;
+  window.photoUI = photoUI;
+
+  const unifiedSettingsUI = (typeof window.UnifiedSettingsUI !== 'undefined') ? new window.UnifiedSettingsUI() : null;
+  window.unifiedSettingsUI = unifiedSettingsUI;
+
+  const uiManager = (typeof window.UIManager !== 'undefined') ? new window.UIManager() : null;
+  window.uiManager = uiManager;
+  if (uiManager) {
+    uiManager.hud = gameHUD;
+    uiManager.pauseMenu = pauseMenuUI;
+    uiManager.worldMapUI = worldMapUI;
+    uiManager.journalUI = journalUI;
+    uiManager.inventoryUI = inventoryUI;
+    uiManager.dialogueUI = dialogueUI;
+    uiManager.photoUI = photoUI;
+    uiManager.settingsUI = unifiedSettingsUI;
+  }
+
   // Attach global references
   window.gameQuests = quests;
   window.gameJournal = journal;
@@ -110,7 +151,12 @@ window.addEventListener('DOMContentLoaded', () => {
     player, renderer, lighting, particles, tracksManager, weather,
     survival, camera: explorerCamera, journal, quests, entities,
     saveManager, multiplayer, audioManager, playerCustomization: customizationSystem,
-    playerCustomizationUI: customizationUI
+    playerCustomizationUI: customizationUI,
+    inventory: inventorySystem,
+    uiManager: uiManager,
+    hud: gameHUD,
+    worldMapUI: worldMapUI,
+    photoUI: photoUI
   };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
@@ -1096,6 +1142,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if (compassNeedle) {
       const headingDeg = (player.angle * 180 / Math.PI) + 90;
       compassNeedle.style.transform = `rotate(${headingDeg}deg)`;
+    }
+
+    // Professional PC Game HUD update
+    if (gameHUD) {
+      gameHUD.update(player.angle || 0, survival, player.nearbyInteractable);
     }
   }
 

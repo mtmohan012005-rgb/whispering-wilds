@@ -146,6 +146,17 @@ class ThreeWeather {
     getRainWetness() {
         return 0.85; // Active monsoon thunderstorm
     }
+
+    setParticleCount(count) {
+        if (!count || count === this.rainCount) return;
+        this.rainCount = count;
+        if (this.rainLines && this.rainLines.parent) {
+            this.rainLines.parent.remove(this.rainLines);
+            if (this.rainLines.geometry) this.rainLines.geometry.dispose();
+            if (this.rainLines.material) this.rainLines.material.dispose();
+        }
+        this.buildRainSystem();
+    }
 }
 
 window.ThreeWeather = ThreeWeather;

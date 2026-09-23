@@ -25,12 +25,23 @@ class ProductionLOD {
     }
 
     // Square distances for fast distance comparisons without Math.sqrt
-    this.lod0Sq = this.lod0Dist * this.lod0Dist;
-    this.lod1Sq = this.lod1Dist * this.lod1Dist;
-    this.lod2Sq = this.lod2Dist * this.lod2Dist;
+    this.lodBias = options.lodBias || 1.0;
+    const bSq = this.lodBias * this.lodBias;
+    this.lod0Sq = (this.lod0Dist * this.lod0Dist) * bSq;
+    this.lod1Sq = (this.lod1Dist * this.lod1Dist) * bSq;
+    this.lod2Sq = (this.lod2Dist * this.lod2Dist) * bSq;
 
     this.currentLevel = 0; // 0: LOD0, 1: LOD1, 2: LOD2, -1: Culled
     this.isVisible = true;
+  }
+
+  setLODBias(bias) {
+    if (typeof bias !== 'number' || bias <= 0) return;
+    this.lodBias = bias;
+    const bSq = bias * bias;
+    this.lod0Sq = (this.lod0Dist * this.lod0Dist) * bSq;
+    this.lod1Sq = (this.lod1Dist * this.lod1Dist) * bSq;
+    this.lod2Sq = (this.lod2Dist * this.lod2Dist) * bSq;
   }
 
   /**

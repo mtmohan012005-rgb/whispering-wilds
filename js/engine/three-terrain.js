@@ -641,6 +641,22 @@ class ThreeTerrain {
     this.scene.add(group);
     this.trees.push(group);
   }
+
+  setQuality(terrainQuality, waterQuality) {
+    if (this.waterMesh && this.waterMesh.material) {
+      if (waterQuality === 'low') {
+        this.waterMesh.material.roughness = 0.5;
+        this.waterMesh.material.metalness = 0.1;
+      } else if (waterQuality === 'ultra') {
+        this.waterMesh.material.roughness = 0.08;
+        this.waterMesh.material.metalness = 0.85;
+      } else {
+        this.waterMesh.material.roughness = 0.18;
+        this.waterMesh.material.metalness = 0.6;
+      }
+      this.waterMesh.material.needsUpdate = true;
+    }
+  }
 }
 
 window.ThreeTerrain = ThreeTerrain;

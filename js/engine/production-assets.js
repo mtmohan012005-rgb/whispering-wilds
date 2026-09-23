@@ -16,6 +16,17 @@ class ProductionAssetsAdapter {
     console.log('[ProductionAssets] Initialized Production Asset Adapter for Tamil Nadu Open-World (PC 60 FPS Target)');
   }
 
+  setQualityProfile(presetId) {
+    const config = window.GRAPHICS_CONFIG;
+    if (config && config.PRESETS[presetId]) {
+      const p = config.PRESETS[presetId];
+      this.textureQuality = p.textureQuality;
+      if (this.worldAssets && typeof this.worldAssets.setLODBias === 'function') {
+        this.worldAssets.setLODBias(p.lodBias);
+      }
+    }
+  }
+
   /**
    * Diagnostic report of all registered vs missing assets
    */

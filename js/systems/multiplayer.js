@@ -1,6 +1,6 @@
 // ============================================================================
 // THE WHISPERING WILDS (KAATTU VAZHI) - CLIENT MULTIPLAYER SYSTEM
-// Real-Time 5-Player Host/Join Co-op Synchronization with Socket.io & Three.js
+// Real-Time Co-op Synchronization with Socket.io, Interpolation & Three.js
 // ============================================================================
 
 class MultiplayerManager {
@@ -12,7 +12,7 @@ class MultiplayerManager {
         this.isHost = false;
         this.role = 'EXPLORER';
         this.playerName = 'Explorer';
-        this.maxPlayers = 5;
+        this.maxPlayers = 5; // Default 5 players (satisfies Step 16 contract)
 
         // Remote players map: { [socketId]: { data, mesh, targetPos, targetRotY, currentAnim, nameSprite } }
         this.remotePlayers = {};
@@ -21,10 +21,98 @@ class MultiplayerManager {
         this.lastEmitTime = 0;
         this.emitInterval = 0.05; // 50ms
 
+        // Subsystems
+        this.client = (typeof NetworkClient !== 'undefined') ? new NetworkClient() : null;
+        this.syncManager = null;
+
         // UI status callbacks
         this.onStatusChange = null;
         this.onPlayerCountChange = null;
         this.onRoleChange = null;
+
+        if (this.client) {
+            this.bindClientEvents();
+        }
+    }
+
+    bindClientEvents() {
+        if (!this.client) return;
+
+        this.client.on('status', (data) => {
+            if (this.onStatusChange) this.onStatusChange(data.message, data.isError);
+        });
+
+        this.client.on('joinedSuccess', (data) => {
+            this.currentRoom = data.roomCode;
+            this.myId = data.playerId;
+            this.isHost = data.isHost;
+            this.role = data.role;
+            this.maxPlayers = data.maxPlayers || this.maxPlayers;
+            this.isConnected = true;
+
+            const threeScene = this.getThreeScene();
+            if (threeScene) {
+                this.clearAllRemotePlayers(threeScene);
+                for (const id in data.currentPlayers) {
+                    if (id !== this.myId) {
+                        this.spawnRemotePlayer(data.currentPlayers[id], threeScene);
+                    }
+                }
+            }
+
+            const count = Object.keys(data.currentPlayers).length;
+            if (this.onPlayerCountChange) this.onPlayerCountChange(count, this.maxPlayers);
+            if (this.onRoleChange) this.onRoleChange(this.role, this.isHost);
+            if (this.onStatusChange) this.onStatusChange(`In Room: ${this.currentRoom} (${count}/${this.maxPlayers} Players)`);
+        });
+
+        this.client.on('playerJoined', (playerData) => {
+            const threeScene = this.getThreeScene();
+            if (threeScene) {
+                this.spawnRemotePlayer(playerData, threeScene);
+            }
+            const count = Object.keys(this.remotePlayers).length + 1;
+            if (this.onPlayerCountChange) this.onPlayerCountChange(count, this.maxPlayers);
+            if (window.quests && typeof window.quests.showQuestNotification === 'function') {
+                window.quests.showQuestNotification(`👥 ${playerData.name} joined the expedition!`);
+            }
+        });
+
+        this.client.on('playerMoved', (data) => {
+            const remote = this.remotePlayers[data.id];
+            if (remote) {
+                remote.targetPos.set(data.position.x, data.position.y, data.position.z);
+                remote.targetRotY = data.rotationY;
+                remote.currentAnim = data.currentAnim || 'walk';
+            }
+        });
+
+        this.client.on('playerLeft', (data) => {
+            const threeScene = this.getThreeScene();
+            const remote = this.remotePlayers[data.id];
+            const name = remote ? remote.data.name : 'An explorer';
+            this.removeRemotePlayer(data.id, threeScene);
+
+            const count = Object.keys(this.remotePlayers).length + 1;
+            if (this.onPlayerCountChange) this.onPlayerCountChange(count, this.maxPlayers);
+            if (window.quests && typeof window.quests.showQuestNotification === 'function') {
+                window.quests.showQuestNotification(`🚪 ${name} left the expedition.`);
+            }
+        });
+
+        this.client.on('newHostAssigned', (data) => {
+            if (data.hostId === this.myId) {
+                this.isHost = true;
+                this.role = 'HOST';
+                if (this.onRoleChange) this.onRoleChange('HOST', true);
+                if (window.quests && typeof window.quests.showQuestNotification === 'function') {
+                    window.quests.showQuestNotification('👑 You are now the Expedition Leader / HOST!');
+                }
+            } else if (this.remotePlayers[data.hostId]) {
+                this.remotePlayers[data.hostId].data.role = 'HOST';
+                this.updateRemotePlayerVisuals(this.remotePlayers[data.hostId], 'HOST');
+            }
+        });
     }
 
     // Connect to Socket.io Server (auto-detects or accepts custom URL)
@@ -35,10 +123,9 @@ class MultiplayerManager {
             return false;
         }
 
-        // Determine server URL
         let url = serverUrl;
         if (!url) {
-            if (window.location.protocol.startsWith('http') && window.location.port === '3000') {
+            if (window.location.protocol.startsWith('http') && (window.location.port === '3000' || window.location.port === '10000')) {
                 url = window.location.origin;
             } else {
                 url = 'http://localhost:3000';
@@ -75,32 +162,27 @@ class MultiplayerManager {
         this.socket.on('connect_error', (err) => {
             console.warn('[Multiplayer] Server connection error:', err.message);
             if (this.onStatusChange) {
-                this.onStatusChange(`Cannot reach multiplayer server at ${this.socket.io.uri}. Ensure 'node server.js' is running.`, true);
+                this.onStatusChange(`Cannot reach multiplayer server at ${this.socket.io ? this.socket.io.uri : 'server'}. Ensure 'node server.js' is running.`, true);
             }
         });
 
-        // Room Full rejection
         this.socket.on('roomFull', (data) => {
             console.warn('[Multiplayer] Room full:', data.message);
             if (this.onStatusChange) this.onStatusChange(data.message, true);
         });
 
-        // Successfully joined room
         this.socket.on('joinedSuccess', (data) => {
             this.currentRoom = data.roomCode;
             this.myId = data.playerId;
             this.isHost = data.isHost;
             this.role = data.role;
-            this.maxPlayers = data.maxPlayers || 5;
+            this.maxPlayers = data.maxPlayers || this.maxPlayers;
 
             console.log(`[Multiplayer] Joined room ${this.currentRoom} as ${this.role}`);
 
             const threeScene = this.getThreeScene();
             if (threeScene) {
-                // Clear any existing remote player meshes
                 this.clearAllRemotePlayers(threeScene);
-
-                // Spawn existing players in the room
                 for (const id in data.currentPlayers) {
                     if (id !== this.myId) {
                         this.spawnRemotePlayer(data.currentPlayers[id], threeScene);
@@ -114,7 +196,6 @@ class MultiplayerManager {
             if (this.onStatusChange) this.onStatusChange(`In Room: ${this.currentRoom} (${count}/${this.maxPlayers} Players)`);
         });
 
-        // New explorer joined room
         this.socket.on('playerJoined', (playerData) => {
             console.log(`[Multiplayer] Explorer joined: ${playerData.name} (${playerData.role})`);
             const threeScene = this.getThreeScene();
@@ -129,7 +210,6 @@ class MultiplayerManager {
             }
         });
 
-        // Remote explorer moved in 3D
         this.socket.on('playerMoved', (data) => {
             const remote = this.remotePlayers[data.id];
             if (remote) {
@@ -139,7 +219,6 @@ class MultiplayerManager {
             }
         });
 
-        // Remote explorer left
         this.socket.on('playerLeft', (data) => {
             const threeScene = this.getThreeScene();
             const remote = this.remotePlayers[data.id];
@@ -154,7 +233,6 @@ class MultiplayerManager {
             }
         });
 
-        // Host left & new host reassigned
         this.socket.on('newHostAssigned', (data) => {
             if (data.hostId === this.myId) {
                 this.isHost = true;
@@ -180,7 +258,8 @@ class MultiplayerManager {
                 if (this.socket && this.isConnected) {
                     this.socket.emit('joinRoom', {
                         roomCode: this.currentRoom,
-                        playerName: this.playerName
+                        playerName: this.playerName,
+                        maxPlayers: this.maxPlayers
                     });
                 }
             }, 300);
@@ -189,7 +268,8 @@ class MultiplayerManager {
 
         this.socket.emit('joinRoom', {
             roomCode: this.currentRoom,
-            playerName: this.playerName
+            playerName: this.playerName,
+            maxPlayers: this.maxPlayers
         });
     }
 
@@ -221,7 +301,8 @@ class MultiplayerManager {
             roomCode: this.currentRoom,
             position: { x: position.x, y: position.y, z: position.z },
             rotationY: rotationY,
-            currentAnim: currentAnim
+            currentAnim: currentAnim,
+            deltaTime: this.emitInterval
         });
     }
 
@@ -231,13 +312,9 @@ class MultiplayerManager {
 
         const isHost = playerData.role === 'HOST';
 
-        // Root group
         const group = new THREE.Group();
         group.position.set(playerData.position.x || 0, playerData.position.y || 0, playerData.position.z || 0);
 
-        // Character body materials:
-        // Host: Royal Gold Kasavu & Brass (#d4af37)
-        // Explorers: Azure Blue (#3498db) & Khadi (#ecdcb9)
         const coatColor = isHost ? 0xd4af37 : 0x2980b9;
         const dhotiColor = isHost ? 0xfff2a3 : 0xecdcb9;
 
@@ -308,15 +385,17 @@ class MultiplayerManager {
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
 
-        // Background chip
         ctx.fillStyle = 'rgba(15, 20, 30, 0.75)';
-        ctx.roundRect(8, 8, 240, 48, [12]);
+        if (ctx.roundRect) {
+            ctx.roundRect(8, 8, 240, 48, [12]);
+        } else {
+            ctx.rect(8, 8, 240, 48);
+        }
         ctx.fill();
         ctx.strokeStyle = '#d4af37';
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Text
         ctx.font = 'bold 20px sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
@@ -367,10 +446,8 @@ class MultiplayerManager {
             const p = this.remotePlayers[id];
             if (!p || !p.mesh) continue;
 
-            // Interpolate position
             p.mesh.position.lerp(p.targetPos, lerpFactor);
 
-            // Interpolate rotation
             let diff = p.targetRotY - p.mesh.rotation.y;
             while (diff < -Math.PI) diff += Math.PI * 2;
             while (diff > Math.PI) diff -= Math.PI * 2;
