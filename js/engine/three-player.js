@@ -33,7 +33,7 @@ class ThreePlayer {
         this.animations = {};
         this.activeAction = null;
         this.isRiggedModelLoaded = false;
-        this.modelUrl = window.CHARACTER_MODEL_URL || 'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/models/gltf/Xbot.glb';
+        this.modelPath = window.CHARACTER_MODEL_URL || 'assets/characters/player/player.glb';
 
         this.group = new THREE.Group();
         this.buildAvatarMesh();
@@ -204,7 +204,7 @@ class ThreePlayer {
         }
 
         const loader = new THREE.GLTFLoader();
-        loader.load(this.modelUrl, (gltf) => {
+        loader.load(this.modelPath, (gltf) => {
             this.gltfMesh = gltf.scene;
             this.gltfMesh.scale.set(1.15, 1.15, 1.15);
             this.gltfMesh.traverse((child) => {
@@ -234,11 +234,10 @@ class ThreePlayer {
                 }
             });
 
-            // Fallbacks for standard Xbot asset indices
+            // Fallbacks for standard asset indices
             if (!this.animations['idle'] && gltf.animations[0]) this.animations['idle'] = this.mixer.clipAction(gltf.animations[0]);
-            if (!this.animations['walk'] && gltf.animations[6]) this.animations['walk'] = this.mixer.clipAction(gltf.animations[6]);
-            if (!this.animations['walk'] && gltf.animations[3]) this.animations['walk'] = this.mixer.clipAction(gltf.animations[3]);
-            if (!this.animations['sprint'] && gltf.animations[3]) this.animations['sprint'] = this.mixer.clipAction(gltf.animations[3]);
+            if (!this.animations['walk'] && gltf.animations[1]) this.animations['walk'] = this.mixer.clipAction(gltf.animations[1]);
+            if (!this.animations['sprint'] && gltf.animations[2]) this.animations['sprint'] = this.mixer.clipAction(gltf.animations[2]);
 
             if (this.animations['idle']) {
                 this.activeAction = this.animations['idle'];
@@ -257,9 +256,9 @@ class ThreePlayer {
 
             this.avatarMesh.add(this.gltfMesh);
             this.isRiggedModelLoaded = true;
-            console.log('Photorealistic 3D Skeletal Rigged Character Loaded');
+            console.log(`[LivingWorld] Loaded local production player GLB: ${this.modelPath}`);
         }, undefined, (err) => {
-            console.warn('Rigged GLTF character loading fallback to procedural avatar:', err);
+            console.warn(`[LivingWorld] Missing local player asset: ${this.modelPath}. Using procedural biomechanical avatar.`);
         });
     }
 

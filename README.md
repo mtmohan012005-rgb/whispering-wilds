@@ -99,18 +99,42 @@ The game includes a full Three.js WebGL skeletal animation pipeline loading rigg
 - **Cinematic Third-Person Follow Camera**: Dampened camera tracking with interactive mouse drag orbit controls.
 
 ### How to Plug in Your Custom Real Tamil Character (.glb)
-1. **Export an avatar** from MakeHuman, Ready Player Me, or Mixamo (with traditional cotton shirt, folded veshti, and boots).
-2. **Download animations** from Mixamo: `Idle.fbx`, `Walking.fbx`, and `Running.fbx`.
-3. **Bundle into a single `.glb` file** using Blender or `gltf-pipeline`.
-4. **Place in assets**: Copy your file to `assets/models/tamil_explorer.glb`.
-5. **Configure URL**: In `index.html` or before game start, set:
-   ```javascript
-   window.CHARACTER_MODEL_URL = './assets/models/tamil_explorer.glb';
-   ```
+1. **Export an avatar** from MakeHuman, Ready Player Me, or Blender (with traditional cotton shirt, folded veshti, and boots).
+2. **Bundle into a single `.glb` file** with animations (`idle`, `walk`, `sprint`).
+3. **Place in assets**: Copy your file to `assets/characters/player/player.glb`.
+4. The system automatically loads this local asset on start without external CDN dependencies.
 
 ---
 
-## 👥 6. Multiplayer Co-op Expedition Engine (Max 5 Players)
+## 🌿 6. Production Living World System (NPC Schedules & Wildlife AI)
+
+*The Whispering Wilds* features an authentic, PC-optimized Living World system:
+
+### A. Realistic NPC Schedules & Waypoints
+* **Occupations**: Tea stall owner, paddy farmer, catamaran fisher, bronze artisan, tea estate worker, forest guide, Chettinad antique merchant, and temple stone sculptor.
+* **Cultural Regions**: Chennai George Town, Cauvery Delta, Pichavaram Wetlands, Chettinad, Thanjavur, Mamallapuram, and Nilgiris / Western Ghats.
+* **Daily Schedules**: Minute-by-minute timetable (00:00 – 24:00) tracking AI states (`SLEEPING`, `HOME`, `MORNING_ROUTINE`, `TRAVELING`, `WORKING`, `EATING`, `RESTING`, `MARKET`, `COMMUNITY`, `TALKING`, `RETURNING_HOME`).
+* **No-Teleport Waypoint Navigation**: NPCs traverse authentic routes with smooth turning and terrain height conformance.
+
+### B. Species-Specific Wildlife Behaviors
+* **Nilgiri Tahr**: Mountain cliff grazing, ridge leaping, skittish flee, group return.
+* **Nilgiri Langur**: Shola canopy climbing, foraging, sentinel observe, vocal alert.
+* **Asian Elephant**: Herd movement, water drinking, defensive standoff (defends only if threatened < 4.5m).
+* **Gaur**: Heavy herd grazing, watchful standoff, slow retreat.
+* **Great Egret**: Mangrove tidal wading, spear-feeding, flight takeoff (`FLY`), glide, water landing (`LAND`).
+* **Kingfisher**: Overhanging reed perch, water observation, swift dive catch, return to perch.
+* **Indian Peafowl**: Ground strut, plumage display, screech alert, flee into scrub.
+* **Kangayam Cattle**: Village pasture grazing, herd amble, evening return to cattle shed.
+* **Tamil Village Goat**: Mound climbing, flocking, nimble flee.
+
+### C. Distance-Based Simulation LOD
+* **Tier 1 (< 65m)**: Full 3D rendering, skeletal animation mixer, terrain IK grounding, and player perception.
+* **Tier 2 (65m – 160m)**: Throttled animation, simplified awareness.
+* **Tier 3 (> 160m)**: Mesh culled/invisible, zero animation mixer cost, fast mathematical waypoint/habitat updates for 60 FPS PC performance.
+
+---
+
+## 👥 7. Multiplayer Co-op Expedition Engine (Max 5 Players)
 
 *The Whispering Wilds* features real-time 5-player cooperative networking powered by **Node.js, Express, and Socket.io**:
 

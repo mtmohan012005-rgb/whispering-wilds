@@ -1,6 +1,6 @@
 // ============================================================================
 // THE WHISPERING WILDS (KAATTU VAZHI) - AUTOMATED STEP-BY-STEP FEATURE TESTER
-// Executes all 16 GDD systems sequentially and logs step verification metrics
+// Executes all 17 GDD systems sequentially and logs step verification metrics
 // ============================================================================
 
 window.runStepByStepFeatureTests = async function() {
@@ -551,6 +551,108 @@ window.runStepByStepFeatureTests = async function() {
       `5PCapEnforced: ${isRoomFull}, DynamicHostPromotion: ${hostPromotionValid}, 20HzThrottled: ${emitIntervalValid}`);
   } catch (err) {
     log(16, 'Multiplayer 5-Player Room Lobby & State Sync Engine', false, err.message);
+  }
+
+  // --- STEP 17: Production Living World System (NPC Schedules, Wildlife AI & Distance LOD) ---
+  try {
+    const hasDataClasses = typeof window.NPC_PRODUCTION_DATA !== 'undefined' &&
+                           typeof window.WILDLIFE_SPECIES_DATA !== 'undefined';
+    const hasEntityClasses = typeof window.ProductionNPC === 'function' &&
+                             typeof window.ProductionWildlife === 'function' &&
+                             typeof window.LivingWorldSystem === 'function';
+
+    // Verify 8 occupations and 7 regions
+    const occupationsValid = window.NPC_OCCUPATIONS && window.NPC_OCCUPATIONS.length === 8;
+    const regionsValid = window.NPC_REGIONS && window.NPC_REGIONS.length === 7;
+
+    // Verify 9 wildlife species
+    const speciesKeys = Object.keys(window.WILDLIFE_SPECIES_DATA || {});
+    const speciesCountValid = speciesKeys.length === 9;
+
+    // Verify ThreeWorld integration
+    const threeWorld = window.threeWorld || (window.testRef && window.testRef.threeWorld);
+    const livingWorld = (threeWorld && threeWorld.livingWorld) ||
+                        new window.LivingWorldSystem(new THREE.Scene(), null);
+
+    const hasNPCMap = livingWorld.npcs instanceof Map && livingWorld.npcs.size >= 8;
+    const hasWildlifeMap = livingWorld.wildlife instanceof Map && livingWorld.wildlife.size > 0;
+
+    // Test Murugan's Schedule Evaluation (Early morning 05:00 = 300 mins vs Midday 12:30 = 750 mins)
+    const murugan = livingWorld.npcs.get('murugan');
+    let scheduleTransitionsValid = false;
+    if (murugan) {
+      murugan.evaluateSchedule(300); // 05:00
+      const earlyState = murugan.currentState;
+      murugan.evaluateSchedule(600); // 10:00
+      const workState = murugan.currentState;
+      murugan.evaluateSchedule(750); // 12:30
+      const eatState = murugan.currentState;
+
+      scheduleTransitionsValid = (earlyState === 'MORNING_ROUTINE' || earlyState === 'WORKING') &&
+                                  workState === 'WORKING' &&
+                                  eatState === 'EATING';
+    }
+
+    // Test Waypoint Movement without Teleportation
+    let smoothMovementValid = false;
+    if (murugan) {
+      const origX = murugan.x;
+      const origZ = murugan.z;
+      murugan.targetPosition.set(origX + 10.0, 0, origZ);
+      murugan.stepWaypointNavigation(0.1, 1.0); // 0.1s step
+      const stepDist = Math.hypot(murugan.x - origX, murugan.z - origZ);
+      // Step distance should be moveSpeed * dt (~0.195m), not instant 10m teleport
+      smoothMovementValid = stepDist > 0.01 && stepDist < 1.0;
+    }
+
+    // Test Wildlife Perception (Tahr Alert & Flee, Elephant Defend)
+    let perceptionValid = false;
+    const tahrCreature = Array.from(livingWorld.wildlife.values()).find(w => w.species === 'nilgiri_tahr');
+    if (tahrCreature) {
+      // Player at 14m (inside alertRadius 18m, outside fleeRadius 10m)
+      tahrCreature.perceive(14.0, { x: tahrCreature.x + 14, z: tahrCreature.z });
+      const alerted = tahrCreature.state === 'ALERT';
+
+      // Player closes to 4m (inside fleeRadius 10m)
+      tahrCreature.perceive(4.0, { x: tahrCreature.x + 4, z: tahrCreature.z });
+      const fled = tahrCreature.state === 'FLEE';
+
+      perceptionValid = alerted && fled;
+    }
+
+    // Test Distance-Based Simulation LOD (Tier 1 Near vs Tier 3 Far)
+    let lodSimulationValid = false;
+    if (murugan) {
+      // Player near (< 65m)
+      livingWorld.update(0.016, 600, { x: murugan.x + 5, y: 0, z: murugan.z });
+      const nearVisible = murugan.group.visible === true;
+
+      // Player far (> 160m)
+      livingWorld.update(0.016, 600, { x: murugan.x + 300, y: 0, z: murugan.z });
+      const farCulled = murugan.group.visible === false;
+
+      lodSimulationValid = nearVisible && farCulled;
+    }
+
+    // Test Player Interaction & Dialogue
+    let interactionValid = false;
+    if (murugan) {
+      const dialogueObj = murugan.interact({ x: murugan.x, z: murugan.z + 1.5 });
+      interactionValid = !!(dialogueObj && dialogueObj.dialogue && dialogueObj.dialogue.ta && dialogueObj.dialogue.en);
+      murugan.endInteraction();
+    }
+
+    const step17Success = hasDataClasses && hasEntityClasses && occupationsValid && regionsValid &&
+                          speciesCountValid && hasNPCMap && hasWildlifeMap && scheduleTransitionsValid &&
+                          smoothMovementValid && perceptionValid && lodSimulationValid && interactionValid;
+
+    log(17, 'Production Living World System (NPC Schedules, Wildlife AI & Distance LOD)', step17Success,
+      `Data: ${hasDataClasses}, Entities: ${hasEntityClasses}, Occupations(8): ${occupationsValid}, Regions(7): ${regionsValid}, ` +
+      `Species(9): ${speciesCountValid}, NPCsMap: ${livingWorld.npcs.size}, WildlifeMap: ${livingWorld.wildlife.size}, ` +
+      `Schedules: ${scheduleTransitionsValid}, NoTeleportNav: ${smoothMovementValid}, ` +
+      `Perception: ${perceptionValid}, DistanceLOD: ${lodSimulationValid}, DialogueBilingual: ${interactionValid}`);
+  } catch (err) {
+    log(17, 'Production Living World System (NPC Schedules, Wildlife AI & Distance LOD)', false, err.message);
   }
 
   console.log('>>> TEST SUITE COMPLETE <<<', results);

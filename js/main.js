@@ -264,6 +264,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // 5. Interactions Logic
   function handleInteraction() {
+    // 1. Check for nearby 3D Living World NPCs if in 3D mode
+    if (threeWorld && threeWorld.isActive && threeWorld.livingWorld) {
+      const nearby3DNPC = threeWorld.livingWorld.getNearbyInteractableNPC(threeWorld.player.getPosition(), 4.0);
+      if (nearby3DNPC) {
+        const interactionData = nearby3DNPC.interact(threeWorld.player.getPosition());
+        openProductionNPCDialogue(interactionData);
+        return;
+      }
+    }
+
     if (!player.nearbyInteractable) return;
     const item = player.nearbyInteractable;
 
@@ -312,6 +322,33 @@ window.addEventListener('DOMContentLoaded', () => {
       quests.showQuestNotification('Rested until dawn! Gained Stamina Recovery Buff.');
       // Diegetic save: slept in tent
       saveManager.saveGame('auto', 'tent_sleep');
+    }
+  }
+
+  function openProductionNPCDialogue(data) {
+    if (!data) return;
+    teaModal.classList.remove('hidden');
+    audio.playPinTap();
+    const titleEl = document.querySelector('.tea-kadai-banner h3');
+    if (titleEl) {
+      titleEl.textContent = `${data.tamilName || data.name} • ${data.occupation.replace(/_/g, ' ').toUpperCase()}`;
+    }
+    const bubbleEl = document.getElementById('tea-dialogue-text');
+    if (bubbleEl) {
+      const ta = (data.dialogue && data.dialogue.ta) || '';
+      const en = (data.dialogue && data.dialogue.en) || '';
+      bubbleEl.innerHTML = `<strong style="color:#d4af37;">${ta}</strong><br><span style="color:#bdc3c7; font-size:0.92rem; display:block; margin-top:6px;">"${en}"</span>`;
+    }
+    const optContainer = document.getElementById('tea-options');
+    if (optContainer) {
+      optContainer.innerHTML = '';
+      const farewellBtn = document.createElement('button');
+      farewellBtn.className = 'tea-choice-btn';
+      farewellBtn.textContent = 'சரிங்க, நான் பாத்து போயிட்டு வர்றேன் (Farewell)';
+      farewellBtn.onclick = () => {
+        teaModal.classList.add('hidden');
+      };
+      optContainer.appendChild(farewellBtn);
     }
   }
 

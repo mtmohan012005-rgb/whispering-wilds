@@ -43,6 +43,14 @@ class ThreeWorld {
         this.player = new ThreePlayer(this.scene, -250, 0);
         this.weather = new ThreeWeather(this.scene);
 
+        // 4. Production Living World System (NPCs & Wildlife)
+        if (typeof LivingWorldSystem !== 'undefined') {
+            this.livingWorld = new LivingWorldSystem(this.scene, this.terrain);
+            window.livingWorld = this.livingWorld;
+        } else {
+            this.livingWorld = null;
+        }
+
         // Set initial player height on terrain
         this.player.setPosition(-250, 0, this.terrain);
 
@@ -166,6 +174,15 @@ class ThreeWorld {
             window.multiplayerManager.updateRemotePlayers(dt);
             const anim = this.player.isMoving ? (this.inputState.shift ? 'sprint' : 'walk') : 'idle';
             window.multiplayerManager.emitMyTransform(playerPos, this.player.currentRotation, anim);
+        }
+
+        // 4c. Update Production Living World System (NPC Schedules & Wildlife)
+        if (this.livingWorld) {
+            let worldClockMinutes = 540;
+            if (window.testRef && window.testRef.lighting) {
+                worldClockMinutes = (window.testRef.lighting.timeOfDay * 60) % 1440;
+            }
+            this.livingWorld.update(dt, worldClockMinutes, playerPos);
         }
 
         // 5. Render Scene
