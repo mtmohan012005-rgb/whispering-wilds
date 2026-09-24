@@ -212,8 +212,20 @@ class SaveManager {
     try {
       const key = this.STORAGE_PREFIX + slot;
       const backupKey = key + '_backup';
+      const tmpKey = key + '_tmp';
 
-      // Keep previous valid save snapshot as backup
+      // 1. Atomic write to temporary slot first
+      const serialized = JSON.stringify(state);
+      localStorage.setItem(tmpKey, serialized);
+
+      // 2. Validate written temporary payload
+      const readBack = localStorage.getItem(tmpKey);
+      if (!readBack || readBack.length !== serialized.length) {
+        throw new Error('Atomic write validation failed: length mismatch');
+      }
+      JSON.parse(readBack); // verify JSON integrity
+
+      // 3. Keep previous valid save snapshot as backup
       const existingRaw = localStorage.getItem(key);
       if (existingRaw) {
         try {
@@ -222,9 +234,19 @@ class SaveManager {
             localStorage.setItem(backupKey, existingRaw);
           }
         } catch (_) {}
+      } else if (!localStorage.getItem(backupKey)) {
+        localStorage.setItem(backupKey, readBack);
       }
 
-      localStorage.setItem(key, JSON.stringify(state));
+      // 4. Commit temporary key to main key
+      localStorage.setItem(key, readBack);
+      localStorage.removeItem(tmpKey);
+
+      // 5. Store last known safe state for crash recovery
+      try {
+        localStorage.setItem('ww_last_safe_state', readBack);
+      } catch (_) {}
+
       this._lastSaveTimestamp = state.timestamp;
 
       console.log(`[SaveManager] ✓ Game saved (slot: ${slot}, reason: ${reason}) at ${state.formattedTime}`);
@@ -236,6 +258,34 @@ class SaveManager {
       console.error('[SaveManager] Save failed:', err);
       return false;
     }
+  }
+
+  _showSaveToast(reason = '') {
+    if (typeof document === 'undefined' || !document.body) return;
+    let toast = document.getElementById('ww-save-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'ww-save-toast';
+      toast.style.cssText = [
+        'position:fixed;bottom:24px;right:24px;z-index:9000;',
+        'background:rgba(15,25,35,0.85);backdrop-filter:blur(8px);',
+        'border:1px solid rgba(226,201,126,0.3);color:#e2c97e;',
+        'padding:8px 16px;border-radius:6px;font-family:Inter,sans-serif;',
+        'font-size:12px;display:flex;align-items:center;gap:8px;',
+        'transition:opacity 0.3s ease;pointer-events:none;opacity:0;'
+      ].join('');
+      document.body.appendChild(toast);
+    }
+
+    toast.innerHTML = '<span>💾</span> <span>சேமிக்கப்படுகிறது... (Saving...)</span>';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+      toast.innerHTML = '<span>✓</span> <span>சேமிக்கப்பட்டது (Saved)</span>';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+      }, 1200);
+    }, 400);
   }
 
   // ------------------------------------------------------------------

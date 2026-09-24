@@ -85,6 +85,16 @@
       return total;
     }
 
+    get playTimeSeconds() {
+      return Math.floor(this.getTotalPlayTimeMs() / 1000);
+    }
+
+    update(dtSeconds = 0) {
+      if (window.GameLifecycle && window.GameLifecycle.state === 'PLAYING') {
+        this._accumulatedPlayTimeMs += dtSeconds * 1000;
+      }
+    }
+
     getFormattedPlayTime() {
       const ms   = this.getTotalPlayTimeMs();
       const secs = Math.floor(ms / 1000);

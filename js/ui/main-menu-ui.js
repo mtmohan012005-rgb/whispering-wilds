@@ -19,7 +19,13 @@
     // PUBLIC: show / hide
     // -------------------------------------------------------------------------
     show() {
-      if (this._visible) return;
+      const existing = document.getElementById('ww-main-menu');
+      if (existing) {
+        this._container = existing;
+        this._visible = true;
+        existing.style.opacity = '1';
+        return;
+      }
       this._visible = true;
 
       // Stop gameplay audio, start menu ambience
@@ -33,7 +39,7 @@
 
       // Animate in
       requestAnimationFrame(() => {
-        this._container.style.opacity = '1';
+        if (this._container) this._container.style.opacity = '1';
       });
 
       // Check crash recovery offer
@@ -43,13 +49,15 @@
     }
 
     hide() {
-      if (!this._visible || !this._container) return;
       this._visible = false;
-      this._container.style.opacity = '0';
-      setTimeout(() => {
-        this._container?.remove();
-        this._container = null;
-      }, 600);
+      const el = this._container || document.getElementById('ww-main-menu');
+      if (el) {
+        el.style.opacity = '0';
+        setTimeout(() => {
+          el.remove();
+          if (this._container === el) this._container = null;
+        }, 300);
+      }
     }
 
     isVisible() { return this._visible; }
@@ -163,7 +171,8 @@
 
     _buildMenuItem({ id, label, enabled, primary, action }, idx) {
       const btn = document.createElement('button');
-      btn.id = `ww-menu-${id}`;
+      btn.id = `ww-menu-${id.replace('_', '-')}`;
+      btn.dataset.id = id;
       btn.className = `ww-menu-item${primary ? ' ww-menu-primary' : ''}${!enabled ? ' ww-menu-disabled' : ''}`;
       btn.textContent = label;
       btn.disabled = !enabled;

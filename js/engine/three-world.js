@@ -248,9 +248,13 @@ class ThreeWorld {
         this.lastTime = now;
         this.frameCount++;
         // Update Central Input Manager
+        const lc = window.GameLifecycle;
+        const simActive = lc ? lc.isSimulationActive() : true;
+        const inputLocked = (lc && lc.isInputLocked()) || (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked());
+
         if (window.InputManager) {
             window.InputManager.update();
-            if (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked()) {
+            if (inputLocked) {
                 this.clearInputState();
             } else {
                 this.inputState.up = window.InputManager.isDown('MOVE_FORWARD');
@@ -263,8 +267,10 @@ class ThreeWorld {
             }
         }
 
-        // 1. Update Player Avatar
-        this.player.update(this.inputState, dt, this.terrain);
+        if (simActive) {
+            // 1. Update Player Avatar
+            this.player.update(this.inputState, dt, this.terrain);
+        }
         const playerPos = this.player.getPosition();
 
         // Synchronize with Authoritative GameState

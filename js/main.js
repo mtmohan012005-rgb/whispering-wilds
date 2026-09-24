@@ -138,7 +138,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const gameHUD = (typeof window.GameHUD !== 'undefined') ? new window.GameHUD() : null;
   window.gameHUD = gameHUD;
 
-  const pauseMenuUI = (typeof window.PauseMenuUI !== 'undefined') ? new window.PauseMenuUI() : null;
+  const pauseMenuUI = (typeof window.PauseMenuUI === 'function')
+    ? new window.PauseMenuUI()
+    : (window.PauseMenuUI || null);
   window.pauseMenuUI = pauseMenuUI;
 
   const worldMapUI = (typeof window.WorldMapUI !== 'undefined') ? new window.WorldMapUI() : null;
@@ -945,6 +947,13 @@ window.addEventListener('DOMContentLoaded', () => {
     audio.init();
     audio.resume();
 
+    // Fade out title screen and activate HUD
+    titleScreen.classList.add('fade-out');
+    setTimeout(() => {
+      titleScreen.classList.add('hidden');
+      hudContainer.classList.remove('hidden');
+    }, 300);
+
     // If BootManager/MainMenuUI is managing the flow, delegate to LoadingManager.
     // (Keeps the title screen button working as a fallback for ?gameplay=true etc.)
     const lc = window.GameLifecycle;
@@ -981,6 +990,16 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }, 900);
   });
+
+  if (window.GameLifecycle && typeof window.GameLifecycle.on === 'function') {
+    window.GameLifecycle.on('enter:PLAYING', () => {
+      if (titleScreen) {
+        titleScreen.classList.add('fade-out');
+        titleScreen.classList.add('hidden');
+      }
+      if (hudContainer) hudContainer.classList.remove('hidden');
+    });
+  }
 
   audioBtn.addEventListener('click', () => {
     audio.init();

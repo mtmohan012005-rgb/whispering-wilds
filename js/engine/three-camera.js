@@ -181,6 +181,9 @@ class ThreeCamera {
                 this.currentPos.lerp(desiredPos, lerpFactor);
                 this.currentTarget.lerp(desiredTarget, lerpFactor);
 
+                // Anti-clipping clamp: camera never dips below ground level
+                this.currentPos.y = Math.max(this.currentPos.y, playerPos.y + 1.5);
+
                 this.camera.position.copy(this.currentPos);
                 this.camera.lookAt(this.currentTarget);
             } else {
@@ -192,6 +195,26 @@ class ThreeCamera {
                 this.camera.lookAt(this.currentTarget);
             }
         }
+    }
+
+    teleportTo(playerPos) {
+        if (!playerPos) return;
+        const rotatedOffset = this.gameplayOffset.clone();
+        rotatedOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.orbitAngleH);
+        rotatedOffset.y += this.orbitAngleV * 14.0;
+        this.currentPos.set(
+            playerPos.x + rotatedOffset.x,
+            Math.max(playerPos.y + rotatedOffset.y, playerPos.y + 2.5),
+            playerPos.z + rotatedOffset.z
+        );
+        this.currentTarget.set(
+            playerPos.x + this.gameplayTargetOffset.x,
+            playerPos.y + this.gameplayTargetOffset.y,
+            playerPos.z + this.gameplayTargetOffset.z
+        );
+        this.camera.position.copy(this.currentPos);
+        this.camera.lookAt(this.currentTarget);
+        this.isTransitioning = false;
     }
 
     setContextFraming(mode) {

@@ -550,6 +550,65 @@ class GameStateEngine {
     return saveData;
   }
 
+  // --------------------------------------------------------------------------
+  // LIFECYCLE INTEGRATION & ANTI-TAMPER VALIDATION
+  // --------------------------------------------------------------------------
+  get lifecycleState() {
+    return window.GameLifecycle ? window.GameLifecycle.state : 'PLAYING';
+  }
+
+  validateLoadedState(saveData) {
+    if (!saveData || typeof saveData !== 'object') {
+      return { valid: false, reason: 'Invalid save payload structure' };
+    }
+
+    const migrated = this.migrateLegacySave(saveData);
+    const p = migrated.player;
+
+    if (!p) {
+      return { valid: false, reason: 'Missing player state in save payload' };
+    }
+
+    // 1. Anti-Tamper Customization Limit Check
+    if (typeof p.customizationChangesUsed === 'number') {
+      if (p.customizationChangesUsed < 0 || p.customizationChangesUsed > 5) {
+        console.warn(`[GameState] Clamping tampered customization count: ${p.customizationChangesUsed} -> 5`);
+        p.customizationChangesUsed = Math.min(Math.max(0, p.customizationChangesUsed), 5);
+      }
+    } else {
+      p.customizationChangesUsed = 0;
+    }
+    p.maxCustomizationChanges = 5;
+
+    // 2. Currency Validation (>= 0)
+    if (typeof p.currency === 'number' && p.currency < 0) {
+      console.warn(`[GameState] Negative currency detected (${p.currency}). Resetting to 0.`);
+      p.currency = 0;
+    }
+
+    // 3. Region Validation
+    const validRegions = [
+      'george_town', 'cauvery_delta', 'pichavaram',
+      'chettinad', 'thanjavur', 'mamallapuram',
+      'nilgiris', 'final_sanctuary'
+    ];
+    if (migrated.world?.currentRegion && !validRegions.includes(migrated.world.currentRegion)) {
+      console.warn(`[GameState] Unknown region '${migrated.world.currentRegion}'. Fallback to 'george_town'.`);
+      migrated.world.currentRegion = 'george_town';
+    }
+
+    // 4. Inventory Validation
+    if (Array.isArray(p.inventory)) {
+      p.inventory = p.inventory.filter(item => {
+        if (!item || typeof item !== 'object' || !item.id) return false;
+        if (typeof item.count === 'number' && item.count < 0) return false;
+        return true;
+      });
+    }
+
+    return { valid: true, state: migrated };
+  }
+
   // Event dispatcher
   on(event, callback) {
     if (!this._listeners.has(event)) {

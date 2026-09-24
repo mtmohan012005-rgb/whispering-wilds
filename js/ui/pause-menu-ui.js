@@ -226,6 +226,21 @@
     }
   }
 
-  window.PauseMenuUI = new PauseMenuUI();
+  const pauseMenuInstance = new PauseMenuUI();
+  function PauseMenuUIExport(options) {
+    if (new.target) {
+      return new PauseMenuUI(options);
+    }
+    return pauseMenuInstance;
+  }
+  Object.setPrototypeOf(PauseMenuUIExport, PauseMenuUI);
+  Object.assign(PauseMenuUIExport, pauseMenuInstance);
+  PauseMenuUIExport.prototype = PauseMenuUI.prototype;
+  PauseMenuUIExport.show = (...args) => pauseMenuInstance.show(...args);
+  PauseMenuUIExport.hide = (...args) => pauseMenuInstance.hide(...args);
+  PauseMenuUIExport.isVisible = (...args) => pauseMenuInstance.isVisible(...args);
+
+  window.PauseMenuUI = PauseMenuUIExport;
+  window.pauseMenuUI = pauseMenuInstance;
 
 })();

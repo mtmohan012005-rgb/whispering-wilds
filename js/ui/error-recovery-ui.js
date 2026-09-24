@@ -74,9 +74,7 @@ class ErrorRecoveryUI {
   attachGlobalHandlers() {
     window.onerror = (message, source, lineno, colno, error) => {
       // In development, log to console
-      if (window.RUNTIME_CONFIG && window.RUNTIME_CONFIG.enableDebugLogs) {
-        console.error('[Global Uncaught Error]', { message, source, lineno, colno, error });
-      }
+      console.error(`[Global Uncaught Error] ${message} at ${source}:${lineno}:${colno} - Stack: ${error ? error.stack : 'none'}`);
 
       // Filter non-fatal browser extensions or benign network blips
       const msg = String(message || '');

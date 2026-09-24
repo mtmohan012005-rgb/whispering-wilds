@@ -461,6 +461,25 @@ class MultiplayerManager {
         }
         return null;
     }
+
+    setPlayerPaused(isPaused) {
+        if (!this.isConnected || !this.client) return;
+        if (typeof this.client.emit === 'function') {
+            this.client.emit('playerPaused', { paused: isPaused, playerId: this.myId });
+        }
+        console.log(`[Multiplayer] Player pause broadcast: ${isPaused}`);
+    }
+
+    disconnectSafely() {
+        if (this.isConnected) {
+            try {
+                if (this.client && typeof this.client.emit === 'function') {
+                    this.client.emit('playerExiting', { playerId: this.myId });
+                }
+                this.disconnect();
+            } catch (_) {}
+        }
+    }
 }
 
 window.MultiplayerManager = MultiplayerManager;

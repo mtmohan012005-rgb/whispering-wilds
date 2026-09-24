@@ -1338,6 +1338,33 @@ window.runStepByStepFeatureTests = async function() {
     log(57, 'Production Email Verification, Password Reset, OTP & Account Security', false, err.message);
   }
 
+  // --- STEP 58: Production Boot Flow, Main Menu, Loading, Pause, Checkpoints & Recovery Lifecycle ---
+  try {
+    const lifecycleTests = [
+      typeof window.testLifecycleBoot === 'function' ? window.testLifecycleBoot() : { passed: false },
+      typeof window.testLifecycleMainMenu === 'function' ? window.testLifecycleMainMenu() : { passed: false },
+      typeof window.testLifecycleNewGame === 'function' ? window.testLifecycleNewGame() : { passed: false },
+      typeof window.testLifecycleContinue === 'function' ? window.testLifecycleContinue() : { passed: false },
+      typeof window.testLifecycleLoading === 'function' ? window.testLifecycleLoading() : { passed: false },
+      typeof window.testLifecycleRegionTransition === 'function' ? window.testLifecycleRegionTransition() : { passed: false },
+      typeof window.testLifecyclePause === 'function' ? window.testLifecyclePause() : { passed: false },
+      typeof window.testLifecycleCheckpoint === 'function' ? window.testLifecycleCheckpoint() : { passed: false },
+      typeof window.testLifecycleSaveRecovery === 'function' ? window.testLifecycleSaveRecovery() : { passed: false },
+      typeof window.testLifecycleCloudConflict === 'function' ? window.testLifecycleCloudConflict() : { passed: false },
+      typeof window.testLifecycleSession === 'function' ? window.testLifecycleSession() : { passed: false },
+      typeof window.testLifecycleInputReset === 'function' ? window.testLifecycleInputReset() : { passed: false },
+      typeof window.testLifecycleShutdown === 'function' ? window.testLifecycleShutdown() : { passed: false }
+    ];
+    const allLifecyclePassed = lifecycleTests.every(t => t.passed);
+    const failedDetails = lifecycleTests
+      .map((t, i) => (!t.passed ? `[Suite ${['Boot', 'MainMenu', 'NewGame', 'Continue', 'Loading', 'RegionTransition', 'Pause', 'Checkpoint', 'SaveRecovery', 'CloudConflict', 'Session', 'InputReset', 'Shutdown'][i]} FAIL: ${JSON.stringify(t.results || t.error || 'not run')}]` : null))
+      .filter(Boolean);
+    log(58, 'Production Boot Flow, Main Menu, Loading, Pause, Checkpoints & Recovery', allLifecyclePassed,
+      allLifecyclePassed ? 'Boot state flow, main menu, new game/continue, staged loading, pause simulation freeze, atomic save, backup recovery, and safe exit verified' : failedDetails.join('; '));
+  } catch (err) {
+    log(58, 'Production Boot Flow, Main Menu, Loading, Pause, Checkpoints & Recovery', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

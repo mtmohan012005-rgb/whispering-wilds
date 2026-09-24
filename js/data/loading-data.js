@@ -42,4 +42,5 @@
     }
   };
 
+  window.LOADING_TIPS = window.LOADING_DATA.tips;
 })();
