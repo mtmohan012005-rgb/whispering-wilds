@@ -4,6 +4,14 @@
 // ============================================================================
 
 window.addEventListener('DOMContentLoaded', () => {
+  // BootManager drives the boot sequence. It hands control to MainMenuUI,
+  // which calls LoadingManager.startLoad() → PLAYING → game loop runs.
+  // All systems below are still initialised unconditionally so they are
+  // available when LoadingManager transitions into PLAYING.
+  if (window.BootManager && typeof window.BootManager.boot === 'function') {
+    window.BootManager.boot();
+  }
+
   // 1. Initialize DOM Elements
   const canvas = document.getElementById('gameCanvas');
   const titleScreen = document.getElementById('title-screen');
@@ -936,6 +944,15 @@ window.addEventListener('DOMContentLoaded', () => {
   startBtn.addEventListener('click', () => {
     audio.init();
     audio.resume();
+
+    // If BootManager/MainMenuUI is managing the flow, delegate to LoadingManager.
+    // (Keeps the title screen button working as a fallback for ?gameplay=true etc.)
+    const lc = window.GameLifecycle;
+    if (lc && lc.state === 'MAIN_MENU' && window.BootManager) {
+      window.BootManager.startNewGame();
+      return;
+    }
+
     audio.startExplorationMusic();
     audio.setWeatherAmbience('storm', 0.9);
 
@@ -1138,30 +1155,48 @@ window.addEventListener('DOMContentLoaded', () => {
     const deltaTime = Math.min(0.1, (now - lastTime) / 1000);
     lastTime = now;
 
+    // ── LIFECYCLE GATE ──────────────────────────────────────────────────────
+    // Only run the full simulation when the lifecycle is PLAYING.
+    // PAUSED, LOADING_GAME, TRANSITIONING etc. skip physics/AI/survival updates.
+    const lc = window.GameLifecycle;
+    const simActive = lc ? lc.isSimulationActive() : true;
+    // ────────────────────────────────────────────────────────────────────────
+
     const currentBiome = getCurrentBiome(player.x);
-
-    // Diegetic autosave on biome transition
-    if (lastBiomeName && currentBiome.name !== lastBiomeName) {
-      saveManager.saveGame('auto', 'biome_enter');
-    }
-    lastBiomeName = currentBiome.name;
-
-    // Update Systems
-    weather.update(deltaTime, player.x, audio);
-    lighting.update(deltaTime, weather);
-
-    // Check if player is near campfire
-    const isNearFire = survival.campfires.some(f => Math.hypot(f.x - player.x, f.y - player.y) < 130);
-    survival.update(deltaTime, player.x, weather, isNearFire);
-
-    // Update Player & Entities (Single Movement Authority)
     const worldBounds = { minX: 0, maxX: 6000, minY: 100, maxY: 1100 };
-    if (!threeWorld || !threeWorld.isActive) {
-      player.update(input, deltaTime, worldBounds, tracksManager, audio, survival, weather);
-    }
-    entities.update(deltaTime);
-    tracksManager.update(weather.current, deltaTime);
-    particles.update(weather.current, deltaTime, canvas.width, canvas.height, renderer.camera);
+
+    if (simActive) {
+      // Diegetic autosave on biome transition
+      if (lastBiomeName && currentBiome.name !== lastBiomeName) {
+        saveManager.saveGame('auto', 'biome_enter');
+        if (window.CheckpointSystem) window.CheckpointSystem.requestCheckpoint('region_discover');
+      }
+      lastBiomeName = currentBiome.name;
+
+      // Update Systems
+      weather.update(deltaTime, player.x, audio);
+      lighting.update(deltaTime, weather);
+
+      // Check if player is near campfire
+      const isNearFire = survival.campfires.some(f => Math.hypot(f.x - player.x, f.y - player.y) < 130);
+      survival.update(deltaTime, player.x, weather, isNearFire);
+
+      // Update Player & Entities (Single Movement Authority)
+      if (!threeWorld || !threeWorld.isActive) {
+        player.update(input, deltaTime, worldBounds, tracksManager, audio, survival, weather);
+      }
+      entities.update(deltaTime);
+      tracksManager.update(weather.current, deltaTime);
+      particles.update(weather.current, deltaTime, canvas.width, canvas.height, renderer.camera);
+
+      // TransitionSystem boundary approach check (preloads next region)
+      if (window.TransitionSystem) {
+        const pPos = (threeWorld && threeWorld.isActive && threeWorld.player)
+          ? threeWorld.player.getPosition()
+          : { x: player.x, z: player.y };
+        window.TransitionSystem.checkBoundaryApproach(pPos, deltaTime);
+      }
+    } // end simActive
 
     // Check nearest interactable
     player.nearbyInteractable = null;

@@ -374,6 +374,11 @@
 
   <!-- Game Scripts -->
   <script src="js/core/game-state.js"></script>
+
+  <!-- Boot Flow: Lifecycle State Machine (must load before all systems) -->
+  <script src="js/core/game-lifecycle.js"></script>
+  <script src="js/core/session-manager.js"></script>
+
   <script src="js/tools/asset-validator.js"></script>
   <script src="js/engine/audio.js"></script>
   <script src="js/data/world-data.js"></script>
@@ -640,6 +645,23 @@
   <script src="js/ui/world-event-ui.js"></script>
   <script src="js/ui/encounter-ui.js"></script>
 
+  <!-- Boot Flow: Loading data, systems, UI (load before main.js) -->
+  <script src="js/data/loading-data.js"></script>
+  <script src="js/systems/loading-manager.js"></script>
+  <script src="js/systems/pause-system.js"></script>
+  <script src="js/systems/checkpoint-system.js"></script>
+  <script src="js/systems/recovery-system.js"></script>
+  <script src="js/systems/transition-system.js"></script>
+  <script src="js/systems/session-save-system.js"></script>
+  <script src="js/ui/boot-screen.js"></script>
+  <script src="js/ui/confirm-dialog-ui.js"></script>
+  <script src="js/ui/recovery-ui.js"></script>
+  <script src="js/ui/loading-screen-ui.js"></script>
+  <script src="js/ui/main-menu-ui.js"></script>
+  <script src="js/ui/pause-menu-ui.js"></script>
+  <script src="js/ui/profile-select-ui.js"></script>
+  <script src="js/core/boot-manager.js"></script>
+
   <script src="js/main.js"></script>
   <script src="js/test-runner.js"></script>
   <script src="js/test-player-production.js"></script>
@@ -716,6 +738,8 @@
   <script src="tests/auth-email/test-session-revocation.js"></script>
   <script src="tests/auth-email/test-change-password.js"></script>
   <script src="tests/auth-email/test-csrf.js"></script>
+  <!-- Boot Flow Tests -->
+  <script src="tests/boot/test-boot-flow.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>
