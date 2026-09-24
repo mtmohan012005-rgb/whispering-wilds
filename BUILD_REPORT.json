@@ -1,0 +1,43 @@
+{
+  "game": "The Whispering Wilds (Kaattu Vazhi)",
+  "buildVersion": "1.0.0",
+  "releaseChannel": "PRODUCTION_CANDIDATE",
+  "timestamp": "2026-09-24T06:30:00.000Z",
+  "environment": "production",
+  "buildStatus": "READY_WITH_WARNINGS",
+  "summary": {
+    "assets": {
+      "totalReferenced": 24,
+      "found": 23,
+      "missing": 1,
+      "proceduralFallbackActive": true,
+      "playerGLBPresent": false
+    },
+    "dataIntegrity": {
+      "entitiesAudited": 48,
+      "errors": 0,
+      "warnings": 0
+    },
+    "links": {
+      "totalLinks": 62,
+      "missing": 0
+    },
+    "codeSafety": {
+      "criticalErrors": 0,
+      "warnings": 0
+    }
+  },
+  "serverConfiguration": {
+    "healthEndpoint": "/health",
+    "readyEndpoint": "/ready",
+    "renderServiceConfigured": true,
+    "portConfigured": true,
+    "hostBinding": "0.0.0.0"
+  },
+  "clientConfiguration": {
+    "singleSourceOfTruth": "js/config/runtime-config.js",
+    "versionLock": "config/three-version.json",
+    "customizationLimit": 5,
+    "saveVersion": 3
+  }
+}

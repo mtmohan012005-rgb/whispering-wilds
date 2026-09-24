@@ -5,10 +5,21 @@
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=(), payment=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self' data: blob:; connect-src 'self' ws: wss: https:; worker-src 'self' blob:;"
     Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/js/config/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/assets/*"

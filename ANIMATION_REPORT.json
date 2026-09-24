@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "generated": "2026-09-24T06:30:00.000Z",
+  "summary": {
+    "totalAnimations": 27,
+    "readyProcedural": 27,
+    "missingBinaryGLB": 22
+  },
+  "playerAnimations": [
+    { "clip": "Player_Idle", "status": "PROCEDURAL_ACTIVE", "duration": 2.0 },
+    { "clip": "Player_Walk", "status": "PROCEDURAL_ACTIVE", "duration": 1.2 },
+    { "clip": "Player_Run", "status": "PROCEDURAL_ACTIVE", "duration": 0.8 },
+    { "clip": "Player_Sprint", "status": "PROCEDURAL_ACTIVE", "duration": 0.65 },
+    { "clip": "Player_Jump_Start", "status": "PROCEDURAL_ACTIVE", "duration": 0.3 },
+    { "clip": "Player_Jump", "status": "PROCEDURAL_ACTIVE", "duration": 0.6 },
+    { "clip": "Player_Fall", "status": "PROCEDURAL_ACTIVE", "duration": 0.5 },
+    { "clip": "Player_Land", "status": "PROCEDURAL_ACTIVE", "duration": 0.4 },
+    { "clip": "Player_Interact", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
+    { "clip": "Player_Pickup", "status": "PROCEDURAL_ACTIVE", "duration": 1.2 },
+    { "clip": "Player_Inspect", "status": "PROCEDURAL_ACTIVE", "duration": 1.5 },
+    { "clip": "Player_Crouch_Idle", "status": "PROCEDURAL_ACTIVE", "duration": 1.8 },
+    { "clip": "Player_Crouch_Walk", "status": "PROCEDURAL_ACTIVE", "duration": 1.4 },
+    { "clip": "Player_Climb_Start", "status": "PROCEDURAL_ACTIVE", "duration": 0.8 },
+    { "clip": "Player_Climb_Loop", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
+    { "clip": "Player_Climb_End", "status": "PROCEDURAL_ACTIVE", "duration": 0.8 },
+    { "clip": "Player_Swim", "status": "PROCEDURAL_ACTIVE", "duration": 1.2 },
+    { "clip": "Player_Sit", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
+    { "clip": "Player_Stand", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
+    { "clip": "Player_Eat", "status": "PROCEDURAL_ACTIVE", "duration": 2.0 },
+    { "clip": "Player_Drink", "status": "PROCEDURAL_ACTIVE", "duration": 1.8 },
+    { "clip": "Player_Photo", "status": "PROCEDURAL_ACTIVE", "duration": 1.5 }
+  ],
+  "wildlifeAnimations": [
+    { "species": "nilgiri_tahr", "clip": "graze", "status": "READY" },
+    { "species": "nilgiri_tahr", "clip": "flee", "status": "READY" },
+    { "species": "asian_elephant", "clip": "walk", "status": "READY" },
+    { "species": "indian_gaur", "clip": "walk", "status": "READY" },
+    { "species": "white_egret", "clip": "fly", "status": "READY" }
+  ]
+}

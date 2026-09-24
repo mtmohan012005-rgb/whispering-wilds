@@ -1,0 +1,51 @@
+{
+  "defaultPreset": "HIGH",
+  "presets": {
+    "LOW": {
+      "shadowMapResolution": 512,
+      "shadowsEnabled": false,
+      "foliageDensity": 0.4,
+      "drawDistance": 180,
+      "pixelRatio": 1.0,
+      "antialiasing": false,
+      "maxLights": 4,
+      "targetFPS": 60
+    },
+    "MEDIUM": {
+      "shadowMapResolution": 1024,
+      "shadowsEnabled": true,
+      "foliageDensity": 0.7,
+      "drawDistance": 280,
+      "pixelRatio": 1.0,
+      "antialiasing": true,
+      "maxLights": 8,
+      "targetFPS": 60
+    },
+    "HIGH": {
+      "shadowMapResolution": 2048,
+      "shadowsEnabled": true,
+      "foliageDensity": 1.0,
+      "drawDistance": 400,
+      "pixelRatio": 1.5,
+      "antialiasing": true,
+      "maxLights": 16,
+      "targetFPS": 60
+    },
+    "ULTRA": {
+      "shadowMapResolution": 4096,
+      "shadowsEnabled": true,
+      "foliageDensity": 1.3,
+      "drawDistance": 600,
+      "pixelRatio": 2.0,
+      "antialiasing": true,
+      "maxLights": 32,
+      "targetFPS": 60
+    }
+  },
+  "pcDisplayOptions": {
+    "fullscreen": false,
+    "vsync": true,
+    "fpsLock": 60,
+    "fov": 60
+  }
+}

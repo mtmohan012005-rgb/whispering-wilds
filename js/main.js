@@ -153,6 +153,29 @@ window.addEventListener('DOMContentLoaded', () => {
     uiManager.settingsUI = unifiedSettingsUI;
   }
 
+  // Initialize Cinematic Storytelling & Presentation Systems
+  const cinematicUI = (typeof window.CinematicUI !== 'undefined') ? new window.CinematicUI() : null;
+  window.cinematicUI = cinematicUI;
+
+  const dialogueChoiceUI = (typeof window.DialogueChoiceUI !== 'undefined') ? new window.DialogueChoiceUI() : null;
+  window.dialogueChoiceUI = dialogueChoiceUI;
+
+  const cameraDirector = (typeof window.CameraDirector !== 'undefined') ? new window.CameraDirector((window.threeWorld && window.threeWorld.cameraController) || null) : null;
+  window.cameraDirector = cameraDirector;
+
+  const facialExpressionSystem = (typeof window.FacialExpressionSystem !== 'undefined') ? new window.FacialExpressionSystem() : null;
+  window.facialExpressionSystem = facialExpressionSystem;
+
+  const dialogueController = (typeof window.DialogueController !== 'undefined') ? new window.DialogueController(cinematicUI, dialogueChoiceUI) : null;
+  window.dialogueController = dialogueController;
+
+  const cinematicSystem = (typeof window.CinematicSystem !== 'undefined') ? new window.CinematicSystem(cinematicUI, cameraDirector) : null;
+  window.cinematicSystem = cinematicSystem;
+
+  const storySceneSystem = (typeof window.StorySceneSystem !== 'undefined') ? new window.StorySceneSystem(cinematicSystem, dialogueController, cameraDirector) : null;
+  window.storySceneSystem = storySceneSystem;
+
+
   // Attach global references
   window.gameQuests = quests;
   window.gameJournal = journal;

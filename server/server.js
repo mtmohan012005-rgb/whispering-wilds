@@ -24,6 +24,9 @@ app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'ok',
         game: 'The Whispering Wilds (Kaattu Vazhi)',
+        players: playerManager.players ? playerManager.players.size : 0,
+        rooms: roomManager.rooms ? roomManager.rooms.size : 0,
+        uptime: Math.floor((Date.now() - startTime) / 1000),
         uptimeSec: Math.floor((Date.now() - startTime) / 1000),
         timestamp: new Date().toISOString()
     });

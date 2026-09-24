@@ -6,7 +6,18 @@
   "scripts": {
     "start": "node server.js",
     "server": "node server.js",
-    "serve": "npx -y serve ."
+    "serve": "npx -y serve .",
+    "validate": "node scripts/validate-data.js && node scripts/validate-links.js && node scripts/validate-production.js",
+    "build-report": "node scripts/build-report.js",
+    "production-check": "node scripts/validate-production.js",
+    "assets:validate": "node scripts/validate-assets.js",
+    "assets:report": "node tools/asset-audit/generate-asset-report.js",
+    "animations:validate": "node tools/animation-validation/validate-animations.js",
+    "textures:validate": "node tools/texture-validation/validate-textures.js",
+    "production:assets": "node tools/asset-audit/generate-asset-report.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",

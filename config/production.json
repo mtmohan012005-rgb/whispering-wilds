@@ -1,0 +1,15 @@
+{
+  "environment": "production",
+  "name": "The Whispering Wilds (Production)",
+  "multiplayerServerUrl": "https://whispering-wilds-server.onrender.com",
+  "assetBaseUrl": "",
+  "enableMultiplayer": true,
+  "enableDeveloperTools": false,
+  "enableTelemetry": false,
+  "enableDebugLogs": false,
+  "server": {
+    "host": "0.0.0.0",
+    "port": 10000,
+    "corsOrigin": "https://whispering-wilds.netlify.app"
+  }
+}

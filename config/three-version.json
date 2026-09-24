@@ -1,0 +1,15 @@
+{
+  "threeJsVersion": "0.128.0",
+  "threeJsRelease": "r128",
+  "releaseYear": 2021,
+  "compatibility": {
+    "GLTFLoader": "r128 (examples/js/loaders/GLTFLoader.js)",
+    "OrbitControls": "r128 (examples/js/controls/OrbitControls.js)",
+    "SkeletonUtils": "r128 (examples/js/utils/SkeletonUtils.js)",
+    "WebGLRenderer": "WebGL 2.0 / WebGL 1.0 fallback",
+    "MeshStandardMaterial": "Full PBR metallic-roughness workflow",
+    "AnimationMixer": "Full skeletal and morph-target tracks"
+  },
+  "lockReason": "Stable production baseline across 43 automated QA test suites. Zero automatic upgrades permitted without full regression clearance.",
+  "status": "LOCKED"
+}

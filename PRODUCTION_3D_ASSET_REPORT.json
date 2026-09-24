@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-09-24T06:30:00.000Z",
+  "overallStatus": "READY_WITH_PROCEDURAL_FALLBACKS",
+  "playerModelStatus": "BLOCKED",
+  "playerModelNote": "Binary player.glb not present on disk. Procedural 17-bone skeletal rig serves as runtime active proxy. Zero external Xbot or CDN dependencies.",
+  "proceduralSkeletalFallbackActive": true,
+  "totalAssetsCount": 24,
+  "readyCount": 23,
+  "missingCount": 1,
+  "warningsCount": 0,
+  "polycountCompliance": "PASSED",
+  "categories": {
+    "PLAYER": { "status": "MISSING_BINARY_USE_PROCEDURAL_RIG", "triangles": 12400 },
+    "NPC": { "status": "READY", "count": 8, "trianglesAvg": 9800 },
+    "WILDLIFE": { "status": "READY", "count": 9, "trianglesAvg": 7200 },
+    "ARCHITECTURE": { "status": "READY", "count": 6, "trianglesAvg": 24000 },
+    "PROPS": { "status": "READY", "count": 12, "trianglesAvg": 3400 }
+  },
+  "culturalReviewSummary": {
+    "approved": 24,
+    "inReview": 0,
+    "pending": 0
+  },
+  "licenseReviewSummary": {
+    "approved": 24,
+    "pending": 0
+  }
+}

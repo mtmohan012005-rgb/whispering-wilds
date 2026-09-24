@@ -8,8 +8,16 @@ services:
     envVars:
       - key: PORT
         value: 10000
+      - key: HOST
+        value: 0.0.0.0
       - key: NODE_ENV
         value: production
+      - key: CORS_ORIGIN
+        value: https://whispering-wilds.netlify.app
       - key: MAX_PLAYERS_PER_ROOM
         value: 16
+      - key: MAX_ROOMS
+        value: 32
+      - key: TICK_RATE
+        value: 20
     healthCheckPath: /health

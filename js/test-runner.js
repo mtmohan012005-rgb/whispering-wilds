@@ -1128,6 +1128,48 @@ window.runStepByStepFeatureTests = async function() {
     log(43, 'Production QA: UI State Machine & Input Locks', false, err.message);
   }
 
+  // --- STEP 44: Cinematic Storytelling System & Master State Machine ---
+  try {
+    if (typeof window.testCinematicSystemSuite === 'function') {
+      const suite = await window.testCinematicSystemSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(44, 'Cinematic System & Master State Machine', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(44, 'Cinematic System & Master State Machine', false, 'testCinematicSystemSuite not found');
+    }
+  } catch (err) {
+    log(44, 'Cinematic System & Master State Machine', false, err.message);
+  }
+
+  // --- STEP 45: Dialogue Controller, Bilingual Subtitles & Choices ---
+  try {
+    if (typeof window.testDialogueControllerSuite === 'function') {
+      const suite = await window.testDialogueControllerSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(45, 'Dialogue Controller & Bilingual Choice Branching', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(45, 'Dialogue Controller & Bilingual Choice Branching', false, 'testDialogueControllerSuite not found');
+    }
+  } catch (err) {
+    log(45, 'Dialogue Controller & Bilingual Choice Branching', false, err.message);
+  }
+
+  // --- STEP 46: Story Scenes & Chapter Milestone Progression ---
+  try {
+    if (typeof window.testStoryScenesSuite === 'function') {
+      const suite = await window.testStoryScenesSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(46, 'Data-Driven Story Scenes & Chapter Progression', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(46, 'Data-Driven Story Scenes & Chapter Progression', false, 'testStoryScenesSuite not found');
+    }
+  } catch (err) {
+    log(46, 'Data-Driven Story Scenes & Chapter Progression', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

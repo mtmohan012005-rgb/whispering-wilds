@@ -185,6 +185,19 @@ class SaveManager {
 
     try {
       const key = this.STORAGE_PREFIX + slot;
+      const backupKey = key + '_backup';
+
+      // Keep previous valid save snapshot as backup
+      const existingRaw = localStorage.getItem(key);
+      if (existingRaw) {
+        try {
+          const parsed = JSON.parse(existingRaw);
+          if (parsed && (parsed.saveVersion || parsed.version)) {
+            localStorage.setItem(backupKey, existingRaw);
+          }
+        } catch (_) {}
+      }
+
       localStorage.setItem(key, JSON.stringify(state));
       this._lastSaveTimestamp = state.timestamp;
 
@@ -281,23 +294,64 @@ class SaveManager {
   // PUBLIC: Load game state from localStorage with migration & validation
   // ------------------------------------------------------------------
   loadGame(slot = 'auto') {
-    try {
-      const key = this.STORAGE_PREFIX + slot;
-      const raw = localStorage.getItem(key);
-      if (!raw) return null;
+    const key = this.STORAGE_PREFIX + slot;
+    let raw = localStorage.getItem(key);
+    let fromBackup = false;
 
-      const parsed = JSON.parse(raw);
-      const migrated = this.migrateSave(parsed);
-      const validation = this.validateSaveData(migrated);
+    // If primary save is missing, try backup snapshot
+    if (!raw) {
+      raw = localStorage.getItem(key + '_backup');
+      if (raw) fromBackup = true;
+    }
+
+    if (!raw) return null;
+
+    try {
+      let parsed = JSON.parse(raw);
+      let migrated = this.migrateSave(parsed);
+      let validation = this.validateSaveData(migrated);
+
+      // If primary save failed validation, attempt fallback to backup
+      if (!validation.valid && !fromBackup) {
+        console.warn('[SaveManager] Primary save corrupt, attempting recovery from backup snapshot...');
+        const backupRaw = localStorage.getItem(key + '_backup');
+        if (backupRaw) {
+          try {
+            parsed = JSON.parse(backupRaw);
+            migrated = this.migrateSave(parsed);
+            validation = this.validateSaveData(migrated);
+            if (validation.valid) {
+              console.log('[SaveManager] ✓ Successfully recovered state from backup snapshot!');
+              fromBackup = true;
+            }
+          } catch (_) {}
+        }
+      }
+
       if (!validation.valid) {
         console.warn('[SaveManager] Corrupt save rejected:', validation.errors);
         return null;
       }
 
-      console.log(`[SaveManager] Found save (slot: ${slot}, v${validation.sanitized.saveVersion || validation.sanitized.version}), saved at ${validation.sanitized.formattedTime}`);
+      console.log(`[SaveManager] Found save (slot: ${slot}${fromBackup ? ' [BACKUP]' : ''}, v${validation.sanitized.saveVersion || validation.sanitized.version}), saved at ${validation.sanitized.formattedTime}`);
       return validation.sanitized;
     } catch (err) {
       console.error('[SaveManager] Load failed:', err);
+      // Attempt emergency recovery from backup
+      if (!fromBackup) {
+        try {
+          const backupRaw = localStorage.getItem(key + '_backup');
+          if (backupRaw) {
+            const parsed = JSON.parse(backupRaw);
+            const migrated = this.migrateSave(parsed);
+            const validation = this.validateSaveData(migrated);
+            if (validation.valid) {
+              console.log('[SaveManager] ✓ Recovered from emergency backup after error.');
+              return validation.sanitized;
+            }
+          }
+        } catch (_) {}
+      }
       return null;
     }
   }
