@@ -155,6 +155,16 @@
         if (savedSettings.audio)    Object.assign(window.GameState.settings.audio, savedSettings.audio);
         if (savedSettings.controls) Object.assign(window.GameState.settings.controls, savedSettings.controls);
       }
+
+      // Initialize hardware detection and authoritative performance manager
+      if (window.hardwareDetectionSystem) {
+        window.hardwareDetectionSystem.detect();
+        const rec = window.hardwareDetectionSystem.getRecommendation();
+        if (window.performanceManager) {
+          const targetTier = (savedSettings?.graphics?.preset?.toUpperCase()) || rec?.tier || 'MEDIUM';
+          window.performanceManager.applyProfile(targetTier);
+        }
+      }
     }
 
     async _initLocalization() {
@@ -203,10 +213,12 @@
     }
 
     _initRendererCheck() {
-      // ThreeWorld is initialised lazily inside main.js. Boot just validates the canvas exists.
+      // ThreeWorld is initialised lazily inside main.js. Boot validates canvas and attaches GPU recovery.
       const threeCanvas = document.getElementById('threeCanvas');
       if (!threeCanvas) {
         console.warn('[BootManager] threeCanvas element not found in DOM.');
+      } else if (window.gpuResourceManager) {
+        window.gpuResourceManager.attachToCanvas(threeCanvas);
       }
     }
 

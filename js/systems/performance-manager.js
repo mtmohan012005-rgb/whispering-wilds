@@ -1,267 +1,338 @@
-/**
- * The Whispering Wilds (Kaattu Vazhi) - Performance Manager
- * Real-time frame budget monitoring, rolling-average FPS calculation,
- * draw call / triangle telemetry, adaptive quality with hysteresis,
- * and F9 developer performance overlay.
- */
+// ============================================================================
+// THE WHISPERING WILDS (KAATTU VAZHI) - AUTHORITATIVE PERFORMANCE MANAGER
+// Single Authority coordinating hardware capability, adaptive quality, frame budgets,
+// memory, WebGL recovery, spawn budgets, and developer diagnostics.
+// ============================================================================
 
-class PerformanceManager {
-  constructor(graphicsSettings, threeWorld) {
-    this.graphicsSettings = graphicsSettings || window.graphicsSettings;
-    this.threeWorld = threeWorld || window.threeWorld;
+(function() {
+  'use strict';
 
-    // Target metrics
-    this.targetFPS = 60;
-    this.frameBudgetMs = 16.67;
+  class PerformanceManager {
+    constructor(graphicsSettings = null, threeWorld = null) {
+      this.graphicsSettings = graphicsSettings || window.graphicsSettings;
+      this.threeWorld = threeWorld || window.threeWorld;
 
-    // Live metrics
-    this.fps = 60;
-    this.smoothedFPS = 60;
-    this.frameTime = 16.67;
-    this.renderTime = 8.0;
-    this.drawCalls = 0;
-    this.triangles = 0;
-    this.activeLights = 0;
-    this.activeParticles = 0;
-    this.loadedRegionsCount = 1;
+      // Active Profile State
+      this.currentTier = 'MEDIUM';
+      this.activeProfile = window.PERFORMANCE_PROFILES ? window.PERFORMANCE_PROFILES.MEDIUM : null;
 
-    // Rolling window buffer (60 frames)
-    this.historySize = 60;
-    this.frameTimeHistory = new Float32Array(this.historySize);
-    this.historyIndex = 0;
-    this.historyCount = 0;
+      // Spawn Population Counters
+      this.spawnCounts = {
+        npc: 0,
+        wildlife: 0,
+        traffic: 0,
+        particle: 0,
+        light: 0,
+        audio: 0,
+        physics: 0
+      };
 
-    // Adaptive quality state machine (with hysteresis)
-    this.adaptiveQualityEnabled = true;
-    this.lowFpsDuration = 0; // seconds below threshold
-    this.highFpsDuration = 0; // seconds above threshold
-    this.currentQualityTier = 3; // 0: VERY_LOW, 1: LOW, 2: MEDIUM, 3: HIGH, 4: ULTRA
-    this.qualityCooldown = 0; // cooldown after a tier shift
+      // Connect Subsystems
+      this.hwDetection = window.hardwareDetectionSystem || (window.HardwareDetectionSystem ? new window.HardwareDetectionSystem() : null);
+      this.budgetSystem = window.frameBudgetSystem || (window.FrameBudgetSystem ? new window.FrameBudgetSystem(60) : null);
+      this.adaptiveSystem = window.adaptiveQualitySystem || (window.AdaptiveQualitySystem ? new window.AdaptiveQualitySystem() : null);
+      this.memory = window.memoryManager || (window.MemoryManager ? new window.MemoryManager() : null);
+      this.gpu = window.gpuResourceManager || (window.GPUResourceManager ? new window.GPUResourceManager() : null);
+      this.thermal = window.thermalSafetySystem || (window.ThermalSafetySystem ? new window.ThermalSafetySystem() : null);
+      this.device = window.deviceCompatibilitySystem || (window.DeviceCompatibilitySystem ? new window.DeviceCompatibilitySystem() : null);
+      this.recovery = window.performanceRecoverySystem || (window.PerformanceRecoverySystem ? new window.PerformanceRecoverySystem() : null);
+      this.renderQuality = window.renderQualitySystem || (window.RenderQualitySystem ? new window.RenderQualitySystem() : null);
+      this.assetQuality = window.assetQualityManager || (window.AssetQualityManager ? new window.AssetQualityManager() : null);
 
-    // Timing timestamps
-    this.lastFrameTime = performance.now();
-    this.renderStartTime = 0;
+      // Legacy compatibility properties
+      this.targetFPS = 60;
+      this.frameBudgetMs = 16.67;
+      this.fps = 60;
+      this.smoothedFPS = 60;
+      this.frameTime = 16.67;
+      this.renderTime = 8.0;
+      this.drawCalls = 0;
+      this.triangles = 0;
+      this.loadedRegionsCount = 1;
 
-    // F9 Developer Telemetry UI
-    this.telemetryVisible = false;
-    this.overlayElement = null;
+      // Initialize
+      this._init();
+    }
 
-    this.initTelemetryOverlay();
-    this.bindKey();
-  }
+    _init() {
+      // 1. Detect hardware safely
+      if (this.hwDetection) {
+        const rec = this.hwDetection.getRecommendation();
+        if (rec && rec.tier) {
+          this.currentTier = rec.tier;
+        }
+      }
 
-  setTargetFPS(fps) {
-    if (typeof fps === 'number' && fps > 0) {
+      // 2. Select initial profile
+      if (window.PERFORMANCE_PROFILES && window.PERFORMANCE_PROFILES[this.currentTier]) {
+        this.activeProfile = window.PERFORMANCE_PROFILES[this.currentTier];
+      }
+
+      // 3. Register global developer performance API (Section 105)
+      this._registerDeveloperApi();
+
+      console.log(`[PerformanceManager] 🚀 Authority initialized with profile: ${this.currentTier}`);
+    }
+
+    applyProfile(tierKey) {
+      if (!window.PERFORMANCE_PROFILES || !window.PERFORMANCE_PROFILES[tierKey]) {
+        console.warn(`[PerformanceManager] Unknown profile: ${tierKey}, falling back to MEDIUM`);
+        tierKey = 'MEDIUM';
+      }
+
+      this.currentTier = tierKey;
+      this.activeProfile = window.PERFORMANCE_PROFILES[tierKey];
+
+      // Update frame budget target
+      if (this.budgetSystem && this.activeProfile.targetFPS) {
+        this.budgetSystem.setTargetFPS(this.activeProfile.targetFPS);
+        this.targetFPS = this.activeProfile.targetFPS;
+        this.frameBudgetMs = this.budgetSystem.frameBudgetMs;
+      }
+
+      // Update device DPR cap
+      if (this.device && this.activeProfile.dprCap) {
+        this.device.setDprCap(this.activeProfile.dprCap);
+      }
+
+      // Apply to Three.js renderer
+      if (this.renderQuality && this.threeWorld?.renderer) {
+        this.renderQuality.applyProfileToRenderer(
+          this.activeProfile,
+          this.threeWorld.renderer,
+          this.threeWorld.scene,
+          this.threeWorld.camera
+        );
+      }
+
+      // Synchronize with GraphicsSettings if present
+      if (this.graphicsSettings && typeof this.graphicsSettings.applyPreset === 'function') {
+        this.graphicsSettings.applyPreset(tierKey.toLowerCase());
+      }
+
+      console.log(`[PerformanceManager] Applied profile: ${tierKey}`);
+    }
+
+    // -------------------------------------------------------------------------
+    // BUDGET ENFORCEMENT & POPULATION GATEKEEPING (Sections 106, 107, 108, 109, 110)
+    // -------------------------------------------------------------------------
+    canSpawn(category) {
+      if (!this.activeProfile) return true;
+
+      const profile = this.activeProfile;
+      switch (category) {
+        case 'npc':
+          return this.spawnCounts.npc < (profile.npcSimulationRadius ? Math.floor(profile.npcSimulationRadius * 0.4) : 25);
+        case 'wildlife':
+          return this.spawnCounts.wildlife < (profile.wildlifeSimulationRadius ? Math.floor(profile.wildlifeSimulationRadius * 0.35) : 30);
+        case 'traffic':
+          return this.spawnCounts.traffic < (profile.trafficBudget || 10);
+        case 'particle':
+          return this.spawnCounts.particle < (profile.maxParticles || 1000);
+        case 'light':
+          return this.spawnCounts.light < (profile.maxDynamicLights || 4);
+        case 'audio':
+          return this.spawnCounts.audio < (profile.maxActiveAudioVoices || 24);
+        case 'physics':
+          return this.spawnCounts.physics < (profile.maxActivePhysicsProps || 50);
+        default:
+          return true;
+      }
+    }
+
+    incrementSpawn(category, amount = 1) {
+      if (this.spawnCounts[category] !== undefined) {
+        this.spawnCounts[category] += amount;
+      }
+    }
+
+    decrementSpawn(category, amount = 1) {
+      if (this.spawnCounts[category] !== undefined) {
+        this.spawnCounts[category] = Math.max(0, this.spawnCounts[category] - amount);
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // FRAME TIMING & TELEMETRY HOOKS
+    // -------------------------------------------------------------------------
+    beginFrame() {
+      if (this.budgetSystem) {
+        this.budgetSystem.beginGpuRender();
+      }
+    }
+
+    endFrame(renderer, scene) {
+      if (this.budgetSystem) {
+        this.budgetSystem.endGpuRender();
+        this.budgetSystem.recordFrame();
+
+        const snap = this.budgetSystem.getSnapshot();
+        this.fps = snap.averageFPS;
+        this.smoothedFPS = snap.averageFPS;
+        this.frameTime = snap.currentFrameTimeMs;
+        this.renderTime = snap.averageGpuTimeMs;
+
+        // Run adaptive quality tick
+        if (this.adaptiveSystem) {
+          this.adaptiveSystem.update(snap, snap.currentFrameTimeMs / 1000.0);
+        }
+
+        // Check thermal inference
+        if (this.thermal) {
+          this.thermal.evaluate(snap.averageFrameTimeMs, snap.currentFrameTimeMs / 1000.0);
+        }
+      }
+
+      // Capture Three.js render metrics if available
+      if (renderer && renderer.info && renderer.info.render) {
+        this.drawCalls = renderer.info.render.calls;
+        this.triangles = renderer.info.render.triangles;
+      }
+
+      // Check memory pressure periodically
+      if (this.memory) {
+        this.memory.handleMemoryPressure(false);
+      }
+    }
+
+    recordFrame(deltaMs) {
+      if (this.budgetSystem) {
+        this.budgetSystem.recordFrame(deltaMs);
+        const snap = this.budgetSystem.getSnapshot();
+        this.fps = snap.averageFPS;
+        this.smoothedFPS = snap.averageFPS;
+        this.frameTime = snap.currentFrameTimeMs;
+      } else {
+        this.frameTime = deltaMs;
+        this.fps = deltaMs > 0 ? (1000.0 / deltaMs) : 60;
+        this.smoothedFPS = this.fps;
+      }
+    }
+
+    getMetrics() {
+      if (this.budgetSystem) {
+        const snap = this.budgetSystem.getSnapshot();
+        return {
+          fps: Math.round(snap.averageFPS),
+          instantFPS: Math.round(this.fps),
+          frameTimeMs: snap.currentFrameTimeMs,
+          drawCalls: this.drawCalls,
+          triangles: this.triangles,
+          onePercentLowFPS: Math.round(snap.onePercentLowFPS),
+          diagnostics: snap.diagnostics,
+          currentTier: this.currentTier
+        };
+      }
+
+      return {
+        fps: Math.round(this.smoothedFPS),
+        instantFPS: Math.round(this.fps),
+        frameTimeMs: parseFloat(this.frameTime.toFixed(2)),
+        drawCalls: this.drawCalls,
+        triangles: this.triangles
+      };
+    }
+
+    setTargetFPS(fps) {
+      if (this.budgetSystem) {
+        this.budgetSystem.setTargetFPS(fps);
+      }
       this.targetFPS = fps;
       this.frameBudgetMs = 1000.0 / fps;
     }
-  }
 
-  getFrameBudgetMs(fps = this.targetFPS) {
-    return 1000.0 / fps;
-  }
-
-  recordFrame(delta) {
-    if (delta > 0 && delta < 500) {
-      this.frameTime = delta;
-      this.fps = 1000.0 / delta;
-      this.frameTimeHistory[this.historyIndex] = delta;
-      this.historyIndex = (this.historyIndex + 1) % this.historySize;
-      if (this.historyCount < this.historySize) this.historyCount++;
-      let sum = 0;
-      for (let i = 0; i < this.historyCount; i++) {
-        sum += this.frameTimeHistory[i];
-      }
-      const avgDelta = sum / this.historyCount;
-      this.smoothedFPS = avgDelta > 0 ? (1000.0 / avgDelta) : 60;
-    }
-  }
-
-  getMetrics() {
-    return {
-      fps: Math.round(this.smoothedFPS),
-      instantFPS: Math.round(this.fps),
-      frameTimeMs: parseFloat(this.frameTime.toFixed(2)),
-      drawCalls: this.drawCalls,
-      triangles: this.triangles
-    };
-  }
-
-  beginFrame() {
-    this.renderStartTime = performance.now();
-  }
-
-  endFrame(renderer, scene) {
-    const now = performance.now();
-    this.renderTime = now - this.renderStartTime;
-    const delta = now - this.lastFrameTime;
-    this.lastFrameTime = now;
-
-    if (delta > 0 && delta < 500) {
-      this.frameTime = delta;
-      this.fps = 1000.0 / delta;
-
-      // Update rolling buffer
-      this.frameTimeHistory[this.historyIndex] = delta;
-      this.historyIndex = (this.historyIndex + 1) % this.historySize;
-      if (this.historyCount < this.historySize) this.historyCount++;
-
-      // Compute smoothed average
-      let sum = 0;
-      for (let i = 0; i < this.historyCount; i++) {
-        sum += this.frameTimeHistory[i];
-      }
-      const avgDelta = sum / this.historyCount;
-      this.smoothedFPS = avgDelta > 0 ? (1000.0 / avgDelta) : 60;
+    getFrameBudgetMs(fps = this.targetFPS) {
+      return 1000.0 / fps;
     }
 
-    // Capture Three.js render metrics if available
-    if (renderer && renderer.info && renderer.info.render) {
-      this.drawCalls = renderer.info.render.calls;
-      this.triangles = renderer.info.render.triangles;
-    }
-
-    // Evaluate adaptive quality
-    const dt = delta / 1000.0;
-    this.updateAdaptiveQuality(dt);
-
-    // Update telemetry overlay if active
-    if (this.telemetryVisible) {
-      this.updateTelemetryDOM();
-    }
-  }
-
-  updateAdaptiveQuality(dt) {
-    if (!this.adaptiveQualityEnabled || !this.graphicsSettings) return;
-
-    if (this.qualityCooldown > 0) {
-      this.qualityCooldown -= dt;
-      return;
-    }
-
-    const underThreshold = this.targetFPS - 6; // e.g. 54 FPS for 60
-    const overThreshold = this.targetFPS - 1;  // e.g. 59 FPS for 60
-
-    if (this.smoothedFPS < underThreshold) {
-      this.lowFpsDuration += dt;
-      this.highFpsDuration = 0;
-
-      // If FPS remains low for > 3.5 seconds, step down
-      if (this.lowFpsDuration >= 3.5) {
-        this.stepDownQuality();
-        this.lowFpsDuration = 0;
-        this.qualityCooldown = 4.0; // 4 seconds hysteresis
-      }
-    } else if (this.smoothedFPS >= overThreshold) {
-      this.highFpsDuration += dt;
-      this.lowFpsDuration = 0;
-
-      // If performance is rock-solid for > 6.0 seconds, gradually restore
-      if (this.highFpsDuration >= 6.0) {
-        this.stepUpQuality();
-        this.highFpsDuration = 0;
-        this.qualityCooldown = 5.0; // 5 seconds hysteresis
-      }
-    } else {
-      // Within acceptable bounds
-      this.lowFpsDuration = Math.max(0, this.lowFpsDuration - dt * 0.5);
-      this.highFpsDuration = Math.max(0, this.highFpsDuration - dt * 0.5);
-    }
-  }
-
-  stepDownQuality() {
-    const tiers = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'ULTRA'];
-    if (this.currentQualityTier > 0) {
-      this.currentQualityTier--;
-      const newPreset = tiers[this.currentQualityTier];
-      console.log(`[PerformanceManager] ⚡ Adaptive Quality: Reduced to ${newPreset} (Smoothed FPS: ${this.smoothedFPS.toFixed(1)})`);
-      this.graphicsSettings.applyPreset(newPreset);
-      if (this.threeWorld) {
-        this.graphicsSettings.applyToThreeWorld(this.threeWorld);
+    stepDownQuality() {
+      if (this.adaptiveSystem) {
+        return this.adaptiveSystem.stepDown();
       }
     }
-  }
 
-  stepUpQuality() {
-    const tiers = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'ULTRA'];
-    if (this.currentQualityTier < 3) { // Cap at HIGH for auto-scaling
-      this.currentQualityTier++;
-      const newPreset = tiers[this.currentQualityTier];
-      console.log(`[PerformanceManager] 🌟 Adaptive Quality: Restored to ${newPreset} (Smoothed FPS: ${this.smoothedFPS.toFixed(1)})`);
-      this.graphicsSettings.applyPreset(newPreset);
-      if (this.threeWorld) {
-        this.graphicsSettings.applyToThreeWorld(this.threeWorld);
+    stepUpQuality() {
+      if (this.adaptiveSystem) {
+        return this.adaptiveSystem.stepUp();
       }
     }
-  }
 
-  initTelemetryOverlay() {
-    if (typeof document === 'undefined') return;
-
-    let el = document.getElementById('perf-telemetry-overlay');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'perf-telemetry-overlay';
-      el.style.cssText = `
-        position: fixed;
-        bottom: 12px;
-        right: 12px;
-        background: rgba(11, 15, 25, 0.88);
-        border: 1px solid rgba(226, 177, 112, 0.4);
-        border-radius: 8px;
-        padding: 10px 14px;
-        color: #e2e8f0;
-        font-family: monospace;
-        font-size: 11px;
-        line-height: 1.5;
-        z-index: 99999;
-        pointer-events: none;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-        display: none;
-      `;
-      document.body.appendChild(el);
-    }
-    this.overlayElement = el;
-  }
-
-  bindKey() {
-    if (typeof window === 'undefined') return;
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'F9' || e.code === 'F9') {
-        e.preventDefault();
-        this.toggleTelemetry();
+    toggleTelemetry(force) {
+      if (window.performanceDiagnosticsUI) {
+        window.performanceDiagnosticsUI.toggle(force);
       }
-    });
-  }
+    }
 
-  toggleTelemetry(force) {
-    this.telemetryVisible = (force !== undefined) ? force : !this.telemetryVisible;
-    if (this.overlayElement) {
-      this.overlayElement.style.display = this.telemetryVisible ? 'block' : 'none';
+    // -------------------------------------------------------------------------
+    // DEVELOPER API (Section 105 & 158)
+    // -------------------------------------------------------------------------
+    _registerDeveloperApi() {
+      if (typeof window === 'undefined') return;
+
+      window.performanceAPI = {
+        report: () => this.generateDeveloperReport(),
+        forceLow: () => this.applyProfile('LOW'),
+        forceMedium: () => this.applyProfile('MEDIUM'),
+        forceHigh: () => this.applyProfile('HIGH'),
+        forceUltra: () => this.applyProfile('ULTRA'),
+        forceSafeMode: () => this.recovery?.activateSafeMode('Developer override'),
+        simulateMemoryPressure: () => this.memory?.handleMemoryPressure(true),
+        simulateContextLoss: () => this.gpu?.simulateContextLoss(),
+        simulateContextRestore: () => this.gpu?.simulateContextRestore(),
+        showBudgets: () => console.table(this.activeProfile),
+        showStreamingQueue: () => console.log('Active spawn counts:', this.spawnCounts)
+      };
+
+      // Alias window.perf for quick developer console access
+      window.perf = window.performanceAPI;
+    }
+
+    generateDeveloperReport() {
+      const snap = this.budgetSystem ? this.budgetSystem.getSnapshot() : {};
+      const mem = this.memory ? this.memory.getMemorySnapshot() : {};
+      const hw = this.hwDetection ? this.hwDetection.detectedInfo : {};
+
+      const rep = {
+        hardware: {
+          renderer: hw?.gpuRenderer || 'N/A',
+          vendor: hw?.gpuVendor || 'N/A',
+          cores: hw?.cpuCores || 4,
+          ramGB: hw?.deviceMemoryGB || 4,
+          webgl: hw?.webglVersion || 2
+        },
+        performance: {
+          currentProfile: this.currentTier,
+          targetFPS: this.targetFPS,
+          averageFPS: snap.averageFPS || this.smoothedFPS,
+          onePercentLow: snap.onePercentLowFPS || 0,
+          frameTimeMs: snap.currentFrameTimeMs || 0,
+          drawCalls: this.drawCalls,
+          triangles: this.triangles,
+          bottleneck: snap.diagnostics || 'Balanced'
+        },
+        memory: {
+          pressureLevel: mem.pressureLevel || 'NORMAL',
+          jsHeapUsedMB: mem.jsHeapUsedMB || 0,
+          geometries: mem.counters?.geometries || 0,
+          textures: mem.counters?.textures || 0
+        },
+        spawns: { ...this.spawnCounts }
+      };
+
+      console.log('=== THE WHISPERING WILDS PERFORMANCE REPORT ===');
+      console.table(rep.performance);
+      return rep;
     }
   }
 
-  updateTelemetryDOM() {
-    if (!this.overlayElement) return;
+  // Export Singleton Authority and Class
+  const defaultInstance = new PerformanceManager();
 
-    const fpsColor = this.smoothedFPS >= 55 ? '#2ecc71' : (this.smoothedFPS >= 35 ? '#f39c12' : '#e74c3c');
-    this.overlayElement.innerHTML = `
-      <div style="font-weight:bold; color:#e2b170; margin-bottom:4px;">ENGINE TELEMETRY [F9]</div>
-      <div>FPS: <span style="color:${fpsColor}; font-weight:bold;">${this.smoothedFPS.toFixed(1)}</span> (Raw: ${this.fps.toFixed(0)})</div>
-      <div>Frame Time: ${this.frameTime.toFixed(2)} ms (Budget: ${this.frameBudgetMs.toFixed(1)}ms)</div>
-      <div>Render Time: ${this.renderTime.toFixed(2)} ms</div>
-      <div>Draw Calls: ${this.drawCalls}</div>
-      <div>Triangles: ${this.triangles.toLocaleString()}</div>
-      <div>Regions: ${this.loadedRegionsCount} | Quality: ${this.graphicsSettings ? this.graphicsSettings.currentPreset : 'N/A'}</div>
-    `;
+  if (typeof window !== 'undefined') {
+    window.PerformanceManager = PerformanceManager;
+    window.performanceManager = defaultInstance;
   }
-}
-
-if (typeof window !== 'undefined') {
-  window.PerformanceManager = PerformanceManager;
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { PerformanceManager };
-}
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { PerformanceManager, performanceManager: defaultInstance };
+  }
+})();

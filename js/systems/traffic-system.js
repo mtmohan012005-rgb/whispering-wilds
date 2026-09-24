@@ -22,12 +22,16 @@
             if (!routes || !Array.isArray(routes)) return;
 
             for (const route of routes) {
+                if (window.performanceManager && !window.performanceManager.canSpawn('traffic')) {
+                    break;
+                }
                 const vehicle = new window.TrafficVehicle({
                     type: route.vehicleType,
                     speed: route.speed,
                     waypoints: route.waypoints
                 });
                 this.vehicles.push(vehicle);
+                if (window.performanceManager) window.performanceManager.incrementSpawn('traffic');
                 if (this.scene && vehicle.mesh) {
                     this.scene.add(vehicle.mesh);
                 }
@@ -45,6 +49,7 @@
                 if (this.scene && v.mesh) {
                     this.scene.remove(v.mesh);
                 }
+                if (window.performanceManager) window.performanceManager.decrementSpawn('traffic');
             }
             this.vehicles = [];
         }

@@ -1391,6 +1391,26 @@ window.runStepByStepFeatureTests = async function() {
     log(59, 'Advanced Environmental Interaction, Physics, Water & World Reactivity', false, err.message);
   }
 
+  // --- STEP 60: Universal PC Performance, Low-End to High-End Hardware, Stability & Compatibility ---
+  try {
+    const perfTests = [
+      typeof window.runTestHardwareDetection === 'function' ? await window.runTestHardwareDetection() : { passed: false },
+      typeof window.runTestAdaptiveQuality === 'function' ? window.runTestAdaptiveQuality() : { passed: false },
+      typeof window.runTestFrameBudget === 'function' ? window.runTestFrameBudget() : { passed: false },
+      typeof window.runTestMemory === 'function' ? window.runTestMemory() : { passed: false },
+      typeof window.runTestRenderRecovery === 'function' ? window.runTestRenderRecovery() : { passed: false },
+      typeof window.runTestDeviceCompatibility === 'function' ? window.runTestDeviceCompatibility() : { passed: false }
+    ];
+    const allPerfPassed = perfTests.every(t => t.passed);
+    const failedPerf = perfTests
+      .map((t, i) => (!t.passed ? `[Suite ${['Detection', 'Adaptive', 'FrameBudget', 'Memory', 'Recovery', 'DeviceCompatibility'][i]} FAIL]` : null))
+      .filter(Boolean);
+    log(60, 'Universal PC Performance, Low-End to High-End Hardware, Stability & Compatibility', allPerfPassed,
+      allPerfPassed ? 'Safe WebGL detection, adaptive hysteresis, 1% low pacing, memory trimming, safe mode recovery, and spawn budget protection verified' : failedPerf.join('; '));
+  } catch (err) {
+    log(60, 'Universal PC Performance, Low-End to High-End Hardware, Stability & Compatibility', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

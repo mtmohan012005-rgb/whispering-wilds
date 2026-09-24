@@ -140,6 +140,12 @@
             this._pendingRestartChanges.push(key);
           }
         }
+        if (key === 'preset' && window.performanceManager) {
+          window.performanceManager.applyProfile(value.toUpperCase());
+        }
+        if (key === 'targetFPS' && window.performanceManager) {
+          window.performanceManager.setTargetFPS(value);
+        }
         this.save();
       }
     }

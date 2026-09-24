@@ -499,13 +499,31 @@
 
   <!-- PC Graphics, Performance, Occlusion & World Streaming -->
   <script src="js/config/graphics-config.js"></script>
+  <script src="js/config/hardware-capability-schema.js"></script>
+  <script src="js/data/hardware-profiles.js"></script>
+  <script src="js/data/performance-profiles.js"></script>
+  <script src="js/systems/hardware-detection-system.js"></script>
+  <script src="js/systems/frame-budget-system.js"></script>
+  <script src="js/systems/memory-manager.js"></script>
+  <script src="js/systems/gpu-resource-manager.js"></script>
+  <script src="js/systems/thermal-safety-system.js"></script>
+  <script src="js/systems/device-compatibility-system.js"></script>
+  <script src="js/systems/performance-recovery-system.js"></script>
+  <script src="js/systems/render-quality-system.js"></script>
+  <script src="js/systems/asset-quality-manager.js"></script>
+  <script src="js/systems/adaptive-quality-system.js"></script>
   <script src="js/systems/graphics-settings.js"></script>
   <script src="js/systems/performance-manager.js"></script>
+  <script src="js/systems/graphics-profile-manager.js"></script>
   <script src="js/systems/laptop-optimization.js"></script>
   <script src="js/engine/occlusion-manager.js"></script>
   <script src="js/engine/instance-manager.js"></script>
   <script src="js/systems/world-streaming.js"></script>
   <script src="js/ui/graphics-settings-ui.js"></script>
+  <script src="js/ui/performance-diagnostics-ui.js"></script>
+  <script src="js/ui/graphics-recommendation-ui.js"></script>
+  <script src="js/ui/compatibility-warning-ui.js"></script>
+  <script src="js/ui/performance-safe-mode-ui.js"></script>
 
   <!-- Production Multiplayer & Client Network Sync -->
   <script src="js/network/network-config.js"></script>
@@ -794,6 +812,14 @@
   <script src="tests/environment/test-save-restore.js"></script>
   <script src="tests/environment/test-multiplayer-interaction.js"></script>
   <script src="tests/environment/test-distance-validation.js"></script>
+
+  <!-- Universal PC Performance & Compatibility QA Tests -->
+  <script src="tests/performance/test-hardware-detection.js"></script>
+  <script src="tests/performance/test-adaptive-quality.js"></script>
+  <script src="tests/performance/test-frame-budget.js"></script>
+  <script src="tests/performance/test-memory.js"></script>
+  <script src="tests/performance/test-render-recovery.js"></script>
+  <script src="tests/performance/test-device-compatibility.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>

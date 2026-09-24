@@ -31,10 +31,12 @@
     }
 
     get telemetry() {
+      const pm = window.performanceManager;
+      const m = pm ? pm.getMetrics() : {};
       return {
-        fps: Math.round(this._fps),
-        frameTimeMs: parseFloat(this._frameTime.toFixed(2)),
-        drawCalls: this._drawCalls,
+        fps: m.fps || Math.round(this._fps),
+        frameTimeMs: m.frameTimeMs || parseFloat(this._frameTime.toFixed(2)),
+        drawCalls: m.drawCalls !== undefined ? m.drawCalls : this._drawCalls,
         activeObjects: this._activeObjects,
         memoryMB: this._memoryMB,
         fullscreen: this._isFullscreen,

@@ -71,24 +71,32 @@ class LivingWorldSystem {
   /**
    * Registers a production NPC instance into the system
    */
-  registerNPC(config) {
+  registerNPC(config, isInitialSeed = false) {
     if (!config || !config.id) return null;
     if (this.npcs.has(config.id)) {
       return this.npcs.get(config.id);
     }
+    if (!isInitialSeed && window.performanceManager && !window.performanceManager.canSpawn('npc')) {
+      return null;
+    }
 
     const npc = new ProductionNPC(config, this.scene, this.terrain);
     this.npcs.set(config.id, npc);
+    if (window.performanceManager) window.performanceManager.incrementSpawn('npc');
     return npc;
   }
 
   /**
    * Registers a wildlife creature instance into the system
    */
-  registerWildlife(speciesConfig, spawnConfig) {
+  registerWildlife(speciesConfig, spawnConfig, isInitialSeed = false) {
     if (!speciesConfig) return null;
+    if (!isInitialSeed && window.performanceManager && !window.performanceManager.canSpawn('wildlife')) {
+      return null;
+    }
     const wildlife = new ProductionWildlife(speciesConfig, spawnConfig, this.scene, this.terrain);
     this.wildlife.set(wildlife.id, wildlife);
+    if (window.performanceManager) window.performanceManager.incrementSpawn('wildlife');
     return wildlife;
   }
 
@@ -99,7 +107,7 @@ class LivingWorldSystem {
     // 1. Register production NPCs
     if (typeof NPC_PRODUCTION_DATA !== 'undefined' && Array.isArray(NPC_PRODUCTION_DATA)) {
       NPC_PRODUCTION_DATA.forEach((npcConfig) => {
-        this.registerNPC(npcConfig);
+        this.registerNPC(npcConfig, true);
       });
       console.log(`[LivingWorld] Registered ${this.npcs.size} production NPCs across Tamil Nadu biomes.`);
     }
@@ -124,7 +132,7 @@ class LivingWorldSystem {
             homeZ: spawnGroup.center.z,
             isHerdLeader: i === 0,
             initialSeed: (i * 17 + 23) % 100
-          });
+          }, true);
         }
       });
       console.log(`[LivingWorld] Registered ${this.wildlife.size} production wildlife entities across habitats.`);
