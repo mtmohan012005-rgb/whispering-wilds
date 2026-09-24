@@ -15,6 +15,7 @@ class ThreeWorld {
         // Input state
         this.inputState = { up: false, down: false, left: false, right: false };
         this.onTelemetryUpdate = null;
+        this.frameCount = 0;
 
         // 1. WebGL Renderer
         const width = this.container.clientWidth || window.innerWidth;
@@ -245,6 +246,7 @@ class ThreeWorld {
         const now = performance.now();
         let dt = (now - this.lastTime) / 1000.0;
         this.lastTime = now;
+        this.frameCount++;
         // Update Central Input Manager
         if (window.InputManager) {
             window.InputManager.update();

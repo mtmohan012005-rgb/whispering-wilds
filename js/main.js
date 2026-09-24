@@ -68,11 +68,35 @@ window.addEventListener('DOMContentLoaded', () => {
   const tracksManager = new window.TerrainTracksManager();
   const weather = new window.WeatherSystem();
   const survival = new window.SurvivalSystem();
+  window.gameSurvival = survival;
+
+  // Initialize Production Survival & Environmental Engines
+  const temperatureSystem = (typeof window.TemperatureSystem !== 'undefined') ? new window.TemperatureSystem() : null;
+  window.temperatureSystem = temperatureSystem;
+
+  const campingSystem = (typeof window.CampingSystem !== 'undefined') ? new window.CampingSystem() : null;
+  window.campingSystem = campingSystem;
+
+  const restSystem = (typeof window.RestSystem !== 'undefined') ? new window.RestSystem() : null;
+  window.restSystem = restSystem;
+
+  const emergencySystem = (typeof window.EmergencySystem !== 'undefined') ? new window.EmergencySystem() : null;
+  window.emergencySystem = emergencySystem;
+
+  const survivalProductionSystem = (typeof window.SurvivalProductionSystem !== 'undefined') ? new window.SurvivalProductionSystem() : null;
+  window.survivalProductionSystem = survivalProductionSystem;
+
   const explorerCamera = new window.ExplorerCamera();
   const journal = new window.FieldJournal();
   const quests = new window.QuestManager();
   const entities = new window.EntityManager();
   const player = new window.Player(220, 630);
+  window.gamePlayer = player;
+
+  if (window.GameState && typeof window.GameState.bindLegacyAdapters === 'function') {
+    window.GameState.bindLegacyAdapters();
+  }
+
   const saveManager = new window.SaveManager();
   const multiplayer = window.MultiplayerManager ? new window.MultiplayerManager() : null;
 
@@ -226,11 +250,13 @@ window.addEventListener('DOMContentLoaded', () => {
   window.gameQuests = quests;
   window.gameJournal = journal;
   window.gameSurvival = survival;
+  window.survivalSystem = survival;
   window.gamePlayer = player;
   window.gameWeather = weather;
   window.gameAudio = audio;
   window.audioManager = audioManager;
   window.gameSaveManager = saveManager;
+  window.saveManager = saveManager;
   window.multiplayerManager = multiplayer;
   window.customizationSystem = customizationSystem;
   window.customizationUI = customizationUI;
@@ -463,6 +489,17 @@ window.addEventListener('DOMContentLoaded', () => {
     if (player.nearbyInteractable) {
       handleItemInteraction(player.nearbyInteractable);
       return;
+    }
+
+    // Check for nearby Campfire or Shelter to trigger Rest modal
+    if (window.campingSystem && window.CampingUI) {
+      const pPos = (threeWorld && threeWorld.isActive && threeWorld.player) ? threeWorld.player.mesh.position : { x: player.x, y: 0, z: player.y };
+      const camp = window.campingSystem.getNearbyCampfire(pPos);
+      const shelter = window.campingSystem.getNearbyShelter(pPos);
+      if (camp || shelter) {
+        window.CampingUI.showRestModal({ campfire: camp, shelter: shelter });
+        return;
+      }
     }
 
     // 1. Check for nearby 3D Living World NPCs if in 3D mode

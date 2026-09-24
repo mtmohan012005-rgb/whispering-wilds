@@ -19,12 +19,31 @@ class GameStateEngine {
       rotation: { x: 0, y: 0, z: 0 },
       velocity: { x: 0, y: 0, z: 0 },
 
-      // Survival Vitals (0 - 100)
-      health: 100,
-      energy: 100,
-      hunger: 85,
-      hydration: 90,
-      warmth: 36.5, // Celsius
+      // ONE AUTHORITATIVE SURVIVAL STATE
+      survival: {
+        health: 100,
+        maxHealth: 100,
+
+        energy: 100,
+        maxEnergy: 100,
+
+        hydration: 100,
+        maxHydration: 100,
+
+        warmth: 80,
+        maxWarmth: 100,
+
+        hunger: 100,
+        maxHunger: 100,
+
+        wetness: 0,
+        statusEffects: [],
+
+        isExhausted: false,
+        isDehydrated: false,
+        isCold: false,
+        isOverheated: false
+      },
 
       // Single Authoritative Currency Source (Rupees ₹)
       currency: 75,
@@ -51,6 +70,38 @@ class GameStateEngine {
       maxCustomizationChanges: 5,
       customizationHistory: []
     };
+
+    // Attach non-enumerable reactive bridge properties to player for legacy compatibility
+    Object.defineProperty(this.player, 'health', {
+      get: () => this.player.survival.health,
+      set: (v) => { this.player.survival.health = Math.max(0, Math.min(this.player.survival.maxHealth, Number(v) || 0)); },
+      configurable: true
+    });
+    Object.defineProperty(this.player, 'energy', {
+      get: () => this.player.survival.energy,
+      set: (v) => { this.player.survival.energy = Math.max(0, Math.min(this.player.survival.maxEnergy, Number(v) || 0)); },
+      configurable: true
+    });
+    Object.defineProperty(this.player, 'hydration', {
+      get: () => this.player.survival.hydration,
+      set: (v) => { this.player.survival.hydration = Math.max(0, Math.min(this.player.survival.maxHydration, Number(v) || 0)); },
+      configurable: true
+    });
+    Object.defineProperty(this.player, 'hunger', {
+      get: () => this.player.survival.hunger,
+      set: (v) => { this.player.survival.hunger = Math.max(0, Math.min(this.player.survival.maxHunger, Number(v) || 0)); },
+      configurable: true
+    });
+    Object.defineProperty(this.player, 'warmth', {
+      get: () => this.player.survival.warmth,
+      set: (v) => { this.player.survival.warmth = Math.max(0, Math.min(this.player.survival.maxWarmth, Number(v) || 0)); },
+      configurable: true
+    });
+    Object.defineProperty(this.player, 'wetness', {
+      get: () => this.player.survival.wetness,
+      set: (v) => { this.player.survival.wetness = Math.max(0, Math.min(100, Number(v) || 0)); },
+      configurable: true
+    });
 
     this.world = {
       seed: 133742,
@@ -124,7 +175,8 @@ class GameStateEngine {
       },
       accessibility: {
         subtitlesEnabled: true,
-        highContrastText: false
+        highContrastText: false,
+        survivalAssist: 'NORMAL' // 'NORMAL' or 'ASSISTED'
       }
     };
 
@@ -367,29 +419,38 @@ class GameStateEngine {
     // Adapter for window.gameSurvival
     if (window.gameSurvival && !window.gameSurvival._gameStateBound) {
       window.gameSurvival._gameStateBound = true;
+      Object.defineProperty(window.gameSurvival, 'survival', {
+        get: () => this.player.survival,
+        configurable: true
+      });
       Object.defineProperty(window.gameSurvival, 'currency', {
         get: () => this.player.currency,
         set: (v) => { this.player.currency = Math.max(0, Math.floor(v || 0)); },
         configurable: true
       });
+      Object.defineProperty(window.gameSurvival, 'health', {
+        get: () => this.player.survival.health,
+        set: (v) => { this.player.survival.health = Math.max(0, Math.min(this.player.survival.maxHealth, Number(v) || 0)); },
+        configurable: true
+      });
       Object.defineProperty(window.gameSurvival, 'energy', {
-        get: () => this.player.energy,
-        set: (v) => { this.player.energy = Math.max(0, Math.min(100, v)); },
+        get: () => this.player.survival.energy,
+        set: (v) => { this.player.survival.energy = Math.max(0, Math.min(this.player.survival.maxEnergy, Number(v) || 0)); },
         configurable: true
       });
       Object.defineProperty(window.gameSurvival, 'hunger', {
-        get: () => this.player.hunger,
-        set: (v) => { this.player.hunger = Math.max(0, Math.min(100, v)); },
+        get: () => this.player.survival.hunger,
+        set: (v) => { this.player.survival.hunger = Math.max(0, Math.min(this.player.survival.maxHunger, Number(v) || 0)); },
         configurable: true
       });
       Object.defineProperty(window.gameSurvival, 'thirst', {
-        get: () => this.player.hydration,
-        set: (v) => { this.player.hydration = Math.max(0, Math.min(100, v)); },
+        get: () => this.player.survival.hydration,
+        set: (v) => { this.player.survival.hydration = Math.max(0, Math.min(this.player.survival.maxHydration, Number(v) || 0)); },
         configurable: true
       });
       Object.defineProperty(window.gameSurvival, 'coreTemp', {
-        get: () => this.player.warmth,
-        set: (v) => { this.player.warmth = v; },
+        get: () => this.player.survival.warmth,
+        set: (v) => { this.player.survival.warmth = Math.max(0, Math.min(this.player.survival.maxWarmth, Number(v) || 0)); },
         configurable: true
       });
     }
@@ -397,6 +458,20 @@ class GameStateEngine {
     // Adapter for window.gamePlayer
     if (window.gamePlayer && !window.gamePlayer._gameStateBound) {
       window.gamePlayer._gameStateBound = true;
+      Object.defineProperty(window.gamePlayer, 'survival', {
+        get: () => this.player.survival,
+        configurable: true
+      });
+      Object.defineProperty(window.gamePlayer, 'health', {
+        get: () => this.player.survival.health,
+        set: (v) => { this.player.survival.health = Math.max(0, Math.min(this.player.survival.maxHealth, Number(v) || 0)); },
+        configurable: true
+      });
+      Object.defineProperty(window.gamePlayer, 'energy', {
+        get: () => this.player.survival.energy,
+        set: (v) => { this.player.survival.energy = Math.max(0, Math.min(this.player.survival.maxEnergy, Number(v) || 0)); },
+        configurable: true
+      });
       Object.defineProperty(window.gamePlayer, 'currency', {
         get: () => this.player.currency,
         set: (v) => { this.player.currency = Math.max(0, Math.floor(v || 0)); },
@@ -415,6 +490,64 @@ class GameStateEngine {
         configurable: true
       });
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // INVENTORY METHODS (Controlled item mutations)
+  // --------------------------------------------------------------------------
+
+  addItemToInventory(itemId, count = 1, name = '', weight = 0.5) {
+    if (!itemId) return false;
+    const item = this.player.inventory.find(i => i.id === itemId);
+    if (item) {
+      item.count = (item.count || 0) + count;
+    } else {
+      this.player.inventory.push({ id: itemId, name: name || itemId, count, weight });
+    }
+    this.emit('inventoryChanged', this.player.inventory);
+    return true;
+  }
+
+  removeItemFromInventory(itemId, count = 1) {
+    const item = this.player.inventory.find(i => i.id === itemId);
+    if (!item || item.count < count) return false;
+    item.count -= count;
+    if (item.count <= 0) {
+      const idx = this.player.inventory.indexOf(item);
+      if (idx !== -1) this.player.inventory.splice(idx, 1);
+    }
+    this.emit('inventoryChanged', this.player.inventory);
+    return true;
+  }
+
+  // --------------------------------------------------------------------------
+  // LEGACY SAVE MIGRATION (Safely migrates old player.health/energy into player.survival)
+  // --------------------------------------------------------------------------
+
+  migrateLegacySave(saveData) {
+    if (!saveData || !saveData.player) return saveData;
+    const p = saveData.player;
+    if (!p.survival) {
+      p.survival = {
+        health: typeof p.health === 'number' ? p.health : 100,
+        maxHealth: 100,
+        energy: typeof p.energy === 'number' ? p.energy : 100,
+        maxEnergy: 100,
+        hydration: typeof p.hydration === 'number' ? p.hydration : 100,
+        maxHydration: 100,
+        warmth: typeof p.warmth === 'number' ? p.warmth : 80,
+        maxWarmth: 100,
+        hunger: typeof p.hunger === 'number' ? p.hunger : 100,
+        maxHunger: 100,
+        wetness: 0,
+        statusEffects: [],
+        isExhausted: false,
+        isDehydrated: false,
+        isCold: false,
+        isOverheated: false
+      };
+    }
+    return saveData;
   }
 
   // Event dispatcher

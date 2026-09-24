@@ -6,11 +6,17 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('./auth-controller');
 const { authMiddleware, requireAuth, csrfProtection } = require('./auth-middleware');
+const emailVerificationRoutes = require('./routes/email-verification');
+const passwordResetRoutes = require('./routes/password-reset');
 
 // Apply auth extraction to all routes in router
 router.use(authMiddleware);
 
-// Public Auth Endpoints
+// Specialized Email Verification and Password Reset / OTP Sub-routers
+router.use('/', emailVerificationRoutes);
+router.use('/', passwordResetRoutes);
+
+// Public Core Auth Endpoints
 router.post('/register', csrfProtection, AuthController.register);
 router.post('/login', csrfProtection, AuthController.login);
 router.post('/logout', csrfProtection, AuthController.logout);

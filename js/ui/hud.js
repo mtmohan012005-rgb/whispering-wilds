@@ -65,9 +65,21 @@ class GameHUD {
                         <div class="survival-bar-fill fill-hydration" id="pc-fill-hydration" style="width: 100%;"></div>
                     </div>
                 </div>
+                <div class="survival-bar-group">
+                    <span class="survival-icon">🍚</span>
+                    <div class="survival-bar-track">
+                        <div class="survival-bar-fill fill-hunger" id="pc-fill-hunger" style="width: 100%; background: linear-gradient(90deg, #dd6b20, #f6ad55);"></div>
+                    </div>
+                </div>
+                <div class="survival-bar-group">
+                    <span class="survival-icon">🔥</span>
+                    <div class="survival-bar-track">
+                        <div class="survival-bar-fill fill-warmth" id="pc-fill-warmth" style="width: 80%; background: linear-gradient(90deg, #d69e2e, #f6e05e);"></div>
+                    </div>
+                </div>
                 <div class="survival-meta-row">
                     <span class="rupee-badge">₹ <span id="pc-rupee-val">75</span></span>
-                    <span id="pc-time-val" style="color: #94a3b8; font-size: 11px;">06:30 AM</span>
+                    <span id="pc-time-val" style="color: #94a3b8; font-size: 11px;">09:00 AM</span>
                 </div>
             </div>
 
@@ -87,6 +99,7 @@ class GameHUD {
             <!-- HOTKEY PILLS -->
             <div class="pc-hotkey-bar">
                 <div class="hotkey-pill" onclick="window.uiManager && window.uiManager.toggleModal('INVENTORY')"><kbd>I</kbd> Satchel</div>
+                <div class="hotkey-pill" onclick="window.SurvivalUI && window.SurvivalUI.toggle()"><kbd>V</kbd> Vitals</div>
                 <div class="hotkey-pill" onclick="window.uiManager && window.uiManager.toggleModal('MAP')"><kbd>M</kbd> Map</div>
                 <div class="hotkey-pill" onclick="window.uiManager && window.uiManager.toggleModal('JOURNAL')"><kbd>J</kbd> Journal</div>
                 <div class="hotkey-pill" onclick="window.uiManager && window.uiManager.toggleModal('PHOTO')"><kbd>F</kbd> Camera</div>
@@ -99,7 +112,10 @@ class GameHUD {
         this.healthFill = document.getElementById('pc-fill-health');
         this.energyFill = document.getElementById('pc-fill-energy');
         this.hydrationFill = document.getElementById('pc-fill-hydration');
+        this.hungerFill = document.getElementById('pc-fill-hunger');
+        this.warmthFill = document.getElementById('pc-fill-warmth');
         this.rupeeAmount = document.getElementById('pc-rupee-val');
+        this.timeVal = document.getElementById('pc-time-val');
         this.promptEl = document.getElementById('pc-interaction-prompt');
         this.promptText = document.getElementById('pc-prompt-label');
         this.trackerChapter = document.getElementById('pc-tracker-chapter');
@@ -124,12 +140,25 @@ class GameHUD {
         }
 
         // 2. Survival Metrics
-        const surv = survival || (window.testRef && window.testRef.survival);
+        const surv = survival || (window.GameState && window.GameState.player && window.GameState.player.survival) || (window.testRef && window.testRef.survival);
         if (surv) {
             if (this.healthFill) this.healthFill.style.width = `${Math.max(0, Math.min(100, surv.health || 100))}%`;
             if (this.energyFill) this.energyFill.style.width = `${Math.max(0, Math.min(100, surv.energy || 100))}%`;
-            if (this.hydrationFill) this.hydrationFill.style.width = `${Math.max(0, Math.min(100, surv.hydration || 100))}%`;
-            if (this.rupeeAmount) this.rupeeAmount.textContent = surv.currency || 0;
+            if (this.hydrationFill) this.hydrationFill.style.width = `${Math.max(0, Math.min(100, surv.hydration !== undefined ? surv.hydration : (surv.thirst || 100)))}%`;
+            if (this.hungerFill) this.hungerFill.style.width = `${Math.max(0, Math.min(100, surv.hunger || 100))}%`;
+            if (this.warmthFill) this.warmthFill.style.width = `${Math.max(0, Math.min(100, surv.warmth !== undefined ? surv.warmth : 80))}%`;
+            if (this.rupeeAmount) {
+                const cur = (survival && survival.currency !== undefined) ? survival.currency : ((window.GameState && window.GameState.player) ? window.GameState.player.currency : (surv.currency || 0));
+                this.rupeeAmount.textContent = String(cur);
+            }
+            if (this.timeVal && window.GameState && window.GameState.world) {
+                const hourDec = window.GameState.world.time || 9.0;
+                const h = Math.floor(hourDec % 24);
+                const m = Math.floor((hourDec % 1) * 60);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                const h12 = h % 12 === 0 ? 12 : (h % 12);
+                this.timeVal.textContent = `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+            }
         }
 
         // 3. Interaction Prompt

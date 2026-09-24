@@ -179,78 +179,39 @@ class AuthService {
      * Safe forgot-password request. Always returns generic response.
      */
     static async forgotPassword({ email }, clientIp) {
-        const ipLimit = rateLimiter.check('forgot_ip', clientIp, 5, 15 * 60 * 1000);
-        if (!ipLimit.allowed) {
-            return { success: false, status: 429, message: 'Too many attempts. Please try again later.' };
-        }
-
-        const normalized = Validation.normalizeEmail(email);
-        const user = db.findUserByEmail(normalized);
-
-        if (user) {
-            const rawToken = crypto.randomBytes(32).toString('hex');
-            const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
-            const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString(); // 1 hour
-            db.createPasswordResetToken(tokenHash, user.id, expiresAt);
-            await emailService.sendPasswordResetEmail(user.email, rawToken);
-        }
-
-        // Generic safe response to protect against account enumeration
+        const RecoveryService = require('./recovery-service');
+        const result = await RecoveryService.requestPasswordReset(email, clientIp);
         return {
             success: true,
             status: 200,
-            message: 'If an account exists, password reset instructions will be provided.'
+            message: result.message
         };
     }
 
     /**
      * Resets password using valid single-use token.
      */
-    static async resetPassword({ token, newPassword, confirmPassword }) {
-        if (!token || typeof token !== 'string') {
-            return { success: false, status: 400, message: 'Invalid or expired reset token.' };
-        }
-        const passCheck = Validation.validatePassword(newPassword, confirmPassword);
-        if (!passCheck.valid) {
-            return { success: false, status: 400, message: passCheck.message };
-        }
-
-        const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
-        const record = db.getPasswordResetToken(tokenHash);
-        if (!record) {
-            return { success: false, status: 400, message: 'Invalid or expired reset token.' };
-        }
-
-        const newHash = PasswordService.hashPassword(newPassword);
-        db.updateUser(record.user_id, { password_hash: newHash });
-        db.consumePasswordResetToken(tokenHash);
-        // Invalidate all existing sessions on password reset
-        db.deleteUserSessions(record.user_id);
-
+    static async resetPassword({ token, newPassword, confirmPassword }, clientIp) {
+        const RecoveryService = require('./recovery-service');
+        const result = await RecoveryService.resetPassword(token, newPassword, confirmPassword, clientIp);
         return {
-            success: true,
-            status: 200,
-            message: 'Password has been reset successfully. Please sign in.'
+            success: result.success,
+            status: result.success ? 200 : 400,
+            message: result.message || result.reason
         };
     }
 
     /**
      * Verifies email with token.
      */
-    static verifyEmail(token) {
-        if (!token || typeof token !== 'string') {
-            return { success: false, status: 400, message: 'Invalid or expired verification token.' };
-        }
-        const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
-        const record = db.getEmailVerificationToken(tokenHash);
-        if (!record) {
-            return { success: false, status: 400, message: 'Invalid or expired verification token.' };
-        }
-
-        db.updateUser(record.user_id, { email_verified: true });
-        db.consumeEmailVerificationToken(tokenHash);
-
-        return { success: true, status: 200, message: 'Email verified successfully.' };
+    static verifyEmail(token, clientIp) {
+        const EmailVerificationService = require('./email-verification-service');
+        const result = EmailVerificationService.verifyToken(token, clientIp);
+        return {
+            success: result.success,
+            status: result.success ? 200 : 400,
+            message: result.message || result.reason
+        };
     }
 
     /**

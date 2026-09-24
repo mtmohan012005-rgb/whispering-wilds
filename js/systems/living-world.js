@@ -172,6 +172,8 @@ class LivingWorldSystem {
     this.frameIndex++;
     if (worldClockMinutes !== undefined) {
       this.worldClockMinutes = worldClockMinutes;
+    } else if (window.GameState && window.GameState.world && typeof window.GameState.world.time === 'number') {
+      this.worldClockMinutes = (window.GameState.world.time * 60) % 1440;
     }
 
     const pPos = playerPosition || { x: 0, y: 0, z: 0 };

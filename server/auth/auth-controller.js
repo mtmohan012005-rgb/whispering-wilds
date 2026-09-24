@@ -83,7 +83,8 @@ class AuthController {
 
     static async resetPassword(req, res) {
         try {
-            const result = await AuthService.resetPassword(req.body);
+            const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+            const result = await AuthService.resetPassword(req.body, clientIp);
             return res.status(result.status).json({
                 success: result.success,
                 message: result.message
@@ -96,7 +97,8 @@ class AuthController {
     static verifyEmail(req, res) {
         try {
             const { token } = req.body;
-            const result = AuthService.verifyEmail(token);
+            const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+            const result = AuthService.verifyEmail(token, clientIp);
             return res.status(result.status).json({
                 success: result.success,
                 message: result.message

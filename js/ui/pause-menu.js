@@ -37,6 +37,9 @@ class PauseMenuUI {
                 <button class="pc-menu-btn" id="pm-btn-graphics">
                     <span>⚙️ Display & Graphics</span> <span>⚙️</span>
                 </button>
+                <button class="pc-menu-btn" id="pm-btn-survival-assist">
+                    <span>🛡️ Survival Mode: <strong id="pm-surv-assist-val">NORMAL</strong></span> <span>⚖️</span>
+                </button>
                 <button class="pc-menu-btn" id="pm-btn-save">
                     <span>💾 Save Game</span> <span>💾</span>
                 </button>
@@ -83,9 +86,25 @@ class PauseMenuUI {
             }
         };
 
+        const assistBtn = document.getElementById('pm-btn-survival-assist');
+        if (assistBtn) {
+            assistBtn.onclick = () => {
+                if (window.GameState && window.GameState.settings && window.GameState.settings.accessibility) {
+                    const current = window.GameState.settings.accessibility.survivalAssist || 'NORMAL';
+                    const next = current === 'NORMAL' ? 'ASSISTED' : 'NORMAL';
+                    window.GameState.settings.accessibility.survivalAssist = next;
+                    const valEl = document.getElementById('pm-surv-assist-val');
+                    if (valEl) valEl.innerText = next;
+                    if (window.NotificationUI && typeof window.NotificationUI.showNotification === 'function') {
+                        window.NotificationUI.showNotification(`Survival Assistance: ${next}`, 'info');
+                    }
+                }
+            };
+        }
+
         document.getElementById('pm-btn-save').onclick = () => {
             if (window.saveManager) {
-                const state = window.saveManager.gatherGameState();
+                const state = window.saveManager.gatherGameState ? window.saveManager.gatherGameState() : window.saveManager._gatherState();
                 window.saveManager.save(state);
                 if (window.quests && window.quests.showQuestNotification) {
                     window.quests.showQuestNotification('💾 Game Progress Saved to Local Storage');
@@ -98,8 +117,18 @@ class PauseMenuUI {
         };
     }
 
+    get isOpen() {
+        return !!(this.backdrop && (this.backdrop.classList.contains('active') || this.backdrop.classList.contains('visible')));
+    }
+
     show() {
-        if (this.backdrop) this.backdrop.classList.add('active');
+        if (this.backdrop) {
+            this.backdrop.classList.add('active');
+            const valEl = document.getElementById('pm-surv-assist-val');
+            if (valEl && window.GameState && window.GameState.settings && window.GameState.settings.accessibility) {
+                valEl.innerText = window.GameState.settings.accessibility.survivalAssist || 'NORMAL';
+            }
+        }
     }
 
     hide() {

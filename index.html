@@ -22,6 +22,8 @@
   <link rel="stylesheet" href="css/auth-screen.css">
   <link rel="stylesheet" href="css/controls-ui.css">
   <link rel="stylesheet" href="css/progression-ui.css">
+  <link rel="stylesheet" href="css/survival-production.css">
+  <link rel="stylesheet" href="css/account-security.css">
 
   <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -385,6 +387,23 @@
   <script src="js/entities/player.js"></script>
   <script src="js/entities/npc.js"></script>
   <script src="js/systems/weather.js"></script>
+  <!-- Combat-Free Survival, Camping, Temperature & Emergency Architecture -->
+  <script src="js/data/survival-production-data.js"></script>
+  <script src="js/data/camp-data.js"></script>
+  <script src="js/data/temperature-data.js"></script>
+  <script src="js/data/emergency-data.js"></script>
+  <script src="js/entities/campfire.js"></script>
+  <script src="js/entities/shelter.js"></script>
+  <script src="js/entities/rest-point.js"></script>
+  <script src="js/systems/temperature-system.js"></script>
+  <script src="js/systems/camping-system.js"></script>
+  <script src="js/systems/rest-system.js"></script>
+  <script src="js/systems/emergency-system.js"></script>
+  <script src="js/systems/survival-production.js"></script>
+  <script src="js/systems/economy-system.js"></script>
+  <script src="js/ui/survival-ui.js"></script>
+  <script src="js/ui/camping-ui.js"></script>
+  <script src="js/ui/emergency-ui.js"></script>
   <script src="js/systems/survival.js"></script>
   <script src="js/systems/camera.js"></script>
   <script src="js/systems/journal.js"></script>
@@ -509,6 +528,9 @@
   <script src="js/auth/forgot-password.js"></script>
   <script src="js/auth/account-profile.js"></script>
   <script src="js/auth/auth-ui.js"></script>
+  <script src="js/auth/email-verification-ui.js"></script>
+  <script src="js/auth/otp-ui.js"></script>
+  <script src="js/auth/password-reset-ui.js"></script>
 
   <!-- Centralized PC Input & Gamepad System -->
   <script src="js/input/input-actions.js"></script>
@@ -671,6 +693,29 @@
   <script src="tests/life/test-life-simulation.js"></script>
   <script src="tests/graphics/test-graphics-systems.js"></script>
   <script src="tests/navigation/test-navigation-systems.js"></script>
+  
+  <!-- Survival, Camping, Temperature & Emergency Automated QA Tests -->
+  <script src="tests/survival/test-survival.js"></script>
+  <script src="tests/survival/test-temperature.js"></script>
+  <script src="tests/survival/test-camping.js"></script>
+  <script src="tests/survival/test-rest.js"></script>
+  <script src="tests/survival/test-emergency.js"></script>
+  <script src="tests/survival/test-survival-save.js"></script>
+
+  <!-- Production Email Verification, OTP & Password Reset QA Tests -->
+  <script src="tests/auth-email/test-email-verification.js"></script>
+  <script src="tests/auth-email/test-verification-expiry.js"></script>
+  <script src="tests/auth-email/test-verification-resend.js"></script>
+  <script src="tests/auth-email/test-password-reset.js"></script>
+  <script src="tests/auth-email/test-reset-expiry.js"></script>
+  <script src="tests/auth-email/test-reset-reuse.js"></script>
+  <script src="tests/auth-email/test-otp.js"></script>
+  <script src="tests/auth-email/test-otp-attempt-limit.js"></script>
+  <script src="tests/auth-email/test-email-enumeration.js"></script>
+  <script src="tests/auth-email/test-auth-rate-limit.js"></script>
+  <script src="tests/auth-email/test-session-revocation.js"></script>
+  <script src="tests/auth-email/test-change-password.js"></script>
+  <script src="tests/auth-email/test-csrf.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>

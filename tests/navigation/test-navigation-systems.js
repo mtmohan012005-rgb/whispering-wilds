@@ -44,7 +44,10 @@
         ftSys.discoverPoint('ft_cauvery_delta');
         assert(ftSys.canFastTravel('ft_cauvery_delta').allowed, 'Discovered post must become travel-eligible');
 
-        const startTime = window.GameState?.world?.time || 10.0;
+        if (window.GameState && window.GameState.world) {
+            window.GameState.world.time = 8.0;
+        }
+        const startTime = window.GameState?.world?.time || 8.0;
         const res = ftSys.executeFastTravel('ft_cauvery_delta');
         assert(res.success, 'Executing valid fast travel must succeed');
         assert((window.GameState?.world?.time || 0) > startTime, 'Fast travel must advance world clock');

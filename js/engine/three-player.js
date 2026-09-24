@@ -244,8 +244,9 @@ class ThreePlayer {
       this.isMoving = false;
     }
 
-    // Input modifiers
-    const isSprinting = !!(inputState.sprint || inputState.shift);
+    // Input modifiers (Section 18: Exhaustion limits sprint capability)
+    const isExhausted = !!(window.GameState && window.GameState.player && window.GameState.player.survival && window.GameState.player.survival.isExhausted);
+    const isSprinting = !isExhausted && !!(inputState.sprint || inputState.shift);
     const isCrouching = !!(inputState.crouch || inputState.ctrl);
     const isWalking = !!(inputState.walk);
 
@@ -270,12 +271,18 @@ class ThreePlayer {
       }
 
       if (this.yOffset <= 0) {
+        const impactVelocity = Math.abs(this.verticalVelocity);
         this.yOffset = 0;
         this.verticalVelocity = 0;
         this.isGrounded = true;
         this.state = window.PLAYER_STATE.LAND;
         this.landTimer = 0.15;
         if (this.characterLoader) this.characterLoader.playAction('Player_Land', 0.1);
+
+        // Fall damage integration via EmergencySystem (Section 25)
+        if (window.emergencySystem && typeof window.emergencySystem.handleFallDamage === 'function') {
+          window.emergencySystem.handleFallDamage(impactVelocity);
+        }
       }
     }
 
@@ -326,6 +333,11 @@ class ThreePlayer {
       if (this.characterLoader) {
         this.characterLoader.playAction(targetClip, 0.2);
       }
+    }
+
+    // Synchronize Authoritative Movement State for Survival Calculations (Section 6 & 7)
+    if (window.GameState && window.GameState.player) {
+      window.GameState.player.movementState = this.state;
     }
 
     // Biomechanics & Surface Friction from Locomotion Engine

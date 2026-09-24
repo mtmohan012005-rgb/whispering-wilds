@@ -1294,6 +1294,50 @@ window.runStepByStepFeatureTests = async function() {
     log(55, 'Dynamic World Events, Emergent Encounters & Event Chains', false, err.message);
   }
 
+  // --- STEP 56: Combat-Free Survival, Camping, Temperature & Emergency Architecture ---
+  try {
+    const survivalTests = [
+      typeof window.testSurvivalSuite === 'function' ? await window.testSurvivalSuite() : { passed: false },
+      typeof window.testTemperatureSuite === 'function' ? await window.testTemperatureSuite() : { passed: false },
+      typeof window.testCampingSuite === 'function' ? await window.testCampingSuite() : { passed: false },
+      typeof window.testRestSuite === 'function' ? await window.testRestSuite() : { passed: false },
+      typeof window.testEmergencySuite === 'function' ? await window.testEmergencySuite() : { passed: false },
+      typeof window.testSurvivalSaveSuite === 'function' ? await window.testSurvivalSaveSuite() : { passed: false }
+    ];
+    const allSurvivalPassed = survivalTests.every(t => t.passed);
+    const failedSuites = survivalTests
+      .map((t, i) => (!t.passed ? `[Suite ${['survival', 'temperature', 'camping', 'rest', 'emergency', 'save'][i]} FAIL: ${JSON.stringify(t.results?.filter(r => !r.passed))}]` : null))
+      .filter(Boolean);
+    log(56, 'Combat-Free Survival, Camping, Temperature & Emergency System', allSurvivalPassed,
+      allSurvivalPassed ? 'Authoritative vitals, regional temperature, campfire fuel, rest clock advance, fall damage, and safe haven respawn verified' : failedSuites.join('; '));
+  } catch (err) {
+    log(56, 'Combat-Free Survival, Camping, Temperature & Emergency System', false, err.message);
+  }
+
+  // --- STEP 57: Production Email Verification, Password Reset, OTP & Account Security ---
+  try {
+    const authTests = [
+      typeof window.testEmailVerificationSuite === 'function' ? await window.testEmailVerificationSuite() : { passed: false },
+      typeof window.testVerificationExpirySuite === 'function' ? await window.testVerificationExpirySuite() : { passed: false },
+      typeof window.testVerificationResendSuite === 'function' ? await window.testVerificationResendSuite() : { passed: false },
+      typeof window.testPasswordResetSuite === 'function' ? await window.testPasswordResetSuite() : { passed: false },
+      typeof window.testResetExpirySuite === 'function' ? await window.testResetExpirySuite() : { passed: false },
+      typeof window.testResetReuseSuite === 'function' ? await window.testResetReuseSuite() : { passed: false },
+      typeof window.testOtpSuite === 'function' ? await window.testOtpSuite() : { passed: false },
+      typeof window.testOtpAttemptLimitSuite === 'function' ? await window.testOtpAttemptLimitSuite() : { passed: false },
+      typeof window.testEmailEnumerationSuite === 'function' ? await window.testEmailEnumerationSuite() : { passed: false },
+      typeof window.testAuthRateLimitSuite === 'function' ? await window.testAuthRateLimitSuite() : { passed: false },
+      typeof window.testSessionRevocationSuite === 'function' ? await window.testSessionRevocationSuite() : { passed: false },
+      typeof window.testChangePasswordSuite === 'function' ? await window.testChangePasswordSuite() : { passed: false },
+      typeof window.testCsrfSuite === 'function' ? await window.testCsrfSuite() : { passed: false }
+    ];
+    const allAuthPassed = authTests.every(t => t.passed);
+    log(57, 'Production Email Verification, Password Reset, OTP & Account Security', allAuthPassed,
+      'Email tokens, 24h/15m expiry, resend rate limits, 6-digit OTP, attempt lockouts, zero enumeration, and session revocation verified');
+  } catch (err) {
+    log(57, 'Production Email Verification, Password Reset, OTP & Account Security', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

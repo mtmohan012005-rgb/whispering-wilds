@@ -44,8 +44,9 @@ class SaveManager {
         hairstyleId: player.hairstyleId || 'short_traditional_part',
         accessoryId: player.accessoryId || 'none',
         footwearId: player.footwearId || 'kolhapuri_sandals',
-        appearancePresetId: player.appearancePresetId || 'everyday_explorer',
-        customizationChangesUsed: window.playerCustomizationSystem ? window.playerCustomizationSystem.customizationChangesUsed : (player.customizationChangesUsed || 0),
+        customizationChangesUsed: (window.GameState && window.GameState.player && typeof window.GameState.player.customizationChangesUsed === 'number')
+          ? window.GameState.player.customizationChangesUsed
+          : (window.playerCustomizationSystem ? window.playerCustomizationSystem.customizationChangesUsed : (player.customizationChangesUsed || 0)),
         maxCustomizationChanges: 5,
         customizationHistory: window.playerCustomizationSystem ? window.playerCustomizationSystem.history : (player.customizationHistory || []),
         equippedOutfit: player.equippedOutfit ? {
@@ -54,7 +55,8 @@ class SaveManager {
           outfitKey: player.equippedOutfit.outfitKey,
           stats: player.equippedOutfit.stats
         } : null,
-        inventory: player.inventory || []
+        inventory: player.inventory || [],
+        survival: (window.GameState && window.GameState.player && window.GameState.player.survival) ? JSON.parse(JSON.stringify(window.GameState.player.survival)) : null
       },
 
       // Audio Settings
@@ -72,10 +74,22 @@ class SaveManager {
 
       // Survival vitals & supplies
       survival: {
-        hunger: survival.hunger,
-        thirst: survival.thirst,
-        energy: survival.energy,
-        coreTemp: survival.coreTemp,
+        health: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.health : (survival.health || 100),
+        maxHealth: 100,
+        energy: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.energy : survival.energy,
+        maxEnergy: 100,
+        hydration: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.hydration : (survival.thirst || 100),
+        maxHydration: 100,
+        hunger: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.hunger : survival.hunger,
+        maxHunger: 100,
+        warmth: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.warmth : (survival.coreTemp || 80),
+        maxWarmth: 100,
+        wetness: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.wetness : 0,
+        statusEffects: (window.GameState && window.GameState.player && window.GameState.player.survival) ? [...window.GameState.player.survival.statusEffects] : [],
+        persistentCamps: window.campingSystem ? window.campingSystem.serializePersistentCamps() : [],
+        safeRespawn: window.emergencySystem ? window.emergencySystem.lastSafePosition : null,
+        thirst: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.hydration : (survival.thirst || 100),
+        coreTemp: (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.warmth : (survival.coreTemp || 80),
         currency: survival.currency,
         baseTier: survival.baseTier,
         hasRestedBuff: survival.hasRestedBuff,
@@ -288,10 +302,20 @@ class SaveManager {
     // 2. Validate & clamp survival vitals
     if (sanitized.survival) {
       const s = sanitized.survival;
-      s.hunger = (typeof s.hunger === 'number' && isFinite(s.hunger)) ? Math.max(0, Math.min(100, s.hunger)) : 85;
-      s.thirst = (typeof s.thirst === 'number' && isFinite(s.thirst)) ? Math.max(0, Math.min(100, s.thirst)) : 90;
-      s.energy = (typeof s.energy === 'number' && isFinite(s.energy)) ? Math.max(0, Math.min(100, s.energy)) : 100;
-      s.coreTemp = (typeof s.coreTemp === 'number' && isFinite(s.coreTemp)) ? Math.max(30.0, Math.min(43.0, s.coreTemp)) : 36.5;
+      const sanitizeNum = (v, min, max, def) => {
+        if (typeof v !== 'number' || isNaN(v) || !isFinite(v)) return def;
+        return Math.max(min, Math.min(max, v));
+      };
+
+      s.health = sanitizeNum(s.health, 0, 100, 100);
+      s.energy = sanitizeNum(s.energy, 0, 100, 100);
+      s.hydration = sanitizeNum(s.hydration !== undefined ? s.hydration : s.thirst, 0, 100, 100);
+      s.hunger = sanitizeNum(s.hunger, 0, 100, 100);
+      s.warmth = sanitizeNum(s.warmth !== undefined ? s.warmth : s.coreTemp, 0, 100, 80);
+      s.wetness = sanitizeNum(s.wetness, 0, 100, 0);
+
+      s.thirst = s.hydration;
+      s.coreTemp = s.warmth;
       s.currency = Math.max(0, Math.floor(Number(s.currency) || 0));
     }
 
@@ -300,6 +324,23 @@ class SaveManager {
       errors,
       sanitized
     };
+  }
+
+  createSavePayload(slot = 'manual', reason = 'save') {
+    return this._gatherState();
+  }
+
+  loadFromPayload(payload) {
+    if (!payload) return false;
+    const validated = this.validateSaveData(payload);
+    if (!validated.valid && !validated.sanitized) return false;
+    return this.restoreState(validated.sanitized || payload);
+  }
+
+  _validateAndSanitizeSurvival(survival) {
+    const valObj = { player: { x: 0, y: 0 }, survival };
+    const res = this.validateSaveData(valObj);
+    return res.sanitized ? res.sanitized.survival : survival;
   }
 
   // ------------------------------------------------------------------
@@ -419,6 +460,10 @@ class SaveManager {
           history: player.customizationHistory
         });
       }
+
+      if (window.GameState && window.GameState.player) {
+        window.GameState.player.customizationChangesUsed = player.customizationChangesUsed;
+      }
     }
 
     // --- Audio Settings ---
@@ -426,19 +471,39 @@ class SaveManager {
       window.audioManager.applySettings(state.audioSettings);
     }
 
-    // --- Survival ---
-    if (survival && state.survival) {
-      survival.hunger = state.survival.hunger;
-      survival.thirst = state.survival.thirst;
-      survival.energy = state.survival.energy;
-      survival.coreTemp = state.survival.coreTemp;
-      survival.currency = state.survival.currency;
-      survival.baseTier = state.survival.baseTier;
-      survival.hasRestedBuff = state.survival.hasRestedBuff;
-      survival.restedTimer = state.survival.restedTimer;
-      survival.inventory = { ...state.survival.inventory };
-      survival.campfires = (state.survival.campfires || []).map(f => ({ ...f, createdAt: Date.now() }));
-      survival.tents = (state.survival.tents || []).map(t => ({ ...t, createdAt: Date.now() }));
+    // --- Authoritative Survival & Camping State ---
+    if (state.survival) {
+      if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+        const gs = window.GameState.player.survival;
+        gs.health = typeof state.survival.health === 'number' ? state.survival.health : 100;
+        gs.energy = typeof state.survival.energy === 'number' ? state.survival.energy : 100;
+        gs.hydration = typeof state.survival.hydration === 'number' ? state.survival.hydration : (state.survival.thirst || 100);
+        gs.hunger = typeof state.survival.hunger === 'number' ? state.survival.hunger : 100;
+        gs.warmth = typeof state.survival.warmth === 'number' ? state.survival.warmth : (state.survival.coreTemp || 80);
+        gs.wetness = typeof state.survival.wetness === 'number' ? state.survival.wetness : 0;
+        gs.statusEffects = Array.isArray(state.survival.statusEffects) ? [...state.survival.statusEffects] : [];
+      }
+
+      if (survival) {
+        survival.hunger = state.survival.hunger;
+        survival.thirst = state.survival.hydration !== undefined ? state.survival.hydration : state.survival.thirst;
+        survival.energy = state.survival.energy;
+        survival.coreTemp = state.survival.warmth !== undefined ? state.survival.warmth : state.survival.coreTemp;
+        survival.currency = state.survival.currency;
+        survival.baseTier = state.survival.baseTier;
+        survival.hasRestedBuff = state.survival.hasRestedBuff;
+        survival.restedTimer = state.survival.restedTimer;
+        survival.inventory = { ...state.survival.inventory };
+        survival.campfires = (state.survival.campfires || []).map(f => ({ ...f, createdAt: Date.now() }));
+        survival.tents = (state.survival.tents || []).map(t => ({ ...t, createdAt: Date.now() }));
+      }
+
+      if (window.campingSystem && state.survival.persistentCamps) {
+        window.campingSystem.loadPersistentCamps(state.survival.persistentCamps);
+      }
+      if (window.emergencySystem && state.survival.safeRespawn) {
+        window.emergencySystem.setSafeCheckpoint(state.survival.safeRespawn);
+      }
     }
 
     // --- Journal ---

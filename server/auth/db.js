@@ -243,6 +243,44 @@ class Database {
         this.save();
         return { ...this.data.profiles[userId] };
     }
+
+    // --- Scheduled Token Cleanup ---
+    cleanupExpiredTokens() {
+        const now = new Date();
+        let changed = false;
+
+        // Clean verification tokens expired or used > 48h
+        for (const h in this.data.email_verification_tokens) {
+            const t = this.data.email_verification_tokens[h];
+            if (t.used || new Date(t.expires_at) < now) {
+                delete this.data.email_verification_tokens[h];
+                changed = true;
+            }
+        }
+
+        // Clean password reset tokens
+        for (const h in this.data.password_reset_tokens) {
+            const t = this.data.password_reset_tokens[h];
+            if (t.used || new Date(t.expires_at) < now) {
+                delete this.data.password_reset_tokens[h];
+                changed = true;
+            }
+        }
+
+        // Clean OTP codes
+        if (this.data.otp_codes) {
+            for (const id in this.data.otp_codes) {
+                const o = this.data.otp_codes[id];
+                if (o.used_at || new Date(o.expires_at) < now) {
+                    delete this.data.otp_codes[id];
+                    changed = true;
+                }
+            }
+        }
+
+        if (changed) this.save();
+        return changed;
+    }
 }
 
 const dbInstance = new Database();

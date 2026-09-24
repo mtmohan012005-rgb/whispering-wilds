@@ -55,6 +55,11 @@ class WeatherSystem {
       audio.setWeatherAmbience(type, intensity);
     }
 
+    // Synchronize Authoritative GameState Weather
+    if (window.GameState && window.GameState.world) {
+      window.GameState.world.weather = type;
+    }
+
     // Dispatch event for UI
     window.dispatchEvent(new CustomEvent('weatherChange', { detail: this.current }));
   }

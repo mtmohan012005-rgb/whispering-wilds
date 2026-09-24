@@ -1,0 +1,209 @@
+/* ==========================================================================
+   THE WHISPERING WILDS - ACCOUNT SECURITY & AUTHENTICATION STYLES
+   Cinematic modal styling, 6-digit OTP inputs, error feedback, and badges
+   ========================================================================== */
+
+.auth-security-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10070;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.auth-security-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 12, 18, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.auth-security-card {
+  position: relative;
+  width: 460px;
+  max-width: 90vw;
+  background: linear-gradient(145deg, rgba(22, 29, 41, 0.98), rgba(13, 18, 27, 0.98));
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 175, 55, 0.1);
+  color: #f1f3f5;
+  overflow: hidden;
+  animation: authCardIn 0.25s ease-out;
+}
+
+@keyframes authCardIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.auth-security-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.auth-security-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffd875;
+  letter-spacing: 0.5px;
+}
+
+.auth-security-close {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.auth-security-close:hover {
+  color: #fff;
+}
+
+.auth-security-body {
+  padding: 24px;
+}
+
+.auth-security-body p {
+  font-size: 13px;
+  color: #cbd5e0;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+/* 6-Digit OTP Inputs Row */
+.otp-inputs-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.otp-digit-input {
+  width: 44px;
+  height: 52px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: monospace;
+  background: #0f1520;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  color: #ffd875;
+  transition: all 0.15s ease;
+}
+
+.otp-digit-input:focus {
+  outline: none;
+  border-color: #ffd875;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  background: #141c2b;
+}
+
+/* Feedback Boxes */
+.auth-feedback-box {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 14px;
+  line-height: 1.4;
+}
+
+.auth-feedback-box.error {
+  background: rgba(229, 62, 62, 0.15);
+  border: 1px solid rgba(229, 62, 62, 0.4);
+  color: #feb2b2;
+}
+
+.auth-feedback-box.success {
+  background: rgba(72, 187, 120, 0.15);
+  border: 1px solid rgba(72, 187, 120, 0.4);
+  color: #9ae6b4;
+}
+
+/* Input Groups */
+.auth-input-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.auth-input-group label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffd875;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.auth-text-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  background: #0e1520;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  transition: border-color 0.15s ease;
+}
+
+.auth-text-input:focus {
+  outline: none;
+  border-color: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+}
+
+/* Action Buttons */
+.auth-action-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-auth-primary {
+  background: linear-gradient(135deg, #d4af37, #b89324);
+  border: none;
+  color: #121820;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.1s ease;
+}
+
+.btn-auth-primary:hover {
+  transform: translateY(-1px);
+}
+
+.btn-auth-secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #cbd5e0;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-auth-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

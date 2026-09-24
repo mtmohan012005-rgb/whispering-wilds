@@ -1,172 +1,288 @@
 // ============================================================================
-// THE WHISPERING WILDS (KAATTU VAZHI) - LIGHT SURVIVAL & CAMPING PROGRESSION
-// Hunger, Thirst, Energy, Core Body Temp, Base Upgrades & Rested Stamina Buff
+// THE WHISPERING WILDS (KAATTU VAZHI) - SURVIVAL SYSTEM ADAPTER
+// Bridges legacy APIs to the single authoritative SurvivalProductionSystem.
+// Guarantees zero duplicate state and zero double-drain execution.
 // ============================================================================
 
-class SurvivalSystem {
-  constructor() {
-    // Vitals (0 - 100)
-    this.hunger = 85;
-    this.thirst = 90;
-    this.energy = 100;
-    this.coreTemp = 36.1; // Celsius (Chennai thunderstorm at night)
+(function() {
+  'use strict';
 
-    // Base Progression (1: Tent & Fire, 2: Woodland Cabin, 3: Upgraded Outpost)
-    this.baseTier = 1;
-    this.hasRestedBuff = false;
-    this.restedTimer = 0;
+  class SurvivalSystem {
+    constructor() {
+      // Connect to GameState.player.survival directly
+      this._lastUpdatedFrame = -1;
 
-    // Currency & Supplies
-    this.currency = 75; // Rupees ₹
-    this.inventory = {
-      wood: 8,
-      stone: 4,
-      cloth: 3,
-      herbs: 2,
-      canteenWater: 3, // sips
-      vadai: 1
-    };
+      // Base Progression (1: Tent & Fire, 2: Woodland Cabin, 3: Upgraded Outpost)
+      this.baseTier = 1;
+      this.hasRestedBuff = false;
+      this.restedTimer = 0;
 
-    // Placed structures
-    this.campfires = [];
-    this.tents = [];
-  }
+      // Currency & Supplies (mirrored to GameState)
+      this.campfires = [];
+      this.tents = [];
 
-  update(deltaTime, playerX, weatherSystem, isNearFire = false) {
-    // 1. Natural slow decay
-    this.hunger = Math.max(0, this.hunger - (0.45 * deltaTime));
-    this.thirst = Math.max(0, this.thirst - (0.7 * deltaTime));
+      // Define reactive vitals mapping directly to GameState.player.survival
+      Object.defineProperty(this, 'health', {
+        get: () => (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.health : 100,
+        set: (v) => {
+          if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+            window.GameState.player.survival.health = Math.max(0, Math.min(window.GameState.player.survival.maxHealth, Number(v) || 0));
+          }
+        },
+        configurable: true
+      });
 
-    // 2. Core Body Temperature calculation
-    // Base biome temp: Chennai ~32C, Pichavaram ~28C, Nilgiris ~13C
-    let targetTemp = 37.0;
-    if (playerX < 2000) {
-      targetTemp = 37.0 + (weatherSystem.current.type === 'sunny' ? 1.5 : -1.0);
-    } else if (playerX >= 2000 && playerX < 4000) {
-      targetTemp = 36.8 + (weatherSystem.current.type === 'rain' ? -2.5 : 0);
-    } else {
-      // Freezing Western Ghats
-      targetTemp = 33.5 + (weatherSystem.current.type === 'fog' ? -4.0 : -2.0);
+      Object.defineProperty(this, 'energy', {
+        get: () => (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.energy : 100,
+        set: (v) => {
+          if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+            window.GameState.player.survival.energy = Math.max(0, Math.min(window.GameState.player.survival.maxEnergy, Number(v) || 0));
+          }
+        },
+        configurable: true
+      });
+
+      Object.defineProperty(this, 'hunger', {
+        get: () => (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.hunger : 100,
+        set: (v) => {
+          if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+            window.GameState.player.survival.hunger = Math.max(0, Math.min(window.GameState.player.survival.maxHunger, Number(v) || 0));
+          }
+        },
+        configurable: true
+      });
+
+      Object.defineProperty(this, 'thirst', {
+        get: () => (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.hydration : 100,
+        set: (v) => {
+          if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+            window.GameState.player.survival.hydration = Math.max(0, Math.min(window.GameState.player.survival.maxHydration, Number(v) || 0));
+          }
+        },
+        configurable: true
+      });
+
+      Object.defineProperty(this, 'coreTemp', {
+        get: () => (window.GameState && window.GameState.player && window.GameState.player.survival) ? window.GameState.player.survival.warmth : 80,
+        set: (v) => {
+          if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+            window.GameState.player.survival.warmth = Math.max(0, Math.min(window.GameState.player.survival.maxWarmth, Number(v) || 0));
+          }
+        },
+        configurable: true
+      });
+
+      Object.defineProperty(this, 'currency', {
+        get: () => (window.GameState && window.GameState.player) ? window.GameState.player.currency : 75,
+        set: (v) => {
+          if (window.GameState && window.GameState.player) {
+            window.GameState.player.currency = Math.max(0, Math.floor(v || 0));
+          }
+        },
+        configurable: true
+      });
+
+      // Legacy inventory object referencing GameState player inventory
+      this.inventory = {
+        get wood() {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'wood');
+          return item ? item.count : 0;
+        },
+        set wood(v) {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'wood');
+          if (item) item.count = v;
+        },
+        get stone() {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'stone');
+          return item ? item.count : 0;
+        },
+        set stone(v) {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'stone');
+          if (item) item.count = v;
+        },
+        get cloth() {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'cloth');
+          return item ? item.count : 0;
+        },
+        set cloth(v) {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'cloth');
+          if (item) item.count = v;
+        },
+        get herbs() {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'herbs');
+          return item ? item.count : 0;
+        },
+        set herbs(v) {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'herbs');
+          if (item) item.count = v;
+        },
+        get canteenWater() {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'canteenWater');
+          return item ? item.count : 0;
+        },
+        set canteenWater(v) {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'canteenWater');
+          if (item) item.count = v;
+        },
+        get vadai() {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'vadai');
+          return item ? item.count : 0;
+        },
+        set vadai(v) {
+          const item = window.GameState && window.GameState.player && window.GameState.player.inventory.find(i => i.id === 'vadai');
+          if (item) item.count = v;
+        }
+      };
     }
 
-    // Warmth from nearby campfire
-    if (isNearFire) {
-      targetTemp = Math.min(37.5, targetTemp + 5.0);
-    }
+    /**
+     * Authoritative single-update entry point
+     * Guards against duplicate calls per frame
+     */
+    update(deltaTime, playerX, weatherSystem, isNearFire = false) {
+      if (!window.survivalProductionSystem) return;
 
-    // Cultural Wardrobe insulation & weather resistance
-    const player = window.gamePlayer || (window.testRef && window.testRef.player);
-    if (player) {
-      let coldBonus = 0;
-      let heatBonus = 0;
-      if (player.equippedOutfit && player.equippedOutfit.stats) {
-        coldBonus = (player.equippedOutfit.stats.coldResistance || 0) * 0.08;
-        heatBonus = (player.equippedOutfit.stats.heatResistance || 0) * 0.05;
-      } else if (player.currentOutfit === 'mountainGear') {
-        coldBonus = 4.0;
-      } else if (player.currentOutfit === 'farmlandGear') {
-        coldBonus = 1.5;
-        heatBonus = 0.5;
+      const currentFrame = (window.threeWorld && typeof window.threeWorld.frameCount === 'number') ? window.threeWorld.frameCount : this._lastUpdatedFrame;
+      if (this._lastUpdatedFrame === currentFrame && this._lastUpdatedFrame !== -1) {
+        // Already updated this frame; prevent double-drain!
+        return;
       }
+      this._lastUpdatedFrame = (window.threeWorld && typeof window.threeWorld.frameCount === 'number') ? window.threeWorld.frameCount : Date.now();
 
-      if (targetTemp < 37.0) {
-        targetTemp = Math.min(37.0, targetTemp + coldBonus);
-      } else if (targetTemp > 37.0) {
-        targetTemp = Math.max(37.0, targetTemp - heatBonus);
+      const playerPos = (window.GameState && window.GameState.player && window.GameState.player.position) || { x: playerX || 0, y: 0, z: 0 };
+      const region = (window.GameState && window.GameState.world && window.GameState.world.currentRegion) || 'george_town';
+      const timeOfDay = (window.GameState && window.GameState.world && window.GameState.world.time) || 12.0;
+      const weatherType = (weatherSystem && weatherSystem.current && weatherSystem.current.type) || 'clear';
+
+      const ambientTemp = window.temperatureSystem ?
+        window.temperatureSystem.calculateAmbientTemperature({
+          region,
+          timeOfDay,
+          weather: weatherType,
+          elevation: playerPos.y || 0
+        }) : 30.0;
+
+      const shelter = window.campingSystem ? window.campingSystem.getNearbyShelter(playerPos) : null;
+      const campfire = window.campingSystem ? window.campingSystem.getNearbyCampfire(playerPos) : null;
+
+      const context = {
+        movementState: (window.GameState && window.GameState.player && window.GameState.player.movementState) || 'IDLE',
+        ambientTemperature: ambientTemp,
+        weather: weatherType,
+        region: region,
+        timeOfDay: timeOfDay,
+        shelter: shelter,
+        isNearCampfire: isNearFire || !!campfire,
+        outfitId: window.GameState && window.GameState.player && window.GameState.player.outfitId,
+        isPaused: window.pauseMenu && window.pauseMenu.isOpen
+      };
+
+      window.survivalProductionSystem.updateSurvival(deltaTime, context);
+
+      // Rested timer update
+      if (this.hasRestedBuff) {
+        this.restedTimer -= deltaTime;
+        if (this.restedTimer <= 0) {
+          this.hasRestedBuff = false;
+        }
       }
     }
 
-    // Interpolate core temperature toward target
-    this.coreTemp += (targetTemp - this.coreTemp) * (0.04 * deltaTime);
-
-    // 3. Rested Buff timer
-    if (this.hasRestedBuff) {
-      this.restedTimer -= deltaTime;
-      if (this.restedTimer <= 0) {
-        this.hasRestedBuff = false;
+    consumeEnergy(amount) {
+      if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+        window.GameState.player.survival.energy = Math.max(0, window.GameState.player.survival.energy - amount);
       }
     }
-  }
 
-  consumeEnergy(amount) {
-    this.energy = Math.max(0, this.energy - amount);
-  }
+    recoverEnergy(amount) {
+      const multiplier = this.hasRestedBuff ? 1.4 : 1.0;
+      if (window.GameState && window.GameState.player && window.GameState.player.survival) {
+        window.GameState.player.survival.energy = Math.min(
+          window.GameState.player.survival.maxEnergy,
+          window.GameState.player.survival.energy + (amount * multiplier)
+        );
+      }
+    }
 
-  recoverEnergy(amount) {
-    const multiplier = this.hasRestedBuff ? 1.4 : 1.0;
-    this.energy = Math.min(100, this.energy + (amount * multiplier));
-  }
+    drinkCanteen() {
+      if (this.inventory.canteenWater > 0 && this.thirst < 100) {
+        this.inventory.canteenWater--;
+        if (window.survivalProductionSystem) {
+          window.survivalProductionSystem.consumeItem('canteenWater');
+        } else {
+          this.thirst = Math.min(100, this.thirst + 35);
+        }
+        return true;
+      }
+      return false;
+    }
 
-  drinkCanteen() {
-    if (this.inventory.canteenWater > 0 && this.thirst < 100) {
-      this.inventory.canteenWater--;
-      this.thirst = Math.min(100, this.thirst + 35);
+    refillCanteen() {
+      this.inventory.canteenWater = 4;
+      this.thirst = 100;
+    }
+
+    eatVadai() {
+      if (this.inventory.vadai > 0 && this.hunger < 100) {
+        this.inventory.vadai--;
+        if (window.survivalProductionSystem) {
+          window.survivalProductionSystem.consumeItem('vadai');
+        } else {
+          this.hunger = Math.min(100, this.hunger + 40);
+          this.energy = Math.min(100, this.energy + 20);
+        }
+        return true;
+      }
+      return false;
+    }
+
+    placeCampfire(x, y) {
+      this.campfires.push({ x, y, duration: 180, isLit: true });
+      if (window.campingSystem) {
+        window.campingSystem.pitchCamp({ x, y, z: 0 });
+      }
       return true;
     }
-    return false;
-  }
 
-  refillCanteen() {
-    this.inventory.canteenWater = 4;
-    this.thirst = 100;
-  }
-
-  eatVadai() {
-    if (this.inventory.vadai > 0 && this.hunger < 100) {
-      this.inventory.vadai--;
-      this.hunger = Math.min(100, this.hunger + 40);
-      this.energy = Math.min(100, this.energy + 15);
+    pitchTent(x, y) {
+      this.tents.push({ x, y, isPitched: true });
+      if (window.campingSystem) {
+        window.campingSystem.pitchCamp({ x, y, z: 0 });
+      }
       return true;
     }
-    return false;
-  }
 
-  placeCampfire(x, y) {
-    if (this.inventory.wood >= 2) {
-      this.inventory.wood -= 2;
-      this.campfires.push({ x, y, createdAt: Date.now() });
-      return true;
+    sleepInTent(lightingEngine, audio) {
+      if (lightingEngine) {
+        lightingEngine.timeOfDay = 6.5;
+      }
+      if (window.lightingEngine) {
+        window.lightingEngine.timeOfDay = 6.5;
+      }
+      if (window.restSystem) {
+        window.restSystem.performRest('LONG_REST', { safe: true, shelter: true });
+        this.hasRestedBuff = true;
+        this.restedTimer = 300;
+        return true;
+      }
+      return false;
     }
-    return false;
-  }
 
-  pitchTent(x, y) {
-    if (this.inventory.cloth >= 2) {
-      this.inventory.cloth -= 2;
-      this.tents.push({ x, y, createdAt: Date.now() });
-      return true;
-    }
-    return false;
-  }
-
-  sleepInTent(lightingEngine, audio) {
-    // Advances time to 6:30 AM (Sunrise)
-    lightingEngine.timeOfDay = 6.5;
-    this.energy = 100;
-    this.hunger = Math.max(20, this.hunger - 15);
-    this.thirst = Math.max(20, this.thirst - 20);
-    this.hasRestedBuff = true;
-    this.restedTimer = 300; // 5 real minutes of rested buff
-
-    if (audio) {
-      audio.playDiscoveryJingle();
+    upgradeBase() {
+      if (this.baseTier === 1 && this.inventory.wood >= 4 && this.inventory.stone >= 2) {
+        this.inventory.wood -= 4;
+        this.inventory.stone -= 2;
+        this.baseTier = 2; // Woodland Cabin
+        return 'Woodland Cabin built!';
+      } else if (this.baseTier === 2 && this.inventory.wood >= 6 && this.inventory.stone >= 4) {
+        this.inventory.wood -= 6;
+        this.inventory.stone -= 4;
+        this.baseTier = 3; // Upgraded Outpost
+        return 'Explorer Outpost fully constructed!';
+      }
+      return false;
     }
   }
 
-  upgradeBase() {
-    if (this.baseTier === 1 && this.inventory.wood >= 4 && this.inventory.stone >= 2) {
-      this.inventory.wood -= 4;
-      this.inventory.stone -= 2;
-      this.baseTier = 2; // Woodland Cabin
-      return 'Woodland Cabin built!';
-    } else if (this.baseTier === 2 && this.inventory.wood >= 6 && this.inventory.stone >= 4) {
-      this.inventory.wood -= 6;
-      this.inventory.stone -= 4;
-      this.baseTier = 3; // Upgraded Outpost
-      return 'Explorer Outpost fully constructed!';
-    }
-    return false;
-  }
-}
-
-window.SurvivalSystem = SurvivalSystem;
+  window.SurvivalSystem = SurvivalSystem;
+})();

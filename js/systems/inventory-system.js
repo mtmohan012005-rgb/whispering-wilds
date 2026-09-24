@@ -262,8 +262,20 @@ class InventorySystem {
         if (!this.hasItem(itemId)) return false;
 
         const entry = this.items.get(itemId);
+
+        // 1. Check if registered in authoritative SurvivalProductionSystem consumables
+        if (window.survivalProductionSystem && typeof window.survivalProductionSystem.consumeItem === 'function') {
+            const consumed = window.survivalProductionSystem.consumeItem(itemId);
+            if (consumed) {
+                this.removeItem(itemId, 1);
+                return true;
+            }
+        }
+
+        // 2. Fallback to custom item.use() hook
         if (typeof entry.item.use === 'function') {
-            const success = entry.item.use(window.player, survivalRef || (window.testRef && window.testRef.survival));
+            const survival = survivalRef || (window.GameState && window.GameState.player && window.GameState.player.survival) || (window.testRef && window.testRef.survival);
+            const success = entry.item.use(window.player, survival);
             if (success) {
                 this.removeItem(itemId, 1);
                 return true;
