@@ -176,6 +176,9 @@ class StorySceneSystem {
     if (this.cinematicSystem) {
       this.cinematicSystem.stopCinematic();
     }
+    if (this.dialogue && typeof this.dialogue.endDialogue === 'function') {
+      this.dialogue.endDialogue();
+    }
 
     console.log(`[StorySceneSystem] Scene ${scene.id} finished.`);
     if (this.onCompleteCallback) {

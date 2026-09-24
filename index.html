@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="css/save-feedback.css">
   <link rel="stylesheet" href="css/customization.css">
   <link rel="stylesheet" href="css/game-ui.css">
+  <link rel="stylesheet" href="css/auth-screen.css">
+  <link rel="stylesheet" href="css/controls-ui.css">
 
   <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -463,6 +465,64 @@
   <script src="js/ui/notification-ui.js"></script>
   <script src="js/ui/settings-ui.js"></script>
   <script src="js/ui/ui-manager.js"></script>
+  <!-- In-Game Account Authentication System -->
+  <script src="js/auth/auth-state.js"></script>
+  <script src="js/auth/auth-client.js"></script>
+  <script src="js/auth/login-screen.js"></script>
+  <script src="js/auth/register-screen.js"></script>
+  <script src="js/auth/forgot-password.js"></script>
+  <script src="js/auth/account-profile.js"></script>
+  <script src="js/auth/auth-ui.js"></script>
+
+  <!-- Centralized PC Input & Gamepad System -->
+  <script src="js/input/input-actions.js"></script>
+  <script src="js/data/default-controls.js"></script>
+  <script src="js/input/input-context.js"></script>
+  <script src="js/input/keyboard-input.js"></script>
+  <script src="js/input/mouse-input.js"></script>
+  <script src="js/input/gamepad-input.js"></script>
+  <script src="js/input/input-conflicts.js"></script>
+  <script src="js/input/input-remapping.js"></script>
+  <script src="js/input/input-manager.js"></script>
+  <script src="js/ui/keybind-ui.js"></script>
+  <script src="js/ui/gamepad-ui.js"></script>
+  <script src="js/ui/controls-settings-ui.js"></script>
+
+  <!-- AI-Free Living World & Simulation -->
+  <script src="js/data/life-simulation-data.js"></script>
+  <script src="js/data/traffic-data.js"></script>
+  <script src="js/data/crowd-data.js"></script>
+  <script src="js/entities/activity-point.js"></script>
+  <script src="js/entities/traffic-vehicle.js"></script>
+  <script src="js/entities/crowd-agent.js"></script>
+  <script src="js/engine/animation-controller.js"></script>
+  <script src="js/engine/animation-lod.js"></script>
+  <script src="js/systems/traffic-system.js"></script>
+  <script src="js/systems/crowd-system.js"></script>
+  <script src="js/systems/ambient-activity-system.js"></script>
+  <script src="js/systems/life-simulation.js"></script>
+
+  <!-- PC Graphics Overhaul (PBR, Water, Sky, Fog) -->
+  <script src="js/data/visual-quality-data.js"></script>
+  <script src="js/engine/render-quality.js"></script>
+  <script src="js/engine/material-system.js"></script>
+  <script src="js/engine/environment-lighting.js"></script>
+  <script src="js/engine/sky-system.js"></script>
+  <script src="js/engine/fog-system.js"></script>
+  <script src="js/engine/water-renderer.js"></script>
+  <script src="js/engine/surface-system.js"></script>
+  <script src="js/engine/atmosphere-system.js"></script>
+
+  <!-- World Map, Fast Travel & Navigation -->
+  <script src="js/data/navigation-data.js"></script>
+  <script src="js/data/fast-travel-data.js"></script>
+  <script src="js/systems/region-progression.js"></script>
+  <script src="js/systems/route-system.js"></script>
+  <script src="js/systems/fast-travel-system.js"></script>
+  <script src="js/systems/navigation-system.js"></script>
+  <script src="js/ui/navigation-ui.js"></script>
+  <script src="js/ui/fast-travel-ui.js"></script>
+  <script src="js/ui/region-map-ui.js"></script>
 
   <script src="js/main.js"></script>
   <script src="js/test-runner.js"></script>
@@ -512,6 +572,10 @@
   <script src="tests/test-world.js"></script>
   <script src="tests/test-player-customization.js"></script>
   <script src="tests/test-ui.js"></script>
+  <script src="tests/input/test-input-manager.js"></script>
+  <script src="tests/life/test-life-simulation.js"></script>
+  <script src="tests/graphics/test-graphics-systems.js"></script>
+  <script src="tests/navigation/test-navigation-systems.js"></script>
 
 </body>
 </html>

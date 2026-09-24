@@ -61,7 +61,7 @@ if ($missingLinks.Count -gt 0) {
     }
 }
 if ($missingLinks.Count -eq 0) {
-    Write-Host "  ✓ All static dependencies resolved on disk" -ForegroundColor Green
+    Write-Host "  [OK] All static dependencies resolved on disk" -ForegroundColor Green
 }
 
 # 3. Compile BUILD_REPORT.json
@@ -109,5 +109,5 @@ $buildReport = @{
 
 $buildReportJson = $buildReport | ConvertTo-Json -Depth 6
 [System.IO.File]::WriteAllText((Join-Path $baseDir "BUILD_REPORT.json"), $buildReportJson)
-Write-Host "✓ BUILD_REPORT.json generated successfully" -ForegroundColor Green
+Write-Host "[OK] BUILD_REPORT.json generated successfully" -ForegroundColor Green
 Write-Host "Build Status: $buildStatus" -ForegroundColor Cyan

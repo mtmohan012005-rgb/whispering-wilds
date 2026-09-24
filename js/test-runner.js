@@ -1170,6 +1170,82 @@ window.runStepByStepFeatureTests = async function() {
     log(46, 'Data-Driven Story Scenes & Chapter Progression', false, err.message);
   }
 
+  // --- STEP 47: In-Game Account Authentication & State Management ---
+  try {
+    const authState = window.AuthState;
+    const authClient = window.AuthClient;
+    const authUI = window.AuthUI;
+
+    const hasAuthState = !!authState && typeof authState.getStatus === 'function';
+    const hasAuthClient = !!authClient && typeof authClient.login === 'function';
+    const hasAuthUI = !!authUI && typeof authUI.showScreen === 'function';
+
+    // Test Guest Mode transition
+    authState.setGuest();
+    const isGuestActive = authState.isGuest && authState.isLoggedIn();
+
+    // Verify 5-change customization limit preservation
+    const changesUsed = window.GameState?.customizationChangesUsed || 0;
+    const limitSafe = changesUsed <= 5;
+
+    // Verify DOM overlay exists
+    const hasOverlay = !!document.getElementById('authOverlay');
+
+    const authPassed = hasAuthState && hasAuthClient && hasAuthUI && isGuestActive && limitSafe && hasOverlay;
+    log(47, 'In-Game Account Authentication & Guest Architecture', authPassed,
+      `State: ${authState?.getStatus()}, Guest: ${isGuestActive}, 5-Change Limit Safe: ${limitSafe}, UI: ${hasOverlay}`);
+  } catch (err) {
+    log(47, 'In-Game Account Authentication & Guest Architecture', false, err.message);
+  }
+
+  // --- STEP 48: Centralized PC Controls, Key Remapping & Gamepad Architecture ---
+  try {
+    if (typeof window.testInputSystem === 'function') {
+      const passed = window.testInputSystem();
+      log(48, 'Centralized PC Controls, Key Remapping & Gamepad Architecture', passed, 'All input checks verified');
+    } else {
+      log(48, 'Centralized PC Controls, Key Remapping & Gamepad Architecture', false, 'testInputSystem not found');
+    }
+  } catch (err) {
+    log(48, 'Centralized PC Controls, Key Remapping & Gamepad Architecture', false, err.message);
+  }
+
+  // --- STEP 49: AI-Free Living World, Crowd, Traffic & Deterministic Routines ---
+  try {
+    if (typeof window.testLifeSimulation === 'function') {
+      const passed = window.testLifeSimulation();
+      log(49, 'AI-Free Living World, Crowd, Traffic & Deterministic Routines', passed, 'All life simulation checks verified');
+    } else {
+      log(49, 'AI-Free Living World, Crowd, Traffic & Deterministic Routines', false, 'testLifeSimulation not found');
+    }
+  } catch (err) {
+    log(49, 'AI-Free Living World, Crowd, Traffic & Deterministic Routines', false, err.message);
+  }
+
+  // --- STEP 50: PC Graphics Overhaul: PBR Materials, Lighting, Water & Dynamic Wetness ---
+  try {
+    if (typeof window.testGraphicsSystems === 'function') {
+      const passed = window.testGraphicsSystems();
+      log(50, 'PC Graphics Overhaul: PBR Materials, Lighting, Water & Dynamic Wetness', passed, 'All visual quality checks verified');
+    } else {
+      log(50, 'PC Graphics Overhaul: PBR Materials, Lighting, Water & Dynamic Wetness', false, 'testGraphicsSystems not found');
+    }
+  } catch (err) {
+    log(50, 'PC Graphics Overhaul: PBR Materials, Lighting, Water & Dynamic Wetness', false, err.message);
+  }
+
+  // --- STEP 51: Final World Map, Fast Travel, Region Progression & Navigation ---
+  try {
+    if (typeof window.testNavigationSystems === 'function') {
+      const passed = window.testNavigationSystems();
+      log(51, 'Final World Map, Fast Travel, Region Progression & Navigation', passed, 'All navigation checks verified');
+    } else {
+      log(51, 'Final World Map, Fast Travel, Region Progression & Navigation', false, 'testNavigationSystems not found');
+    }
+  } catch (err) {
+    log(51, 'Final World Map, Fast Travel, Region Progression & Navigation', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

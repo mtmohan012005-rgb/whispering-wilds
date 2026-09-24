@@ -13,10 +13,15 @@ const Logger = require('./logger');
 const RoomManager = require('./room-manager');
 const PlayerManager = require('./player-manager');
 const { registerSocketHandlers } = require('./connection-handler');
+const authRoutes = require('./auth/auth-routes');
+const { socketAuthMiddleware } = require('./auth/auth-middleware');
 
 const app = express();
-app.use(cors({ origin: config.CORS_ORIGIN }));
+app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '5mb' }));
+
+// Auth Routes
+app.use('/api/auth', authRoutes);
 
 // Health & Readiness Endpoints
 const startTime = Date.now();
@@ -76,8 +81,11 @@ const io = new Server(server, {
 const roomManager = new RoomManager();
 const playerManager = new PlayerManager();
 
+io.use(socketAuthMiddleware);
+
 io.on('connection', (socket) => {
-    Logger.info(`[Socket] Connected: ${socket.id}`);
+    const authDesc = socket.user ? `[Authenticated: ${socket.user.email} (${socket.accountId})]` : '[Guest]';
+    Logger.info(`[Socket] Connected: ${socket.id} ${authDesc}`);
     registerSocketHandlers(io, socket, roomManager, playerManager);
 });
 

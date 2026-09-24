@@ -149,38 +149,7 @@ class ThreeWorld {
         // Clear keys on window blur to prevent stuck movement
         window.addEventListener('blur', () => {
             this.clearInputState();
-        });
-
-        // Key bindings for WASD / Arrows / Jump / Crouch / Sprint
-        window.addEventListener('keydown', (e) => {
-            if (!this.isActive) return;
-            if (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked()) {
-                this.clearInputState();
-                return;
-            }
-            if (e.repeat && ['Space', 'KeyC', 'ControlLeft', 'ControlRight'].includes(e.code)) return;
-
-            if (['KeyW', 'ArrowUp'].includes(e.code)) this.inputState.up = true;
-            if (['KeyS', 'ArrowDown'].includes(e.code)) this.inputState.down = true;
-            if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = true;
-            if (['KeyD', 'ArrowRight'].includes(e.code)) this.inputState.right = true;
-            if (['ShiftLeft', 'ShiftRight'].includes(e.code)) this.inputState.sprint = true;
-            if (['Space'].includes(e.code)) {
-                this.inputState.jump = true;
-                e.preventDefault();
-            }
-            if (['ControlLeft', 'ControlRight', 'KeyC'].includes(e.code)) this.inputState.crouch = true;
-        });
-
-        window.addEventListener('keyup', (e) => {
-            if (!this.isActive) return;
-            if (['KeyW', 'ArrowUp'].includes(e.code)) this.inputState.up = false;
-            if (['KeyS', 'ArrowDown'].includes(e.code)) this.inputState.down = false;
-            if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = false;
-            if (['KeyD', 'ArrowRight'].includes(e.code)) this.inputState.right = false;
-            if (['ShiftLeft', 'ShiftRight'].includes(e.code)) this.inputState.sprint = false;
-            if (['Space'].includes(e.code)) this.inputState.jump = false;
-            if (['ControlLeft', 'ControlRight', 'KeyC'].includes(e.code)) this.inputState.crouch = false;
+            if (window.InputManager) window.InputManager.clearAll();
         });
     }
 
@@ -276,7 +245,21 @@ class ThreeWorld {
         const now = performance.now();
         let dt = (now - this.lastTime) / 1000.0;
         this.lastTime = now;
-        if (dt > 0.1) dt = 0.1; // Cap large frame jumps
+        // Update Central Input Manager
+        if (window.InputManager) {
+            window.InputManager.update();
+            if (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked()) {
+                this.clearInputState();
+            } else {
+                this.inputState.up = window.InputManager.isDown('MOVE_FORWARD');
+                this.inputState.down = window.InputManager.isDown('MOVE_BACK');
+                this.inputState.left = window.InputManager.isDown('MOVE_LEFT');
+                this.inputState.right = window.InputManager.isDown('MOVE_RIGHT');
+                this.inputState.sprint = window.InputManager.isDown('SPRINT');
+                this.inputState.jump = window.InputManager.wasPressed('JUMP') || window.InputManager.isDown('JUMP');
+                this.inputState.crouch = window.InputManager.isDown('CROUCH');
+            }
+        }
 
         // 1. Update Player Avatar
         this.player.update(this.inputState, dt, this.terrain);

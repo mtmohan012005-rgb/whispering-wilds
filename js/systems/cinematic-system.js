@@ -109,6 +109,7 @@ class CinematicSystem {
       this.camera.stopCinematic(0.8);
     }
 
+    this.state = window.CINEMATIC_STATE.COMPLETE;
     setTimeout(() => {
       this.state = window.CINEMATIC_STATE.NONE;
     }, 850);
@@ -124,6 +125,10 @@ class CinematicSystem {
     } else {
       this.stopCinematic();
     }
+  }
+
+  static isPlaying() {
+    return window.cinematicSystem ? window.cinematicSystem.isPlaying() : false;
   }
 }
 

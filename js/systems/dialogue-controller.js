@@ -138,6 +138,10 @@ class DialogueController {
       cb();
     }
   }
+
+  static isActive() {
+    return window.dialogueController ? !!window.dialogueController.isActive : false;
+  }
 }
 
 window.DialogueController = DialogueController;

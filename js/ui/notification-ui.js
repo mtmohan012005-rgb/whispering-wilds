@@ -5,17 +5,40 @@
 class NotificationUI {
     constructor() {
         this.container = null;
-        this.initDOM();
+        if (typeof document !== 'undefined' && document.body) {
+            this.initDOM();
+        }
     }
 
     initDOM() {
+        if (typeof document === 'undefined' || !document.body) return;
+        const existing = document.getElementById('pc-toast-container');
+        if (existing) {
+            this.container = existing;
+            return;
+        }
         this.container = document.createElement('div');
         this.container.id = 'pc-toast-container';
         this.container.className = 'pc-toast-container';
         document.body.appendChild(this.container);
     }
 
+    static show(title, message = '', icon = '🧭', durationMs = 4000) {
+        if (!window.notificationUI) {
+            window.notificationUI = new NotificationUI();
+        }
+        return window.notificationUI.show(title, message, icon, durationMs);
+    }
+
     show(title, message = '', icon = '🧭', durationMs = 4000) {
+        if (typeof icon === 'number') {
+            durationMs = icon;
+            icon = '🧭';
+        }
+
+        if (!this.container && typeof document !== 'undefined' && document.body) {
+            this.initDOM();
+        }
         if (!this.container) return;
 
         const toast = document.createElement('div');
