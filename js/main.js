@@ -974,6 +974,56 @@ window.addEventListener('DOMContentLoaded', () => {
   const toggleCustomizationBtn = document.getElementById('toggle-customization-btn');
   toggleCustomizationBtn?.addEventListener('click', () => customizationUI?.toggle());
 
+  const toggleCodexBtn = document.getElementById('toggle-codex-btn');
+  toggleCodexBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleModal('CODEX');
+    else if (window.CodexUI) window.CodexUI.open();
+  });
+
+  const toggleAchievementsBtn = document.getElementById('toggle-achievements-btn');
+  toggleAchievementsBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleModal('ACHIEVEMENTS');
+    else if (window.AchievementUI) window.AchievementUI.open();
+  });
+
+  const toggleStoryBtn = document.getElementById('toggle-story-btn');
+  toggleStoryBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleModal('STORY');
+    else if (window.StoryProgressUI) window.StoryProgressUI.open();
+  });
+
+  const toggleProfileBtn = document.getElementById('toggle-profile-btn');
+  toggleProfileBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleModal('PROFILE');
+    else if (window.ProfileUI) window.ProfileUI.open();
+  });
+
+  const toggleFullscreenBtn = document.getElementById('toggle-fullscreen-btn');
+  toggleFullscreenBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleFullscreen();
+    else {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    const fsLabel = document.getElementById('fullscreen-btn-label');
+    if (fsLabel) {
+      fsLabel.textContent = document.fullscreenElement ? '🗗 Windowed' : '⛶ Fullscreen';
+    }
+  });
+
+  const inventoryToggleBtn = document.getElementById('inventory-toggle-btn');
+  inventoryToggleBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleModal('INVENTORY');
+  });
+
+  const settingsToggleBtn = document.getElementById('settings-toggle-btn');
+  settingsToggleBtn?.addEventListener('click', () => {
+    if (window.uiManager) window.uiManager.toggleModal('PAUSED');
+  });
+
   if (multiplayer) {
     multiplayer.onStatusChange = (msg, isError) => {
       if (lobbyStatus) {

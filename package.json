@@ -7,6 +7,8 @@
     "start": "node server.js",
     "server": "node server.js",
     "serve": "npx -y serve .",
+    "desktop": "electron electron-main.js",
+    "app": "powershell -ExecutionPolicy Bypass -File Launch-Game-PC.ps1",
     "validate": "node scripts/validate-data.js && node scripts/validate-links.js && node scripts/validate-production.js",
     "build-report": "node scripts/build-report.js",
     "production-check": "node scripts/validate-production.js",

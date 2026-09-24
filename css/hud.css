@@ -333,3 +333,45 @@
   color: var(--primary-gold);
   font-family: 'JetBrains Mono', monospace;
 }
+
+/* --- RESPONSIVE SCALING FOR LAPTOPS & PC MONITORS --- */
+@media (max-width: 1440px) {
+  .hud-top-actions {
+    flex-wrap: wrap;
+    max-width: 60vw;
+    gap: 6px;
+  }
+  .hud-mode-btn {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    gap: 5px;
+  }
+  .hud-hotbar {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .hotbar-btn {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  #hud-container {
+    padding: 14px;
+  }
+  .hud-location-card {
+    padding: 10px 14px;
+  }
+  #biome-title {
+    font-size: 0.9rem;
+  }
+  .hud-compass-widget {
+    width: 58px;
+    height: 58px;
+  }
+  .hud-top-actions {
+    max-width: 70vw;
+  }
+}
+

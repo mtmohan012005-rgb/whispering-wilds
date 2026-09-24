@@ -81,7 +81,17 @@
         }
 
         handleWheel(e) {
-            this.wheelDelta += Math.sign(e.deltaY);
+            // Laptop trackpads fire fine fractional deltaY; regular mouse wheels fire larger discrete steps.
+            let delta = e.deltaY;
+            if (e.ctrlKey) {
+                // Trackpad pinch-to-zoom gesture
+                delta = e.deltaY * 0.5;
+            }
+            if (Math.abs(delta) < 20) {
+                this.wheelDelta += delta / 20;
+            } else {
+                this.wheelDelta += Math.sign(delta);
+            }
         }
 
         handleLockChange() {

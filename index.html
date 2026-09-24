@@ -6,6 +6,10 @@
   <title>The Whispering Wilds (காட்டு வழி / Thadam) - Open-World Tamil Nadu Exploration</title>
   <meta name="description" content="Open-world exploration, light survival, and mystery adventure across authentic Tamil Nadu landscapes from Madras High Court to Pichavaram and Nilgiris.">
 
+  <meta name="theme-color" content="#0c1017">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/app-icon.svg">
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/hud.css">
@@ -91,20 +95,44 @@
       <!-- 3D Open-World Mode & Macro-Map Controls -->
       <div class="hud-top-actions">
         <button id="toggle-3d-view-btn" class="hud-mode-btn" title="Toggle between 2D View and 3D Open-World [V]">
-          <span id="view-mode-label">🌐 3D World (3D வரைபடம்)</span>
+          <span id="view-mode-label">🌐 3D World</span>
           <span class="key-hint">V</span>
         </button>
         <button id="toggle-macro-map-btn" class="hud-mode-btn hidden" title="Toggle Macro-Map Bird's-Eye View [M]">
-          <span id="macro-map-label">🗺️ Macro View</span>
+          <span id="macro-map-label">🗺️ Map</span>
           <span class="key-hint">M</span>
+        </button>
+        <button id="toggle-codex-btn" class="hud-mode-btn" title="Open Master Discovery Codex & Wildlife Journal [C]">
+          <span>📖 Codex</span>
+          <span class="key-hint">C</span>
+        </button>
+        <button id="toggle-achievements-btn" class="hud-mode-btn" title="Open Achievements & Titles [Y]">
+          <span>🏆 Trophies</span>
+          <span class="key-hint">Y</span>
+        </button>
+        <button id="toggle-story-btn" class="hud-mode-btn" title="Open 7-Chapter Story Narrative & Objectives [K]">
+          <span>📜 Story</span>
+          <span class="key-hint">K</span>
+        </button>
+        <button id="toggle-profile-btn" class="hud-mode-btn" title="Open Player Profile & Cloud Saves [U]">
+          <span>👤 Profile</span>
+          <span class="key-hint">U</span>
         </button>
         <button id="toggle-customization-btn" class="hud-mode-btn" title="Open Player Customization & Wardrobe [P]">
           <span id="customization-btn-label">🥻 Wardrobe</span>
           <span class="key-hint">P</span>
         </button>
         <button id="toggle-multiplayer-btn" class="hud-mode-btn" title="Open Expedition Co-op Lobby [O]">
-          <span id="multiplayer-btn-label">👥 Co-op Lobby</span>
+          <span id="multiplayer-btn-label">👥 Co-op</span>
           <span class="key-hint">O</span>
+        </button>
+        <button id="toggle-eco-btn" class="hud-mode-btn" title="Toggle Laptop Battery Eco Mode / PC High Performance [F8]">
+          <span id="eco-btn-label">🔋 Eco Mode</span>
+          <span class="key-hint">F8</span>
+        </button>
+        <button id="toggle-fullscreen-btn" class="hud-mode-btn" title="Toggle Borderless Fullscreen [F11]">
+          <span id="fullscreen-btn-label">⛶ Fullscreen</span>
+          <span class="key-hint">F11</span>
         </button>
       </div>
 
@@ -151,8 +179,10 @@
         </div>
       </div>
 
-      <!-- Quick Actions Hotbar -->
-      <div class="hud-hotbar">
+        <button id="inventory-toggle-btn" class="hotbar-btn" title="Satchel & Inventory 20kg [I]">
+          <span>🎒 Satchel</span>
+          <span class="key-hint">I</span>
+        </button>
         <button id="camera-toggle-btn" class="hotbar-btn" title="Explorer Camera [F]">
           <span>📷 Camera</span>
           <span class="key-hint">F</span>
@@ -172,6 +202,10 @@
         <button id="tent-btn" class="hotbar-btn" title="Pitch Canvas Tent [T]">
           <span>⛺ Pitch Tent</span>
           <span class="key-hint">T</span>
+        </button>
+        <button id="settings-toggle-btn" class="hotbar-btn" title="Game Settings & Display [ESC]">
+          <span>⚙️ Settings</span>
+          <span class="key-hint">ESC</span>
         </button>
       </div>
     </div>
@@ -443,6 +477,7 @@
   <script src="js/config/graphics-config.js"></script>
   <script src="js/systems/graphics-settings.js"></script>
   <script src="js/systems/performance-manager.js"></script>
+  <script src="js/systems/laptop-optimization.js"></script>
   <script src="js/engine/occlusion-manager.js"></script>
   <script src="js/engine/instance-manager.js"></script>
   <script src="js/systems/world-streaming.js"></script>
@@ -637,5 +672,17 @@
   <script src="tests/graphics/test-graphics-systems.js"></script>
   <script src="tests/navigation/test-navigation-systems.js"></script>
 
+  <!-- Service Worker Registration for PC & Laptop Offline Play -->
+  <script>
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('[PWA] Service Worker registered with scope:', reg.scope);
+        }).catch((err) => {
+          console.log('[PWA] Service Worker registration skipped/failed:', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

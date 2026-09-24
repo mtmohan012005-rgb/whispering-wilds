@@ -65,9 +65,15 @@ class UIManager {
                     e.preventDefault();
                     this.toggleModal('PROFILE');
                     break;
-                case 'KeyL':
+                case 'KeyK':
                     e.preventDefault();
                     this.toggleModal('STORY');
+                    break;
+                case 'F8':
+                    e.preventDefault();
+                    if (window.laptopOptimization) {
+                        window.laptopOptimization.toggleMode();
+                    }
                     break;
                 case 'F9':
                     e.preventDefault();
@@ -75,11 +81,25 @@ class UIManager {
                         window.performanceManager.toggleOverlay();
                     }
                     break;
+                case 'F11':
+                    e.preventDefault();
+                    this.toggleFullscreen();
+                    break;
                 case 'KeyE':
                     // Interaction handled by player / game loop, or dialogue trigger
                     break;
             }
         });
+    }
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
     }
 
     handleEscape() {
