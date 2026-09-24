@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/game-ui.css">
   <link rel="stylesheet" href="css/auth-screen.css">
   <link rel="stylesheet" href="css/controls-ui.css">
+  <link rel="stylesheet" href="css/progression-ui.css">
 
   <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -524,6 +525,64 @@
   <script src="js/ui/fast-travel-ui.js"></script>
   <script src="js/ui/region-map-ui.js"></script>
 
+  <!-- Phase 1: Achievements, Discovery Codex, Wildlife Journal & Cultural Progression -->
+  <script src="js/data/achievement-data.js"></script>
+  <script src="js/data/codex-data.js"></script>
+  <script src="js/data/wildlife-codex-data.js"></script>
+  <script src="js/data/culture-codex-data.js"></script>
+  <script src="js/data/discovery-data.js"></script>
+  <script src="js/systems/achievement-system.js"></script>
+  <script src="js/systems/codex-system.js"></script>
+  <script src="js/systems/discovery-progression.js"></script>
+  <script src="js/systems/wildlife-observation-system.js"></script>
+  <script src="js/systems/culture-discovery-system.js"></script>
+  <script src="js/ui/codex-ui.js"></script>
+  <script src="js/ui/achievement-ui.js"></script>
+  <script src="js/ui/wildlife-codex-ui.js"></script>
+  <script src="js/ui/culture-codex-ui.js"></script>
+  <script src="js/ui/discovery-ui.js"></script>
+
+  <!-- Phase 2: Main Story, Side Quests, Secrets, Collectibles & Replay System -->
+  <script src="js/data/main-story-data.js"></script>
+  <script src="js/data/side-quest-data.js"></script>
+  <script src="js/data/secret-discovery-data.js"></script>
+  <script src="js/data/collectible-data.js"></script>
+  <script src="js/data/environmental-mystery-data.js"></script>
+  <script src="js/systems/story-content-system.js"></script>
+  <script src="js/systems/side-quest-system.js"></script>
+  <script src="js/systems/secret-discovery-system.js"></script>
+  <script src="js/systems/collectible-system.js"></script>
+  <script src="js/systems/replay-system.js"></script>
+  <script src="js/ui/story-progress-ui.js"></script>
+  <script src="js/ui/side-quest-ui.js"></script>
+  <script src="js/ui/secret-discovery-ui.js"></script>
+  <script src="js/ui/collectible-ui.js"></script>
+
+  <!-- Phase 3: Cloud Save, Player Profile & Multi-Device Sync -->
+  <script src="js/cloud/cloud-save-client.js"></script>
+  <script src="js/cloud/cloud-conflict.js"></script>
+  <script src="js/cloud/cloud-profile.js"></script>
+  <script src="js/cloud/cloud-save-manager.js"></script>
+  <script src="js/cloud/cloud-sync.js"></script>
+  <script src="js/ui/cloud-save-ui.js"></script>
+  <script src="js/ui/save-conflict-ui.js"></script>
+  <script src="js/ui/profile-ui.js"></script>
+
+  <!-- Phase 4: Dynamic World Events, Encounters & Event Chains -->
+  <script src="js/data/world-event-data.js"></script>
+  <script src="js/data/world-event-dialogue.js"></script>
+  <script src="js/data/encounter-data.js"></script>
+  <script src="js/data/event-chain-data.js"></script>
+  <script src="js/entities/world-event.js"></script>
+  <script src="js/entities/event-trigger.js"></script>
+  <script src="js/systems/event-condition-system.js"></script>
+  <script src="js/systems/world-event-system.js"></script>
+  <script src="js/systems/encounter-system.js"></script>
+  <script src="js/systems/event-chain-system.js"></script>
+  <script src="js/systems/event-director.js"></script>
+  <script src="js/ui/world-event-ui.js"></script>
+  <script src="js/ui/encounter-ui.js"></script>
+
   <script src="js/main.js"></script>
   <script src="js/test-runner.js"></script>
   <script src="js/test-player-production.js"></script>
@@ -540,6 +599,7 @@
   <script src="js/test-market-life.js"></script>
   <script src="js/test-kolam-system.js"></script>
   <script src="js/test-food-culture.js"></script>
+  <script src="js/test-progression-expansion.js"></script>
 
   <!-- Cinematic Story, Dialogue & Story Presentation -->
   <script src="js/data/cinematic-data.js"></script>

@@ -206,9 +206,14 @@ class Database {
     }
 
     // --- Cloud Saves ---
-    saveCloudSave(userId, saveData) {
+    saveCloudSave(userId, saveData, revision = 1, checksum = '', clientTimestamp = null, deviceId = null) {
         this.data.cloud_saves[userId] = {
             user_id: userId,
+            revision: revision,
+            checksum: checksum,
+            client_timestamp: clientTimestamp || new Date().toISOString(),
+            server_timestamp: new Date().toISOString(),
+            device_id: deviceId,
             data: saveData,
             updated_at: new Date().toISOString()
         };
@@ -218,6 +223,25 @@ class Database {
 
     getCloudSave(userId) {
         return this.data.cloud_saves[userId] ? { ...this.data.cloud_saves[userId] } : null;
+    }
+
+    // --- Profiles ---
+    getProfile(userId) {
+        if (!this.data.profiles) this.data.profiles = {};
+        return this.data.profiles[userId] ? { ...this.data.profiles[userId] } : null;
+    }
+
+    upsertProfile(userId, profileData) {
+        if (!this.data.profiles) this.data.profiles = {};
+        const existing = this.data.profiles[userId] || {};
+        this.data.profiles[userId] = {
+            user_id: userId,
+            ...existing,
+            ...profileData,
+            updated_at: new Date().toISOString()
+        };
+        this.save();
+        return { ...this.data.profiles[userId] };
     }
 }
 

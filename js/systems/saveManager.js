@@ -141,6 +141,18 @@ class SaveManager {
       culturalLife: window.culturalLifeSystem ? window.culturalLifeSystem.getState() : null,
       festival: window.festivalSystem ? window.festivalSystem.getState() : null,
 
+      // Phase 1: Progression, Achievements & Codex
+      achievements: window.AchievementSystem ? window.AchievementSystem.serialize() : null,
+      codex: window.CodexSystem ? window.CodexSystem.serialize() : null,
+      discoveries: window.DiscoveryProgression ? window.DiscoveryProgression.serialize() : null,
+
+      // Phase 2: Main Story, Side Quests, Secrets & Collectibles
+      storyContent: window.StoryContentSystem ? window.StoryContentSystem.serialize() : null,
+      sideQuests: window.SideQuestSystem ? window.SideQuestSystem.serialize() : null,
+      secrets: window.SecretDiscoverySystem ? window.SecretDiscoverySystem.serialize() : null,
+      collectibles: window.CollectibleSystem ? window.CollectibleSystem.serialize() : null,
+      replay: window.ReplaySystem ? window.ReplaySystem.serialize() : null,
+
       // Story flags
       storyFlags: window.STORY_FLAGS ? Array.from(window.STORY_FLAGS) : [],
 
@@ -536,6 +548,34 @@ class SaveManager {
         window.GameState.quests.active = state.quests.filter(q => q.status === 'active').map(q => q.id);
         window.GameState.quests.completed = state.quests.filter(q => q.status === 'completed' || q.status === 'rewarded').map(q => q.id);
       }
+    }
+
+    // --- Phase 1: Progression, Achievements & Codex ---
+    if (window.AchievementSystem && state.achievements) {
+      window.AchievementSystem.init(state.achievements);
+    }
+    if (window.CodexSystem && state.codex) {
+      window.CodexSystem.init(state.codex);
+    }
+    if (window.DiscoveryProgression && state.discoveries) {
+      window.DiscoveryProgression.init(state.discoveries);
+    }
+
+    // --- Phase 2: Main Story, Side Quests, Secrets & Collectibles ---
+    if (window.StoryContentSystem && state.storyContent) {
+      window.StoryContentSystem.init(state.storyContent);
+    }
+    if (window.SideQuestSystem && state.sideQuests) {
+      window.SideQuestSystem.init(state.sideQuests);
+    }
+    if (window.SecretDiscoverySystem && state.secrets) {
+      window.SecretDiscoverySystem.init(state.secrets);
+    }
+    if (window.CollectibleSystem && state.collectibles) {
+      window.CollectibleSystem.init(state.collectibles);
+    }
+    if (window.ReplaySystem && state.replay) {
+      window.ReplaySystem.init(state.replay);
     }
 
     console.log('[SaveManager] ✓ Game state restored successfully.');

@@ -14,14 +14,18 @@ const RoomManager = require('./room-manager');
 const PlayerManager = require('./player-manager');
 const { registerSocketHandlers } = require('./connection-handler');
 const authRoutes = require('./auth/auth-routes');
+const profileRoutes = require('./profile/profile-routes');
+const saveRoutes = require('./saves/save-routes');
 const { socketAuthMiddleware } = require('./auth/auth-middleware');
 
 const app = express();
 app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '5mb' }));
 
-// Auth Routes
+// API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/saves', saveRoutes);
 
 // Health & Readiness Endpoints
 const startTime = Date.now();

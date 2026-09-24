@@ -175,6 +175,52 @@ window.addEventListener('DOMContentLoaded', () => {
   const storySceneSystem = (typeof window.StorySceneSystem !== 'undefined') ? new window.StorySceneSystem(cinematicSystem, dialogueController, cameraDirector) : null;
   window.storySceneSystem = storySceneSystem;
 
+  // Initialize Phase 1: Progression, Achievements & Codex
+  if (window.AchievementSystem && typeof window.AchievementSystem.init === 'function') {
+    window.AchievementSystem.init();
+  }
+  if (window.CodexSystem && typeof window.CodexSystem.init === 'function') {
+    window.CodexSystem.init();
+  }
+  if (window.DiscoveryProgression && typeof window.DiscoveryProgression.init === 'function') {
+    window.DiscoveryProgression.init();
+  }
+  if (window.WildlifeObservationSystem && typeof window.WildlifeObservationSystem.init === 'function') {
+    window.WildlifeObservationSystem.init();
+  }
+  if (window.CultureDiscoverySystem && typeof window.CultureDiscoverySystem.init === 'function') {
+    window.CultureDiscoverySystem.init();
+  }
+
+  // Initialize Phase 2: Story, Side Quests, Secrets, Collectibles, Replay
+  if (window.StoryContentSystem && typeof window.StoryContentSystem.init === 'function') {
+    window.StoryContentSystem.init();
+  }
+  if (window.SideQuestSystem && typeof window.SideQuestSystem.init === 'function') {
+    window.SideQuestSystem.init();
+  }
+  if (window.SecretDiscoverySystem && typeof window.SecretDiscoverySystem.init === 'function') {
+    window.SecretDiscoverySystem.init();
+  }
+  if (window.CollectibleSystem && typeof window.CollectibleSystem.init === 'function') {
+    window.CollectibleSystem.init();
+  }
+  if (window.ReplaySystem && typeof window.ReplaySystem.init === 'function') {
+    window.ReplaySystem.init();
+  }
+
+  // Initialize Phase 3: Cloud Sync Heartbeat
+  if (window.CloudSyncEngine && typeof window.CloudSyncEngine.start === 'function') {
+    window.CloudSyncEngine.start();
+  }
+
+  // Initialize Phase 4: Dynamic World Event Director & Encounters
+  if (window.EncounterSystem && typeof window.EncounterSystem.init === 'function') {
+    window.EncounterSystem.init();
+  }
+  if (window.EventDirector && typeof window.EventDirector.init === 'function') {
+    window.EventDirector.init(1337).start();
+  }
 
   // Attach global references
   window.gameQuests = quests;
@@ -203,7 +249,22 @@ window.addEventListener('DOMContentLoaded', () => {
     puzzleUI: puzzleUI,
     explorationUI: explorationUI,
     culturalDiscoveryUI: culturalDiscoveryUI,
-    festivalUI: festivalUI
+    festivalUI: festivalUI,
+    achievementSystem: window.AchievementSystem,
+    codexSystem: window.CodexSystem,
+    discoveryProgression: window.DiscoveryProgression,
+    wildlifeObservationSystem: window.WildlifeObservationSystem,
+    cultureDiscoverySystem: window.CultureDiscoverySystem,
+    storyContentSystem: window.StoryContentSystem,
+    sideQuestSystem: window.SideQuestSystem,
+    secretDiscoverySystem: window.SecretDiscoverySystem,
+    collectibleSystem: window.CollectibleSystem,
+    replaySystem: window.ReplaySystem,
+    cloudSaveManager: window.CloudSaveManager,
+    cloudProfile: window.CloudProfile,
+    eventDirector: window.EventDirector,
+    worldEventSystem: window.WorldEventSystem,
+    encounterSystem: window.EncounterSystem
   };
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 

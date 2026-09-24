@@ -1246,6 +1246,54 @@ window.runStepByStepFeatureTests = async function() {
     log(51, 'Final World Map, Fast Travel, Region Progression & Navigation', false, err.message);
   }
 
+  // --- STEP 52: Achievements, Discovery Codex, Wildlife Journal & Cultural Progression ---
+  try {
+    if (typeof window.testProgressionSubsystems === 'function') {
+      const passed = window.testProgressionSubsystems();
+      log(52, 'Achievements, Discovery Codex, Wildlife Journal & Cultural Progression', passed, 'All 9 categories, 9 sections & 9 wildlife verified');
+    } else {
+      log(52, 'Achievements, Discovery Codex, Wildlife Journal & Cultural Progression', false, 'testProgressionSubsystems not found');
+    }
+  } catch (err) {
+    log(52, 'Achievements, Discovery Codex, Wildlife Journal & Cultural Progression', false, err.message);
+  }
+
+  // --- STEP 53: Main Story 7-Chapter Arc, Side Quests, Secrets & Collectibles ---
+  try {
+    if (typeof window.testStoryAndQuestContent === 'function') {
+      const passed = window.testStoryAndQuestContent();
+      log(53, 'Main Story 7-Chapter Arc, Side Quests, Secrets & Collectibles', passed, '7 chapters, 5 side quests, 7 secrets, 8 collectibles verified');
+    } else {
+      log(53, 'Main Story 7-Chapter Arc, Side Quests, Secrets & Collectibles', false, 'testStoryAndQuestContent not found');
+    }
+  } catch (err) {
+    log(53, 'Main Story 7-Chapter Arc, Side Quests, Secrets & Collectibles', false, err.message);
+  }
+
+  // --- STEP 54: Secure Cloud Save, Profile Progression & Customization Ceiling Guard ---
+  try {
+    if (typeof window.testCloudAndProfileSubsystems === 'function') {
+      const passed = window.testCloudAndProfileSubsystems();
+      log(54, 'Secure Cloud Save, Profile Progression & Customization Ceiling Guard', passed, 'Revision sync, 3-way merge, and permanent limit <= 5 verified');
+    } else {
+      log(54, 'Secure Cloud Save, Profile Progression & Customization Ceiling Guard', false, 'testCloudAndProfileSubsystems not found');
+    }
+  } catch (err) {
+    log(54, 'Secure Cloud Save, Profile Progression & Customization Ceiling Guard', false, err.message);
+  }
+
+  // --- STEP 55: Dynamic World Events, Emergent Encounters & Event Chains ---
+  try {
+    if (typeof window.testDynamicWorldEvents === 'function') {
+      const passed = window.testDynamicWorldEvents();
+      log(55, 'Dynamic World Events, Emergent Encounters & Event Chains', passed, 'Atmospheric events, choice encounters & deterministic director verified');
+    } else {
+      log(55, 'Dynamic World Events, Emergent Encounters & Event Chains', false, 'testDynamicWorldEvents not found');
+    }
+  } catch (err) {
+    log(55, 'Dynamic World Events, Emergent Encounters & Event Chains', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

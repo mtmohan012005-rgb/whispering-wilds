@@ -53,6 +53,22 @@ class UIManager {
                     e.preventDefault();
                     this.toggleModal('PHOTO');
                     break;
+                case 'KeyC':
+                    e.preventDefault();
+                    this.toggleModal('CODEX');
+                    break;
+                case 'KeyY':
+                    e.preventDefault();
+                    this.toggleModal('ACHIEVEMENTS');
+                    break;
+                case 'KeyU':
+                    e.preventDefault();
+                    this.toggleModal('PROFILE');
+                    break;
+                case 'KeyL':
+                    e.preventDefault();
+                    this.toggleModal('STORY');
+                    break;
                 case 'F9':
                     e.preventDefault();
                     if (window.performanceManager) {
@@ -162,6 +178,30 @@ class UIManager {
             case 'INSPECT':
                 if (window.explorationUI) window.explorationUI.inspectModalEl && window.explorationUI.inspectModalEl.classList.remove('hidden');
                 break;
+            case 'CODEX':
+                if (window.CodexUI) window.CodexUI.open();
+                break;
+            case 'ACHIEVEMENTS':
+                if (window.AchievementUI) window.AchievementUI.open();
+                break;
+            case 'PROFILE':
+                if (window.ProfileUI) window.ProfileUI.open();
+                break;
+            case 'CLOUDSAVE':
+                if (window.CloudSaveUI) window.CloudSaveUI.open();
+                break;
+            case 'STORY':
+                if (window.StoryProgressUI) window.StoryProgressUI.open();
+                break;
+            case 'SIDEQUESTS':
+                if (window.SideQuestUI) window.SideQuestUI.open();
+                break;
+            case 'SECRETS':
+                if (window.SecretDiscoveryUI) window.SecretDiscoveryUI.open();
+                break;
+            case 'COLLECTIBLES':
+                if (window.CollectibleUI) window.CollectibleUI.open();
+                break;
         }
     }
 
@@ -205,6 +245,30 @@ class UIManager {
                 break;
             case 'INSPECT':
                 if (window.environmentInteraction) window.environmentInteraction.endInspection();
+                break;
+            case 'CODEX':
+                if (window.CodexUI) window.CodexUI.close();
+                break;
+            case 'ACHIEVEMENTS':
+                if (window.AchievementUI) window.AchievementUI.close();
+                break;
+            case 'PROFILE':
+                if (window.ProfileUI) window.ProfileUI.close();
+                break;
+            case 'CLOUDSAVE':
+                if (window.CloudSaveUI) window.CloudSaveUI.close();
+                break;
+            case 'STORY':
+                if (window.StoryProgressUI) window.StoryProgressUI.close();
+                break;
+            case 'SIDEQUESTS':
+                if (window.SideQuestUI) window.SideQuestUI.close();
+                break;
+            case 'SECRETS':
+                if (window.SecretDiscoveryUI) window.SecretDiscoveryUI.close();
+                break;
+            case 'COLLECTIBLES':
+                if (window.CollectibleUI) window.CollectibleUI.close();
                 break;
         }
     }
