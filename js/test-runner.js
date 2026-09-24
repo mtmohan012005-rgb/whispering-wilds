@@ -974,6 +974,160 @@ window.runStepByStepFeatureTests = async function() {
     log(32, 'Food Culture, Preparation Loops & Survival Vitals', false, err.message);
   }
 
+  // --- STEP 33: Production QA Suite - Authoritative GameState ---
+  try {
+    if (typeof window.testGameStateSuite === 'function') {
+      const suite = await window.testGameStateSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(33, 'Production QA: Authoritative GameState Engine', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(33, 'Production QA: Authoritative GameState Engine', false, 'testGameStateSuite not found');
+    }
+  } catch (err) {
+    log(33, 'Production QA: Authoritative GameState Engine', false, err.message);
+  }
+
+  // --- STEP 34: Production QA Suite - Player Authority & Locomotion ---
+  try {
+    if (typeof window.testPlayerSuite === 'function') {
+      const suite = await window.testPlayerSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(34, 'Production QA: Player Authority & Locomotion', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(34, 'Production QA: Player Authority & Locomotion', false, 'testPlayerSuite not found');
+    }
+  } catch (err) {
+    log(34, 'Production QA: Player Authority & Locomotion', false, err.message);
+  }
+
+  // --- STEP 35: Production QA Suite - Save System & v3 Migration ---
+  try {
+    if (typeof window.testSaveSuite === 'function') {
+      const suite = await window.testSaveSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(35, 'Production QA: Save System & v3 Migration', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(35, 'Production QA: Save System & v3 Migration', false, 'testSaveSuite not found');
+    }
+  } catch (err) {
+    log(35, 'Production QA: Save System & v3 Migration', false, err.message);
+  }
+
+  // --- STEP 36: Production QA Suite - Quests Progression & Reward Integrity ---
+  try {
+    if (typeof window.testQuestsSuite === 'function') {
+      const suite = await window.testQuestsSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(36, 'Production QA: Quests Progression & Reward Integrity', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(36, 'Production QA: Quests Progression & Reward Integrity', false, 'testQuestsSuite not found');
+    }
+  } catch (err) {
+    log(36, 'Production QA: Quests Progression & Reward Integrity', false, err.message);
+  }
+
+  // --- STEP 37: Production QA Suite - Inventory & Weight Limits ---
+  try {
+    if (typeof window.testInventorySuite === 'function') {
+      const suite = await window.testInventorySuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(37, 'Production QA: Inventory & Weight Limits', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(37, 'Production QA: Inventory & Weight Limits', false, 'testInventorySuite not found');
+    }
+  } catch (err) {
+    log(37, 'Production QA: Inventory & Weight Limits', false, err.message);
+  }
+
+  // --- STEP 38: Production QA Suite - Economy & Single Deduction Authority ---
+  try {
+    if (typeof window.testEconomySuite === 'function') {
+      const suite = await window.testEconomySuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(38, 'Production QA: Economy & Single Deduction Authority', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(38, 'Production QA: Economy & Single Deduction Authority', false, 'testEconomySuite not found');
+    }
+  } catch (err) {
+    log(38, 'Production QA: Economy & Single Deduction Authority', false, err.message);
+  }
+
+  // --- STEP 39: Production QA Suite - Investigation & Clueboard ---
+  try {
+    if (typeof window.testInvestigationSuite === 'function') {
+      const suite = await window.testInvestigationSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(39, 'Production QA: Investigation & Clueboard', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(39, 'Production QA: Investigation & Clueboard', false, 'testInvestigationSuite not found');
+    }
+  } catch (err) {
+    log(39, 'Production QA: Investigation & Clueboard', false, err.message);
+  }
+
+  // --- STEP 40: Production QA Suite - Environmental Puzzles & Mechanisms ---
+  try {
+    if (typeof window.testPuzzlesSuite === 'function') {
+      const suite = await window.testPuzzlesSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(40, 'Production QA: Environmental Puzzles & Mechanisms', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(40, 'Production QA: Environmental Puzzles & Mechanisms', false, 'testPuzzlesSuite not found');
+    }
+  } catch (err) {
+    log(40, 'Production QA: Environmental Puzzles & Mechanisms', false, err.message);
+  }
+
+  // --- STEP 41: Production QA Suite - Deterministic World & Region Unlocks ---
+  try {
+    if (typeof window.testWorldSuite === 'function') {
+      const suite = await window.testWorldSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(41, 'Production QA: Deterministic World & Region Unlocks', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(41, 'Production QA: Deterministic World & Region Unlocks', false, 'testWorldSuite not found');
+    }
+  } catch (err) {
+    log(41, 'Production QA: Deterministic World & Region Unlocks', false, err.message);
+  }
+
+  // --- STEP 42: Production QA Suite - Player Customization & 5-Change Limit ---
+  try {
+    if (typeof window.testPlayerCustomizationSuite === 'function') {
+      const suite = await window.testPlayerCustomizationSuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(42, 'Production QA: Player Customization & 5-Change Limit', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(42, 'Production QA: Player Customization & 5-Change Limit', false, 'testPlayerCustomizationSuite not found');
+    }
+  } catch (err) {
+    log(42, 'Production QA: Player Customization & 5-Change Limit', false, err.message);
+  }
+
+  // --- STEP 43: Production QA Suite - UI State Machine & Input Locks ---
+  try {
+    if (typeof window.testUISuite === 'function') {
+      const suite = await window.testUISuite();
+      const failed = suite.results.filter(r => !r.passed);
+      log(43, 'Production QA: UI State Machine & Input Locks', suite.passed,
+        `Passed: ${suite.passed}, Checks: ${suite.results.length}${failed.length ? ', Failed: ' + JSON.stringify(failed) : ''}`);
+    } else {
+      log(43, 'Production QA: UI State Machine & Input Locks', false, 'testUISuite not found');
+    }
+  } catch (err) {
+    log(43, 'Production QA: UI State Machine & Input Locks', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 
@@ -988,7 +1142,7 @@ window.runStepByStepFeatureTests = async function() {
 
   // Send results directly to local server
   try {
-    fetch('/api/test-results', {
+    await fetch('/api/test-results', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(results)

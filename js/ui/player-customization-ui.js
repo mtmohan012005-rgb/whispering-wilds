@@ -52,6 +52,14 @@ class PlayerCustomizationUI {
     }
   }
 
+  show() {
+    this.open();
+  }
+
+  hide() {
+    this.close();
+  }
+
   open() {
     if (!this.system) this.system = window.playerCustomizationSystem;
     this.isOpen = true;

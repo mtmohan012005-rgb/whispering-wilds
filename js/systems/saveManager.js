@@ -29,7 +29,8 @@ class SaveManager {
     }
 
     return {
-      version: 1,
+      version: 3,
+      saveVersion: 3,
       timestamp: Date.now(),
       formattedTime: new Date().toLocaleString('en-IN'),
 
@@ -199,7 +200,85 @@ class SaveManager {
   }
 
   // ------------------------------------------------------------------
-  // PUBLIC: Load game state from localStorage
+  // SAVE MIGRATION PIPELINE (v1 -> v2 -> v3)
+  // ------------------------------------------------------------------
+  migrateSave(rawState) {
+    if (!rawState || typeof rawState !== 'object') return null;
+    const state = JSON.parse(JSON.stringify(rawState));
+    let ver = state.saveVersion || state.version || 1;
+
+    // Version 1 -> Version 2: Ensure quest progression, investigation, and world unlock structures
+    if (ver === 1) {
+      if (!state.questProgression && state.quests) {
+        state.questProgression = { active: [], completed: [], objectives: {} };
+      }
+      if (!state.worldUnlocks) {
+        state.worldUnlocks = { unlockedRegions: ['george_town', 'cauvery_delta'] };
+      }
+      ver = 2;
+    }
+
+    // Version 2 -> Version 3: Authoritative GameState consolidation
+    if (ver === 2) {
+      if (state.player) {
+        state.player.customizationChangesUsed = Math.max(0, Math.min(5, Number(state.player.customizationChangesUsed) || 0));
+        state.player.maxCustomizationChanges = 5;
+        if (!state.player.outfitId && state.player.currentOutfit) {
+          state.player.outfitId = state.player.currentOutfit;
+        }
+      }
+      if (state.survival) {
+        state.survival.currency = Math.max(0, Math.floor(Number(state.survival.currency) || 0));
+      }
+      state.saveVersion = 3;
+      state.version = 3;
+      ver = 3;
+    }
+
+    return state;
+  }
+
+  // ------------------------------------------------------------------
+  // STRICT DATA VALIDATION & SANITIZATION
+  // ------------------------------------------------------------------
+  validateSaveData(data) {
+    const errors = [];
+    if (!data || typeof data !== 'object') {
+      return { valid: false, errors: ['Save data is not an object.'], sanitized: null };
+    }
+
+    const sanitized = JSON.parse(JSON.stringify(data));
+
+    // 1. Validate & clamp player fields
+    if (sanitized.player) {
+      const p = sanitized.player;
+      p.x = (typeof p.x === 'number' && isFinite(p.x)) ? Math.max(0, Math.min(10000, p.x)) : 220;
+      p.y = (typeof p.y === 'number' && isFinite(p.y)) ? Math.max(0, Math.min(3000, p.y)) : 630;
+      p.customizationChangesUsed = Math.max(0, Math.min(5, Math.floor(Number(p.customizationChangesUsed) || 0)));
+      p.maxCustomizationChanges = 5;
+    } else {
+      errors.push('Missing player state in save payload.');
+    }
+
+    // 2. Validate & clamp survival vitals
+    if (sanitized.survival) {
+      const s = sanitized.survival;
+      s.hunger = (typeof s.hunger === 'number' && isFinite(s.hunger)) ? Math.max(0, Math.min(100, s.hunger)) : 85;
+      s.thirst = (typeof s.thirst === 'number' && isFinite(s.thirst)) ? Math.max(0, Math.min(100, s.thirst)) : 90;
+      s.energy = (typeof s.energy === 'number' && isFinite(s.energy)) ? Math.max(0, Math.min(100, s.energy)) : 100;
+      s.coreTemp = (typeof s.coreTemp === 'number' && isFinite(s.coreTemp)) ? Math.max(30.0, Math.min(43.0, s.coreTemp)) : 36.5;
+      s.currency = Math.max(0, Math.floor(Number(s.currency) || 0));
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors,
+      sanitized
+    };
+  }
+
+  // ------------------------------------------------------------------
+  // PUBLIC: Load game state from localStorage with migration & validation
   // ------------------------------------------------------------------
   loadGame(slot = 'auto') {
     try {
@@ -207,9 +286,16 @@ class SaveManager {
       const raw = localStorage.getItem(key);
       if (!raw) return null;
 
-      const state = JSON.parse(raw);
-      console.log(`[SaveManager] Found save (slot: ${slot}), saved at ${state.formattedTime}, reason: ${state.saveReason}`);
-      return state;
+      const parsed = JSON.parse(raw);
+      const migrated = this.migrateSave(parsed);
+      const validation = this.validateSaveData(migrated);
+      if (!validation.valid) {
+        console.warn('[SaveManager] Corrupt save rejected:', validation.errors);
+        return null;
+      }
+
+      console.log(`[SaveManager] Found save (slot: ${slot}, v${validation.sanitized.saveVersion || validation.sanitized.version}), saved at ${validation.sanitized.formattedTime}`);
+      return validation.sanitized;
     } catch (err) {
       console.error('[SaveManager] Load failed:', err);
       return null;
@@ -222,10 +308,10 @@ class SaveManager {
   restoreState(state) {
     if (!state) return false;
 
-    const player   = window.gamePlayer;
-    const survival = window.gameSurvival;
-    const journal  = window.gameJournal;
-    const quests   = window.gameQuests;
+    const player   = window.gamePlayer || (window.testRef && window.testRef.player);
+    const survival = window.gameSurvival || (window.testRef && window.testRef.survival);
+    const journal  = window.gameJournal || (window.testRef && window.testRef.journal);
+    const quests   = window.gameQuests || (window.testRef && window.testRef.quests);
     const lighting = window.testRef && window.testRef.lighting;
 
     // --- Player ---
@@ -374,13 +460,27 @@ class SaveManager {
       lighting.timeOfDay = state.world.timeOfDay;
     }
 
-    // --- Biome unlock flags ---
-    if (state.biomes && window.WORLD_DATA && window.WORLD_DATA.biomes) {
-      if (state.biomes.pichavaram_delta) {
-        window.WORLD_DATA.biomes.pichavaram_delta.unlocked = true;
+    // --- Authoritative GameState Sync ---
+    if (window.GameState) {
+      if (state.player) {
+        window.GameState.player.position.x = state.player.x;
+        window.GameState.player.position.y = state.player.y;
+        window.GameState.player.outfitId = state.player.outfitId;
+        window.GameState.player.customizationChangesUsed = state.player.customizationChangesUsed;
+        window.GameState.player.customizationHistory = state.player.customizationHistory || [];
       }
-      if (state.biomes.western_ghats) {
-        window.WORLD_DATA.biomes.western_ghats.unlocked = true;
+      if (state.survival) {
+        if (window.GameState.player.hunger !== undefined && state.survival.hunger !== undefined) {
+          window.GameState.player.hunger = state.survival.hunger;
+        }
+        window.GameState.player.currency = state.survival.currency;
+        window.GameState.player.energy = state.survival.energy;
+        window.GameState.player.hydration = state.survival.thirst;
+        window.GameState.player.warmth = state.survival.coreTemp;
+      }
+      if (state.quests && window.GameState.quests) {
+        window.GameState.quests.active = state.quests.filter(q => q.status === 'active').map(q => q.id);
+        window.GameState.quests.completed = state.quests.filter(q => q.status === 'completed' || q.status === 'rewarded').map(q => q.id);
       }
     }
 

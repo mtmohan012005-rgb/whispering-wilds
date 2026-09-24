@@ -51,6 +51,13 @@ class DialogueUI {
         window.uiInputLocked = true;
     }
 
+    show() {
+        if (this.container) {
+            this.container.style.display = 'flex';
+        }
+        window.uiInputLocked = true;
+    }
+
     hide() {
         if (this.container) {
             this.container.style.display = 'none';

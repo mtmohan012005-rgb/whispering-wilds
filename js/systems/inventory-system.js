@@ -163,15 +163,36 @@ class InventorySystem {
         this.addItem('cutting_chai', 2);
     }
 
-    addItem(itemId, qty = 1) {
-        const itemDef = INVENTORY_ITEMS_DATABASE[itemId];
+    get maxWeight() {
+        return this.maxWeightKg;
+    }
+
+    get currentWeight() {
+        return this.getTotalWeight();
+    }
+
+    addItem(itemOrId, qty = 1) {
+        let itemId = '';
+        let itemDef = null;
+
+        if (typeof itemOrId === 'string') {
+            itemId = itemOrId;
+            itemDef = INVENTORY_ITEMS_DATABASE[itemId];
+        } else if (itemOrId && typeof itemOrId === 'object') {
+            itemId = itemOrId.id || itemOrId.itemId;
+            itemDef = itemOrId;
+            if (!INVENTORY_ITEMS_DATABASE[itemId]) {
+                INVENTORY_ITEMS_DATABASE[itemId] = itemDef;
+            }
+        }
+
         if (!itemDef) {
-            console.warn(`[Inventory] Unknown item ID: ${itemId}`);
+            console.warn(`[Inventory] Unknown item ID: ${itemOrId}`);
             return false;
         }
 
         const currentWeight = this.getTotalWeight();
-        const addedWeight = itemDef.weight * qty;
+        const addedWeight = (itemDef.weight || 0) * qty;
 
         // Overencumber warning, but allow picking up vital quest documents
         if (currentWeight + addedWeight > this.maxWeightKg && itemDef.category !== 'documents') {
@@ -198,8 +219,11 @@ class InventorySystem {
         if (!this.items.has(itemId)) return false;
 
         const entry = this.items.get(itemId);
-        entry.quantity -= qty;
+        if (entry.item && (entry.item.isQuestItem || entry.item.category === 'documents')) {
+            return false;
+        }
 
+        entry.quantity -= qty;
         if (entry.quantity <= 0) {
             this.items.delete(itemId);
         }

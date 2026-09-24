@@ -179,7 +179,7 @@ class InvestigationSystem {
       item.discovered = true;
       item.discoveredAt = Date.now();
 
-      if (window.gameAudio) {
+      if (window.gameAudio && typeof window.gameAudio.playDiscoveryJingle === 'function') {
         window.gameAudio.playDiscoveryJingle();
       }
 

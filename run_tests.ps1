@@ -11,13 +11,15 @@ $edgeArgs = @(
     "--headless=new",
     "--no-sandbox",
     "--disable-gpu",
+    "--enable-logging=stderr",
+    "--v=1",
     "http://localhost:8080/?runTests=true"
 )
 
 Write-Host "Launching Edge headless to execute tests..."
-$proc = Start-Process -FilePath $edgePath -ArgumentList $edgeArgs -PassThru
+$proc = Start-Process -FilePath $edgePath -ArgumentList $edgeArgs -PassThru -RedirectStandardError "edge_stderr.log"
 
-$timeoutSec = 25
+$timeoutSec = 50
 $elapsed = 0
 while ($elapsed -lt $timeoutSec) {
     Start-Sleep -Seconds 1

@@ -1,0 +1,147 @@
+{
+  "manifestVersion": "1.0.0",
+  "generatedAt": "2026-09-23T23:30:00.000Z",
+  "game": "The Whispering Wilds (Kaattu Vazhi)",
+  "assets": [
+    {
+      "id": "player_character_glb",
+      "path": "assets/characters/player/player.glb",
+      "exists": false,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "ThreePlayer / CharacterLoader",
+      "status": "MISSING",
+      "notes": "CHARACTER_MANIFEST.json and textures authored; awaits binary GLB export from Blender. Diagnostic Tamil explorer proxy active."
+    },
+    {
+      "id": "player_manifest",
+      "path": "assets/characters/player/CHARACTER_MANIFEST.json",
+      "exists": true,
+      "type": "application/json",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "CharacterLoader",
+      "status": "READY",
+      "notes": "Full rig hierarchy, 17-state animation table, and Tamil cultural wardrobe specifications."
+    },
+    {
+      "id": "heist_cinematic_backdrop",
+      "path": "assets/heist.jpg",
+      "exists": true,
+      "type": "image/jpeg",
+      "licenseStatus": "CC-BY-4.0",
+      "usedBy": "Title Screen & Inciting Incident Heist",
+      "status": "READY",
+      "notes": "Madras High Court rain prologue background."
+    },
+    {
+      "id": "tea_kadai_backdrop",
+      "path": "assets/tea_kadai.jpg",
+      "exists": true,
+      "type": "image/jpeg",
+      "licenseStatus": "CC-BY-4.0",
+      "usedBy": "Murugan Annan Tea Kadai Modal",
+      "status": "READY",
+      "notes": "Authentic Tamil roadside tea stall."
+    },
+    {
+      "id": "title_bg_backdrop",
+      "path": "assets/title_bg.jpg",
+      "exists": true,
+      "type": "image/jpeg",
+      "licenseStatus": "CC-BY-4.0",
+      "usedBy": "Title Screen UI",
+      "status": "READY",
+      "notes": "Ancient Tamil landscape and temple gopuram vista."
+    },
+    {
+      "id": "high_court_glb",
+      "path": "assets/architecture/chennai/madras_high_court.glb",
+      "exists": false,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PENDING_AUTHORED",
+      "usedBy": "ProductionWorldAssets (Chennai)",
+      "status": "MISSING",
+      "notes": "Procedural Indo-Saracenic red-brick geometry active per missing-asset contract."
+    },
+    {
+      "id": "tea_kadai_glb",
+      "path": "assets/architecture/chennai/tea_kadai_stall.glb",
+      "exists": false,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PENDING_AUTHORED",
+      "usedBy": "ProductionWorldAssets (Chennai)",
+      "status": "MISSING",
+      "notes": "Procedural timber & corrugated zinc tea kadai geometry active."
+    },
+    {
+      "id": "chola_sluice_glb",
+      "path": "assets/architecture/delta/irrigation_sluice.glb",
+      "exists": false,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PENDING_AUTHORED",
+      "usedBy": "ProductionWorldAssets (Cauvery Delta)",
+      "status": "MISSING",
+      "notes": "Procedural granite sluice and waterwheel active."
+    },
+    {
+      "id": "toda_mund_glb",
+      "path": "assets/architecture/nilgiris/toda_mund_hut.glb",
+      "exists": false,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PENDING_AUTHORED",
+      "usedBy": "ProductionWorldAssets (Nilgiris)",
+      "status": "MISSING",
+      "notes": "Procedural barrel-vaulted Toda bamboo hut geometry active."
+    },
+    {
+      "id": "eco_sanctuary_glb",
+      "path": "assets/architecture/sanctuary/botanical_portal.glb",
+      "exists": false,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PENDING_AUTHORED",
+      "usedBy": "ProductionWorldAssets (Western Ghats)",
+      "status": "MISSING",
+      "notes": "Procedural granite torana portal geometry active."
+    },
+    {
+      "id": "chennai_market_bed_audio",
+      "path": "assets/audio/ambience/chennai/george_town_market.mp3",
+      "exists": false,
+      "type": "audio/mpeg",
+      "licenseStatus": "PENDING_RECORDING",
+      "usedBy": "AmbientWorldAudioSystem",
+      "status": "MISSING",
+      "notes": "Procedural Web Audio acoustic noise/frequency synthesized fallback active."
+    },
+    {
+      "id": "delta_paddy_breeze_audio",
+      "path": "assets/audio/ambience/cauvery-delta/farmland_breeze.mp3",
+      "exists": false,
+      "type": "audio/mpeg",
+      "licenseStatus": "PENDING_RECORDING",
+      "usedBy": "AmbientWorldAudioSystem",
+      "status": "MISSING",
+      "notes": "Synthesized brown noise wind filter active."
+    },
+    {
+      "id": "pichavaram_boat_creak_audio",
+      "path": "assets/audio/vehicles/boat/hull_wood_groan.mp3",
+      "exists": false,
+      "type": "audio/mpeg",
+      "licenseStatus": "PENDING_RECORDING",
+      "usedBy": "BoatController / AudioSpatialSystem",
+      "status": "MISSING",
+      "notes": "Procedural resonant oscillator pulse fallback active."
+    },
+    {
+      "id": "temple_chime_stinger_audio",
+      "path": "assets/audio/music/discovery/temple_chime_stinger.mp3",
+      "exists": false,
+      "type": "audio/mpeg",
+      "licenseStatus": "PENDING_RECORDING",
+      "usedBy": "DynamicMusicSystem / ExplorationUI",
+      "status": "MISSING",
+      "notes": "Procedural harmonic chime bell synthesis active via SoundEngine."
+    }
+  ]
+}

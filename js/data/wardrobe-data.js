@@ -154,16 +154,21 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
             window.threeWorld.player.setOutfit(targetOutfitId);
         }
         console.log(`Equipped owned attire: ${item.name}!`);
-        if (audio) audio.playPinTap();
-        if (window.gameQuests) window.gameQuests.showQuestNotification(`Equipped: ${item.name} (${item.stats.mobility || item.stats.durability || 'Standard'} mobility)`);
+        if (audio && typeof audio.playPinTap === 'function') audio.playPinTap();
+        const mobility = (item.stats && (item.stats.mobility || item.stats.durability)) || 'Standard';
+        if (window.gameQuests) window.gameQuests.showQuestNotification(`Equipped: ${item.name} (${mobility} mobility)`);
         if (window.gameJournal && window.gameJournal.isOpen) window.gameJournal.render();
         return { success: true, alreadyOwned: true, item };
     }
 
     // Check if player has enough currency or barter items
     if (currentRupees >= item.price) {
-        if (p && p.currency !== undefined) p.currency -= item.price;
-        if (survival) survival.currency -= item.price;
+        if (window.GameState && window.GameState.deductCurrency) {
+            window.GameState.deductCurrency(item.price);
+        } else {
+            if (survival) survival.currency -= item.price;
+            if (p && p.currency !== undefined && p !== survival) p.currency -= item.price;
+        }
 
         if (p) {
             p.inventory.push(item);
@@ -176,9 +181,11 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
         }
 
         console.log(`Successfully purchased/traded for: ${item.name}! Stats updated.`);
-        if (audio) audio.playTeaPour();
+        if (audio && typeof audio.playTeaPour === 'function') audio.playTeaPour();
         if (window.gameQuests) {
-            window.gameQuests.showQuestNotification(`Purchased & Equipped: ${item.name} for ₹${item.price}! (+${item.stats.coldResistance} Cold Res, +${item.stats.heatResistance} Heat Res)`);
+            const coldRes = (item.stats && item.stats.coldResistance !== undefined) ? item.stats.coldResistance : 0;
+            const heatRes = (item.stats && item.stats.heatResistance !== undefined) ? item.stats.heatResistance : 0;
+            window.gameQuests.showQuestNotification(`Purchased & Equipped: ${item.name} for ₹${item.price}! (+${coldRes} Cold Res, +${heatRes} Heat Res)`);
         }
         if (window.gameJournal && window.gameJournal.isOpen) window.gameJournal.render();
         return { success: true, item };
@@ -188,4 +195,20 @@ window.tradeOrBuyClothing = function(player, itemID, merchantRegion) {
         if (window.gameQuests) window.gameQuests.showQuestNotification(`Aiyo! Need ₹${item.price} (Have ₹${currentRupees}). Trade or complete quests!`);
         return { success: false, reason: msg };
     }
+};
+
+window.buyOrEquipWardrobeItem = function(itemOrId, player, merchantRegion, audio) {
+    if (!itemOrId) return { success: false, reason: 'Invalid item' };
+    const wardrobe = window.culturalWardrobeSystem;
+    const itemId = typeof itemOrId === 'string' ? itemOrId : (itemOrId.id || itemOrId.itemId);
+    let item = wardrobe.tradeableClothingItems.find(i => i.itemId === itemId || i.id === itemId);
+    if (!item && typeof itemOrId === 'object') {
+        item = {
+            stats: { coldResistance: 0, heatResistance: 0, mobility: 'Standard' },
+            ...itemOrId
+        };
+        if (!item.itemId) item.itemId = itemId;
+        wardrobe.tradeableClothingItems.push(item);
+    }
+    return window.tradeOrBuyClothing(player, itemId, merchantRegion);
 };

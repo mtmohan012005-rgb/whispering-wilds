@@ -4,7 +4,7 @@
  * Used for all procedural asset scattering, foliage instancing, resource placement, and wildlife routines.
  */
 
-class WorldRNG {
+var WorldRNG = (typeof window !== 'undefined' && window.WorldRNG) ? window.WorldRNG : class WorldRNG {
   constructor(seed = 133742) {
     this.initialSeed = seed;
     this.s = seed;

@@ -158,8 +158,15 @@ window.addEventListener('DOMContentLoaded', () => {
   window.gameJournal = journal;
   window.gameSurvival = survival;
   window.gamePlayer = player;
+  window.gameWeather = weather;
+  window.gameAudio = audio;
+  window.audioManager = audioManager;
   window.gameSaveManager = saveManager;
   window.multiplayerManager = multiplayer;
+  window.customizationSystem = customizationSystem;
+  window.customizationUI = customizationUI;
+  window.inventorySystem = inventorySystem;
+  window.uiManager = uiManager;
   window.testRef = {
     player, renderer, lighting, particles, tracksManager, weather,
     survival, camera: explorerCamera, journal, quests, entities,
@@ -191,10 +198,11 @@ window.addEventListener('DOMContentLoaded', () => {
       threeWorld.onTelemetryUpdate = (data) => {
         player.x = data.x2D;
         player.y = data.y2D;
-        if (data.isMoving) {
-          survival.consumeEnergy(0.035);
-        }
+        player.isMoving = data.isMoving;
       };
+      if (window.GameState && typeof window.GameState.bindLegacyAdapters === 'function') {
+        window.GameState.bindLegacyAdapters();
+      }
     } catch (e) {
       console.warn("ThreeWorld initialization error:", e);
     }
@@ -359,6 +367,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('keyup', e => {
     input.keys[e.code] = false;
+  });
+
+  window.addEventListener('blur', () => {
+    input.keys = {};
   });
 
   // 5. Interactions Logic
@@ -971,9 +983,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const isNearFire = survival.campfires.some(f => Math.hypot(f.x - player.x, f.y - player.y) < 130);
     survival.update(deltaTime, player.x, weather, isNearFire);
 
-    // Update Player & Entities
+    // Update Player & Entities (Single Movement Authority)
     const worldBounds = { minX: 0, maxX: 6000, minY: 100, maxY: 1100 };
-    player.update(input, deltaTime, worldBounds, tracksManager, audio, survival, weather);
+    if (!threeWorld || !threeWorld.isActive) {
+      player.update(input, deltaTime, worldBounds, tracksManager, audio, survival, weather);
+    }
     entities.update(deltaTime);
     tracksManager.update(weather.current, deltaTime);
     particles.update(weather.current, deltaTime, canvas.width, canvas.height, renderer.camera);

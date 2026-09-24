@@ -182,7 +182,7 @@ class PuzzleSystem {
     const serialized = {};
     for (const [id, p] of this.puzzles.entries()) {
       serialized[id] = {
-        state: p.state,
+        state: JSON.parse(JSON.stringify(p.state || {})),
         solved: p.solved,
         attempts: p.attempts
       };

@@ -71,6 +71,15 @@ class WeatherSystem {
     if (this.current.type === 'sunny' && playerX < 2000) delta += 3; // Scorching plains sun
     return delta;
   }
+
+  get currentWeather() {
+    return this.current.type;
+  }
+
+  get windSpeed() {
+    return Math.round(this.current.intensity * 40);
+  }
 }
 
 window.WeatherSystem = WeatherSystem;
+window.Weather = WeatherSystem;

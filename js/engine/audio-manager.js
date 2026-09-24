@@ -7,7 +7,7 @@
 class AudioManager {
   constructor(audioData, soundEngineFallback) {
     this.data = audioData || window.AUDIO_DATA || {};
-    this.soundEngine = soundEngineFallback || (window.gameAudio instanceof window.SoundEngine ? window.gameAudio : null);
+    this.soundEngine = soundEngineFallback || (window.gameAudio && typeof window.gameAudio.playFootstep === 'function' ? window.gameAudio : (window.SoundEngine ? new window.SoundEngine() : null));
 
     this.ctx = null;
     this.isMuted = false;
@@ -310,6 +310,42 @@ class AudioManager {
     }
     if (settings.language !== undefined) this.setLanguage(settings.language);
     if (settings.subtitleMode !== undefined) this.setSubtitleMode(settings.subtitleMode);
+  }
+
+  playDiscoveryJingle() {
+    if (this.soundEngine && typeof this.soundEngine.playDiscoveryJingle === 'function') {
+      this.soundEngine.playDiscoveryJingle();
+    }
+  }
+
+  playPageFlip() {
+    if (this.soundEngine && typeof this.soundEngine.playPageFlip === 'function') {
+      this.soundEngine.playPageFlip();
+    }
+  }
+
+  playCameraShutter() {
+    if (this.soundEngine && typeof this.soundEngine.playCameraSnap === 'function') {
+      this.soundEngine.playCameraSnap();
+    }
+  }
+
+  playPinTap() {
+    if (this.soundEngine && typeof this.soundEngine.playPinTap === 'function') {
+      this.soundEngine.playPinTap();
+    }
+  }
+
+  playTeaPour() {
+    if (this.soundEngine && typeof this.soundEngine.playTeaPour === 'function') {
+      this.soundEngine.playTeaPour();
+    }
+  }
+
+  playFootstep(surface = 'dirt') {
+    if (this.soundEngine && typeof this.soundEngine.playFootstep === 'function') {
+      this.soundEngine.playFootstep(surface);
+    }
   }
 }
 

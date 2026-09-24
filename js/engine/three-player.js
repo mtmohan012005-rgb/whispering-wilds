@@ -391,6 +391,8 @@ class ThreePlayer {
     // Terrain elevation alignment
     if (terrain && typeof terrain.getElevation === 'function') {
       this.y = terrain.getElevation(this.x, this.z);
+    } else if (terrain && typeof terrain.getInterpolatedHeight === 'function') {
+      this.y = terrain.getInterpolatedHeight(this.x, this.z);
     } else {
       this.y = 0;
     }

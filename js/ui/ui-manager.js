@@ -140,6 +140,22 @@ class UIManager {
             case 'SETTINGS':
                 if (this.settingsUI) this.settingsUI.show();
                 break;
+            case 'DIALOGUE':
+                if (this.dialogueUI) this.dialogueUI.show();
+                break;
+            case 'PLAYER':
+                if (window.customizationUI) window.customizationUI.show();
+                break;
+            case 'TRADING':
+                const tradeEl = document.getElementById('trade-modal');
+                if (tradeEl) tradeEl.classList.remove('hidden');
+                break;
+            case 'QUESTS':
+                if (this.journalUI) { this.journalUI.show(); this.journalUI.switchTab && this.journalUI.switchTab('quests'); }
+                break;
+            case 'CRAFTING':
+                if (this.journalUI) { this.journalUI.show(); this.journalUI.switchTab && this.journalUI.switchTab('crafting'); }
+                break;
             case 'PUZZLE':
                 if (window.puzzleUI && window.puzzleUI.modal) window.puzzleUI.modal.classList.remove('hidden');
                 break;
@@ -152,6 +168,7 @@ class UIManager {
     closeModalInternal(mode) {
         switch (mode) {
             case 'PAUSED':
+            case 'PAUSE':
                 if (this.pauseMenu) this.pauseMenu.hide();
                 break;
             case 'MAP':
@@ -168,6 +185,20 @@ class UIManager {
                 break;
             case 'SETTINGS':
                 if (this.settingsUI) this.settingsUI.hide();
+                break;
+            case 'DIALOGUE':
+                if (this.dialogueUI) this.dialogueUI.hide();
+                break;
+            case 'PLAYER':
+                if (window.customizationUI) window.customizationUI.hide();
+                break;
+            case 'TRADING':
+                const tradeEl = document.getElementById('trade-modal');
+                if (tradeEl) tradeEl.classList.add('hidden');
+                break;
+            case 'QUESTS':
+            case 'CRAFTING':
+                if (this.journalUI) this.journalUI.hide();
                 break;
             case 'PUZZLE':
                 if (window.puzzleUI) window.puzzleUI.modal && window.puzzleUI.modal.classList.add('hidden');

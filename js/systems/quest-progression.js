@@ -134,7 +134,7 @@ class QuestProgressionSystem {
     quest.status = window.QUEST_STATE.OBJECTIVE;
 
     const audio = context.audio || window.gameAudio;
-    if (audio) {
+    if (audio && typeof audio.playDiscoveryJingle === 'function') {
       audio.playDiscoveryJingle();
     }
 
@@ -158,7 +158,7 @@ class QuestProgressionSystem {
 
     quest.status = window.QUEST_STATE.COMPLETED;
     const audio = context.audio || window.gameAudio;
-    if (audio) {
+    if (audio && typeof audio.playDiscoveryJingle === 'function') {
       audio.playDiscoveryJingle();
     }
 
@@ -206,8 +206,14 @@ class QuestProgressionSystem {
       quest.rewards.forEach(reward => {
         switch (reward.type) {
           case 'currency':
-            if (survival && typeof survival.currency === 'number') survival.currency += reward.amount;
-            if (player && typeof player.currency === 'number') player.currency += reward.amount;
+            if (window.GameState && window.GameState.addCurrency) {
+              window.GameState.addCurrency(reward.amount);
+            }
+            if (survival && typeof survival.currency === 'number' && (!window.GameState || survival !== window.gameSurvival)) {
+              survival.currency += reward.amount;
+            } else if (player && typeof player.currency === 'number' && (!window.GameState || player !== window.gamePlayer) && player !== survival) {
+              player.currency += reward.amount;
+            }
             this.showNotification(`💰 Received: ₹${reward.amount} Rupees`);
             break;
 

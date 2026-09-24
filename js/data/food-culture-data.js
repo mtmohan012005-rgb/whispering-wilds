@@ -41,6 +41,19 @@ window.FOOD_CULTURE_DATA = [
     }
   },
   {
+    id: 'kumbakonam_degree_coffee',
+    name: 'Kumbakonam Degree Filter Coffee',
+    tamilName: 'கும்பகோணம் டிகிரி பில்டர் காபி',
+    region: 'THANJAVUR',
+    mealType: 'beverage',
+    description: 'Fresh decoction Kumbakonam degree filter coffee served in traditional brass dabarah.',
+    ingredients: ['coffee_chicory_grounds', 'boiling_water', 'pure_cows_milk', 'sugar'],
+    visualAsset: 'assets/props/food/filter_coffee_tumbler.glb',
+    audioHooks: { brew: 'coffee_decoction_drip', pour: 'dabarah_froth_pour', sip: 'coffee_relish_sip' },
+    survivalEffect: { hunger: 5, thirst: 10, energy: 35, warmth: 1.8 },
+    costRupees: 25
+  },
+  {
     id: 'food_elaneer',
     name: 'Fresh Tender Coconut (Elaneer)',
     tamilName: 'செவ்விளநீர்',

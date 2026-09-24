@@ -44,22 +44,41 @@ class FoodCultureSystem {
   }
 
   /**
+   * Orders/purchases and consumes food item from a vendor stall
+   */
+  orderFoodItem(foodId) {
+    if (foodId === 'kumbakonam_degree_coffee' && !this.getFood(foodId)) {
+      const existing = this.getFood('food_degree_filter_coffee');
+      if (existing) {
+        return this.consumeFood('food_degree_filter_coffee');
+      }
+    }
+    return this.consumeFood(foodId);
+  }
+
+  /**
    * Consumes food item, applying authoritative survival stats and currency deduction
    */
   consumeFood(foodId) {
     const food = this.getFood(foodId);
     if (!food) return { success: false, message: 'Unknown food item' };
 
+    const cost = food.costRupees || 0;
+    if (cost > 0) {
+      if (window.GameState && typeof window.GameState.deductCurrency === 'function') {
+        if (!window.GameState.deductCurrency(cost)) {
+          return { success: false, message: `Insufficient rupees (Requires ₹${cost}, has ₹${window.GameState.player.currency})` };
+        }
+      } else if (window.gameSurvival) {
+        if (window.gameSurvival.currency < cost) {
+          return { success: false, message: `Insufficient rupees (Requires ₹${cost}, has ₹${window.gameSurvival.currency})` };
+        }
+        window.gameSurvival.currency -= cost;
+      }
+    }
+
     const survival = window.gameSurvival;
     if (survival) {
-      // Check currency if purchasing from stall
-      if (food.costRupees && survival.currency < food.costRupees) {
-        return { success: false, message: `Insufficient rupees (Requires ₹${food.costRupees}, has ₹${survival.currency})` };
-      }
-
-      if (food.costRupees) {
-        survival.currency -= food.costRupees;
-      }
 
       const eff = food.survivalEffect || {};
       if (eff.hunger) {

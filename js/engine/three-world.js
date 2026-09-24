@@ -134,6 +134,7 @@ class ThreeWorld {
         document.addEventListener('visibilitychange', () => {
             this.isTabHidden = document.hidden;
             if (document.hidden) {
+                this.clearInputState();
                 if (window.audioManager && typeof window.audioManager.setMasterVolume === 'function') {
                     window.audioManager.setMasterVolume(0.1);
                 }
@@ -145,12 +146,20 @@ class ThreeWorld {
             }
         });
 
+        // Clear keys on window blur to prevent stuck movement
+        window.addEventListener('blur', () => {
+            this.clearInputState();
+        });
+
         // Key bindings for WASD / Arrows / Jump / Crouch / Sprint
         window.addEventListener('keydown', (e) => {
             if (!this.isActive) return;
             if (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked()) {
+                this.clearInputState();
                 return;
             }
+            if (e.repeat && ['Space', 'KeyC', 'ControlLeft', 'ControlRight'].includes(e.code)) return;
+
             if (['KeyW', 'ArrowUp'].includes(e.code)) this.inputState.up = true;
             if (['KeyS', 'ArrowDown'].includes(e.code)) this.inputState.down = true;
             if (['KeyA', 'ArrowLeft'].includes(e.code)) this.inputState.left = true;
@@ -173,6 +182,21 @@ class ThreeWorld {
             if (['Space'].includes(e.code)) this.inputState.jump = false;
             if (['ControlLeft', 'ControlRight', 'KeyC'].includes(e.code)) this.inputState.crouch = false;
         });
+    }
+
+    clearInputState() {
+        if (this.inputState) {
+            this.inputState.up = false;
+            this.inputState.down = false;
+            this.inputState.left = false;
+            this.inputState.right = false;
+            this.inputState.sprint = false;
+            this.inputState.jump = false;
+            this.inputState.crouch = false;
+        }
+        if (this.inputKeys) {
+            this.inputKeys = {};
+        }
     }
 
     world2DTo3D(x2D, y2D) {
@@ -257,6 +281,14 @@ class ThreeWorld {
         // 1. Update Player Avatar
         this.player.update(this.inputState, dt, this.terrain);
         const playerPos = this.player.getPosition();
+
+        // Synchronize with Authoritative GameState
+        if (window.GameState && window.GameState.player) {
+            window.GameState.player.position.x = playerPos.x;
+            window.GameState.player.position.y = playerPos.y;
+            window.GameState.player.position.z = playerPos.z;
+            window.GameState.player.rotation.y = this.player.currentRotation;
+        }
 
         // 2. Update Camera
         this.cameraController.update(playerPos, dt);
