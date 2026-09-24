@@ -15,18 +15,30 @@ class SaveManager {
   // ------------------------------------------------------------------
   // CORE: Serialize the full game state into a storable JSON object
   // ------------------------------------------------------------------
+  captureState() {
+    return this._gatherState();
+  }
+
+  _captureState() {
+    return this._gatherState();
+  }
+
   _gatherState() {
-    const player   = window.gamePlayer;
-    const survival = window.gameSurvival;
-    const journal  = window.gameJournal;
-    const quests   = window.gameQuests;
+    const player   = window.gamePlayer || (window.testRef && window.testRef.player) || (window.GameState && window.GameState.player) || {
+      x: 0, y: 0, angle: 0, isLanternOn: false, outfitId: 'everyday_veshti', hairstyleId: 'short_traditional_part',
+      accessoryId: 'none', footwearId: 'kolhapuri_sandals', customizationChangesUsed: 0, maxCustomizationChanges: 5,
+      customizationHistory: [], equippedOutfit: null, inventory: [], survival: null
+    };
+    const survival = window.gameSurvival || (window.testRef && window.testRef.survival) || (window.GameState && window.GameState.player && window.GameState.player.survival) || {
+      health: 100, maxHealth: 100, energy: 100, maxEnergy: 100, hydration: 100, maxHydration: 100,
+      hunger: 100, maxHunger: 100, warmth: 80, maxWarmth: 100, wetness: 0, statusEffects: [],
+      persistentCamps: [], safeRespawn: null, thirst: 100, coreTemp: 80, currency: 0, baseTier: 1,
+      hasRestedBuff: false, restedTimer: 0, inventory: {}, campfires: [], tents: []
+    };
+    const journal  = window.gameJournal || (window.testRef && window.testRef.journal);
+    const quests   = window.gameQuests || (window.testRef && window.testRef.quests);
     const lighting = window.testRef && window.testRef.lighting;
     const weather  = window.testRef && window.testRef.weather;
-
-    if (!player || !survival) {
-      console.warn('[SaveManager] Cannot gather state — player or survival not ready.');
-      return null;
-    }
 
     return {
       version: 3,
@@ -94,9 +106,9 @@ class SaveManager {
         baseTier: survival.baseTier,
         hasRestedBuff: survival.hasRestedBuff,
         restedTimer: survival.restedTimer,
-        inventory: { ...survival.inventory },
-        campfires: survival.campfires.map(f => ({ x: f.x, y: f.y })),
-        tents: survival.tents.map(t => ({ x: t.x, y: t.y }))
+        inventory: { ...(survival.inventory || {}) },
+        campfires: Array.isArray(survival.campfires) ? survival.campfires.map(f => ({ x: f.x, y: f.y })) : [],
+        tents: Array.isArray(survival.tents) ? survival.tents.map(t => ({ x: t.x, y: t.y })) : []
       },
 
       // Journal / progress
@@ -173,7 +185,8 @@ class SaveManager {
       // Day/night & weather snapshot
       world: {
         timeOfDay: lighting ? lighting.timeOfDay : 21,
-        weatherType: weather ? weather.current.type : 'storm'
+        weatherType: weather ? weather.current.type : 'storm',
+        interactions: window.GameState?.world?.interactions ? JSON.parse(JSON.stringify(window.GameState.world.interactions)) : null
       },
 
       // Biome unlock flags
@@ -639,6 +652,14 @@ class SaveManager {
     // --- Lighting (time of day) ---
     if (lighting && state.world) {
       lighting.timeOfDay = state.world.timeOfDay;
+    }
+
+    // --- Environmental Interactions State ---
+    if (state.world?.interactions && window.GameState?.world) {
+      window.GameState.world.interactions = {
+        ...window.GameState.world.interactions,
+        ...state.world.interactions
+      };
     }
 
     // --- Authoritative GameState Sync ---

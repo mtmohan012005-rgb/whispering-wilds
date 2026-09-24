@@ -9,6 +9,8 @@ class LightingEngine {
     this.timeOfDay = 21.0167; // Starts at 9:01 PM (Atmospheric Night Thunderstorm)
     this.timeSpeed = 0.04; // 1 real second = a few game minutes
     this.ambientColor = 'rgba(0, 0, 0, 0)';
+    this.ambientRGB = { r: 10, g: 18, b: 38 };
+    this.darkness = 0.88;
     this.lightCanvas = document.createElement('canvas');
     this.lightCtx = this.lightCanvas.getContext('2d');
   }
@@ -61,11 +63,12 @@ class LightingEngine {
     }
 
     // Weather impact on darkness
-    if (weatherState.type === 'storm') {
+    const wType = (weatherState && weatherState.current) ? weatherState.current.type : (weatherState ? weatherState.type : null);
+    if (wType === 'storm') {
       darkness = Math.min(0.85, darkness + 0.45);
-    } else if (weatherState.type === 'rain') {
+    } else if (wType === 'rain') {
       darkness = Math.min(0.75, darkness + 0.25);
-    } else if (weatherState.type === 'fog') {
+    } else if (wType === 'fog') {
       darkness = Math.min(0.65, darkness + 0.18);
     }
 
@@ -83,7 +86,8 @@ class LightingEngine {
   }
 
   drawLightingPass(ctx, camera, player, campfires = []) {
-    if (this.darkness < 0.12 && !player.isLanternOn && campfires.length === 0) {
+    const darkness = typeof this.darkness === 'number' ? this.darkness : 0.88;
+    if (darkness < 0.12 && !player?.isLanternOn && (!campfires || campfires.length === 0)) {
       return; // Skip costly overlay during bright daylight
     }
 
@@ -93,7 +97,8 @@ class LightingEngine {
 
     // 1. Fill light canvas with dark ambient veil
     lCtx.clearRect(0, 0, w, h);
-    lCtx.fillStyle = `rgba(${this.ambientRGB.r * 0.12}, ${this.ambientRGB.g * 0.14}, ${this.ambientRGB.b * 0.22}, ${this.darkness})`;
+    const rgb = this.ambientRGB || { r: 10, g: 18, b: 38 };
+    lCtx.fillStyle = `rgba(${rgb.r * 0.12}, ${rgb.g * 0.14}, ${rgb.b * 0.22}, ${darkness})`;
     lCtx.fillRect(0, 0, w, h);
 
     // 2. Punch holes with point lights using 'destination-out'

@@ -1365,6 +1365,32 @@ window.runStepByStepFeatureTests = async function() {
     log(58, 'Production Boot Flow, Main Menu, Loading, Pause, Checkpoints & Recovery', false, err.message);
   }
 
+  // --- STEP 59: Advanced Environmental Interaction, Physics, Destructibility, Water & World Reactivity ---
+  try {
+    const envTests = [
+      typeof window.runTestInteractionDetection === 'function' ? window.runTestInteractionDetection() : { passed: false },
+      typeof window.runTestDoor === 'function' ? window.runTestDoor() : { passed: false },
+      typeof window.runTestGate === 'function' ? window.runTestGate() : { passed: false },
+      typeof window.runTestContainer === 'function' ? window.runTestContainer() : { passed: false },
+      typeof window.runTestPhysicsProps === 'function' ? window.runTestPhysicsProps() : { passed: false },
+      typeof window.runTestWaterInteraction === 'function' ? window.runTestWaterInteraction() : { passed: false },
+      typeof window.runTestVegetationReaction === 'function' ? window.runTestVegetationReaction() : { passed: false },
+      typeof window.runTestPersistentProps === 'function' ? window.runTestPersistentProps() : { passed: false },
+      typeof window.runTestDestruction === 'function' ? window.runTestDestruction() : { passed: false },
+      typeof window.runTestSaveRestore === 'function' ? window.runTestSaveRestore() : { passed: false },
+      typeof window.runTestMultiplayerInteraction === 'function' ? window.runTestMultiplayerInteraction() : { passed: false },
+      typeof window.runTestDistanceValidation === 'function' ? window.runTestDistanceValidation() : { passed: false }
+    ];
+    const allEnvPassed = envTests.every(t => t.passed);
+    const failedEnv = envTests
+      .map((t, i) => (!t.passed ? `[Suite ${['Detection', 'Door', 'Gate', 'Container', 'Physics', 'Water', 'Vegetation', 'Persistent', 'Destruction', 'SaveRestore', 'Multiplayer', 'Distance'][i]} FAIL]` : null))
+      .filter(Boolean);
+    log(59, 'Advanced Environmental Interaction, Physics, Water & World Reactivity', allEnvPassed,
+      allEnvPassed ? 'Raycast priority, doors/gates, containers, soft physics, water depths & ripples, vegetation bending, destructibility safeguards, save persistence, and anti-cheat distance verified' : failedEnv.join('; '));
+  } catch (err) {
+    log(59, 'Advanced Environmental Interaction, Physics, Water & World Reactivity', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

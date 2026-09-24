@@ -300,8 +300,40 @@ window.addEventListener('DOMContentLoaded', () => {
     cloudProfile: window.CloudProfile,
     eventDirector: window.EventDirector,
     worldEventSystem: window.WorldEventSystem,
-    encounterSystem: window.EncounterSystem
+    encounterSystem: window.EncounterSystem,
+    environmentInteractionSystem: window.EnvironmentInteractionSystem,
+    physicsInteractionSystem: window.PhysicsInteractionSystem,
+    worldReactivitySystem: window.WorldReactivitySystem,
+    propStateSystem: window.PropStateSystem,
+    waterInteractionSystem: window.WaterInteractionSystem,
+    vegetationReactionSystem: window.VegetationReactionSystem
   };
+
+  // Register initial interactive environment props into spatial systems
+  if (window.ENVIRONMENT_PROPS && window.EnvironmentInteractionSystem) {
+    Object.values(window.ENVIRONMENT_PROPS).forEach(propDef => {
+      let propInstance = null;
+      if (propDef.type === 'door' && window.InteractiveDoor) {
+        propInstance = new window.InteractiveDoor(propDef);
+      } else if (propDef.type === 'gate' && window.InteractiveGate) {
+        propInstance = new window.InteractiveGate(propDef);
+      } else if (propDef.type === 'lamp' && window.InteractiveLamp) {
+        propInstance = new window.InteractiveLamp(propDef);
+      } else if (propDef.type === 'container' && window.InteractiveContainer) {
+        propInstance = new window.InteractiveContainer(propDef);
+      } else if (window.InteractiveProp) {
+        propInstance = new window.InteractiveProp(propDef);
+      }
+
+      if (propInstance) {
+        window.EnvironmentInteractionSystem.registerProp(propInstance);
+        if (propDef.type === 'physics_prop' && window.PhysicsInteractionSystem) {
+          window.PhysicsInteractionSystem.registerPhysicsProp(propDef, propInstance.position);
+        }
+      }
+    });
+  }
+
   explorerCamera.init(cameraOverlay, cameraSubjectTag);
 
   // Initialize 3D World Engine
@@ -1214,6 +1246,21 @@ window.addEventListener('DOMContentLoaded', () => {
           ? threeWorld.player.getPosition()
           : { x: player.x, z: player.y };
         window.TransitionSystem.checkBoundaryApproach(pPos, deltaTime);
+      }
+
+      // Update Environmental Physics, Water, Vegetation & Spatial Interaction
+      if (window.PhysicsInteractionSystem) {
+        window.PhysicsInteractionSystem.update(deltaTime, player);
+      }
+      if (window.WaterInteractionSystem) {
+        window.WaterInteractionSystem.update(deltaTime, player, weather);
+      }
+      if (window.VegetationReactionSystem) {
+        window.VegetationReactionSystem.update(deltaTime, player, weather);
+      }
+      if (window.EnvironmentInteractionSystem) {
+        const cam = (threeWorld && threeWorld.isActive) ? threeWorld.camera : renderer.camera;
+        window.EnvironmentInteractionSystem.update(deltaTime, player, cam);
       }
     } // end simActive
 

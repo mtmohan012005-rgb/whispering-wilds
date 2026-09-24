@@ -125,6 +125,16 @@ class GameStateEngine {
       environmentStates: {},
       puzzleStates: {},
 
+      // Authoritative Environmental Interactions State
+      interactions: {
+        persistentProps: {},
+        mechanisms: {},
+        openedDoors: {},
+        openedContainers: {},
+        solvedEnvironmentalObjects: {},
+        discoveredInteractiveObjects: []
+      },
+
       festivalState: {
         activeFestival: 'PONGAL',
         currentPhaseIndex: 0,
@@ -604,6 +614,28 @@ class GameStateEngine {
         if (typeof item.count === 'number' && item.count < 0) return false;
         return true;
       });
+    }
+
+    // 5. Environmental Interactions Validation
+    if (!migrated.world) migrated.world = {};
+    if (!migrated.world.interactions || typeof migrated.world.interactions !== 'object') {
+      migrated.world.interactions = {
+        persistentProps: {},
+        mechanisms: {},
+        openedDoors: {},
+        openedContainers: {},
+        solvedEnvironmentalObjects: {},
+        discoveredInteractiveObjects: []
+      };
+    } else {
+      if (!migrated.world.interactions.persistentProps) migrated.world.interactions.persistentProps = {};
+      if (!migrated.world.interactions.mechanisms) migrated.world.interactions.mechanisms = {};
+      if (!migrated.world.interactions.openedDoors) migrated.world.interactions.openedDoors = {};
+      if (!migrated.world.interactions.openedContainers) migrated.world.interactions.openedContainers = {};
+      if (!migrated.world.interactions.solvedEnvironmentalObjects) migrated.world.interactions.solvedEnvironmentalObjects = {};
+      if (!Array.isArray(migrated.world.interactions.discoveredInteractiveObjects)) {
+        migrated.world.interactions.discoveredInteractiveObjects = [];
+      }
     }
 
     return { valid: true, state: migrated };
