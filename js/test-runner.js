@@ -1815,6 +1815,75 @@ window.runStepByStepFeatureTests = async function() {
     log(69, 'Story Endings, Branching Consequences, New Game+, Replayability & Final Progression', false, err.message);
   }
 
+  // --- STEP 70: Real Audio, Tamil Voice Acting, Environmental Sounds, Footsteps & Cinematic Sound ---
+  try {
+    const audioSuites = [
+      { name: 'AudioRegistry', fn: window.testAudioRegistry },
+      { name: 'AudioBuses', fn: window.testAudioBuses },
+      { name: 'VoiceManager', fn: window.testVoice },
+      { name: 'DialogueVoiceSystem', fn: window.testDialogue },
+      { name: 'DynamicMusicSystem', fn: window.testMusic },
+      { name: 'AmbientAudioSystem', fn: window.testAmbient },
+      { name: 'FootstepAudioSystem', fn: window.testFootsteps },
+      { name: 'VehicleAudioSystem', fn: window.testVehicleAudio },
+      { name: 'WildlifeAudioSystem', fn: window.testWildlifeAudio },
+      { name: 'WeatherAudioSystem', fn: window.testWeatherAudio },
+      { name: 'AudioOcclusionSystem', fn: window.testOcclusion },
+      { name: 'AudioPerformanceSystem', fn: window.testPerformance },
+      { name: 'AudioSave', fn: window.testAudioSave }
+    ];
+
+    const audioResults = [];
+    for (const suite of audioSuites) {
+      if (typeof suite.fn === 'function') {
+        const res = await suite.fn();
+        audioResults.push({ name: suite.name, passed: res.failed === 0, details: res });
+      } else {
+        audioResults.push({ name: suite.name, passed: false, details: 'Function not loaded' });
+      }
+    }
+
+    const allAudioPassed = audioResults.every(r => r.passed);
+    const failedAudioSuites = audioResults.filter(r => !r.passed).map(r => `${r.name} (${(r.details && r.details.errors) ? r.details.errors.join('; ') : r.details})`);
+
+    // Invariant & architecture checks
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+    const hasAudioAuthority = !!(window.audioManager && window.AudioBusMatrix);
+    const busesCount = window.AudioBusMatrix ? window.AudioBusMatrix.getAllBuses().length : 0;
+    const busMatrixValid = busesCount >= 10;
+
+    const step70Success = allAudioPassed && customValid && hasAudioAuthority && busMatrixValid;
+    const details = step70Success
+      ? 'All 13 Production Audio QA suites passed (Registry, Buses, Voice, Dialogue, Music, Ambient, Footsteps, Vehicles, Wildlife, Weather, Occlusion, Performance, Save). Single AudioManager authority, 10 authoritative buses, Tamil & English voice pipeline, subtitle accessibility, and Customization <= 5 preserved'
+      : `Failed Suites: [${failedAudioSuites.join(', ')}], Customization Valid: ${customValid}, Audio Authority: ${hasAudioAuthority}, Buses: ${busesCount}/10`;
+
+    log(70, 'Real Audio, Tamil Voice Acting, Environmental Sounds, Footsteps & Cinematic Sound', step70Success, details);
+  } catch (err) {
+    log(70, 'Real Audio, Tamil Voice Acting, Environmental Sounds, Footsteps & Cinematic Sound', false, err.message);
+  }
+
+  // --- STEP 71: Production Content Authoring + Data-Driven Game System ---
+  try {
+    let pipelineResult = { passed: false, details: 'testContentPipeline not defined' };
+    if (typeof window.testContentPipeline === 'function') {
+      pipelineResult = await window.testContentPipeline();
+    }
+
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+    const hasRegistry = !!(window.ContentRegistry && window.QuestStateMachine && window.ContentValidator);
+
+    const step71Success = pipelineResult.passed && customValid && hasRegistry;
+    const details = step71Success
+      ? 'All 11 Content QA suites passed (Registry, Quests, Dialogue, NPCs, Locations, Culture, Events, Shops, Validator, Migration, Security). Full data-driven pipeline active, 15 acceptance criteria verified, 0 validation errors, and Customization <= 5 preserved'
+      : `Pipeline Passed: ${pipelineResult.passed}, Customization Valid: ${customValid}, Registry Active: ${hasRegistry}, Errors: ${(pipelineResult.errors || []).join('; ')}`;
+
+    log(71, 'Production Content Authoring + Data-Driven Game System', step71Success, details);
+  } catch (err) {
+    log(71, 'Production Content Authoring + Data-Driven Game System', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

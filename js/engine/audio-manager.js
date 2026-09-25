@@ -97,6 +97,11 @@ class AudioManager {
         this.soundEngine.ambienceGain = this.ambienceGain;
         this.soundEngine.sfxGain = this.sfxGain;
       }
+
+      // Initialize authoritative 10 AudioBusMatrix with the single AudioContext
+      if (window.AudioBusMatrix) {
+        window.AudioBusMatrix.init(this.ctx);
+      }
     } catch (e) {
       console.warn('[AudioManager] Could not initialize Web Audio Context:', e);
     }
@@ -147,17 +152,17 @@ class AudioManager {
 
     // Trigger rich procedural synthesis fallback
     if (this.soundEngine) {
-      if (category === 'footsteps') {
+      if (category === 'footsteps' && typeof this.soundEngine.playFootstep === 'function') {
         this.soundEngine.playFootstep('dirt');
-      } else if (category === 'music') {
+      } else if (category === 'music' && typeof this.soundEngine.playAcousticNote === 'function') {
         this.soundEngine.playAcousticNote(220, 1.2, 0.4);
-      } else if (safeId.includes('shutter') || safeId.includes('camera')) {
+      } else if ((safeId.includes('shutter') || safeId.includes('camera')) && typeof this.soundEngine.playCameraSnap === 'function') {
         this.soundEngine.playCameraSnap();
-      } else if (safeId.includes('tea')) {
+      } else if (safeId.includes('tea') && typeof this.soundEngine.playTeaPour === 'function') {
         this.soundEngine.playTeaPour();
-      } else if (safeId.includes('relic') || safeId.includes('pickup')) {
+      } else if ((safeId.includes('relic') || safeId.includes('pickup')) && typeof this.soundEngine.playPinTap === 'function') {
         this.soundEngine.playPinTap();
-      } else if (safeId.includes('stinger') || safeId.includes('discovery')) {
+      } else if ((safeId.includes('stinger') || safeId.includes('discovery')) && typeof this.soundEngine.playDiscoveryJingle === 'function') {
         this.soundEngine.playDiscoveryJingle();
       }
     }

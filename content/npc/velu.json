@@ -1,0 +1,40 @@
+{
+  "id": "npc_velu",
+  "version": "1.0.0",
+  "name": "Auto Driver Velu",
+  "nameTa": "ஆட்டோ டிரைவர் வேலு",
+  "role": "Navigator & Veteran Auto Driver",
+  "ageGroup": "young_adult",
+  "region": "george_town",
+  "occupation": "autorickshaw_driver",
+  "clothingSet": "khaki_auto_uniform_shirt_dark_trousers_rajini_sunglasses",
+  "homeLocationId": "loc_george_town_residence",
+  "workplaceLocationId": "loc_george_town_auto_stand",
+  "dialogueId": "dialogue_velu_intro",
+  "voiceId": "audio.voice.velu.intro_01",
+  "faction": "transporters",
+  "reputation": 50,
+  "relationships": {
+    "npc_murugan": 75,
+    "npc_selvam": 40
+  },
+  "questReferences": [
+    "quest_lost_chola_seal",
+    "quest_cutting_chai_route"
+  ],
+  "schedule": [
+    { "time": "06:00", "activity": "wash_auto_and_garland_hood", "location": "workplace" },
+    { "time": "07:00", "activity": "morning_commuter_ferry", "location": "streets" },
+    { "time": "12:00", "activity": "murugan_tea_stall_chai_break", "location": "loc_george_town_tea_stall" },
+    { "time": "13:00", "activity": "afternoon_shade_nap_in_rear_seat", "location": "workplace" },
+    { "time": "16:00", "activity": "evening_rush_trips", "location": "streets" },
+    { "time": "21:00", "activity": "return_to_stand_count_earnings", "location": "workplace" },
+    { "time": "22:00", "activity": "dinner_and_sleep", "location": "home" }
+  ],
+  "animationSet": {
+    "idle": "anim_velu_lean_on_auto",
+    "talk": "anim_velu_gesturing_streets",
+    "drive": "anim_velu_handlebar_steer"
+  },
+  "culturalNotes": "Velu's yellow-and-black Bajaj auto bears yellow jasmine garlands and painted quotes. He navigates George Town's tightest alleyways with pinpoint instinct."
+}

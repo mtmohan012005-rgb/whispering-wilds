@@ -1,0 +1,39 @@
+{
+  "id": "npc_murugan",
+  "version": "1.0.0",
+  "name": "Murugan Annan",
+  "nameTa": "முருகன் அண்ணன்",
+  "role": "Tea Master & Local Informant",
+  "ageGroup": "middle_aged",
+  "region": "george_town",
+  "occupation": "tea_stall_owner",
+  "clothingSet": "white_veshti_folded_blue_shirt_towel_on_shoulder",
+  "homeLocationId": "loc_george_town_residence",
+  "workplaceLocationId": "loc_george_town_tea_stall",
+  "dialogueId": "dialogue_murugan_intro",
+  "voiceId": "audio.voice.murugan.intro_01",
+  "faction": "merchants",
+  "reputation": 65,
+  "relationships": {
+    "npc_velu": 75,
+    "npc_selvam": 80
+  },
+  "questReferences": [
+    "quest_cutting_chai_route"
+  ],
+  "schedule": [
+    { "time": "05:00", "activity": "wake_and_bath", "location": "home" },
+    { "time": "05:30", "activity": "light_oil_lamp_and_stove", "location": "workplace" },
+    { "time": "06:00", "activity": "brew_morning_ginger_tea", "location": "workplace" },
+    { "time": "12:30", "activity": "lunch_curd_rice_rest", "location": "workplace" },
+    { "time": "14:30", "activity": "evening_tea_rush", "location": "workplace" },
+    { "time": "20:30", "activity": "clean_brass_samovar_close_stall", "location": "workplace" },
+    { "time": "21:30", "activity": "family_dinner_and_sleep", "location": "home" }
+  ],
+  "animationSet": {
+    "idle": "anim_murugan_tea_filter_idle",
+    "talk": "anim_murugan_talk_warm",
+    "pour": "anim_murugan_high_meter_pour"
+  },
+  "culturalNotes": "Murugan is known across northern Madras for his meter-high froth pour (மீட்டர் டீ) and his encyclopedic memory of everyone passing through the harbour."
+}

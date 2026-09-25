@@ -1,0 +1,22 @@
+{
+  "id": "event_sudden_rain",
+  "version": "1.0.0",
+  "titleEn": "Bay of Bengal Cloudburst",
+  "titleTa": "வங்கக்கடல் திடீர் மழைப் பொழிவு",
+  "region": "george_town",
+  "durationSeconds": 180,
+  "weatherProfile": "thunderstorm",
+  "audioProfile": "audio.weather.rain.roof",
+  "conditions": {
+    "probability": 0.25,
+    "timeOfDay": ["afternoon", "evening"]
+  },
+  "consequences": {
+    "streetsEmpty": true,
+    "umbrellaNpcShelter": true,
+    "mudPuddlesForm": true
+  },
+  "rewards": {
+    "discoveryXp": 40
+  }
+}

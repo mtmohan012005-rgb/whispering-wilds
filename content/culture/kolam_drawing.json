@@ -1,0 +1,38 @@
+{
+  "id": "culture_kolam_drawing",
+  "version": "1.0.0",
+  "titleEn": "Morning Threshold Sikku Kolam",
+  "titleTa": "விடியற்காலை வாசற்படி சிக்குக் கோலம்",
+  "region": "george_town",
+  "category": "threshold_art",
+  "culturalExplanationEn": "Kolam is an auspicious threshold geometry drawn with raw rice flour at dawn. It welcomes positive energy and provides sustenance to tiny creatures like ants and birds.",
+  "culturalExplanationTa": "கோலம் என்பது அரிசி மாவினால் விடியலில் போடப்படும் மங்களகரமான கணித வடிவ வடிவியல். எறும்பு போன்ற சிறு உயிர்களுக்கு உணவாகவும் மன அமைதிக்காகவும் வரையப்படுகிறது.",
+  "steps": [
+    {
+      "id": "step_sweep_water",
+      "instructionEn": "Sprinkle turmeric water and sweep the red stone threshold clean",
+      "instructionTa": "மஞ்சள் நீர் தெளித்து வாசற்படியை பெருக்கித் தூய்மைப்படுத்தவும்",
+      "soundEffect": "sfx_player_water_splash"
+    },
+    {
+      "id": "step_place_dots",
+      "instructionEn": "Lay out the symmetric 7x7 dot matrix (புள்ளி)",
+      "instructionTa": "சீரான 7x7 புள்ளி அமைப்பை வரிசையாக இடவும்",
+      "soundEffect": "sfx_interact_generic_tap"
+    },
+    {
+      "id": "step_interlock_curves",
+      "instructionEn": "Loop smooth uninterrupted curves around dots to complete the infinity pattern",
+      "instructionTa": "புள்ளிகளை இணைக்காமல் சுற்றி வளைத்து தடையற்ற சிக்குக் கோல வளைவுகளை முடிக்கவும்",
+      "soundEffect": "sfx_interact_generic_tap"
+    }
+  ],
+  "audio": {
+    "start": "sfx_ui_menu_select",
+    "finish": "sfx_ui_achievement"
+  },
+  "rewards": {
+    "culturalKnowledge": 50,
+    "reputation": { "chennai": 5 }
+  }
+}

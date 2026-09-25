@@ -1,0 +1,173 @@
+{
+  "id": "dialogue_murugan_intro",
+  "version": "1.0.0",
+  "speaker": "npc_murugan",
+  "voiceId": "audio.voice.murugan.intro_01",
+  "region": "george_town",
+  "startNode": "greeting",
+  "nodes": {
+    "greeting": {
+      "speaker": "npc_murugan",
+      "textEn": "Vanakkam, thambi! Welcome to George Town. The sea breeze brings the morning smell of ginger tea. What brings an explorer to my humble stall today?",
+      "textTa": "வணக்கம் தம்பி! ஜார்ஜ் டவுனுக்கு நல்வரவு. கடல் காத்துல இஞ்சி டீ வாசனை தூக்குது பாரு. இன்னைக்கு என்ன விசேஷம், இந்த பக்கமா வந்திருக்கீங்க?",
+      "voiceId": "audio.voice.murugan.intro_01",
+      "emotion": "welcoming",
+      "animation": "tea_pour_gesture",
+      "facialExpression": "warm_smile",
+      "cameraDirection": "over_shoulder_npc",
+      "choices": [
+        {
+          "id": "ask_cutting_chai",
+          "tone": "friendly",
+          "textEn": "A hot cutting chai first, Murugan Anna. It's been a long journey from the coast.",
+          "textTa": "முதல்ல ஒரு சூடான கட்டிங் டீ போடுங்க முருகன் அண்ணா. கடலோரப் பயணம் ரொம்ப தூரம்.",
+          "nextNode": "serve_tea",
+          "consequences": {
+            "relationshipDelta": 3,
+            "reputation": { "chennai": 2 }
+          }
+        },
+        {
+          "id": "ask_about_heist",
+          "tone": "investigative",
+          "textEn": "I heard whispers about an ancient seal missing from the High Court museum last night.",
+          "textTa": "நேத்து ராத்திரி உயர்நீதிமன்ற அருங்காட்சியகத்துல ஏதோ பழங்கால முத்திரை காணாம போயிருச்சுன்னு பேச்சு அடிபடுதே?",
+          "nextNode": "whisper_heist",
+          "consequences": {
+            "relationshipDelta": 2,
+            "unlockClue": "clue_high_court_shadow"
+          }
+        },
+        {
+          "id": "ask_directions",
+          "tone": "curious",
+          "textEn": "Can you point me toward Velu's auto stand? I need to head south toward Pichavaram.",
+          "textTa": "வேலுவோட ஆட்டோ ஸ்டாண்ட் எங்க இருக்குன்னு சொல்ல முடியுமா? பிச்சாவரம் பக்கம் போகணும்.",
+          "nextNode": "directions_velu",
+          "consequences": {
+            "relationshipDelta": 1
+          }
+        }
+      ]
+    },
+    "serve_tea": {
+      "speaker": "npc_murugan",
+      "textEn": "Right away! Made with fresh cardamom and pure milk. Take a sip, feel your tiredness melt away like Madras mist.",
+      "textTa": "இதோ வந்துருச்சு! ஏலக்காய் தட்டி போட்ட பசும்பால் டீ. குடிச்சு பாருங்க, மதராஸ் பனிபோல அலுப்பெல்லாம் பறந்து போய்டும்.",
+      "voiceId": "audio.voice.murugan.tea_serve",
+      "emotion": "proud",
+      "animation": "tea_meter_pour",
+      "facialExpression": "focused",
+      "cameraDirection": "close_up_props",
+      "choices": [
+        {
+          "id": "order_more_delivery",
+          "tone": "quest_focused",
+          "textEn": "This is exceptional. Anna, do you need help delivering tea to the harbour workers?",
+          "textTa": "அட்டகாசமா இருக்கு அண்ணா. துறைமுக தொழிலாளர்களுக்கு டீ கொண்டு போய் கொடுக்க ஆள் வேணுமா?",
+          "nextNode": "quest_tea_offer",
+          "consequences": {
+            "relationshipDelta": 4,
+            "startQuestId": "quest_cutting_chai_route"
+          }
+        },
+        {
+          "id": "finish_polite",
+          "tone": "culturally_respectful",
+          "textEn": "Nandri Anna. Here is the payment. May your business prosper today.",
+          "textTa": "நன்றி அண்ணா. இந்தாங்க காசு. இன்னைக்கு வியாபாரம் சிறக்கட்டும்.",
+          "nextNode": "farewell",
+          "consequences": {
+            "relationshipDelta": 2
+          }
+        }
+      ]
+    },
+    "whisper_heist": {
+      "speaker": "npc_murugan",
+      "textEn": "Shh! Keep your voice down, thambi. Near 3 AM, an unregistered black auto sped past toward Parry's Corner. Velu might have seen the driver. Go talk to him near the red brick gate.",
+      "textTa": "ஷ்! சத்தமா பேசாதீங்க தம்பி. அதிகாலை மூணு மணி இருக்கும், நம்பர் பிளேட் இல்லாத ஒரு கருப்பு ஆட்டோ பாரிஸ் கார்னர் வழியா சீறிப் போச்சு. வேலு அதை பாத்திருப்பான். சிகப்பு செங்கல் கேட் பக்கத்துல போய் அவன்கிட்ட கேளுங்க.",
+      "voiceId": "audio.voice.murugan.whisper",
+      "emotion": "cautious",
+      "animation": "lean_forward_whisper",
+      "facialExpression": "serious",
+      "cameraDirection": "tight_close_up",
+      "choices": [
+        {
+          "id": "thank_for_clue",
+          "tone": "investigative",
+          "textEn": "Thank you, Murugan Anna. I won't forget this lead.",
+          "textTa": "ரொம்ப நன்றி முருகன் அண்ணா. இந்த தகவலை நான் மறக்க மாட்டேன்.",
+          "nextNode": "farewell",
+          "consequences": {
+            "relationshipDelta": 3,
+            "reputation": { "chennai": 5 }
+          }
+        }
+      ]
+    },
+    "directions_velu": {
+      "speaker": "npc_murugan",
+      "textEn": "Velu is parked under the banyan tree by the tram line monument. Tell him Murugan sent you, or he'll charge you tourist meter rates!",
+      "textTa": "பழைய ட்ராம் வண்டி நினைவு தூண் பக்கத்துல இருக்க ஆலமரத்தடியில வேலு நிப்பான். முருகன் அண்ணன் அனுப்புனாருன்னு சொல்லுங்க, இல்லாட்டி டூரிஸ்ட் மீட்டர் போட்டுருவான்!",
+      "voiceId": "audio.voice.murugan.directions",
+      "emotion": "humorous",
+      "animation": "point_right",
+      "facialExpression": "chuckle",
+      "cameraDirection": "medium_shot",
+      "choices": [
+        {
+          "id": "leave_laughing",
+          "tone": "humorous",
+          "textEn": "Haha, noted! I will use your secret password. See you soon, Anna.",
+          "textTa": "ஹாஹா, குறிச்சுக்கிட்டேன்! உங்க பேரையே பாஸ்வேர்டா சொல்றேன். அப்புறம் பாக்கலாம் அண்ணா.",
+          "nextNode": "farewell",
+          "consequences": {
+            "relationshipDelta": 3
+          }
+        }
+      ]
+    },
+    "quest_tea_offer": {
+      "speaker": "npc_murugan",
+      "textEn": "Appada! You have the heart of a true Thamizhan. Take this brass carrier with five hot glasses to Selvam at the heritage archives. Don't let it get cold!",
+      "textTa": "அப்பப்பா! உங்க மனசே தங்கம் தம்பி. இந்த பித்தளை கேரியர்ல அஞ்சு கிளாஸ் டீ இருக்கு, வரலாற்று காப்பகத்துல இருக்கிற செல்வம்கிட்ட குடுங்க. ஆறிடாம பாத்துக்கோங்க!",
+      "voiceId": "audio.voice.murugan.quest_give",
+      "emotion": "relieved",
+      "animation": "hand_brass_carrier",
+      "facialExpression": "gratitude",
+      "cameraDirection": "medium_shot",
+      "choices": [
+        {
+          "id": "accept_delivery",
+          "tone": "quest_focused",
+          "textEn": "Consider it done, Anna. I'll deliver it steaming hot.",
+          "textTa": "வேலை முடிஞ்சிருச்சுன்னு நெனச்சுக்கோங்க அண்ணா. ஆவி பறக்க கொண்டு போய் சேக்குறேன்.",
+          "nextNode": "farewell",
+          "consequences": {
+            "relationshipDelta": 5
+          }
+        }
+      ]
+    },
+    "farewell": {
+      "speaker": "npc_murugan",
+      "textEn": "Poittu vaanga! Watch out for the coastal traffic.",
+      "textTa": "போயிட்டு வாங்க! கடலோர வண்டி நெரிசல்ல பாத்து போங்க.",
+      "voiceId": "audio.voice.murugan.farewell",
+      "emotion": "pleasant",
+      "animation": "wave_hand",
+      "facialExpression": "warm_smile",
+      "cameraDirection": "wide_environmental",
+      "choices": [
+        {
+          "id": "exit_dialogue",
+          "tone": "culturally_respectful",
+          "textEn": "Poittu varren, Anna! [Exit]",
+          "textTa": "போயிட்டு வர்றேன் அண்ணா! [விடைபெறு]",
+          "nextNode": "exit"
+        }
+      ]
+    }
+  }
+}

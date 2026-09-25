@@ -1,0 +1,24 @@
+{
+  "id": "shop_murugan_tea_kadai",
+  "version": "1.0.0",
+  "nameEn": "Murugan Annan's Tea Kadai",
+  "nameTa": "முருகன் அண்ணனின் டீக்கடை",
+  "ownerNpcId": "npc_murugan",
+  "region": "george_town",
+  "openingHours": ["dawn", "morning", "afternoon", "evening"],
+  "reputationRequired": 0,
+  "inventory": [
+    {
+      "id": "item_cutting_chai",
+      "stock": 50,
+      "priceMultiplier": 1.0
+    },
+    {
+      "id": "item_brass_tea_carrier",
+      "stock": 2,
+      "priceMultiplier": 1.0
+    }
+  ],
+  "dialogue": "dialogue_murugan_intro",
+  "culturalContext": "Tea stalls in Tamil Nadu serve as community bulletin boards, philosophical debating grounds, and vital neighborhood gathering nodes."
+}

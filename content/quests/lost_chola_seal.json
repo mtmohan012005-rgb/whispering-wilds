@@ -1,0 +1,54 @@
+{
+  "id": "quest_lost_chola_seal",
+  "version": "1.0.0",
+  "title": "Shadows of the Tiger Seal",
+  "titleTa": "புலி முத்திரையின் நிழல்கள்",
+  "description": "Investigate the midnight theft of the 10th-century Chola royal bronze seal from the High Court heritage vault.",
+  "descriptionTa": "உயர்நீதிமன்றப் பாரம்பரிய பெட்டகத்திலிருந்து பத்தாம் நூற்றாண்டு சோழர் அரச வெண்கல முத்திரை களவு போனதை துப்பறியவும்.",
+  "region": "george_town",
+  "category": "main",
+  "difficulty": "medium",
+  "recommendedProgression": 2,
+  "giverNpcId": "npc_selvam",
+  "prerequisites": {
+    "requiredQuests": ["quest_cutting_chai_route"],
+    "requiredRegion": "george_town"
+  },
+  "isDefaultUnlocked": false,
+  "objectives": [
+    {
+      "id": "obj_reach_high_court",
+      "type": "reach_location",
+      "target": "loc_george_town_high_court",
+      "descriptionEn": "Reach the High Court heritage compound",
+      "descriptionTa": "உயர்நீதிமன்றப் பாரம்பரிய வளாகத்தை அடையவும்"
+    },
+    {
+      "id": "obj_inspect_broken_lock",
+      "type": "inspect_clue",
+      "target": "clue_broken_brass_padlock",
+      "descriptionEn": "Inspect the severed ancient brass padlock",
+      "descriptionTa": "உடைக்கப்பட்ட பழங்கால பித்தளை பூட்டை ஆய்வு செய்யவும்"
+    },
+    {
+      "id": "obj_talk_velu_auto",
+      "type": "talk_npc",
+      "target": "npc_velu",
+      "descriptionEn": "Question Velu about the midnight getaway auto",
+      "descriptionTa": "நள்ளிரவு தப்பிச் சென்ற ஆட்டோ பற்றி வேலுவிடம் விசாரிக்கவும்"
+    },
+    {
+      "id": "obj_photograph_tyre_marks",
+      "type": "photograph_subject",
+      "target": "sub_auto_mud_tyre_tracks",
+      "descriptionEn": "Photograph the distinct tyre track imprint in the mud",
+      "descriptionTa": "சேற்றில் பதிந்த டயர் தடத்தை புகைப்பட ஆவணம் எடுக்கவும்"
+    }
+  ],
+  "rewards": {
+    "xp": 350,
+    "coins": 100,
+    "items": ["item_ancient_chola_coin"],
+    "reputation": { "chennai": 25, "epigraphists": 20 }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "npc_selvam",
+  "version": "1.0.0",
+  "name": "Dr. Selvam",
+  "nameTa": "டாக்டர் செல்வம்",
+  "role": "Chola Epigraphist & Heritage Archivist",
+  "ageGroup": "elderly",
+  "region": "george_town",
+  "occupation": "epigraphist",
+  "clothingSet": "khadi_kurta_white_dhoti_reading_spectacles",
+  "homeLocationId": "loc_george_town_residence",
+  "workplaceLocationId": "loc_george_town_archives",
+  "dialogueId": "dialogue_selvam_intro",
+  "voiceId": "audio.voice.selvam.intro_01",
+  "faction": "epigraphists",
+  "reputation": 85,
+  "relationships": {
+    "npc_murugan": 80,
+    "npc_velu": 40
+  },
+  "questReferences": [
+    "quest_cutting_chai_route",
+    "quest_lost_chola_seal"
+  ],
+  "schedule": [
+    { "time": "06:30", "activity": "morning_walk_and_prayers", "location": "home" },
+    { "time": "08:00", "activity": "study_olaichuvadi_palm_leaves", "location": "workplace" },
+    { "time": "12:00", "activity": "tea_and_inscriptions_cataloging", "location": "workplace" },
+    { "time": "14:00", "activity": "rest_and_manuscript_preservation", "location": "workplace" },
+    { "time": "17:00", "activity": "student_consultations", "location": "workplace" },
+    { "time": "20:00", "activity": "retire_home_classical_music", "location": "home" }
+  ],
+  "animationSet": {
+    "idle": "anim_selvam_inspect_lens",
+    "talk": "anim_selvam_scholarly_nod"
+  },
+  "culturalNotes": "Dr. Selvam has dedicated four decades to deciphering Tamil Brahmi and medieval Chola copper plates, preserving fragile palm-leaf manuscripts (ஓலைச்சுவடி)."
+}

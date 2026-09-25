@@ -1,0 +1,64 @@
+{
+  "id": "quest_cutting_chai_route",
+  "version": "1.0.0",
+  "title": "The Cutting Chai Express",
+  "titleTa": "கட்டிங் டீ விரைவுப் பாதை",
+  "description": "Deliver steaming hot ginger tea from Murugan Annan's tea kadai to scholar Selvam at the heritage archives before it cools down.",
+  "descriptionTa": "முருகன் அண்ணன் கடையில் இருந்து சூடான இஞ்சி டீயை ஆறிப்போவதற்குள் வரலாற்று ஆய்வாளர் செல்வத்திடம் கொண்டு போய் சேர்க்கவும்.",
+  "region": "george_town",
+  "category": "side",
+  "difficulty": "easy",
+  "recommendedProgression": 1,
+  "giverNpcId": "npc_murugan",
+  "prerequisites": {
+    "requiredQuests": [],
+    "requiredRegion": "george_town"
+  },
+  "isDefaultUnlocked": true,
+  "objectives": [
+    {
+      "id": "obj_talk_murugan",
+      "type": "talk_npc",
+      "target": "npc_murugan",
+      "descriptionEn": "Speak with Murugan Annan at his tea stall",
+      "descriptionTa": "டீக்கடையில் முருகன் அண்ணனுடன் பேசவும்"
+    },
+    {
+      "id": "obj_collect_tea_carrier",
+      "type": "collect_item",
+      "target": "item_brass_tea_carrier",
+      "descriptionEn": "Pick up the brass tea carrier with 5 hot glasses",
+      "descriptionTa": "5 சூடான கிளாஸ் கொண்ட பித்தளை டீ கேரியரை எடுக்கவும்"
+    },
+    {
+      "id": "obj_deliver_to_selvam",
+      "type": "deliver_item",
+      "target": "item_brass_tea_carrier",
+      "recipientNpcId": "npc_selvam",
+      "descriptionEn": "Deliver the tea to Dr. Selvam at George Town Archives",
+      "descriptionTa": "ஜார்ஜ் டவுன் காப்பகத்தில் உள்ள டாக்டர் செல்வத்திடம் டீயை வழங்கவும்"
+    },
+    {
+      "id": "obj_return_to_murugan",
+      "type": "return_to_npc",
+      "target": "npc_murugan",
+      "descriptionEn": "Return to Murugan Annan to collect your reward",
+      "descriptionTa": "வெகுமதியைப் பெற மீண்டும் முருகன் அண்ணனிடம் செல்லவும்"
+    }
+  ],
+  "optionalObjectives": [
+    {
+      "id": "opt_talk_to_velu_en_route",
+      "type": "talk_npc",
+      "target": "npc_velu",
+      "descriptionEn": "Greet Auto Driver Velu on the way",
+      "descriptionTa": "வழியில் ஆட்டோ டிரைவர் வேலுவுக்கு வணக்கம் சொல்லவும்"
+    }
+  ],
+  "rewards": {
+    "xp": 120,
+    "coins": 35,
+    "items": ["item_murugan_special_chai_token"],
+    "reputation": { "chennai": 10 }
+  }
+}
