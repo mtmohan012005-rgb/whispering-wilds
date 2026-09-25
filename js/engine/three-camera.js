@@ -13,8 +13,8 @@ class ThreeCamera {
         // Modes: 'gameplay' | 'macro'
         this.mode = 'gameplay';
 
-        // Camera offset relative to player in gameplay mode
-        this.defaultGameplayOffset = new THREE.Vector3(-22, 19, 22);
+        // Camera offset relative to player in gameplay mode (cinematic third-person)
+        this.defaultGameplayOffset = new THREE.Vector3(-15, 11, 15);
         this.gameplayOffset = this.defaultGameplayOffset.clone();
         this.gameplayTargetOffset = new THREE.Vector3(0, 1.35, 0); // Tracks player chest / root area per Section 20
 
@@ -41,7 +41,7 @@ class ThreeCamera {
         this.startLook = new THREE.Vector3();
         this.targetLook = new THREE.Vector3();
 
-        // Mouse pan / orbit controls
+        // Mouse pan / orbit controls & wheel zoom
         this.isMouseDown = false;
         this.mousePrevX = 0;
         this.mousePrevY = 0;
@@ -68,6 +68,16 @@ class ThreeCamera {
                 this.orbitAngleH -= dx * 0.006;
                 this.orbitAngleV = Math.max(-0.4, Math.min(0.6, this.orbitAngleV + dy * 0.005));
             });
+
+            window.addEventListener('wheel', (e) => {
+                if (this.mode !== 'gameplay') return;
+                const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+                const currentDist = this.gameplayOffset.length();
+                const nextDist = currentDist * zoomFactor;
+                if (nextDist >= 8.5 && nextDist <= 46.0) {
+                    this.gameplayOffset.multiplyScalar(zoomFactor);
+                }
+            }, { passive: true });
         }
     }
 

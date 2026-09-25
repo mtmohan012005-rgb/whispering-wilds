@@ -166,8 +166,23 @@ class GameHUD {
         const interactable = nearbyInteractable || (player ? player.nearbyInteractable : null);
         if (interactable && this.promptEl) {
             this.promptEl.classList.add('visible');
-            const name = interactable.name || interactable.id || 'Interact';
-            if (this.promptText) this.promptText.textContent = `Talk to ${name}`;
+            let label = interactable.interactionPrompt || interactable.prompt;
+            if (!label) {
+                const name = interactable.name || interactable.id || 'Interact';
+                const lower = name.toLowerCase();
+                if (interactable.isNPC || interactable.type === 'npc' || lower.includes('annan') || lower.includes('selvam') || lower.includes('driver') || lower.includes('artisan') || lower.includes('sembian')) {
+                    label = `Talk to ${name}`;
+                } else if (lower.includes('gate') || lower.includes('door') || lower.includes('court') || lower.includes('wheel') || lower.includes('portal') || lower.includes('clue') || lower.includes('mechanism')) {
+                    label = `Examine ${name}`;
+                } else if (lower.includes('kadai') || lower.includes('stall') || lower.includes('shop')) {
+                    label = `Inquire at ${name}`;
+                } else if (lower.includes('item') || lower.includes('chest') || lower.includes('satchel')) {
+                    label = `Open ${name}`;
+                } else {
+                    label = `Inspect ${name}`;
+                }
+            }
+            if (this.promptText) this.promptText.textContent = label;
         } else if (this.promptEl) {
             this.promptEl.classList.remove('visible');
         }

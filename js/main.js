@@ -1440,8 +1440,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (thirstBar) thirstBar.style.width = `${survival.thirst}%`;
     if (energyBar) energyBar.style.width = `${survival.energy}%`;
     if (tempGauge) {
-      tempGauge.textContent = `${survival.coreTemp.toFixed(1)}°C`;
-      tempGauge.style.color = survival.coreTemp < 34 ? '#74b9ff' : (survival.coreTemp > 38 ? '#ff7675' : '#55efc4');
+      const displayTemp = (survival.coreTemp > 45) ? (35.5 + (survival.coreTemp / 100) * 2.0) : survival.coreTemp;
+      tempGauge.textContent = `${displayTemp.toFixed(1)}°C`;
+      tempGauge.style.color = displayTemp < 35.0 ? '#74b9ff' : (displayTemp > 38.0 ? '#ff7675' : '#55efc4');
     }
     if (timeDisplay) timeDisplay.textContent = lighting.getFormattedTime();
     if (weatherBadge) weatherBadge.textContent = weather.getDisplayName();

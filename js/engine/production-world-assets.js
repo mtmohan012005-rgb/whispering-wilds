@@ -258,19 +258,24 @@ class ProductionWorldAssets {
   }
 
   /**
-   * Diagnostic placeholder proxy marked as non-final
+   * Diagnostic placeholder proxy marked as non-final.
+   * In standard gameplay, invisible collision proxy is used to eliminate wireframe visual clutter.
+   * Wireframe visualization is reserved strictly for explicit developer debug mode (window.DEBUG_COLLISION).
    */
   createDiagnosticProxy(meta) {
     const size = (meta.collider && meta.collider.size) ? meta.collider.size : [2, 2, 2];
     const geo = new THREE.BoxGeometry(size[0], size[1], size[2]);
+    const isDebug = !!(window.DEBUG_COLLISION || window.DEBUG_STREAMING_PROXIES);
     const mat = new THREE.MeshBasicMaterial({
       color: 0xff6b6b,
       wireframe: true,
       transparent: true,
-      opacity: 0.35
+      opacity: isDebug ? 0.35 : 0.0,
+      visible: isDebug
     });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.y = size[1] / 2;
+    mesh.visible = isDebug;
     mesh.userData.isMissingProductionAsset = true;
     return mesh;
   }
