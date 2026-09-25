@@ -4,6 +4,29 @@ Desktop.ini
 .DS_Store
 *.log
 
+# Test files — never commit to repo
+tests/
+test-*.js
+test-runner.js
+*-test.js
+test_*.json
+test_*.html
+test_*.png
+run_tests.*
+desktop/tests/
+
+# Report artifacts
+ANIMATION_REPORT.json
+BUILD_REPORT.json
+PRODUCTION_3D_ASSET_REPORT.*
+PRODUCTION_QA_REPORT.md
+WORLD_STREAMING_REPORT.*
+SURVIVAL_BALANCE_REPORT.md
+PRODUCTION_ASSET_STATUS.json
+RELEASE_CHECKLIST.md
+normal_run.log
+edge_stderr.log
+
 # Temporary test outputs
 screenshot.png
 shot.png
