@@ -105,6 +105,10 @@ window.addEventListener('DOMContentLoaded', () => {
     window.GameState.bindLegacyAdapters();
   }
 
+  if (window.GameRuntime && typeof window.GameRuntime.init === 'function') {
+    window.GameRuntime.init();
+  }
+
   const saveManager = new window.SaveManager();
   const multiplayer = window.MultiplayerManager ? new window.MultiplayerManager() : null;
 
@@ -1246,6 +1250,18 @@ window.addEventListener('DOMContentLoaded', () => {
           ? threeWorld.player.getPosition()
           : { x: player.x, z: player.y };
         window.TransitionSystem.checkBoundaryApproach(pPos, deltaTime);
+      }
+
+      // Master Large World Streaming update
+      if (window.WorldStreaming && typeof window.WorldStreaming.update === 'function') {
+        const pPos = (threeWorld && threeWorld.isActive && threeWorld.player)
+          ? threeWorld.player.getPosition()
+          : { x: player.x, z: player.y };
+        window.WorldStreaming.update({
+          pos: { x: pPos.x, y: pPos.y || 0, z: pPos.z !== undefined ? pPos.z : pPos.y },
+          velocity: { x: player.vx || 0, y: 0, z: player.vy || 0 },
+          inVehicle: !!(player.vehicleState && player.vehicleState.inVehicle)
+        }, threeWorld ? threeWorld.scene : null, audioManager);
       }
 
       // Update Environmental Physics, Water, Vegetation & Spatial Interaction

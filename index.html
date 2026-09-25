@@ -391,8 +391,22 @@
   <script src="js/debug/runtime-overlay.js"></script>
   <script src="js/debug/system-inspector.js"></script>
 
+  <!-- Authoritative Core Architecture & Single State of Truth -->
+  <script src="js/core/world-rng.js"></script>
+  <script src="js/core/event-bus.js"></script>
+  <script src="js/core/game-mode.js"></script>
+  <script src="js/core/game-clock.js"></script>
+  <script src="js/core/input-manager.js"></script>
+  <script src="js/core/frame-scheduler.js"></script>
+  <script src="js/core/system-manager.js"></script>
+  <script src="js/core/state-validator.js"></script>
+  <script src="js/core/performance-monitor.js"></script>
+  <script src="js/engine/collision-system.js"></script>
+  <script src="js/engine/navigation-system.js"></script>
+
   <!-- Game Scripts -->
   <script src="js/core/game-state.js"></script>
+  <script src="js/core/game-runtime.js"></script>
 
   <!-- Boot Flow: Lifecycle State Machine (must load before all systems) -->
   <script src="js/core/game-lifecycle.js"></script>
@@ -552,6 +566,17 @@
   <script src="js/systems/asset-streaming-manager.js"></script>
   <script src="js/systems/transport-system.js"></script>
   <script src="js/systems/world-streaming-system.js"></script>
+  <!-- Large Open World Streaming, LOD & Visibility Architecture -->
+  <script src="js/world/world-sector.js"></script>
+  <script src="js/world/world-grid.js"></script>
+  <script src="js/world/world-origin.js"></script>
+  <script src="js/world/world-visibility.js"></script>
+  <script src="js/world/world-lod.js"></script>
+  <script src="js/world/world-prefetch.js"></script>
+  <script src="js/world/world-asset-cache.js"></script>
+  <script src="js/world/world-memory.js"></script>
+  <script src="js/world/world-unload.js"></script>
+  <script src="js/world/world-streaming.js"></script>
   <script src="js/ui/graphics-settings-ui.js"></script>
   <script src="js/ui/performance-diagnostics-ui.js"></script>
   <script src="js/ui/graphics-recommendation-ui.js"></script>

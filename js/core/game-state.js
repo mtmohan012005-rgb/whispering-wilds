@@ -196,12 +196,373 @@ class GameStateEngine {
       }
     };
 
+    Object.defineProperty(this.player, 'money', {
+      get: () => this.player.currency,
+      set: (v) => { this.player.currency = Math.max(0, Math.floor(Number(v) || 0)); },
+      configurable: true
+    });
+
     this.multiplayer = {
       connected: false,
       roomId: null,
       role: 'EXPLORER',
       remotePlayers: {}
     };
+
+    // ── CENTRAL SINGLE SOURCE OF TRUTH DOMAINS (Section 2) ──────────────────
+    this.equipment = {
+      head: null,
+      body: 'everyday_veshti',
+      feet: 'kolhapuri_sandals',
+      accessory: null,
+      tool: 'brass_compass'
+    };
+
+    this.dialogue = {
+      activeSpeaker: null,
+      dialogueHistory: [],
+      choiceHistory: []
+    };
+
+    this.npcs = {
+      schedules: {},
+      dispositions: {},
+      states: {}
+    };
+    this.NPCs = this.npcs;
+
+    this.wildlife = {
+      trackedTracks: [],
+      sightings: [],
+      behaviorStates: {}
+    };
+
+    this.relationships = {};
+    this.reputation = {
+      george_town: 10,
+      cauvery_delta: 5,
+      pichavaram: 0,
+      chettinad: 0,
+      thanjavur: 0,
+      mamallapuram: 0,
+      nilgiris: 0,
+      final_sanctuary: 0
+    };
+
+    this.discoveries = [];
+    this.collectibles = [];
+    this.achievements = [];
+
+    const that = this;
+
+    this.economy = {
+      currencyName: 'Rupees (₹)',
+      get currency() { return that.player.currency; },
+      transactions: []
+    };
+
+    this.vehicles = {
+      activeVehicle: null,
+      unlockedVehicles: ['vintage_royal_enfield']
+    };
+
+    this.camera = {
+      mode: 'THIRD_PERSON',
+      distance: 4.5,
+      pitch: 0,
+      yaw: 0,
+      fov: 60
+    };
+
+    this.saveMetadata = {
+      gameVersion: '1.4.0',
+      contentVersion: '1.4.0',
+      schemaVersion: 4,
+      timestamp: Date.now()
+    };
+
+    this.story = {
+      storyCompleted: false,
+      currentChapter: 1,
+      branches: {},
+      activeEnding: null
+    };
+
+    // Root-level reactive accessors for seamless subsystem integration
+    Object.defineProperty(this, 'time', {
+      get: () => this.world.time,
+      set: (v) => { this.world.time = Number(v) || 0; },
+      configurable: true
+    });
+
+    Object.defineProperty(this, 'weather', {
+      get: () => this.world.weather,
+      set: (v) => { this.setWeather(v); },
+      configurable: true
+    });
+
+    Object.defineProperty(this, 'survival', {
+      get: () => this.player.survival,
+      configurable: true
+    });
+
+    Object.defineProperty(this, 'outfit', {
+      get: () => this.player.outfitId,
+      set: (v) => { this.player.outfitId = v; },
+      configurable: true
+    });
+
+    Object.defineProperty(this, 'locations', {
+      get: () => this.world.discoveredLocations,
+      set: (arr) => { if (Array.isArray(arr)) this.world.discoveredLocations = arr; },
+      configurable: true
+    });
+
+    // Authoritative Inventory facade preserving both array methods and .items access
+    this.inventory = {
+      get items() { return that.player.inventory; },
+      set items(arr) { if (Array.isArray(arr)) that.player.inventory = arr; },
+      slice: (...args) => that.player.inventory.slice(...args),
+      find: (...args) => that.player.inventory.find(...args),
+      filter: (...args) => that.player.inventory.filter(...args),
+      reduce: (...args) => that.player.inventory.reduce(...args),
+      forEach: (...args) => that.player.inventory.forEach(...args)
+    };
+  }
+
+  // --------------------------------------------------------------------------
+  // AUTHORITATIVE STATE ACTIONS (Section 3, controlled & validated mutations)
+  // --------------------------------------------------------------------------
+
+  setPlayerPosition(x, y, z) {
+    if (window.GameRuntime && typeof window.GameRuntime.setPlayerPosition === 'function') {
+      return window.GameRuntime.setPlayerPosition(x, y, z);
+    }
+    if (isNaN(x) || isNaN(y) || isNaN(z)) return false;
+    this.player.position = { x, y, z };
+    this.player.x = x;
+    this.player.y = z;
+    this.emit('playerMoved', this.player.position);
+    return true;
+  }
+
+  setPlayerRotation(x, y, z) {
+    this.player.rotation = { x: x || 0, y: y || 0, z: z || 0 };
+    return true;
+  }
+
+  setPlayerMovement(vx, vy, vz, movementState = 'idle') {
+    this.player.velocity = { x: vx || 0, y: vy || 0, z: vz || 0 };
+    this.player.movementState = movementState;
+    return true;
+  }
+
+  movePlayer(dx, dz, dt = 0.016) {
+    if (window.GameRuntime && typeof window.GameRuntime.movePlayer === 'function') {
+      return window.GameRuntime.movePlayer(dx, dz, dt);
+    }
+    const p = this.player.position;
+    return this.setPlayerPosition(p.x + dx, p.y, p.z + dz);
+  }
+
+  changeCurrency(amount, reason = '') {
+    if (window.GameRuntime && typeof window.GameRuntime.changeCurrency === 'function') {
+      return window.GameRuntime.changeCurrency(amount, reason);
+    }
+    const cost = Math.floor(Number(amount) || 0);
+    if (cost < 0) return this.deductCurrency(-cost);
+    return this.addCurrency(cost);
+  }
+
+  addItem(item, count = 1) {
+    return this.addInventoryItem({ ...(typeof item === 'string' ? { id: item } : item), count });
+  }
+
+  removeItem(itemId, count = 1) {
+    return this.removeInventoryItem(itemId, count);
+  }
+
+  equipItem(slot, itemId) {
+    if (!slot || !this.equipment) return false;
+    this.equipment[slot] = itemId;
+    this.emit('equipmentChanged', { slot, itemId });
+    return true;
+  }
+
+  setOutfit(outfitId) {
+    return this.applyCustomization({ outfitId });
+  }
+
+  startQuest(questId) {
+    if (window.QuestStateMachine) return window.QuestStateMachine.startQuest(questId);
+    if (!this.quests.active.includes(questId)) {
+      this.quests.active.push(questId);
+      this.emit('questStarted', questId);
+      return true;
+    }
+    return false;
+  }
+
+  advanceQuest(questId, objectiveId) {
+    if (window.QuestStateMachine) return window.QuestStateMachine.advanceObjective(questId, objectiveId);
+    this.emit('objectiveCompleted', { questId, objectiveId });
+    return true;
+  }
+
+  completeObjective(questId, objectiveId) {
+    return this.advanceQuest(questId, objectiveId);
+  }
+
+  failQuest(questId, reason = '') {
+    if (window.QuestStateMachine) return window.QuestStateMachine.failQuest(questId, reason);
+    this.quests.active = this.quests.active.filter(q => q !== questId);
+    if (!this.quests.failed.includes(questId)) this.quests.failed.push(questId);
+    this.emit('questFailed', { questId, reason });
+    return true;
+  }
+
+  discoverLocation(locationId) {
+    if (window.GameRuntime && typeof window.GameRuntime.discoverLocation === 'function') {
+      return window.GameRuntime.discoverLocation(locationId);
+    }
+    if (!this.world.discoveredLocations.includes(locationId)) {
+      this.world.discoveredLocations.push(locationId);
+      this.emit('locationDiscovered', locationId);
+      return true;
+    }
+    return false;
+  }
+
+  discoverWildlife(speciesId) {
+    if (window.GameRuntime && typeof window.GameRuntime.discoverWildlife === 'function') {
+      return window.GameRuntime.discoverWildlife(speciesId);
+    }
+    if (!this.world.discoveredWildlife.includes(speciesId)) {
+      this.world.discoveredWildlife.push(speciesId);
+      this.emit('wildlifeDiscovered', speciesId);
+      return true;
+    }
+    return false;
+  }
+
+  unlockAchievement(achievementId) {
+    if (window.GameRuntime && typeof window.GameRuntime.unlockAchievement === 'function') {
+      return window.GameRuntime.unlockAchievement(achievementId);
+    }
+    if (!this.achievements.includes(achievementId)) {
+      this.achievements.push(achievementId);
+      this.emit('achievementUnlocked', achievementId);
+      return true;
+    }
+    return false;
+  }
+
+  changeRelationship(npcId, delta) {
+    const curr = this.relationships[npcId] || 0;
+    this.relationships[npcId] = Math.max(-100, Math.min(100, curr + delta));
+    return this.relationships[npcId];
+  }
+
+  changeReputation(regionId, delta) {
+    const curr = this.reputation[regionId] || 0;
+    this.reputation[regionId] = Math.max(-100, Math.min(100, curr + delta));
+    return this.reputation[regionId];
+  }
+
+  setWeather(weatherConfig) {
+    if (typeof weatherConfig === 'string') {
+      this.world.weather = weatherConfig;
+    } else if (weatherConfig && typeof weatherConfig === 'object') {
+      this.world.weather = weatherConfig.type || 'clear';
+    }
+    this.emit('weatherChanged', this.world.weather);
+    return true;
+  }
+
+  setTime(hour, minute = 0) {
+    this.world.time = hour + (minute / 60);
+    this.emit('timeChanged', this.world.time);
+    return true;
+  }
+
+  startWorldEvent(eventId, data = {}) {
+    this.emit('worldEventStarted', { eventId, data });
+    return true;
+  }
+
+  finishWorldEvent(eventId, outcome = 'completed') {
+    this.emit('worldEventFinished', { eventId, outcome });
+    return true;
+  }
+
+  enterVehicle(vehicleId, vehicleType = 'auto') {
+    this.player.vehicleState = { inVehicle: true, vehicleId, vehicleType };
+    this.emit('vehicleEntered', { vehicleId, vehicleType });
+    return true;
+  }
+
+  exitVehicle() {
+    this.player.vehicleState = { inVehicle: false, vehicleId: null, vehicleType: null };
+    this.emit('vehicleExited', {});
+    return true;
+  }
+
+  consumeFood(foodItem) {
+    const s = this.player.survival;
+    s.hunger = Math.min(s.maxHunger || 100, (s.hunger || 0) + (foodItem?.nourishment || 25));
+    s.health = Math.min(s.maxHealth || 100, (s.health || 0) + (foodItem?.healthGain || 10));
+    return true;
+  }
+
+  drinkWater(amount = 35) {
+    const s = this.player.survival;
+    s.hydration = Math.min(s.maxHydration || 100, (s.hydration || 0) + amount);
+    return true;
+  }
+
+  rest(durationHours = 1) {
+    const s = this.player.survival;
+    s.energy = Math.min(s.maxEnergy || 100, (s.energy || 0) + durationHours * 20);
+    return true;
+  }
+
+  sleep(hours = 8) {
+    const s = this.player.survival;
+    s.energy = s.maxEnergy || 100;
+    s.health = Math.min(s.maxHealth || 100, (s.health || 0) + 30);
+    s.warmth = 85;
+    return true;
+  }
+
+  warmUp(delta = 10) {
+    this.player.survival.warmth = Math.min(100, (this.player.survival.warmth || 80) + delta);
+    return true;
+  }
+
+  coolDown(delta = 10) {
+    this.player.survival.warmth = Math.max(0, (this.player.survival.warmth || 80) - delta);
+    return true;
+  }
+
+  // Transaction API
+  beginTransaction(txId = null) {
+    if (window.GameRuntime) return window.GameRuntime.beginTransaction(txId);
+    return `tx_${Date.now()}`;
+  }
+
+  validate() {
+    if (window.StateValidator) return window.StateValidator.validateState(this);
+    return { isValid: true, errors: [] };
+  }
+
+  commit() {
+    if (window.GameRuntime) return window.GameRuntime.commit();
+    return true;
+  }
+
+  rollback() {
+    if (window.GameRuntime) return window.GameRuntime.rollback();
+    return true;
   }
 
   // --------------------------------------------------------------------------
