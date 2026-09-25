@@ -1,0 +1,42 @@
+name: Universal Compatibility & Release Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compatibility-gate:
+    name: Compatibility, Graphics Fallback & Release Gate
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci || npm install
+
+      - name: Static Compatibility Verification
+        run: node scripts/verify-compatibility.js
+
+      - name: Asset & Model Audit (Local player.glb, No Xbot)
+        run: node desktop/scripts/check-assets.js
+
+      - name: Platform Integrity Audit
+        run: node desktop/scripts/check-platform.js
+
+      - name: Automated Release Gate Audit
+        run: node scripts/release-verify.js

@@ -1680,6 +1680,94 @@ window.runStepByStepFeatureTests = async function() {
     log(66, 'PC Storefront & Platform Integration (Steam/Epic/GOG/Direct, Achievements, Cloud, Overlay & Controller)', false, err.message);
   }
 
+  // --------------------------------------------------------------------------
+  // STEP 67: Final Universal Compatibility & Device Adaptation Layer (Windows, macOS, Linux, Hardware Tiers & Automatic Bug Prevention)
+  // --------------------------------------------------------------------------
+  try {
+    const compatSuites = [
+      { name: 'OSAdapter', fn: window.testOSAdapter },
+      { name: 'GPUAdapter', fn: window.testGPUAdapter },
+      { name: 'DisplayAdapter', fn: window.testDisplayAdapter },
+      { name: 'InputAdapter', fn: window.testInputAdapter },
+      { name: 'StorageAdapter', fn: window.testStorageAdapter },
+      { name: 'DeviceProfile', fn: window.testDeviceProfile },
+      { name: 'RuntimeCompatibility', fn: window.testRuntimeCompatibility },
+      { name: 'AutomaticRecovery', fn: window.testAutomaticRecovery },
+      { name: 'Stability', fn: window.testStability }
+    ];
+
+    const compatResults = [];
+    for (const suite of compatSuites) {
+      if (typeof suite.fn === 'function') {
+        const res = await suite.fn();
+        compatResults.push({ name: suite.name, passed: res.failed === 0, details: res });
+      } else {
+        compatResults.push({ name: suite.name, passed: false, details: 'Function not loaded' });
+      }
+    }
+
+    const allCompatPassed = compatResults.every(r => r.passed);
+    const failedSuites = compatResults.filter(r => !r.passed).map(r => `${r.name} (${(r.details && r.details.errors) ? r.details.errors.join('; ') : r.details})`);
+
+    // Invariant checks
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+    const soleAuthority = !!(window.RuntimeCompatibilitySystemInstance || window.RuntimeCompatibilitySystem);
+
+    const step67Success = allCompatPassed && customValid && soleAuthority;
+    const details = step67Success
+      ? 'All 9 Universal Compatibility QA suites passed (OSAdapter, GPUAdapter, DisplayAdapter, InputAdapter, StorageAdapter, DeviceProfile, RuntimeCompatibility, AutomaticRecovery, Stability). Hardware tiers normalized, Sole authority confirmed, Customization <= 5 preserved'
+      : `Failed Suites: [${failedSuites.join(', ')}], Customization Valid: ${customValid}, Sole Authority: ${soleAuthority}`;
+
+    log(67, 'Final Universal Compatibility, Device Adaptation & Automatic Bug Prevention (Windows, macOS, Linux)', step67Success, details);
+  } catch (err) {
+    log(67, 'Final Universal Compatibility, Device Adaptation & Automatic Bug Prevention (Windows, macOS, Linux)', false, err.message);
+  }
+
+  // --------------------------------------------------------------------------
+  // STEP 68: Universal Graphics Backend, GPU Fallback, Display Compatibility & Renderer Stability
+  // --------------------------------------------------------------------------
+  try {
+    const graphicsSuites = [
+      { name: 'Capabilities', fn: window.testCapabilities },
+      { name: 'BackendSelection', fn: window.testBackendSelection },
+      { name: 'ShaderFallback', fn: window.testShaderFallback },
+      { name: 'TextureFallback', fn: window.testTextureFallback },
+      { name: 'Antialiasing', fn: window.testAntialiasing },
+      { name: 'RenderTargets', fn: window.testRenderTargets },
+      { name: 'DisplayScaling', fn: window.testDisplayScaling },
+      { name: 'ContextLoss', fn: window.testContextLoss },
+      { name: 'GPURecovery', fn: window.testGPURecovery }
+    ];
+
+    const graphicsResults = [];
+    for (const suite of graphicsSuites) {
+      if (typeof suite.fn === 'function') {
+        const res = await suite.fn();
+        graphicsResults.push({ name: suite.name, passed: res.failed === 0, details: res });
+      } else {
+        graphicsResults.push({ name: suite.name, passed: false, details: 'Function not loaded' });
+      }
+    }
+
+    const allGraphicsPassed = graphicsResults.every(r => r.passed);
+    const failedSuites = graphicsResults.filter(r => !r.passed).map(r => `${r.name} (${(r.details && r.details.errors) ? r.details.errors.join('; ') : r.details})`);
+
+    // Invariant checks
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+    const soleGraphicsAuthority = !!(window.GraphicsBackendManagerInstance || window.GraphicsBackendManager);
+
+    const step68Success = allGraphicsPassed && customValid && soleGraphicsAuthority;
+    const details = step68Success
+      ? 'All 9 Universal Graphics QA suites passed (Capabilities, BackendSelection, ShaderFallback, TextureFallback, Antialiasing, RenderTargets, DisplayScaling, ContextLoss, GPURecovery). WebGL2/Fallback active, GPU recovery verified, Customization <= 5 preserved'
+      : `Failed Suites: [${failedSuites.join(', ')}], Customization Valid: ${customValid}, Sole Graphics Authority: ${soleGraphicsAuthority}`;
+
+    log(68, 'Universal Graphics Backend, GPU Fallback, Display Compatibility & Renderer Stability', step68Success, details);
+  } catch (err) {
+    log(68, 'Universal Graphics Backend, GPU Fallback, Display Compatibility & Renderer Stability', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

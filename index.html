@@ -986,6 +986,61 @@
   <script src="tests/platform/test-controller.js"></script>
   <script src="tests/platform/test-offline-platform.js"></script>
 
+  <!-- Universal Compatibility & Device Adaptation Layer -->
+  <script src="js/config/device-capability-schema.js"></script>
+  <script src="js/config/device-fallback-rules.js"></script>
+  <script src="js/platform/os-adapter.js"></script>
+  <script src="js/platform/gpu-adapter.js"></script>
+  <script src="js/platform/display-adapter.js"></script>
+  <script src="js/platform/input-adapter.js"></script>
+  <script src="js/platform/audio-adapter.js"></script>
+  <script src="js/platform/storage-adapter.js"></script>
+  <script src="js/platform/universal-platform-layer.js"></script>
+  <script src="js/systems/device-profile-system.js"></script>
+  <script src="js/systems/runtime-compatibility-system.js"></script>
+  <script src="js/systems/automatic-recovery-system.js"></script>
+  <script src="js/systems/device-adaptation-system.js"></script>
+  <script src="js/systems/stability-manager.js"></script>
+  <script src="js/ui/compatibility-center-ui.js"></script>
+  <script src="js/ui/adaptive-notification-ui.js"></script>
+  <script src="tests/platform/test-os-adapter.js"></script>
+  <script src="tests/platform/test-gpu-adapter.js"></script>
+  <script src="tests/platform/test-display-adapter.js"></script>
+  <script src="tests/platform/test-input-adapter.js"></script>
+  <script src="tests/platform/test-storage-adapter.js"></script>
+  <script src="tests/platform/test-device-profile.js"></script>
+  <script src="tests/platform/test-runtime-compatibility.js"></script>
+  <script src="tests/platform/test-automatic-recovery.js"></script>
+  <script src="tests/platform/test-stability.js"></script>
+
+  <!-- Universal Graphics Backend, GPU Fallback & Display Compatibility -->
+  <script src="js/graphics/graphics-capability-detector.js"></script>
+  <script src="js/graphics/webgl2-backend.js"></script>
+  <script src="js/graphics/webgl-fallback-backend.js"></script>
+  <script src="js/graphics/webgpu-capability.js"></script>
+  <script src="js/graphics/shader-capability.js"></script>
+  <script src="js/graphics/texture-capability.js"></script>
+  <script src="js/graphics/antialiasing-manager.js"></script>
+  <script src="js/graphics/render-target-manager.js"></script>
+  <script src="js/graphics/gpu-recovery-manager.js"></script>
+  <script src="js/graphics/display-scaling-manager.js"></script>
+  <script src="js/graphics/color-management.js"></script>
+  <script src="js/graphics/graphics-backend-manager.js"></script>
+  <script src="js/systems/graphics-health-system.js"></script>
+  <script src="js/systems/graphics-fallback-system.js"></script>
+  <script src="js/systems/display-compatibility-system.js"></script>
+  <script src="js/ui/graphics-capability-ui.js"></script>
+  <script src="js/ui/graphics-recovery-ui.js"></script>
+  <script src="tests/graphics/test-capabilities.js"></script>
+  <script src="tests/graphics/test-backend-selection.js"></script>
+  <script src="tests/graphics/test-shader-fallback.js"></script>
+  <script src="tests/graphics/test-texture-fallback.js"></script>
+  <script src="tests/graphics/test-antialiasing.js"></script>
+  <script src="tests/graphics/test-render-targets.js"></script>
+  <script src="tests/graphics/test-display-scaling.js"></script>
+  <script src="tests/graphics/test-context-loss.js"></script>
+  <script src="tests/graphics/test-gpu-recovery.js"></script>
+
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
