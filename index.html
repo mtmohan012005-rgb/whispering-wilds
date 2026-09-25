@@ -372,6 +372,24 @@
   <script src="js/config/asset-version.js"></script>
   <script src="js/config/runtime-config.js"></script>
 
+  <!-- Core QA, Assertions, Validation Schemas & Error Boundaries -->
+  <script src="js/core/assertions.js"></script>
+  <script src="js/data/validation-schema.js"></script>
+  <script src="js/core/system-registry.js"></script>
+  <script src="js/core/error-boundary.js"></script>
+  <script src="js/core/lifecycle-validator.js"></script>
+  <script src="js/core/runtime-validator.js"></script>
+  <script src="js/systems/state-integrity-system.js"></script>
+  <script src="js/systems/resource-leak-detector.js"></script>
+  <script src="js/systems/event-listener-registry.js"></script>
+  <script src="js/systems/timer-registry.js"></script>
+  <script src="js/systems/render-loop-registry.js"></script>
+  <script src="js/systems/health-monitor.js"></script>
+  <script src="js/systems/crash-recovery-system.js"></script>
+  <script src="js/debug/diagnostics-console.js"></script>
+  <script src="js/debug/runtime-overlay.js"></script>
+  <script src="js/debug/system-inspector.js"></script>
+
   <!-- Game Scripts -->
   <script src="js/core/game-state.js"></script>
 
@@ -820,6 +838,23 @@
   <script src="tests/performance/test-memory.js"></script>
   <script src="tests/performance/test-render-recovery.js"></script>
   <script src="tests/performance/test-device-compatibility.js"></script>
+
+  <!-- Zero-Crash QA, State Integrity, Leak Detection & Regression Tests -->
+  <script src="tests/core/test-runtime-validator.js"></script>
+  <script src="tests/core/test-state-integrity.js"></script>
+  <script src="tests/core/test-lifecycle-validator.js"></script>
+  <script src="tests/core/test-system-registry.js"></script>
+  <script src="tests/core/test-error-boundary.js"></script>
+  <script src="tests/runtime/test-save-protection.js"></script>
+  <script src="tests/runtime/test-resource-leaks.js"></script>
+  <script src="tests/runtime/test-event-listeners.js"></script>
+  <script src="tests/runtime/test-timers.js"></script>
+  <script src="tests/runtime/test-render-loops.js"></script>
+  <script src="tests/regression/test-main-flow.js"></script>
+  <script src="tests/regression/test-quest-flow.js"></script>
+  <script src="tests/regression/test-player-flow.js"></script>
+  <script src="tests/regression/test-world-flow.js"></script>
+  <script src="tests/regression/test-performance-flow.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>

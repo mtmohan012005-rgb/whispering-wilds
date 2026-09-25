@@ -78,6 +78,19 @@
         // Step 10: Crash recovery check
         await this._checkCrashRecovery();
 
+        // Step 11: Register systems and validate system health
+        if (window.SystemRegistry) {
+          if (window.GameState) window.SystemRegistry.register('GameState', window.GameState, { isCritical: true });
+          if (window.GameLifecycle) window.SystemRegistry.register('Lifecycle', window.GameLifecycle, { isCritical: true });
+          if (window.saveManager || window.gameSaveManager) window.SystemRegistry.register('SaveManager', window.saveManager || window.gameSaveManager, { isCritical: true });
+          if (window.performanceManager) window.SystemRegistry.register('Performance', window.performanceManager, { isCritical: false });
+          if (window.LocalizationManager) window.SystemRegistry.register('Localization', window.LocalizationManager, { isCritical: false });
+          if (window.ProductionAssetRegistry) window.SystemRegistry.register('Assets', window.ProductionAssetRegistry, { isCritical: false });
+          if (window.RuntimeValidator && window.GameState) {
+            window.RuntimeValidator.validateGameState(window.GameState);
+          }
+        }
+
         // Boot complete
         this._ready = true;
         const bootMs = Date.now() - this._bootStartTime;

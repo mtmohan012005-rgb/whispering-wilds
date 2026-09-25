@@ -54,6 +54,10 @@
       this._init();
     }
 
+    get currentProfile() {
+      return this.currentTier;
+    }
+
     _init() {
       // 1. Detect hardware safely
       if (this.hwDetection) {

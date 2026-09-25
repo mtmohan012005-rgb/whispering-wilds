@@ -217,8 +217,15 @@ class SaveManager {
   }
 
   _performSave(slot, reason) {
+    if (window.LifecycleValidator && !window.LifecycleValidator.startSaveWatchdog()) {
+      return false;
+    }
+
     const state = this._gatherState();
-    if (!state) return false;
+    if (!state) {
+      if (window.LifecycleValidator) window.LifecycleValidator.completeSaveWatchdog();
+      return false;
+    }
 
     state.saveReason = reason;
 
@@ -229,6 +236,15 @@ class SaveManager {
 
       // 1. Atomic write to temporary slot first
       const serialized = JSON.stringify(state);
+
+      // Validate serialized payload before committing
+      if (window.RuntimeValidator) {
+        const valRes = window.RuntimeValidator.validateSavePayload(serialized);
+        if (!valRes.valid) {
+          throw new Error(`Save payload validation failed: ${valRes.error}`);
+        }
+      }
+
       localStorage.setItem(tmpKey, serialized);
 
       // 2. Validate written temporary payload
@@ -270,6 +286,10 @@ class SaveManager {
     } catch (err) {
       console.error('[SaveManager] Save failed:', err);
       return false;
+    } finally {
+      if (window.LifecycleValidator) {
+        window.LifecycleValidator.completeSaveWatchdog();
+      }
     }
   }
 
