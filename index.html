@@ -1123,20 +1123,23 @@
   <script src="js/ui/voice-language-ui.js"></script>
   <script src="js/ui/subtitle-ui.js"></script>
 
-  <!-- Audio Production QA Test Suites -->
-  <script src="tests/audio/test-audio-registry.js"></script>
-  <script src="tests/audio/test-audio-buses.js"></script>
-  <script src="tests/audio/test-voice.js"></script>
-  <script src="tests/audio/test-dialogue.js"></script>
-  <script src="tests/audio/test-music.js"></script>
-  <script src="tests/audio/test-ambient.js"></script>
-  <script src="tests/audio/test-footsteps.js"></script>
-  <script src="tests/audio/test-vehicle-audio.js"></script>
-  <script src="tests/audio/test-wildlife-audio.js"></script>
-  <script src="tests/audio/test-weather-audio.js"></script>
-  <script src="tests/audio/test-occlusion.js"></script>
-  <script src="tests/audio/test-performance.js"></script>
-  <script src="tests/audio/test-save.js"></script>
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- SPATIAL SYSTEMS: Collision · NavMesh · Pathfinding · Traversal -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <script src="js/engine/spatial/collision-layers.js"></script>
+  <script src="js/engine/spatial/collision-proxy.js"></script>
+  <script src="js/engine/spatial/ground-detection.js"></script>
+  <script src="js/engine/spatial/slope-system.js"></script>
+  <script src="js/engine/spatial/collision-system.js"></script>
+  <script src="js/engine/spatial/spatial-query.js"></script>
+  <script src="js/engine/spatial/navmesh-manager.js"></script>
+  <script src="js/engine/spatial/pathfinding.js"></script>
+  <script src="js/engine/spatial/navigation-system.js"></script>
+  <script src="js/engine/spatial/traversal-system.js"></script>
+  <script src="js/engine/spatial/interaction-probes.js"></script>
+  <script src="js/engine/spatial/world-obstacle-system.js"></script>
+  <script src="js/engine/spatial/spatial-debugger.js"></script>
+  <script src="js/engine/spatial/index.js"></script>
 
   <!-- Production Content Authoring & Data-Driven Game System -->
   <script src="js/content/content-utils.js"></script>
@@ -1153,19 +1156,22 @@
   <script src="js/content/content-loader.js"></script>
   <script src="js/content/content-panel-dev.js"></script>
 
-  <!-- Content System QA Test Suites -->
-  <script src="tests/content/test-content-registry.js"></script>
-  <script src="tests/content/test-quest-system.js"></script>
-  <script src="tests/content/test-dialogue-system.js"></script>
-  <script src="tests/content/test-npc-content.js"></script>
-  <script src="tests/content/test-location-content.js"></script>
-  <script src="tests/content/test-cultural-activities.js"></script>
-  <script src="tests/content/test-world-events.js"></script>
-  <script src="tests/content/test-items-shops.js"></script>
-  <script src="tests/content/test-validator.js"></script>
-  <script src="tests/content/test-save-migration.js"></script>
-  <script src="tests/content/test-security-devpanel.js"></script>
-  <script src="tests/content/test-content-pipeline.js"></script>
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- NPC AI · Wildlife · Living Crowd · Game Director                -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <script src="js/ai/npc-behaviour-tree.js"></script>
+  <script src="js/ai/npc-manager.js"></script>
+  <script src="js/ai/wildlife-ai.js"></script>
+  <script src="js/ai/living-crowd.js"></script>
+  <script src="js/director/game-director.js"></script>
+  <script src="js/ai/index.js"></script>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- EXPLORATION · WORLD MEMORY · STORY CONSEQUENCES                -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <script src="js/exploration/exploration-discovery.js"></script>
+  <script src="js/story/world-memory.js"></script>
+  <script src="js/story/story-consequence.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>
