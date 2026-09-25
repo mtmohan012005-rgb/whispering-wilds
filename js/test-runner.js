@@ -1456,6 +1456,44 @@ window.runStepByStepFeatureTests = async function() {
     log(61, 'Zero-Crash Production QA, Automated Bug Detection, Regression Prevention & Self-Healing Runtime', false, err.message);
   }
 
+  // --- STEP 62: Production PC Launcher, Updates, Patch System, Version Compatibility & Safe Installation ---
+  try {
+    const launcherSuites = [
+      { name: 'Install', fn: window.runTestLauncherInstall },
+      { name: 'Manifest', fn: window.runTestLauncherManifest },
+      { name: 'Checksum', fn: window.runTestLauncherChecksum },
+      { name: 'Update', fn: window.runTestLauncherUpdate },
+      { name: 'Repair', fn: window.runTestLauncherRepair },
+      { name: 'Rollback', fn: window.runTestLauncherRollback },
+      { name: 'Offline', fn: window.runTestLauncherOffline },
+      { name: 'CrashRecovery', fn: window.runTestLauncherCrashRecovery },
+      { name: 'SaveSafety', fn: window.runTestLauncherSaveSafety },
+      { name: 'VersionCompatibility', fn: window.runTestLauncherVersionCompatibility }
+    ];
+
+    const launcherResults = [];
+    for (const suite of launcherSuites) {
+      if (typeof suite.fn === 'function') {
+        const res = await suite.fn();
+        launcherResults.push({ name: suite.name, passed: !!res.passed, details: res });
+      } else {
+        launcherResults.push({ name: suite.name, passed: false, details: 'Function not loaded' });
+      }
+    }
+
+    const allLauncherPassed = launcherResults.every(r => r.passed);
+    const failedSuites = launcherResults.filter(r => !r.passed).map(r => r.name);
+
+    const step62Success = allLauncherPassed;
+    const details = step62Success
+      ? 'All 10 Launcher QA suites passed (Install, Manifest, Checksum, Update, Repair, Rollback, Offline, CrashRecovery, SaveSafety, VersionCompatibility). User savedata strictly separated from game binaries, Customization <= 5 preserved'
+      : `Failed Launcher Suites: [${failedSuites.join(', ')}]`;
+
+    log(62, 'Production PC Launcher, Updates, Patch System, Version Compatibility & Safe Installation', step62Success, details);
+  } catch (err) {
+    log(62, 'Production PC Launcher, Updates, Patch System, Version Compatibility & Safe Installation', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

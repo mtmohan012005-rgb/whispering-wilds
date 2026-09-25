@@ -19,7 +19,7 @@ $edgeArgs = @(
 Write-Host "Launching Edge headless to execute tests..."
 $proc = Start-Process -FilePath $edgePath -ArgumentList $edgeArgs -PassThru -RedirectStandardError "edge_stderr.log"
 
-$timeoutSec = 50
+$timeoutSec = 90
 $elapsed = 0
 while ($elapsed -lt $timeoutSec) {
     Start-Sleep -Seconds 1

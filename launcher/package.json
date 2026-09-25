@@ -1,0 +1,14 @@
+{
+  "name": "the-whispering-wilds-launcher",
+  "version": "1.0.0",
+  "description": "Production PC Launcher, Version Compatibility, Update and Repair System for The Whispering Wilds (Kaattu Vazhi)",
+  "main": "src/main.js",
+  "author": "The Whispering Wilds Team",
+  "license": "Proprietary",
+  "scripts": {
+    "start": "electron src/main.js",
+    "test": "node ../tests/launcher/run-launcher-tests.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

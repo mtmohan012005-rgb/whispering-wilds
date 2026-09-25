@@ -856,6 +856,31 @@
   <script src="tests/regression/test-world-flow.js"></script>
   <script src="tests/regression/test-performance-flow.js"></script>
 
+  <!-- Production PC Launcher, Updates & Version Management Modules -->
+  <script src="launcher/src/launcher-state.js"></script>
+  <script src="launcher/src/manifest-manager.js"></script>
+  <script src="launcher/src/file-validator.js"></script>
+  <script src="launcher/src/version-manager.js"></script>
+  <script src="launcher/src/download-manager.js"></script>
+  <script src="launcher/src/install-manager.js"></script>
+  <script src="launcher/src/update-manager.js"></script>
+  <script src="launcher/src/repair-manager.js"></script>
+  <script src="launcher/src/rollback-manager.js"></script>
+  <script src="launcher/src/launcher-settings.js"></script>
+  <script src="launcher/src/launcher-ui.js"></script>
+
+  <!-- Production PC Launcher QA Tests -->
+  <script src="tests/launcher/test-install.js"></script>
+  <script src="tests/launcher/test-manifest.js"></script>
+  <script src="tests/launcher/test-checksum.js"></script>
+  <script src="tests/launcher/test-update.js"></script>
+  <script src="tests/launcher/test-repair.js"></script>
+  <script src="tests/launcher/test-rollback.js"></script>
+  <script src="tests/launcher/test-offline.js"></script>
+  <script src="tests/launcher/test-crash-recovery.js"></script>
+  <script src="tests/launcher/test-save-safety.js"></script>
+  <script src="tests/launcher/test-version-compatibility.js"></script>
+
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
