@@ -178,6 +178,11 @@ class SaveManager {
       secrets: window.SecretDiscoverySystem ? window.SecretDiscoverySystem.serialize() : null,
       collectibles: window.CollectibleSystem ? window.CollectibleSystem.serialize() : null,
       replay: window.ReplaySystem ? window.ReplaySystem.serialize() : null,
+      storyProgression: window.StoryProgressionSystem ? window.StoryProgressionSystem.serialize() : null,
+      storyBranch: window.StoryBranchSystem ? window.StoryBranchSystem.serialize() : null,
+      endingSystem: window.EndingSystem ? window.EndingSystem.serialize() : null,
+      newGamePlus: window.NewGamePlusSystem ? window.NewGamePlusSystem.serialize() : null,
+      storyRecap: window.StoryRecapSystem ? window.StoryRecapSystem.serialize() : null,
 
       // Story flags
       storyFlags: window.STORY_FLAGS ? Array.from(window.STORY_FLAGS) : [],
@@ -734,6 +739,21 @@ class SaveManager {
     }
     if (window.ReplaySystem && state.replay) {
       window.ReplaySystem.init(state.replay);
+    }
+    if (window.StoryProgressionSystem && state.storyProgression) {
+      window.StoryProgressionSystem.init(state.storyProgression);
+    }
+    if (window.StoryBranchSystem && state.storyBranch) {
+      window.StoryBranchSystem.init(state.storyBranch);
+    }
+    if (window.EndingSystem && state.endingSystem) {
+      window.EndingSystem.init(state.endingSystem);
+    }
+    if (window.NewGamePlusSystem && state.newGamePlus) {
+      window.NewGamePlusSystem.init(state.newGamePlus);
+    }
+    if (window.StoryRecapSystem && state.storyRecap) {
+      window.StoryRecapSystem.init(state.storyRecap);
     }
 
     // --- Authoritative World Streaming State (Section 88) ---

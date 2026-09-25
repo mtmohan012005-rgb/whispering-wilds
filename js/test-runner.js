@@ -1768,6 +1768,53 @@ window.runStepByStepFeatureTests = async function() {
     log(68, 'Universal Graphics Backend, GPU Fallback, Display Compatibility & Renderer Stability', false, err.message);
   }
 
+  // --------------------------------------------------------------------------
+  // STEP 69: Story Endings, Branching Consequences, New Game+, Replayability & Final Progression
+  // --------------------------------------------------------------------------
+  try {
+    const storySuites = [
+      { name: 'StoryProgression', fn: window.testStoryProgression },
+      { name: 'StoryBranches', fn: window.testStoryBranches },
+      { name: 'Endings', fn: window.testEndings },
+      { name: 'NewGamePlus', fn: window.testNewGamePlus },
+      { name: 'ReplaySystem', fn: window.testReplaySystem }
+    ];
+
+    const storyResults = [];
+    for (const suite of storySuites) {
+      if (typeof suite.fn === 'function') {
+        const res = await suite.fn();
+        storyResults.push({ name: suite.name, passed: res.failed === 0, details: res });
+      } else {
+        storyResults.push({ name: suite.name, passed: false, details: 'Function not loaded' });
+      }
+    }
+
+    const allStoryPassed = storyResults.every(r => r.passed);
+    const failedStorySuites = storyResults.filter(r => !r.passed).map(r => `${r.name} (${(r.details && r.details.errors) ? r.details.errors.join('; ') : r.details})`);
+
+    // Invariant checks
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+    const allSystemsLoaded = !!(
+      window.StoryProgressionSystem &&
+      window.StoryBranchSystem &&
+      window.EndingSystem &&
+      window.NewGamePlusSystem &&
+      window.StoryRecapSystem &&
+      window.ReplaySystem
+    );
+
+    const step69Success = allStoryPassed && customValid && allSystemsLoaded;
+    const details = step69Success
+      ? 'All 5 Story Progression & Ending QA suites passed (Progression, Branches, Endings, NewGamePlus, ReplaySystem). 4 distinct endings verified, spoiler shield confirmed, save preservation validated, Customization <= 5 preserved'
+      : `Failed Suites: [${failedStorySuites.join(', ')}], Customization Valid: ${customValid}, All Systems Loaded: ${allSystemsLoaded}`;
+
+    log(69, 'Story Endings, Branching Consequences, New Game+, Replayability & Final Progression', step69Success, details);
+  } catch (err) {
+    log(69, 'Story Endings, Branching Consequences, New Game+, Replayability & Final Progression', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

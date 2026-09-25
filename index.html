@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="css/progression-ui.css">
   <link rel="stylesheet" href="css/survival-production.css">
   <link rel="stylesheet" href="css/account-security.css">
+  <link rel="stylesheet" href="css/story-progression.css">
 
   <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -660,15 +661,29 @@
   <script src="js/data/secret-discovery-data.js"></script>
   <script src="js/data/collectible-data.js"></script>
   <script src="js/data/environmental-mystery-data.js"></script>
+  <script src="js/data/story-progression-data.js"></script>
+  <script src="js/data/story-branch-data.js"></script>
+  <script src="js/data/ending-data.js"></script>
+  <script src="js/data/replay-data.js"></script>
+  <script src="js/data/new-game-plus-data.js"></script>
   <script src="js/systems/story-content-system.js"></script>
   <script src="js/systems/side-quest-system.js"></script>
   <script src="js/systems/secret-discovery-system.js"></script>
   <script src="js/systems/collectible-system.js"></script>
   <script src="js/systems/replay-system.js"></script>
+  <script src="js/systems/story-progression-system.js"></script>
+  <script src="js/systems/story-branch-system.js"></script>
+  <script src="js/systems/ending-system.js"></script>
+  <script src="js/systems/new-game-plus-system.js"></script>
+  <script src="js/systems/story-recap-system.js"></script>
   <script src="js/ui/story-progress-ui.js"></script>
   <script src="js/ui/side-quest-ui.js"></script>
   <script src="js/ui/secret-discovery-ui.js"></script>
   <script src="js/ui/collectible-ui.js"></script>
+  <script src="js/ui/ending-ui.js"></script>
+  <script src="js/ui/story-recap-ui.js"></script>
+  <script src="js/ui/new-game-plus-ui.js"></script>
+  <script src="js/ui/replay-summary-ui.js"></script>
 
   <!-- Phase 3: Cloud Save, Player Profile & Multi-Device Sync -->
   <script src="js/cloud/cloud-save-client.js"></script>
@@ -1040,6 +1055,13 @@
   <script src="tests/graphics/test-display-scaling.js"></script>
   <script src="tests/graphics/test-context-loss.js"></script>
   <script src="tests/graphics/test-gpu-recovery.js"></script>
+ 
+  <!-- Story Endings, Branching Consequences, New Game+ & Replay QA Test Suites -->
+  <script src="tests/story/test-story-progression.js"></script>
+  <script src="tests/story/test-story-branches.js"></script>
+  <script src="tests/story/test-endings.js"></script>
+  <script src="tests/story/test-new-game-plus.js"></script>
+  <script src="tests/story/test-replay-system.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>

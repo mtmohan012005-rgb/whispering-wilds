@@ -1,0 +1,432 @@
+/* ============================================================================
+   THE WHISPERING WILDS (KAATTU VAZHI) - STORY, ENDING & RECAP STYLES
+   Cinematic glassmorphism styling for Ending, Recap, NG+, and Replay modals.
+   ============================================================================ */
+
+.ending-screen-overlay,
+.story-recap-overlay,
+.ngplus-screen-overlay,
+.replay-summary-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 14, 22, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.ending-screen-overlay.hidden,
+.story-recap-overlay.hidden,
+.ngplus-screen-overlay.hidden,
+.replay-summary-overlay.hidden {
+  display: none !important;
+}
+
+/* Ending Screen Panel */
+.ending-content-card {
+  width: 90%;
+  max-width: 780px;
+  max-height: 85vh;
+  background: linear-gradient(135deg, rgba(22, 28, 40, 0.95), rgba(12, 16, 25, 0.98));
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 175, 55, 0.15);
+  padding: 32px;
+  color: #e0e6ed;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ending-header {
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.ending-badge {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.ending-tamil-title {
+  font-size: 1.15rem;
+  color: #d4af37;
+  letter-spacing: 1px;
+}
+
+.ending-main-title {
+  margin: 4px 0;
+  font-size: 2rem;
+  color: #f1f2f6;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.ending-tone-tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: #a4b0be;
+}
+
+.ending-epilogue-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ending-epilogue-scroll p {
+  line-height: 1.7;
+  font-size: 1.02rem;
+  color: #ced6e0;
+  margin-bottom: 14px;
+}
+
+.ending-rewards-box {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+}
+
+.ending-rewards-box h4 {
+  margin: 0 0 6px 0;
+  color: #d4af37;
+  font-size: 0.95rem;
+}
+
+.ending-actions-row {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* Recap & NG+ Panels */
+.story-recap-panel,
+.ngplus-panel,
+.replay-summary-panel {
+  width: 90%;
+  max-width: 860px;
+  max-height: 85vh;
+  background: linear-gradient(145deg, #171c26, #0e121a);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 24px;
+  color: #f1f2f6;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+.recap-header,
+.ngplus-header,
+.replay-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.recap-close-x {
+  background: none;
+  border: none;
+  color: #a4b0be;
+  font-size: 1.8rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.recap-close-x:hover {
+  color: #ff4757;
+}
+
+.recap-ending-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.recap-ending-icon {
+  font-size: 2.2rem;
+}
+
+.recap-ending-tamil {
+  font-size: 0.9rem;
+  color: #d4af37;
+}
+
+.recap-ending-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.recap-grid-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.recap-column h3 {
+  font-size: 1rem;
+  color: #ced6e0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 6px;
+}
+
+.recap-decision-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid #2ed573;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.decision-badge {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #a4b0be;
+}
+
+.decision-title {
+  margin: 3px 0;
+  color: #f1f2f6;
+}
+
+.decision-choice {
+  color: #7bed9f;
+  margin-bottom: 4px;
+}
+
+.decision-consequence {
+  color: #a4b0be;
+  font-size: 0.84rem;
+}
+
+.recap-npc-row,
+.recap-faction-row {
+  margin-bottom: 10px;
+  font-size: 0.88rem;
+}
+
+.npc-meta,
+.faction-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.npc-bar-track,
+.faction-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.npc-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1e90ff, #2ed573);
+  border-radius: 4px;
+}
+
+.faction-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffa502, #ff4757);
+  border-radius: 4px;
+}
+
+/* NG+ UI Styles */
+.ngplus-security-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(46, 213, 115, 0.1);
+  border: 1px solid rgba(46, 213, 115, 0.3);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #7bed9f;
+  margin-bottom: 14px;
+}
+
+.ngplus-summary-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 14px;
+  border-radius: 8px;
+}
+
+.ngplus-summary-box h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.92rem;
+}
+
+.carryover-col h4 {
+  color: #2ed573;
+}
+
+.reset-col h4 {
+  color: #ffa502;
+}
+
+.ngplus-summary-box ul {
+  padding-left: 20px;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #ced6e0;
+}
+
+.modifier-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.modifier-checkbox-label input {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.mod-info strong {
+  color: #f1f2f6;
+  font-size: 0.92rem;
+}
+
+.mod-info em {
+  color: #d4af37;
+  font-size: 0.82rem;
+}
+
+.mod-info p {
+  margin: 4px 0 0 0;
+  font-size: 0.84rem;
+  color: #a4b0be;
+}
+
+/* Replay Summary UI */
+.replay-stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-val {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.stat-lbl {
+  font-size: 0.76rem;
+  color: #a4b0be;
+  text-transform: uppercase;
+}
+
+.replay-scenarios-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.scenario-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.scenario-card h4 {
+  margin: 0;
+  color: #f1f2f6;
+  font-size: 0.95rem;
+}
+
+.scenario-tamil {
+  color: #d4af37;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+
+.scenario-card p {
+  font-size: 0.82rem;
+  color: #a4b0be;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+/* Buttons */
+.btn-highlight {
+  background: linear-gradient(135deg, #d4af37, #b38f2a);
+  color: #0c1017;
+  font-weight: 700;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-highlight:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
