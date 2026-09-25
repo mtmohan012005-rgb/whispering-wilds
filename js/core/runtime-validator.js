@@ -208,6 +208,41 @@
     }
 
     /**
+     * Validates world streaming integrity, active cell bounds, and zero duplicate states.
+     */
+    validateWorldStreaming(streamingSystem = null, autoRepair = true) {
+      const stream = streamingSystem || window.worldStreamingSystem;
+      if (!stream) return { valid: true, issues: [] };
+
+      const issues = [];
+      const cellMgr = stream.cellManager;
+      if (cellMgr) {
+        // 1. Verify active cell count is bounded
+        if (cellMgr.activeCellIds.size > 16) {
+          issues.push(`Excessive active cells count (${cellMgr.activeCellIds.size})`);
+          if (autoRepair) {
+            stream.cache.handleMemoryPressure('HIGH');
+            this._recordRepair('STREAMING_CELLS_TRIMMED', { count: cellMgr.activeCellIds.size });
+          }
+        }
+
+        // 2. Validate cell states are non-ambiguous
+        const validStates = ['UNLOADED', 'QUEUED', 'LOADING', 'LOADED', 'ACTIVE', 'DEACTIVATING', 'UNLOADING', 'FAILED'];
+        for (const [id, rec] of cellMgr.cellRecords.entries()) {
+          if (!validStates.includes(rec.state)) {
+            issues.push(`Invalid state for cell ${id}: ${rec.state}`);
+            if (autoRepair) {
+              rec.state = 'UNLOADED';
+              this._recordRepair('CELL_STATE_RESET', { cellId: id });
+            }
+          }
+        }
+      }
+
+      return { valid: issues.length === 0, issues };
+    }
+
+    /**
      * Validates a serialized save payload before writing to persistent storage.
      */
     validateSavePayload(payloadString) {

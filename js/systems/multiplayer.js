@@ -439,12 +439,26 @@ class MultiplayerManager {
     }
 
     // Called on every 3D animation frame to smoothly interpolate remote players
-    updateRemotePlayers(deltaTime) {
+    updateRemotePlayers(deltaTime, localPlayerPos = null) {
         const lerpFactor = Math.min(1.0, deltaTime * 12.0);
+        const lPos = localPlayerPos || (window.threeWorld?.player?.getPosition ? window.threeWorld.player.getPosition() : null);
 
         for (const id in this.remotePlayers) {
             const p = this.remotePlayers[id];
             if (!p || !p.mesh) continue;
+
+            // Interest management & distance-based relevance (Section 84, 85, 86)
+            if (lPos) {
+                const dist = Math.hypot(p.targetPos.x - lPos.x, p.targetPos.z - lPos.z);
+                const isNearOrInteracting = dist < 120.0 || p.isInteracting;
+
+                // Far remote players: abstract visibility (toggle mesh, throttle interpolation)
+                p.mesh.visible = isNearOrInteracting;
+                if (!isNearOrInteracting) {
+                    p.mesh.position.copy(p.targetPos);
+                    continue;
+                }
+            }
 
             p.mesh.position.lerp(p.targetPos, lerpFactor);
 
@@ -468,6 +482,21 @@ class MultiplayerManager {
             this.client.emit('playerPaused', { paused: isPaused, playerId: this.myId });
         }
         console.log(`[Multiplayer] Player pause broadcast: ${isPaused}`);
+    }
+
+    /**
+     * Network Message Security Validation (Section 133, 134)
+     * Rejects unauthorized peer messages attempting to alter region, cells, or quest progression.
+     */
+    validateNetworkStreamingMessage(msg) {
+        if (!msg || typeof msg !== 'object') return false;
+        // Streaming messages cannot grant arbitrary region unlocks or quest states
+        if (msg.type === 'FORCE_REGION_LOAD' || msg.type === 'COMPLETE_QUEST' || msg.type === 'SPAWN_CUSTOM_OBJECT') {
+            console.warn(`[Multiplayer][Security] REJECTED unauthorized streaming network command: ${msg.type}`);
+            return false;
+        }
+        const allowedTypes = ['playerMove', 'playerPaused', 'chatMessage', 'emote', 'syncTime'];
+        return allowedTypes.includes(msg.type);
     }
 
     disconnectSafely() {

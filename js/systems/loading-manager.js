@@ -277,6 +277,12 @@
           window.SessionManager.setRegion(this._targetRegion);
         }
 
+        // Initialize authoritative WorldStreamingSystem for target region and cell (Section 88)
+        if (window.worldStreamingSystem) {
+          const startCell = this._pendingSaveData?.world?.currentCell || 'CELL_CHE_001';
+          window.worldStreamingSystem.restoreFromSave(this._targetRegion || 'CHENNAI', startCell);
+        }
+
         this._setStageProgress('FINALIZE', 100);
         this._isLoading = false;
 

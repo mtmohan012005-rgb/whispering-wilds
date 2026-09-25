@@ -536,7 +536,21 @@
   <script src="js/systems/laptop-optimization.js"></script>
   <script src="js/engine/occlusion-manager.js"></script>
   <script src="js/engine/instance-manager.js"></script>
-  <script src="js/systems/world-streaming.js"></script>
+  <script src="js/data/streaming-data.js"></script>
+  <script src="js/data/world-cell-data.js"></script>
+  <script src="js/data/world-region-data.js"></script>
+  <script src="js/systems/world-cell-manager.js"></script>
+  <script src="js/systems/streaming-budget-manager.js"></script>
+  <script src="js/systems/streaming-priority-manager.js"></script>
+  <script src="js/systems/streaming-recovery-system.js"></script>
+  <script src="js/systems/world-origin-manager.js"></script>
+  <script src="js/systems/streaming-cache.js"></script>
+  <script src="js/engine/streaming-renderer.js"></script>
+  <script src="js/engine/streaming-culling.js"></script>
+  <script src="js/debug/streaming-debugger.js"></script>
+  <script src="js/systems/asset-streaming-manager.js"></script>
+  <script src="js/systems/transport-system.js"></script>
+  <script src="js/systems/world-streaming-system.js"></script>
   <script src="js/ui/graphics-settings-ui.js"></script>
   <script src="js/ui/performance-diagnostics-ui.js"></script>
   <script src="js/ui/graphics-recommendation-ui.js"></script>
@@ -691,7 +705,6 @@
   <script src="js/systems/session-save-system.js"></script>
   <script src="js/systems/settings-manager.js"></script>
   <script src="js/systems/display-manager.js"></script>
-  <script src="js/systems/world-streaming-system.js"></script>
   <script src="js/systems/audio.js"></script>
   <script src="js/systems/cloud-save.js"></script>
   <script src="js/systems/account-system.js"></script>
@@ -919,6 +932,17 @@
   <script src="tests/animation/test-motion-matching.js"></script>
   <script src="tests/animation/test-animation-events.js"></script>
   <script src="tests/animation/test-animation-performance.js"></script>
+
+  <!-- Advanced World Streaming & Seamless Transition QA Tests -->
+  <script src="tests/streaming/test-cell-loading.js"></script>
+  <script src="tests/streaming/test-cell-unloading.js"></script>
+  <script src="tests/streaming/test-priority.js"></script>
+  <script src="tests/streaming/test-memory.js"></script>
+  <script src="tests/streaming/test-duplicates.js"></script>
+  <script src="tests/streaming/test-region-transition.js"></script>
+  <script src="tests/streaming/test-recovery.js"></script>
+  <script src="tests/streaming/test-world-origin.js"></script>
+  <script src="tests/streaming/test-performance.js"></script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>

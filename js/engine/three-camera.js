@@ -221,10 +221,18 @@ class ThreeCamera {
         this.contextFraming = mode;
         if (mode === 'PHOTO') {
             this.gameplayOffset.set(-5, 1.4, 6);
+            // Photo Mode Cell Locking (Section 75, 76)
+            if (window.worldStreamingSystem && window.worldStreamingSystem.culling) {
+                const activeIds = Array.from(window.worldStreamingSystem.cellManager.activeCellIds);
+                window.worldStreamingSystem.culling.setPhotoMode(true, activeIds);
+            }
         } else if (mode === 'INSPECT' || mode === 'INTERACT') {
             this.gameplayOffset.set(-8, 1.6, 9);
         } else {
             this.gameplayOffset.copy(this.defaultGameplayOffset);
+            if (window.worldStreamingSystem && window.worldStreamingSystem.culling) {
+                window.worldStreamingSystem.culling.setPhotoMode(false);
+            }
         }
     }
 

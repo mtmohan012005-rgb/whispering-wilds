@@ -57,6 +57,26 @@ class ProductionAssetsAdapter {
   isAssetProductionReady(id) {
     return this.worldAssets ? this.worldAssets.loadedAssets.has(id) : false;
   }
+
+  /**
+   * Section 137: External Asset Audit
+   * Validates that all streamable production assets are strictly local
+   */
+  auditExternalDependencies() {
+    const issues = [];
+    const registry = window.WORLD_ASSET_REGISTRY || {};
+    for (const [id, item] of Object.entries(registry)) {
+      const url = item.path || item.url || '';
+      if (/^https?:\/\/|cdn\./i.test(url)) {
+        issues.push({ id, url });
+      }
+    }
+    return {
+      passed: issues.length === 0,
+      issues,
+      count: issues.length
+    };
+  }
 }
 
 if (typeof window !== 'undefined') {

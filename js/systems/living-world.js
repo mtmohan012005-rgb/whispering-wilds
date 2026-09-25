@@ -197,6 +197,13 @@ class LivingWorldSystem {
     const shouldThrottleMidTier = this.frameIndex % 2 !== 0;
 
     this.npcs.forEach((npc) => {
+      // Abstract simulation support for out-of-range streaming cells (Section 28)
+      if (npc.isAbstractSimulation) {
+        if (npc.mesh) npc.mesh.visible = false;
+        npc.evaluateSchedule(this.worldClockMinutes);
+        return;
+      }
+
       const dist = Math.hypot(npc.x - playerPosition.x, npc.z - playerPosition.z);
 
       let lodTier = 1;

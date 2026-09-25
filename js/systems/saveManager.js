@@ -186,6 +186,8 @@ class SaveManager {
       world: {
         timeOfDay: lighting ? lighting.timeOfDay : 21,
         weatherType: weather ? weather.current.type : 'storm',
+        currentRegion: window.worldStreamingSystem?.currentRegionId || window.GameState?.world?.currentRegion || 'CHENNAI',
+        currentCell: window.worldStreamingSystem?.currentPlayerCellId || window.GameState?.world?.currentCell || 'CELL_CHE_001',
         interactions: window.GameState?.world?.interactions ? JSON.parse(JSON.stringify(window.GameState.world.interactions)) : null
       },
 
@@ -732,6 +734,13 @@ class SaveManager {
     }
     if (window.ReplaySystem && state.replay) {
       window.ReplaySystem.init(state.replay);
+    }
+
+    // --- Authoritative World Streaming State (Section 88) ---
+    if (state.world && window.worldStreamingSystem) {
+      const reg = state.world.currentRegion || 'CHENNAI';
+      const cell = state.world.currentCell || 'CELL_CHE_001';
+      window.worldStreamingSystem.restoreFromSave(reg, cell);
     }
 
     console.log('[SaveManager] ✓ Game state restored successfully.');

@@ -182,6 +182,24 @@
       if (window.renderQualitySystem && window.threeWorld?.renderer) {
         window.renderQualitySystem.setDynamicRenderScale(this.runtimeOverrides.renderScale, window.threeWorld.renderer);
       }
+
+      // Propagate adaptive quality to WorldStreamingSystem (Section 142)
+      if (window.worldStreamingSystem) {
+        if (step <= 60) {
+          window.worldStreamingSystem.preloadRadius = Math.max(70.0, window.worldStreamingSystem.activeRadius * 1.3);
+          if (window.worldStreamingSystem.cache) {
+            window.worldStreamingSystem.cache.coldCapacity = 3;
+          }
+        } else if (step >= 90) {
+          const prof = window.worldStreamingSystem.budgetManager?.profile;
+          if (prof) {
+            window.worldStreamingSystem.preloadRadius = prof.preloadCellRadius;
+            if (window.worldStreamingSystem.cache) {
+              window.worldStreamingSystem.cache.coldCapacity = prof.coldCacheCapacity || 8;
+            }
+          }
+        }
+      }
     }
   }
 

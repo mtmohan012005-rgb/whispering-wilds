@@ -114,6 +114,11 @@
         this.graphicsSettings.applyPreset(tierKey.toLowerCase());
       }
 
+      // Synchronize with Authoritative WorldStreamingSystem (Section 90, 141)
+      if (window.worldStreamingSystem && typeof window.worldStreamingSystem.applyHardwareProfile === 'function') {
+        window.worldStreamingSystem.applyHardwareProfile(tierKey);
+      }
+
       console.log(`[PerformanceManager] Applied profile: ${tierKey}`);
     }
 
@@ -184,6 +189,11 @@
         // Check thermal inference
         if (this.thermal) {
           this.thermal.evaluate(snap.averageFrameTimeMs, snap.currentFrameTimeMs / 1000.0);
+        }
+
+        // Streaming frame budget feedback (Section 90, 92)
+        if (window.worldStreamingSystem && window.worldStreamingSystem.budgetManager) {
+          window.worldStreamingSystem.budgetManager.setFrameTimeFeedback(this.frameTime, this.targetFPS);
         }
       }
 

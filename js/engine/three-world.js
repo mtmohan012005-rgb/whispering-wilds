@@ -72,7 +72,19 @@ class ThreeWorld {
         this.occlusionManager = (typeof OcclusionManager !== 'undefined') ? new OcclusionManager(this.scene, this.cameraController.camera) : null;
         window.occlusionManager = this.occlusionManager;
 
-        this.worldStreaming = (typeof WorldStreamingSystem !== 'undefined') ? new WorldStreamingSystem(this.scene, this.worldAssets) : null;
+        if (window.worldStreamingSystem) {
+            this.worldStreaming = window.worldStreamingSystem;
+            this.worldStreaming.scene = this.scene;
+            this.worldStreaming.worldAssets = this.worldAssets;
+            if (this.worldStreaming.renderer) {
+                this.worldStreaming.renderer.scene = this.scene;
+            }
+        } else if (typeof WorldStreamingSystem !== 'undefined') {
+            this.worldStreaming = new WorldStreamingSystem(this.scene, this.worldAssets);
+            window.worldStreamingSystem = this.worldStreaming;
+        } else {
+            this.worldStreaming = null;
+        }
         window.worldStreaming = this.worldStreaming;
 
         this.performanceManager = (typeof PerformanceManager !== 'undefined') ? new PerformanceManager(window.graphicsSettings, this) : null;
@@ -130,6 +142,24 @@ class ThreeWorld {
             this.renderer.setSize(w, h);
             this.cameraController.handleResize(w, h);
         });
+
+        // WebGL Context Loss Recovery (Section 125)
+        if (this.canvas) {
+            this.canvas.addEventListener('webglcontextlost', (e) => {
+                e.preventDefault();
+                console.warn('[ThreeWorld][WebGL] Context lost! Pausing renderLoop and world streaming.');
+                if (this.worldStreaming) this.worldStreaming.pause();
+            }, false);
+
+            this.canvas.addEventListener('webglcontextrestored', () => {
+                console.log('[ThreeWorld][WebGL] Context restored! Rebuilding world streaming state.');
+                if (this.worldStreaming) {
+                    this.worldStreaming.resume();
+                    const pPos = this.player.getPosition();
+                    this.worldStreaming.evaluateStreaming(pPos);
+                }
+            }, false);
+        }
 
         // Visibility change handling to conserve battery & GPU when tab is inactive
         document.addEventListener('visibilitychange', () => {
@@ -337,7 +367,8 @@ class ThreeWorld {
 
         // 4e. Update PC World Streaming & Occlusion Frustum
         if (this.worldStreaming) {
-            this.worldStreaming.update(playerPos, dt);
+            const movementMode = this.inputState.sprint ? 'SPRINT' : (this.player.isMoving ? 'WALK' : 'STATIONARY');
+            this.worldStreaming.update(playerPos, dt, this.cameraController?.camera, movementMode);
         }
         if (this.occlusionManager) {
             this.occlusionManager.updateFrustum(this.cameraController.camera);

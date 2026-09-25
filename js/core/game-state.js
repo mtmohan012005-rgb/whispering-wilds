@@ -106,6 +106,12 @@ class GameStateEngine {
     this.world = {
       seed: 133742,
       currentRegion: 'george_town',
+      currentCell: 'CELL_CHE_001',
+      activeCells: ['CELL_CHE_001'],
+      unlockedStops: {
+        stop_che_high_court: true,
+        stop_cau_anicut: true
+      },
       discoveredLocations: ['madras_high_court'],
       discoveredWildlife: [],
       culturalDiscoveries: [],
@@ -413,6 +419,25 @@ class GameStateEngine {
     }
     this.emit('regionUnlocked', regionId);
     return true;
+  }
+
+  // --------------------------------------------------------------------------
+  // STREAMING STATE SYNCHRONIZATION
+  // --------------------------------------------------------------------------
+
+  setStreamingCell(regionId, cellId, activeCells = []) {
+    if (regionId) this.world.currentRegion = String(regionId).toLowerCase();
+    if (cellId) this.world.currentCell = cellId;
+    if (Array.isArray(activeCells)) this.world.activeCells = [...activeCells];
+    this.emit('streamingCellChanged', { regionId: this.world.currentRegion, cellId: this.world.currentCell, activeCells: this.world.activeCells });
+  }
+
+  getStreamingState() {
+    return {
+      currentRegion: this.world.currentRegion,
+      currentCell: this.world.currentCell || 'CELL_CHE_001',
+      activeCells: this.world.activeCells || ['CELL_CHE_001']
+    };
   }
 
   // --------------------------------------------------------------------------
