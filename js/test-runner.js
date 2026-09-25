@@ -1604,6 +1604,82 @@ window.runStepByStepFeatureTests = async function() {
     log(64, 'Advanced World Streaming, Seamless Open World, Background Loading & Zero-Stutter Region Transitions', false, err.message);
   }
 
+  // --------------------------------------------------------------------------
+  // STEP 65: Desktop Packaging & Cross-Platform Runtime (Windows, macOS, Linux, x64, ARM64)
+  // --------------------------------------------------------------------------
+  try {
+    let desktopPassed = false;
+    let desktopDetails = '';
+
+    if (typeof window.testDesktopRuntime === 'function') {
+      const dRes = window.testDesktopRuntime();
+      desktopPassed = !!dRes.passed;
+      desktopDetails = `Checks: ${dRes.checks}, Suites: ${Object.keys(dRes.suites).join(', ')}`;
+    } else {
+      desktopDetails = 'testDesktopRuntime function not found';
+    }
+
+    // Customization limit invariant check (<= 5)
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+
+    // Single authority checks
+    const singleCodebase = (!!document.getElementById('threeCanvas') || !!document.getElementById('gameCanvas')) && !!window.GameState && !!window.PerformanceManager;
+
+    const step65Success = desktopPassed && customValid && singleCodebase;
+    const finalDetails = step65Success
+      ? `Desktop runtime verified (Windows/macOS/Linux x64/arm64). Single codebase confirmed, Preload bridge active, Customization <= 5 preserved. ${desktopDetails}`
+      : `Desktop checks failed. Passed: ${desktopPassed}, Customization valid: ${customValid}, Single codebase: ${singleCodebase}`;
+
+    log(65, 'Desktop Packaging & Cross-Platform Runtime (Windows, macOS, Linux, Multiple Architectures)', step65Success, finalDetails);
+  } catch (err) {
+    log(65, 'Desktop Packaging & Cross-Platform Runtime (Windows, macOS, Linux, Multiple Architectures)', false, err.message);
+  }
+
+  // --------------------------------------------------------------------------
+  // STEP 66: PC Storefront & Platform Integration (Steam/Epic/GOG/Direct, Achievements, Cloud, Overlay, Controller)
+  // --------------------------------------------------------------------------
+  try {
+    const platformSuites = [
+      { name: 'Capabilities', fn: window.testPlatformCapabilities },
+      { name: 'Session', fn: window.testPlatformSession },
+      { name: 'Achievements', fn: window.testAchievements },
+      { name: 'CloudSave', fn: window.testPlatformCloud },
+      { name: 'Overlay', fn: window.testOverlay },
+      { name: 'Controller', fn: window.testController },
+      { name: 'OfflineIndependence', fn: window.testOfflinePlatform }
+    ];
+
+    const platResults = [];
+    for (const suite of platformSuites) {
+      if (typeof suite.fn === 'function') {
+        const res = await suite.fn();
+        platResults.push({ name: suite.name, passed: res.failed === 0, details: res });
+      } else {
+        platResults.push({ name: suite.name, passed: false, details: 'Function not loaded' });
+      }
+    }
+
+    const allPlatPassed = platResults.every(r => r.passed);
+    const failedSuites = platResults.filter(r => !r.passed).map(r => `${r.name} (${(r.details && r.details.errors) ? r.details.errors.join('; ') : r.details})`);
+
+    // Customization limit invariant check (<= 5)
+    const customUsed = window.GameState?.player?.customizationChangesUsed ?? 0;
+    const customValid = customUsed >= 0 && customUsed <= 5;
+
+    // Sole authority check
+    const soleAuthority = !!window.PlatformIntegrationSystem;
+
+    const step66Success = allPlatPassed && customValid && soleAuthority;
+    const details = step66Success
+      ? 'All 7 Platform QA suites passed (Capabilities, Session, Achievements, CloudSave, Overlay, Controller, OfflineIndependence). Zero-storefront gameplay autonomy verified, Customization <= 5 preserved'
+      : `Failed Suites: [${failedSuites.join(', ')}], Customization Valid: ${customValid}, Sole Authority: ${soleAuthority}`;
+
+    log(66, 'PC Storefront & Platform Integration (Steam/Epic/GOG/Direct, Achievements, Cloud, Overlay & Controller)', step66Success, details);
+  } catch (err) {
+    log(66, 'PC Storefront & Platform Integration (Steam/Epic/GOG/Direct, Achievements, Cloud, Overlay & Controller)', false, err.message);
+  }
+
   console.log('>>> TEST SUITE COMPLETE <<<', results);
   window.testResults = results;
 

@@ -1,0 +1,42 @@
+{
+  "appId": "com.whisperingwilds.game",
+  "productName": "The Whispering Wilds",
+  "copyright": "Copyright © 2026 Mohan",
+  "directories": {
+    "output": "dist/windows",
+    "app": ".."
+  },
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "desktop/icons/windows/icon.ico",
+    "legalTrademarks": "The Whispering Wilds",
+    "requestedExecutionLevel": "asInvoker"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "The Whispering Wilds",
+    "uninstallDisplayName": "The Whispering Wilds"
+  },
+  "files": [
+    "index.html",
+    "css/**/*",
+    "js/**/*",
+    "assets/**/*",
+    "desktop/electron/**/*",
+    "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!**/*.{o,h,c,py,rb,map}"
+  ]
+}

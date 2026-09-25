@@ -1,0 +1,38 @@
+{
+  "appId": "com.whisperingwilds.game",
+  "productName": "The Whispering Wilds",
+  "copyright": "Copyright © 2026 Mohan",
+  "directories": {
+    "output": "dist/linux",
+    "app": ".."
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64", "arm64"]
+      },
+      {
+        "target": "deb",
+        "arch": ["x64"]
+      },
+      {
+        "target": "tar.gz",
+        "arch": ["x64", "arm64"]
+      }
+    ],
+    "icon": "desktop/icons/linux/icon.png",
+    "category": "Game;AdventureGame;",
+    "synopsis": "The Whispering Wilds Open-World Adventure",
+    "description": "An open-world narrative exploration game across Tamil Nadu."
+  },
+  "files": [
+    "index.html",
+    "css/**/*",
+    "js/**/*",
+    "assets/**/*",
+    "desktop/electron/**/*",
+    "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!**/*.{o,h,c,py,rb,map}"
+  ]
+}

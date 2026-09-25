@@ -1,0 +1,28 @@
+name: Platform Release Validation & Security Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Asset Validation (Player Model, Zero-Xbot, Zero-Placeholder)
+        run: node desktop/scripts/check-assets.js
+
+      - name: Package & Build Verification
+        run: node desktop/scripts/verify-build.js
+
+      - name: Platform Integration & Storefront Verification
+        run: node desktop/tests/platform-test.js

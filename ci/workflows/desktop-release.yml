@@ -1,0 +1,41 @@
+name: Desktop Release Pipeline
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build & Publish Release Packages
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Validate All Packages
+        run: node desktop/scripts/verify-build.js
+
+      - name: Stage Windows
+        run: node desktop/scripts/build-windows.js
+
+      - name: Stage macOS
+        run: node desktop/scripts/build-macos.js
+
+      - name: Stage Linux
+        run: node desktop/scripts/build-linux.js
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/windows/*
+            dist/macos/*
+            dist/linux/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

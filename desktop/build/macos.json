@@ -1,0 +1,54 @@
+{
+  "appId": "com.whisperingwilds.game",
+  "productName": "The Whispering Wilds",
+  "copyright": "Copyright © 2026 Mohan",
+  "directories": {
+    "output": "dist/macos",
+    "app": ".."
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["arm64", "x64"]
+      },
+      {
+        "target": "zip",
+        "arch": ["arm64", "x64"]
+      }
+    ],
+    "icon": "desktop/icons/macos/icon.icns",
+    "category": "public.app-category.adventure-games",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "desktop/installer/macos/entitlements.mac.plist",
+    "entitlementsInherit": "desktop/installer/macos/entitlements.mac.inherit.plist"
+  },
+  "dmg": {
+    "contents": [
+      {
+        "x": 130,
+        "y": 220
+      },
+      {
+        "x": 410,
+        "y": 220,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ],
+    "window": {
+      "width": 540,
+      "height": 380
+    }
+  },
+  "files": [
+    "index.html",
+    "css/**/*",
+    "js/**/*",
+    "assets/**/*",
+    "desktop/electron/**/*",
+    "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!**/*.{o,h,c,py,rb,map}"
+  ]
+}

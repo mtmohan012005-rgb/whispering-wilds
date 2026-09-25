@@ -1,0 +1,41 @@
+name: Desktop Linux Build & Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Verify Assets & Integrity
+        run: |
+          node desktop/scripts/check-assets.js
+          node desktop/scripts/check-platform.js
+
+      - name: Run Test Suites
+        run: |
+          node desktop/tests/platform-test.js
+          node desktop/tests/window-test.js
+          node desktop/tests/path-test.js
+          node desktop/tests/ipc-test.js
+          node desktop/tests/security-test.js
+
+      - name: Build Linux Packages
+        run: node desktop/scripts/build-linux.js
+
+      - name: Archive Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: The-Whispering-Wilds-Linux
+          path: dist/linux/

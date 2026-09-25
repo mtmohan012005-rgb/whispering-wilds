@@ -1,0 +1,21 @@
+{
+  "name": "the-whispering-wilds-desktop",
+  "version": "1.0.0",
+  "description": "The Whispering Wilds (Kaattu Vazhi / Thadam) - Cross-Platform Desktop Application (Windows, macOS, Linux)",
+  "main": "electron/main.js",
+  "author": "Mohan",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron electron/main.js",
+    "dev": "electron electron/main.js --dev",
+    "test": "node scripts/verify-build.js && node scripts/check-assets.js && node scripts/check-platform.js",
+    "build:windows": "node scripts/build-windows.js",
+    "build:macos": "node scripts/build-macos.js",
+    "build:linux": "node scripts/build-linux.js",
+    "verify": "node scripts/verify-build.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^28.2.0"
+  }
+}
