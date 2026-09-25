@@ -881,6 +881,45 @@
   <script src="tests/launcher/test-save-safety.js"></script>
   <script src="tests/launcher/test-version-compatibility.js"></script>
 
+  <!-- Production Animation System Data -->
+  <script src="js/data/animation-data.js"></script>
+  <script src="js/data/animation-profile-data.js"></script>
+  <script src="js/data/retarget-data.js"></script>
+  <script src="js/data/interaction-animation-data.js"></script>
+
+  <!-- Production Animation System Core Modules -->
+  <script src="js/animation/animation-registry.js"></script>
+  <script src="js/animation/animation-state-machine.js"></script>
+  <script src="js/animation/animation-blender.js"></script>
+  <script src="js/animation/animation-retargeter.js"></script>
+  <script src="js/animation/motion-matching.js"></script>
+  <script src="js/animation/pose-controller.js"></script>
+  <script src="js/animation/foot-ik-system.js"></script>
+  <script src="js/animation/hand-ik-system.js"></script>
+  <script src="js/animation/full-body-ik.js"></script>
+  <script src="js/animation/look-at-system.js"></script>
+  <script src="js/animation/upper-body-layer.js"></script>
+  <script src="js/animation/additive-animation.js"></script>
+  <script src="js/animation/animation-events.js"></script>
+  <script src="js/animation/animation-cache.js"></script>
+  <script src="js/animation/animation-controller.js"></script>
+
+  <!-- Animation Performance & Validation Systems -->
+  <script src="js/systems/animation-performance-system.js"></script>
+  <script src="js/systems/animation-validation-system.js"></script>
+  <script src="js/debug/animation-debugger.js"></script>
+
+  <!-- Production Animation QA Tests -->
+  <script src="tests/animation/test-animation-registry.js"></script>
+  <script src="tests/animation/test-state-machine.js"></script>
+  <script src="tests/animation/test-blending.js"></script>
+  <script src="tests/animation/test-retargeting.js"></script>
+  <script src="tests/animation/test-foot-ik.js"></script>
+  <script src="tests/animation/test-hand-ik.js"></script>
+  <script src="tests/animation/test-motion-matching.js"></script>
+  <script src="tests/animation/test-animation-events.js"></script>
+  <script src="tests/animation/test-animation-performance.js"></script>
+
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
