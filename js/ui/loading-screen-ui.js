@@ -7,14 +7,30 @@
   'use strict';
 
   const REGION_DISPLAY = {
-    george_town:    { name: 'GEORGE TOWN',    tamil: 'ஜார்ஜ் டவுன், சென்னை',      color: '#8b4513' },
-    cauvery_delta:  { name: 'CAUVERY DELTA',  tamil: 'காவிரி டெல்டா',               color: '#2d6a3f' },
-    pichavaram:     { name: 'PICHAVARAM',     tamil: 'பிச்சாவரம்',                  color: '#1a4a2e' },
-    chettinad:      { name: 'CHETTINAD',      tamil: 'செட்டிநாடு',                  color: '#7a5c2e' },
-    thanjavur:      { name: 'THANJAVUR',      tamil: 'தஞ்சாவூர்',                   color: '#6b3a1f' },
-    mamallapuram:   { name: 'MAMALLAPURAM',   tamil: 'மாமல்லபுரம்',                color: '#2a5080' },
-    nilgiris:       { name: 'NILGIRI MOUNTAINS', tamil: 'நீலகிரி மலைகள்',           color: '#1a3a28' },
-    final_sanctuary:{ name: 'PASUMAI THADAM', tamil: 'பசுமை தடம்',                  color: '#0e2a1a' }
+    george_town:    { name: 'GEORGE TOWN, CHENNAI',    tamil: 'ஜார்ஜ் டவுன், சென்னை',      color: '#8b4513', image: 'assets/ui/menu/menu-chennai.jpg' },
+    cauvery_delta:  { name: 'CAUVERY DELTA',           tamil: 'காவிரி டெல்டா',               color: '#2d6a3f', image: 'assets/ui/menu/menu-delta.jpg' },
+    pichavaram:     { name: 'PICHAVARAM',              tamil: 'பிச்சாவரம்',                  color: '#1a4a2e', image: 'assets/ui/menu/menu-pichavaram.jpg' },
+    chettinad:      { name: 'CHETTINAD',               tamil: 'செட்டிநாடு',                  color: '#7a5c2e', image: 'assets/ui/menu/menu-chettinad.jpg' },
+    thanjavur:      { name: 'THANJAVUR',               tamil: 'தஞ்சாவூர்',                   color: '#6b3a1f', image: 'assets/ui/menu/menu-chettinad.jpg' },
+    mamallapuram:   { name: 'MAMALLAPURAM',            tamil: 'மாமல்லபுரம்',                color: '#2a5080', image: 'assets/ui/menu/menu-mamallapuram.jpg' },
+    nilgiris:       { name: 'NILGIRI MOUNTAINS',        tamil: 'நீலகிரி மலைகள்',           color: '#1a3a28', image: 'assets/ui/menu/menu-nilgiris.jpg' },
+    final_sanctuary:{ name: 'PASUMAI THADAM SANCTUARY', tamil: 'பசுமை தடம் சரணாலயம்',       color: '#0e2a1a', image: 'assets/ui/menu/menu-nilgiris.jpg' }
+  };
+
+  const STAGE_NAMES = {
+    SETUP: 'Preparing World Environment…',
+    SAVE_PARSE: 'Validating Save Data…',
+    WORLD_DATA: 'Loading World…',
+    REGION: 'Loading Starting Sector…',
+    TERRAIN: 'Loading Environment & Terrain…',
+    ASSETS: 'Loading World Assets…',
+    CHARACTER: 'Loading Player…',
+    NPCS: 'Loading NPCs & Living World…',
+    WILDLIFE: 'Loading Wildlife Habitats…',
+    WEATHER: 'Synchronizing Weather & Atmosphere…',
+    AUDIO: 'Loading Audio & Spatial Ambience…',
+    LIGHTING: 'Configuring Lighting & Shadows…',
+    FINALIZE: 'Preparing Gameplay Mode…'
   };
 
   class LoadingScreenUI {
@@ -35,7 +51,7 @@
       if (this._visible) return;
       this._visible = true;
 
-      const info = REGION_DISPLAY[regionId] || { name: regionId.toUpperCase(), tamil: '', color: '#1a2a1a' };
+      const info = REGION_DISPLAY[regionId] || { name: regionId ? regionId.toUpperCase() : 'GEORGE TOWN', tamil: 'தமிழ்நாடு', color: '#1a2a1a', image: 'assets/ui/menu/menu-chennai.jpg' };
       const tips = this._getTips();
 
       const screen = document.createElement('div');
@@ -44,7 +60,7 @@
         'position:fixed;inset:0;z-index:8800;',
         'display:flex;flex-direction:column;',
         'font-family:"Inter",sans-serif;overflow:hidden;',
-        `background:linear-gradient(160deg,#050810 0%,${info.color}22 40%,#050810 100%);`,
+        `background:linear-gradient(rgba(5,8,16,0.85), rgba(5,8,16,0.92)), url("${info.image || 'assets/ui/menu/menu-chennai.jpg'}") center/cover no-repeat;`,
         'opacity:0;transition:opacity .5s ease;'
       ].join('');
 
@@ -148,7 +164,7 @@
       if (pctEl) pctEl.textContent = `${pct}%`;
 
       if (this._stageLabel && stage) {
-        this._stageLabel.textContent = stage.replace(/_/g, ' ');
+        this._stageLabel.textContent = STAGE_NAMES[stage] || stage.replace(/_/g, ' ');
       }
     }
 

@@ -979,61 +979,125 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // 9. Buttons & Modal Listeners
-  startBtn.addEventListener('click', () => {
-    audio.init();
-    audio.resume();
+  const skipIntroBtn = document.getElementById('skip-intro-btn');
+  const backToMenuBtn = document.getElementById('back-to-menu-btn');
 
-    // Fade out title screen and activate HUD
-    titleScreen.classList.add('fade-out');
-    setTimeout(() => {
-      titleScreen.classList.add('hidden');
-      hudContainer.classList.remove('hidden');
-    }, 300);
+  function handleStartJourney(isSkipped = false) {
+    if (audio) {
+      audio.init();
+      audio.resume();
+    }
 
-    // If BootManager/MainMenuUI is managing the flow, delegate to LoadingManager.
-    // (Keeps the title screen button working as a fallback for ?gameplay=true etc.)
-    const lc = window.GameLifecycle;
-    if (lc && lc.state === 'MAIN_MENU' && window.BootManager) {
+    // Mark intro completed
+    if (window.GameState) {
+      window.GameState.story = window.GameState.story || {};
+      window.GameState.story.introCompleted = true;
+    }
+
+    // Fade out title screen
+    if (titleScreen) {
+      titleScreen.classList.add('fade-out');
+      setTimeout(() => {
+        titleScreen.classList.add('hidden');
+      }, 300);
+    }
+
+    // Hide any MainMenuUI
+    if (window.MainMenuUI && typeof window.MainMenuUI.hide === 'function') {
+      window.MainMenuUI.hide();
+    }
+
+    // Start New Game flow via BootManager -> LoadingManager -> 3D World
+    if (window.BootManager) {
       window.BootManager.startNewGame();
       return;
     }
 
-    audio.startExplorationMusic();
-    audio.setWeatherAmbience('storm', 0.9);
-
-    // Play Inciting Incident cutscene
-    titleScreen.classList.add('fade-out');
-    setTimeout(() => {
-      titleScreen.classList.add('hidden');
-      hudContainer.classList.remove('hidden');
-
-      // Inciting Enfield roar & muddy splash
-      audio.playEnfieldRoar();
-      audio.playThunder();
-      quests.showQuestNotification('THIEF ON ROYAL ENFIELD STOLE YOUR BLUEPRINT! Track the skids in the rain!');
-
-      // Diegetic load: check for existing save
-      const existingSave = saveManager.loadGame('auto');
-      if (existingSave) {
-        saveManager.restoreState(existingSave);
-        quests.showQuestNotification(`📓 Journey resumed from ${existingSave.formattedTime}`);
-        console.log('[Main] Restored save from', existingSave.formattedTime);
+    // Fallback if BootManager is missing
+    if (audio) {
+      audio.startExplorationMusic();
+      audio.setWeatherAmbience('storm', 0.9);
+      if (!isSkipped) {
+        audio.playEnfieldRoar();
+        audio.playThunder();
+        quests.showQuestNotification('THIEF ON ROYAL ENFIELD STOLE YOUR BLUEPRINT! Track the skids in the rain!');
       }
+    }
 
-      // Activate Photorealistic 3D Mode as primary view
-      if (threeWorld) {
-        toggle3DMode(true);
+    if (hudContainer) hudContainer.classList.remove('hidden');
+    if (threeWorld) toggle3DMode(true);
+  }
+
+  if (startBtn) {
+    startBtn.addEventListener('click', () => handleStartJourney(false));
+  }
+
+  if (skipIntroBtn) {
+    skipIntroBtn.addEventListener('click', () => handleStartJourney(true));
+  }
+
+  if (backToMenuBtn) {
+    backToMenuBtn.addEventListener('click', () => {
+      if (titleScreen) {
+        titleScreen.classList.add('fade-out');
+        setTimeout(() => titleScreen.classList.add('hidden'), 200);
       }
-    }, 900);
-  });
+      if (window.MainMenuUI) {
+        window.MainMenuUI.show();
+      }
+    });
+  }
 
   if (window.GameLifecycle && typeof window.GameLifecycle.on === 'function') {
-    window.GameLifecycle.on('enter:PLAYING', () => {
+    window.GameLifecycle.on('enter:PLAYING', (data) => {
       if (titleScreen) {
         titleScreen.classList.add('fade-out');
         titleScreen.classList.add('hidden');
       }
       if (hudContainer) hudContainer.classList.remove('hidden');
+
+      // Hide all menu and splash overlays completely
+      if (window.MainMenuUI && typeof window.MainMenuUI.hide === 'function') {
+        window.MainMenuUI.hide();
+      }
+      const splash = document.getElementById('ww-splash-screen');
+      if (splash) splash.remove();
+      const bootOverlay = document.getElementById('ww-boot-overlay');
+      if (bootOverlay) bootOverlay.remove();
+
+      // Activate Photorealistic 3D Mode as primary view
+      if (threeWorld && !threeWorld.isActive) {
+        toggle3DMode(true);
+      }
+
+      // Safe authored spawn positioning for George Town, Chennai
+      if (threeWorld && threeWorld.player && threeWorld.terrain) {
+        if (data?.isNewGame || !data?.saveData) {
+          threeWorld.player.setPosition(-250, 0, threeWorld.terrain);
+        }
+      }
+
+      // Audio setup
+      if (audio) {
+        audio.init();
+        audio.resume();
+        audio.startExplorationMusic();
+      }
+
+      // Set Input context to GAMEPLAY
+      if (window.InputManager && typeof window.InputManager.setContext === 'function') {
+        window.InputManager.setContext('GAMEPLAY');
+      }
+
+      // Create safe initial checkpoint autosave on new game
+      if (data?.isNewGame && saveManager) {
+        try {
+          saveManager.saveGame('auto', 'georgetown_intro_start');
+          console.log('[Main] Safe initial checkpoint created: georgetown_intro_start');
+        } catch (e) {
+          console.warn('[Main] Failed to create initial checkpoint:', e);
+        }
+      }
     });
   }
 

@@ -272,7 +272,8 @@
 
     startNewGame(profileId = 'default') {
       const lifecycle = window.GameLifecycle;
-      if (!lifecycle || lifecycle.state !== 'MAIN_MENU') return;
+      if (!lifecycle) return;
+      if (['PLAYING', 'LOADING_GAME'].includes(lifecycle.state)) return;
 
       // Reset GameState to clean defaults
       if (window.GameState && typeof window.GameState._initAuthoritativeState === 'function') {
@@ -281,6 +282,8 @@
         window.GameState.player.customizationChangesUsed = 0;
         window.GameState.player.maxCustomizationChanges = 5;
         window.GameState.player.customizationHistory = [];
+        window.GameState.story = window.GameState.story || {};
+        window.GameState.story.introCompleted = true;
       }
 
       if (window.SessionManager) {
@@ -295,7 +298,8 @@
 
     continueGame() {
       const lifecycle = window.GameLifecycle;
-      if (!lifecycle || lifecycle.state !== 'MAIN_MENU') return;
+      if (!lifecycle) return;
+      if (['PLAYING', 'LOADING_GAME'].includes(lifecycle.state)) return;
 
       const sm = window.saveManager || window.gameSaveManager;
       if (!sm) { console.warn('[BootManager] SaveManager not available.'); return; }

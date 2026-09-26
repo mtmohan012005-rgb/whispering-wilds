@@ -10,6 +10,7 @@ class ThreeTerrain {
     this.waterMesh = null;
     this.landmarks = [];
     this.trees = [];
+    this.currentRegion = 'CHENNAI';
 
     // Terrain world bounds: X from -300 to +300, Z from -110 to +110
     this.width = 600;
@@ -18,6 +19,10 @@ class ThreeTerrain {
     this.segmentsZ = 70;
 
     this.init();
+  }
+
+  setRegion(region) {
+    this.currentRegion = region ? String(region).toUpperCase() : 'CHENNAI';
   }
 
   // Pure procedural elevation calculation

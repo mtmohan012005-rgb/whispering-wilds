@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="icTitle icDesc">
+  <title id="icTitle">The Whispering Wilds - application icon</title>
+  <desc id="icDesc">Square app icon. A bold gold W monogram lit from a low sun, resting on a Western Ghats ridgeline, framed by a thin teal keyline. Deliberately reduced detail so it stays legible down to 32 pixels.</desc>
+
+  <defs>
+    <linearGradient id="iField" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#04100b"/>
+      <stop offset="0.30" stop-color="#0a1c14"/>
+      <stop offset="0.60" stop-color="#123021"/>
+      <stop offset="1"    stop-color="#050f0b"/>
+    </linearGradient>
+
+    <radialGradient id="iSun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#ffe9b0" stop-opacity="0.92"/>
+      <stop offset="0.30" stop-color="#f7c14e" stop-opacity="0.42"/>
+      <stop offset="0.66" stop-color="#d98f1e" stop-opacity="0.14"/>
+      <stop offset="1"    stop-color="#d98f1e" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="iGold" x1="0.1" y1="0" x2="0.7" y2="1">
+      <stop offset="0"    stop-color="#fff4cd"/>
+      <stop offset="0.18" stop-color="#f9d67c"/>
+      <stop offset="0.40" stop-color="#e8ab2c"/>
+      <stop offset="0.60" stop-color="#b9761a"/>
+      <stop offset="0.78" stop-color="#e6bb45"/>
+      <stop offset="0.93" stop-color="#f8de95"/>
+      <stop offset="1"    stop-color="#a8641a"/>
+    </linearGradient>
+
+    <linearGradient id="iRidge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c4034"/>
+      <stop offset="1" stop-color="#071610"/>
+    </linearGradient>
+
+    <linearGradient id="iKey" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0"    stop-color="#2ec4b6" stop-opacity="0.75"/>
+      <stop offset="0.5"  stop-color="#f7c14e" stop-opacity="0.85"/>
+      <stop offset="1"    stop-color="#2ec4b6" stop-opacity="0.75"/>
+    </linearGradient>
+
+    <clipPath id="iClip"><rect x="0" y="0" width="512" height="512" rx="96"/></clipPath>
+
+    <filter id="iGrain" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" seed="5" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 0 0.40  0 0 0 0 0.35  0 0 0 0 0.26  0 0 0 0.5 0" result="t"/>
+      <feComposite in="t" in2="SourceAlpha" operator="in" result="tin"/>
+      <feBlend in="SourceGraphic" in2="tin" mode="multiply"/>
+    </filter>
+
+    <filter id="iBloom" x="-30%" y="-60%" width="160%" height="220%">
+      <feGaussianBlur stdDeviation="13"/>
+    </filter>
+
+    <!-- ridge, 512 wide, baseline 420 -->
+    <path id="iRidgeP" d="M0,420 L0,352 L46,318 L86,344 L130,296 L176,340 L214,306 L262,352 L306,314 L356,350 L402,322 L456,356 L512,330 L512,420 Z"/>
+
+    <!-- palmyra palm, base at 0,0 -->
+    <g id="iPalm">
+      <path d="M0,0 C-2,-40 -3,-78 -2,-116 L3,-116 C4,-78 2,-40 0,0 Z"/>
+      <g fill="none" stroke-linecap="round">
+        <path d="M0,-116 C-11,-132 -25,-138 -38,-137" stroke-width="2.6"/>
+        <path d="M0,-116 C0,-138 0,-150 0,-158" stroke-width="2.4"/>
+        <path d="M0,-116 C11,-132 25,-138 38,-137" stroke-width="2.6"/>
+      </g>
+    </g>
+
+    <!-- W monogram, 158 x 100 -->
+    <path id="iW" d="M0,0 L31,0 L50,58 L66,0 L92,0 L108,58 L127,0 L158,0 L127,100 L99,100 L79,40 L59,100 L31,100 Z"/>
+  </defs>
+
+  <g clip-path="url(#iClip)">
+    <rect width="512" height="512" fill="url(#iField)"/>
+
+    <!-- low sun behind the ridge -->
+    <ellipse cx="256" cy="330" rx="270" ry="230" fill="url(#iSun)"/>
+
+    <!-- light shafts -->
+    <g fill="#f7c14e" opacity="0.10">
+      <path d="M256,330 L206,150 L238,150 Z"/>
+      <path d="M256,330 L300,168 L326,178 Z"/>
+      <path d="M256,330 L168,214 L188,206 Z"/>
+    </g>
+
+    <!-- horizon mist -->
+    <rect x="0" y="300" width="512" height="70" fill="#cfe4dc" opacity="0.10"/>
+
+    <!-- W monogram -->
+    <g transform="translate(77,132) scale(2.263)">
+      <use href="#iW" fill="#0a1a13" opacity="0.55" transform="translate(0,4)"/>
+      <use href="#iW" fill="url(#iGold)" filter="url(#iGrain)"/>
+      <use href="#iW" fill="none" stroke="#fff8e2" stroke-width="1.6" opacity="0.40" transform="translate(0,-1.4)"/>
+      <use href="#iW" fill="none" stroke="#f7c14e" stroke-width="6" opacity="0.30" filter="url(#iBloom)"/>
+    </g>
+
+    <!-- ridge the monogram sits on -->
+    <use href="#iRidgeP" fill="url(#iRidge)"/>
+
+    <!-- framing palms -->
+    <g fill="#04100b" opacity="0.92">
+      <use href="#iPalm" transform="translate(38,430) scale(1.0)"/>
+      <use href="#iPalm" transform="translate(474,430) scale(-0.86,0.86)" opacity="0.85"/>
+    </g>
+
+    <!-- keyline -->
+    <rect x="11" y="11" width="490" height="490" rx="88" fill="none" stroke="url(#iKey)" stroke-width="2.5" opacity="0.55"/>
+  </g>
+</svg>

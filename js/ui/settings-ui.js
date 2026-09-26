@@ -48,6 +48,16 @@ class UnifiedSettingsUI {
                         </button>
                     </div>
 
+                    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h4 style="color:#ffd700; margin:0 0 4px 0;">Story Introduction</h4>
+                            <p style="color:#94a3b8; font-size:12px; margin:0;">Replay the Madras High Court Inciting Incident</p>
+                        </div>
+                        <button class="inv-action-btn" id="replay-intro-settings-btn" style="flex:none; width:auto; padding:8px 16px;">
+                            📜 Replay Intro
+                        </button>
+                    </div>
+
                     <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
                         <h4 style="color:#ffd700; margin:0 0 10px 0;">PC Control Bindings</h4>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; color:#94a3b8;">
@@ -74,7 +84,22 @@ class UnifiedSettingsUI {
     bindEvents() {
         document.getElementById('pc-settings-close').onclick = () => {
             if (window.uiManager) window.uiManager.closeModal('SETTINGS');
+            this.hide();
         };
+
+        const replayBtn = document.getElementById('replay-intro-settings-btn');
+        if (replayBtn) {
+            replayBtn.onclick = () => {
+                if (window.uiManager) window.uiManager.closeModal('SETTINGS');
+                this.hide();
+                if (window.MainMenuUI && typeof window.MainMenuUI._showPrologueModal === 'function') {
+                    window.MainMenuUI._showPrologueModal({ isReplay: true });
+                } else {
+                    const titleScreen = document.getElementById('title-screen');
+                    if (titleScreen) titleScreen.classList.remove('hidden');
+                }
+            };
+        }
 
         document.getElementById('open-graphics-settings-btn').onclick = () => {
             if (window.uiManager) window.uiManager.closeModal('SETTINGS');

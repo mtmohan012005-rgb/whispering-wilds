@@ -154,7 +154,7 @@
       await this._runStage('TERRAIN', async () => {
         this._setStageProgress('TERRAIN', 30);
         await this._tick();
-        if (window.threeWorld?.terrain) {
+        if (window.threeWorld?.terrain && typeof window.threeWorld.terrain.setRegion === 'function') {
           window.threeWorld.terrain.setRegion(this._targetRegion);
         }
         this._setStageProgress('TERRAIN', 100);
@@ -295,7 +295,9 @@
       if (window.GameLifecycle) {
         window.GameLifecycle.transitionTo('PLAYING', {
           region: this._targetRegion,
-          loadMs: this._telemetry.loadDuration
+          loadMs: this._telemetry.loadDuration,
+          isNewGame: this._isNewGame,
+          saveData: this._pendingSaveData
         });
       }
 

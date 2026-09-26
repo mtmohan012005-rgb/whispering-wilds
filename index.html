@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Whispering Wilds (காட்டு வழி / Thadam) - Open-World Tamil Nadu Exploration</title>
+  <title>The Whispering Wilds — Tamil Nadu Exploration</title>
   <meta name="description" content="Open-world exploration, light survival, and mystery adventure across authentic Tamil Nadu landscapes from Madras High Court to Pichavaram and Nilgiris.">
 
   <meta name="theme-color" content="#0c1017">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/svg+xml" href="assets/icons/app-icon.svg">
+  <link rel="icon" type="image/png" href="assets/ui/icons/whispering-wilds-icon.png">
+  <link rel="apple-touch-icon" href="assets/ui/icons/whispering-wilds-icon.png">
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
@@ -57,8 +58,8 @@
   <!-- Diegetic Save Feedback Toast -->
   <div id="save-toast" class="hidden"></div>
 
-  <!-- Cinematic Title Screen -->
-  <div id="title-screen">
+  <!-- Cinematic Title Screen & Prologue Modal (Hidden at startup, displayed on New Game Intro or Replay) -->
+  <div id="title-screen" class="hidden">
     <div class="title-card-container">
       <div class="tamil-title">காட்டு வழி • தடம்</div>
       <h1 class="main-title">The Whispering Wilds</h1>
@@ -72,8 +73,10 @@
 
       <div class="title-actions">
         <button id="start-game-btn" class="btn-primary">▶ Begin Journey (George Town, Chennai)</button>
-        <button id="multiplayer-title-btn" class="btn-secondary">👥 Co-op Expedition (Max 5P)</button>
-        <button id="toggle-audio-btn" class="btn-secondary">🔊 Enable Acoustic Audio</button>
+        <button id="skip-intro-btn" class="btn-secondary">⏩ Skip Intro</button>
+        <button id="back-to-menu-btn" class="btn-secondary">↩ Main Menu</button>
+        <button id="multiplayer-title-btn" class="btn-secondary hidden" style="display:none;">👥 Co-op Expedition (Max 5P)</button>
+        <button id="toggle-audio-btn" class="btn-secondary hidden" style="display:none;">🔊 Enable Acoustic Audio</button>
       </div>
     </div>
   </div>
