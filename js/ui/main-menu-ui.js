@@ -1118,44 +1118,45 @@
         }
         .btn-confirm:hover { background: #f0ce64; }
 
-        /* Prologue Modal Window */
+        /* Prologue Modal Window - Compact Cinematic Dialog */
         .ww-prologue-window {
-          background: #090d15; border: 1px solid rgba(212,175,55,0.35);
-          border-radius: 12px; width: 720px; max-width: 95%; padding: 40px;
-          text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.85), 0 0 50px rgba(212,175,55,0.15);
+          background: rgba(9, 13, 21, 0.94); border: 1px solid rgba(212,175,55,0.35);
+          border-radius: 12px; width: 580px; max-width: 90vw; padding: 26px 30px;
+          text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 35px rgba(212,175,55,0.12);
+          backdrop-filter: blur(16px);
         }
         .prologue-top-badge {
-          display: flex; justify-content: space-between; font-size: 0.75rem; letter-spacing: 0.15em;
-          color: #d4af37; margin-bottom: 20px; border-bottom: 1px solid rgba(212,175,55,0.15);
-          padding-bottom: 12px;
+          display: flex; justify-content: space-between; font-size: 0.72rem; letter-spacing: 0.14em;
+          color: #d4af37; margin-bottom: 14px; border-bottom: 1px solid rgba(212,175,55,0.15);
+          padding-bottom: 8px;
         }
         .prologue-title {
-          font-family: 'Cinzel', serif; font-size: 1.7rem; color: #ffffff;
-          letter-spacing: 0.06em; margin: 0 0 16px;
+          font-family: 'Cinzel', serif; font-size: 1.4rem; color: #ffffff;
+          letter-spacing: 0.05em; margin: 0 0 12px;
         }
         .prologue-divider {
-          width: 60px; height: 2px; background: #d4af37; margin: 0 auto 24px;
+          width: 50px; height: 2px; background: #d4af37; margin: 0 auto 16px;
         }
         .prologue-content {
-          font-size: 0.95rem; line-height: 1.75; color: #cbd5e1; text-align: left;
-          background: rgba(255,255,255,0.02); padding: 20px; border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.06); margin-bottom: 30px;
+          font-size: 0.88rem; line-height: 1.65; color: #cbd5e1; text-align: left;
+          background: rgba(255,255,255,0.03); padding: 14px 18px; border-radius: 8px;
+          border: 1px solid rgba(255,255,255,0.06); margin-bottom: 22px;
         }
-        .prologue-content p { margin-bottom: 12px; }
+        .prologue-content p { margin-bottom: 10px; }
         .prologue-content p:last-child { margin-bottom: 0; }
         .prologue-actions {
-          display: flex; flex-direction: column; gap: 10px; align-items: center;
+          display: flex; flex-direction: column; gap: 8px; align-items: center;
         }
         .btn-primary-prologue {
           background: #d4af37; color: #070b12; border: none; border-radius: 6px;
-          padding: 14px 32px; font-size: 1rem; font-weight: 700; letter-spacing: 0.05em;
-          cursor: pointer; width: 100%; max-width: 440px; transition: all 0.2s;
+          padding: 12px 28px; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.04em;
+          cursor: pointer; width: 100%; max-width: 400px; transition: all 0.2s;
         }
         .btn-primary-prologue:hover { background: #f0ce64; transform: translateY(-1px); }
         .btn-secondary-prologue {
           background: transparent; color: #94a3b8; border: 1px solid rgba(255,255,255,0.15);
-          border-radius: 6px; padding: 10px 24px; font-size: 0.85rem; font-weight: 500;
-          cursor: pointer; width: 100%; max-width: 440px; transition: all 0.2s;
+          border-radius: 6px; padding: 9px 20px; font-size: 0.82rem; font-weight: 500;
+          cursor: pointer; width: 100%; max-width: 400px; transition: all 0.2s;
         }
         .btn-secondary-prologue:hover { border-color: #d4af37; color: #e2c97e; }
 
