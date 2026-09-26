@@ -6,7 +6,10 @@
 (function() {
     class CloudSaveClient {
         constructor() {
-            this.baseUrl = window.location.origin;
+            const runtimeBackend = (typeof window !== 'undefined' && window.RUNTIME_CONFIG && window.RUNTIME_CONFIG.multiplayerServerUrl)
+                ? window.RUNTIME_CONFIG.multiplayerServerUrl
+                : (typeof window !== 'undefined' ? window.location.origin : '');
+            this.baseUrl = runtimeBackend.replace(/\/$/, '');
         }
 
         async request(endpoint, options = {}) {

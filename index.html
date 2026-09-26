@@ -393,9 +393,6 @@
   <script src="js/systems/render-loop-registry.js"></script>
   <script src="js/systems/health-monitor.js"></script>
   <script src="js/systems/crash-recovery-system.js"></script>
-  <script src="js/debug/diagnostics-console.js"></script>
-  <script src="js/debug/runtime-overlay.js"></script>
-  <script src="js/debug/system-inspector.js"></script>
 
   <!-- Authoritative Core Architecture & Single State of Truth -->
   <script src="js/core/world-rng.js"></script>
@@ -568,7 +565,6 @@
   <script src="js/systems/streaming-cache.js"></script>
   <script src="js/engine/streaming-renderer.js"></script>
   <script src="js/engine/streaming-culling.js"></script>
-  <script src="js/debug/streaming-debugger.js"></script>
   <script src="js/systems/asset-streaming-manager.js"></script>
   <script src="js/systems/transport-system.js"></script>
   <script src="js/systems/world-streaming-system.js"></script>
@@ -785,22 +781,6 @@
   <script src="js/ui/environment-interaction-ui.js"></script>
 
   <script src="js/main.js"></script>
-  <script src="js/test-runner.js"></script>
-  <script src="js/test-player-production.js"></script>
-  <script src="js/test-quest-progression.js"></script>
-  <script src="js/test-player-customization.js"></script>
-  <script src="js/test-audio-production.js"></script>
-  <script src="js/test-pc-graphics.js"></script>
-  <script src="js/test-production-multiplayer.js"></script>
-  <script src="js/test-professional-ui.js"></script>
-  <script src="js/test-exploration-system.js"></script>
-  <script src="js/test-puzzle-system.js"></script>
-  <script src="js/test-cultural-life.js"></script>
-  <script src="js/test-festival-system.js"></script>
-  <script src="js/test-market-life.js"></script>
-  <script src="js/test-kolam-system.js"></script>
-  <script src="js/test-food-culture.js"></script>
-  <script src="js/test-progression-expansion.js"></script>
 
   <!-- Cinematic Story, Dialogue & Story Presentation -->
   <script src="js/data/cinematic-data.js"></script>
@@ -816,105 +796,6 @@
   <script src="js/ui/dialogue-choice-ui.js"></script>
   <script src="js/ui/error-recovery-ui.js"></script>
 
-  <!-- Cinematic Automated QA Tests -->
-  <script src="js/test-cinematic-system.js"></script>
-  <script src="js/test-dialogue-controller.js"></script>
-  <script src="js/test-story-scenes.js"></script>
-  
-  <!-- Automated QA Production Test Suites -->
-  <script src="tests/test-game-state.js"></script>
-  <script src="tests/test-player.js"></script>
-  <script src="tests/test-save.js"></script>
-  <script src="tests/test-quests.js"></script>
-  <script src="tests/test-inventory.js"></script>
-  <script src="tests/test-economy.js"></script>
-  <script src="tests/test-investigation.js"></script>
-  <script src="tests/test-puzzles.js"></script>
-  <script src="tests/test-world.js"></script>
-  <script src="tests/test-player-customization.js"></script>
-  <script src="tests/test-ui.js"></script>
-  <script src="tests/input/test-input-manager.js"></script>
-  <script src="tests/life/test-life-simulation.js"></script>
-  <script src="tests/graphics/test-graphics-systems.js"></script>
-  <script src="tests/navigation/test-navigation-systems.js"></script>
-  
-  <!-- Survival, Camping, Temperature & Emergency Automated QA Tests -->
-  <script src="tests/survival/test-survival.js"></script>
-  <script src="tests/survival/test-temperature.js"></script>
-  <script src="tests/survival/test-camping.js"></script>
-  <script src="tests/survival/test-rest.js"></script>
-  <script src="tests/survival/test-emergency.js"></script>
-  <script src="tests/survival/test-survival-save.js"></script>
-
-  <!-- Production Email Verification, OTP & Password Reset QA Tests -->
-  <script src="tests/auth-email/test-email-verification.js"></script>
-  <script src="tests/auth-email/test-verification-expiry.js"></script>
-  <script src="tests/auth-email/test-verification-resend.js"></script>
-  <script src="tests/auth-email/test-password-reset.js"></script>
-  <script src="tests/auth-email/test-reset-expiry.js"></script>
-  <script src="tests/auth-email/test-reset-reuse.js"></script>
-  <script src="tests/auth-email/test-otp.js"></script>
-  <script src="tests/auth-email/test-otp-attempt-limit.js"></script>
-  <script src="tests/auth-email/test-email-enumeration.js"></script>
-  <script src="tests/auth-email/test-auth-rate-limit.js"></script>
-  <script src="tests/auth-email/test-session-revocation.js"></script>
-  <script src="tests/auth-email/test-change-password.js"></script>
-  <script src="tests/auth-email/test-csrf.js"></script>
-  <!-- Boot Flow Tests -->
-  <script src="tests/boot/test-boot-flow.js"></script>
-  <script src="tests/lifecycle/test-boot.js"></script>
-  <script src="tests/lifecycle/test-main-menu.js"></script>
-  <script src="tests/lifecycle/test-new-game.js"></script>
-  <script src="tests/lifecycle/test-continue.js"></script>
-  <script src="tests/lifecycle/test-loading.js"></script>
-  <script src="tests/lifecycle/test-region-transition.js"></script>
-  <script src="tests/lifecycle/test-pause.js"></script>
-  <script src="tests/lifecycle/test-checkpoint.js"></script>
-  <script src="tests/lifecycle/test-save-recovery.js"></script>
-  <script src="tests/lifecycle/test-cloud-conflict.js"></script>
-  <script src="tests/lifecycle/test-session.js"></script>
-  <script src="tests/lifecycle/test-input-reset.js"></script>
-  <script src="tests/lifecycle/test-shutdown.js"></script>
-
-  <!-- Advanced Environmental Interaction & Reactivity QA Tests -->
-  <script src="tests/environment/test-interaction-detection.js"></script>
-  <script src="tests/environment/test-door.js"></script>
-  <script src="tests/environment/test-gate.js"></script>
-  <script src="tests/environment/test-container.js"></script>
-  <script src="tests/environment/test-physics-props.js"></script>
-  <script src="tests/environment/test-water-interaction.js"></script>
-  <script src="tests/environment/test-vegetation-reaction.js"></script>
-  <script src="tests/environment/test-persistent-props.js"></script>
-  <script src="tests/environment/test-destruction.js"></script>
-  <script src="tests/environment/test-save-restore.js"></script>
-  <script src="tests/environment/test-multiplayer-interaction.js"></script>
-  <script src="tests/environment/test-distance-validation.js"></script>
-
-  <!-- Universal PC Performance & Compatibility QA Tests -->
-  <script src="tests/performance/test-hardware-detection.js"></script>
-  <script src="tests/performance/test-adaptive-quality.js"></script>
-  <script src="tests/performance/test-frame-budget.js"></script>
-  <script src="tests/performance/test-memory.js"></script>
-  <script src="tests/performance/test-render-recovery.js"></script>
-  <script src="tests/performance/test-device-compatibility.js"></script>
-
-  <!-- Zero-Crash QA, State Integrity, Leak Detection & Regression Tests -->
-  <script src="tests/core/test-runtime-validator.js"></script>
-  <script src="tests/core/test-state-integrity.js"></script>
-  <script src="tests/core/test-lifecycle-validator.js"></script>
-  <script src="tests/core/test-system-registry.js"></script>
-  <script src="tests/core/test-error-boundary.js"></script>
-  <script src="tests/runtime/test-save-protection.js"></script>
-  <script src="tests/runtime/test-resource-leaks.js"></script>
-  <script src="tests/runtime/test-event-listeners.js"></script>
-  <script src="tests/runtime/test-timers.js"></script>
-  <script src="tests/runtime/test-render-loops.js"></script>
-  <script src="tests/regression/test-main-flow.js"></script>
-  <script src="tests/regression/test-quest-flow.js"></script>
-  <script src="tests/regression/test-player-flow.js"></script>
-  <script src="tests/regression/test-world-flow.js"></script>
-  <script src="tests/regression/test-performance-flow.js"></script>
-
   <!-- Production PC Launcher, Updates & Version Management Modules -->
   <script src="launcher/src/launcher-state.js"></script>
   <script src="launcher/src/manifest-manager.js"></script>
@@ -927,18 +808,6 @@
   <script src="launcher/src/rollback-manager.js"></script>
   <script src="launcher/src/launcher-settings.js"></script>
   <script src="launcher/src/launcher-ui.js"></script>
-
-  <!-- Production PC Launcher QA Tests -->
-  <script src="tests/launcher/test-install.js"></script>
-  <script src="tests/launcher/test-manifest.js"></script>
-  <script src="tests/launcher/test-checksum.js"></script>
-  <script src="tests/launcher/test-update.js"></script>
-  <script src="tests/launcher/test-repair.js"></script>
-  <script src="tests/launcher/test-rollback.js"></script>
-  <script src="tests/launcher/test-offline.js"></script>
-  <script src="tests/launcher/test-crash-recovery.js"></script>
-  <script src="tests/launcher/test-save-safety.js"></script>
-  <script src="tests/launcher/test-version-compatibility.js"></script>
 
   <!-- Production Animation System Data -->
   <script src="js/data/animation-data.js"></script>
@@ -966,32 +835,8 @@
   <!-- Animation Performance & Validation Systems -->
   <script src="js/systems/animation-performance-system.js"></script>
   <script src="js/systems/animation-validation-system.js"></script>
-  <script src="js/debug/animation-debugger.js"></script>
-
-  <!-- Production Animation QA Tests -->
-  <script src="tests/animation/test-animation-registry.js"></script>
-  <script src="tests/animation/test-state-machine.js"></script>
-  <script src="tests/animation/test-blending.js"></script>
-  <script src="tests/animation/test-retargeting.js"></script>
-  <script src="tests/animation/test-foot-ik.js"></script>
-  <script src="tests/animation/test-hand-ik.js"></script>
-  <script src="tests/animation/test-motion-matching.js"></script>
-  <script src="tests/animation/test-animation-events.js"></script>
-  <script src="tests/animation/test-animation-performance.js"></script>
-
-  <!-- Advanced World Streaming & Seamless Transition QA Tests -->
-  <script src="tests/streaming/test-cell-loading.js"></script>
-  <script src="tests/streaming/test-cell-unloading.js"></script>
-  <script src="tests/streaming/test-priority.js"></script>
-  <script src="tests/streaming/test-memory.js"></script>
-  <script src="tests/streaming/test-duplicates.js"></script>
-  <script src="tests/streaming/test-region-transition.js"></script>
-  <script src="tests/streaming/test-recovery.js"></script>
-  <script src="tests/streaming/test-world-origin.js"></script>
-  <script src="tests/streaming/test-performance.js"></script>
 
   <!-- Desktop Runtime & Cross-Platform Packaging -->
-  <script src="tests/desktop/test-desktop-runtime.js"></script>
 
   <!-- Platform Core, Identity & Capability Infrastructure -->
   <script src="platform/platform-capabilities.js"></script>
@@ -1023,15 +868,6 @@
   <script src="js/ui/platform-account-ui.js"></script>
   <script src="js/ui/platform-status-ui.js"></script>
 
-  <!-- Platform QA & Storefront Integration Test Suites -->
-  <script src="tests/platform/test-platform-capabilities.js"></script>
-  <script src="tests/platform/test-platform-session.js"></script>
-  <script src="tests/platform/test-achievements.js"></script>
-  <script src="tests/platform/test-platform-cloud.js"></script>
-  <script src="tests/platform/test-overlay.js"></script>
-  <script src="tests/platform/test-controller.js"></script>
-  <script src="tests/platform/test-offline-platform.js"></script>
-
   <!-- Universal Compatibility & Device Adaptation Layer -->
   <script src="js/config/device-capability-schema.js"></script>
   <script src="js/config/device-fallback-rules.js"></script>
@@ -1049,15 +885,6 @@
   <script src="js/systems/stability-manager.js"></script>
   <script src="js/ui/compatibility-center-ui.js"></script>
   <script src="js/ui/adaptive-notification-ui.js"></script>
-  <script src="tests/platform/test-os-adapter.js"></script>
-  <script src="tests/platform/test-gpu-adapter.js"></script>
-  <script src="tests/platform/test-display-adapter.js"></script>
-  <script src="tests/platform/test-input-adapter.js"></script>
-  <script src="tests/platform/test-storage-adapter.js"></script>
-  <script src="tests/platform/test-device-profile.js"></script>
-  <script src="tests/platform/test-runtime-compatibility.js"></script>
-  <script src="tests/platform/test-automatic-recovery.js"></script>
-  <script src="tests/platform/test-stability.js"></script>
 
   <!-- Universal Graphics Backend, GPU Fallback & Display Compatibility -->
   <script src="js/graphics/graphics-capability-detector.js"></script>
@@ -1077,23 +904,7 @@
   <script src="js/systems/display-compatibility-system.js"></script>
   <script src="js/ui/graphics-capability-ui.js"></script>
   <script src="js/ui/graphics-recovery-ui.js"></script>
-  <script src="tests/graphics/test-capabilities.js"></script>
-  <script src="tests/graphics/test-backend-selection.js"></script>
-  <script src="tests/graphics/test-shader-fallback.js"></script>
-  <script src="tests/graphics/test-texture-fallback.js"></script>
-  <script src="tests/graphics/test-antialiasing.js"></script>
-  <script src="tests/graphics/test-render-targets.js"></script>
-  <script src="tests/graphics/test-display-scaling.js"></script>
-  <script src="tests/graphics/test-context-loss.js"></script>
-  <script src="tests/graphics/test-gpu-recovery.js"></script>
  
-  <!-- Story Endings, Branching Consequences, New Game+ & Replay QA Test Suites -->
-  <script src="tests/story/test-story-progression.js"></script>
-  <script src="tests/story/test-story-branches.js"></script>
-  <script src="tests/story/test-endings.js"></script>
-  <script src="tests/story/test-new-game-plus.js"></script>
-  <script src="tests/story/test-replay-system.js"></script>
-
   <!-- Production Audio, Voice Acting, Environmental Ambience & Dynamic Score Pipeline -->
   <script src="js/data/audio-data.js"></script>
   <script src="js/data/music-data.js"></script>

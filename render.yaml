@@ -15,7 +15,7 @@ services:
       - key: CORS_ORIGIN
         value: https://whispering-wilds.netlify.app
       - key: MAX_PLAYERS_PER_ROOM
-        value: 16
+        value: 5
       - key: MAX_ROOMS
         value: 32
       - key: TICK_RATE

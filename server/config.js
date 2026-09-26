@@ -12,9 +12,12 @@ const config = {
     HOST: process.env.HOST || '0.0.0.0',
 
     // In production, set CORS_ORIGIN in Render environment variables.
-    // Example:
-    // CORS_ORIGIN=https://your-netlify-site.netlify.app
-    CORS_ORIGIN: process.env.CORS_ORIGIN || '*',
+    // Supports comma-separated list or fallback to known deployment domains.
+    CORS_ORIGIN: process.env.CORS_ORIGIN 
+      ? (process.env.CORS_ORIGIN.includes(',') ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : process.env.CORS_ORIGIN)
+      : (process.env.NODE_ENV === 'production' 
+          ? ['https://whispering-wilds.netlify.app'] 
+          : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8080']),
 
     // ------------------------------------------------------------------------
     // MULTIPLAYER ROOM SETTINGS

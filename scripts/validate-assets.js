@@ -111,7 +111,7 @@ function runAssetValidation() {
   }
 
   const isPlayerMissing = !relativePhysical.has('assets/characters/player/player.glb');
-  console.log(`\nPlayer Hero Asset Status: ${isPlayerMissing ? 'MISSING (Using Procedural Skeletal Rig)' : 'FOUND'}`);
+  console.log(`\nPlayer Hero Asset Status: ${isPlayerMissing ? 'MISSING (STATUS = BLOCKED)' : 'FOUND & READY'}`);
 
   const report = {
     timestamp: new Date().toISOString(),
@@ -127,13 +127,19 @@ function runAssetValidation() {
 
   fs.writeFileSync(path.join(ROOT_DIR, 'ASSET_AUDIT_REPORT.json'), JSON.stringify(report, null, 2));
 
-  // Exit cleanly if procedural fallbacks handle all missing references
+  if (isPlayerMissing) {
+    console.error('\n✗ ASSET VALIDATION FAILED: Required player hero asset missing!');
+    if (require.main === module) process.exit(1);
+    return { success: false, report };
+  }
+
   console.log('\nAsset audit complete. Report written to ASSET_AUDIT_REPORT.json');
   return { success: true, report };
 }
 
 if (require.main === module) {
-  runAssetValidation();
+  const result = runAssetValidation();
+  if (!result.success) process.exit(1);
 }
 
 module.exports = { runAssetValidation };

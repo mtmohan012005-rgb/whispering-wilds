@@ -84,7 +84,8 @@ function validatePlayerGLB() {
 }
 
 if (require.main === module) {
-  validatePlayerGLB();
+  const res = validatePlayerGLB();
+  console.log('Result:', JSON.stringify(res, null, 2));
 }
 
 module.exports = { validatePlayerGLB, REQUIRED_ANIMATIONS };

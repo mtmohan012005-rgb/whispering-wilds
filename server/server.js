@@ -54,20 +54,22 @@ app.get('/ready', (req, res) => {
     });
 });
 
-// Test results ingestion endpoint (for automated testing & headless test-runner)
-app.post('/api/test-results', (req, res) => {
-    try {
-        const fs = require('fs');
-        const results = req.body;
-        const outPath = path.join(__dirname, '..', 'test_results.json');
-        fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
-        Logger.info(`Saved test results (${Array.isArray(results) ? results.length : 0} steps)`);
-        res.status(200).json({ saved: true });
-    } catch (err) {
-        Logger.error('Failed to save test results', { error: err.message });
-        res.status(500).json({ error: err.message });
-    }
-});
+// Test results ingestion endpoint (strictly development-only, isolated from production)
+if (process.env.NODE_ENV === 'development') {
+    app.post('/api/test-results', (req, res) => {
+        try {
+            const fs = require('fs');
+            const results = req.body;
+            const outPath = path.join(__dirname, '..', 'test_results.json');
+            fs.writeFileSync(outPath, JSON.stringify(results, null, 2));
+            Logger.info(`Saved test results (${Array.isArray(results) ? results.length : 0} steps)`);
+            res.status(200).json({ saved: true });
+        } catch (err) {
+            Logger.error('Failed to save test results', { error: err.message });
+            res.status(500).json({ error: err.message });
+        }
+    });
+}
 
 // Serve static game files from project root
 app.use(express.static(path.join(__dirname, '..')));

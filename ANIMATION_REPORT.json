@@ -1,40 +1,395 @@
 {
-  "version": "1.0.0",
-  "generated": "2026-09-24T06:30:00.000Z",
-  "summary": {
-    "totalAnimations": 27,
-    "readyProcedural": 27,
-    "missingBinaryGLB": 22
-  },
-  "playerAnimations": [
-    { "clip": "Player_Idle", "status": "PROCEDURAL_ACTIVE", "duration": 2.0 },
-    { "clip": "Player_Walk", "status": "PROCEDURAL_ACTIVE", "duration": 1.2 },
-    { "clip": "Player_Run", "status": "PROCEDURAL_ACTIVE", "duration": 0.8 },
-    { "clip": "Player_Sprint", "status": "PROCEDURAL_ACTIVE", "duration": 0.65 },
-    { "clip": "Player_Jump_Start", "status": "PROCEDURAL_ACTIVE", "duration": 0.3 },
-    { "clip": "Player_Jump", "status": "PROCEDURAL_ACTIVE", "duration": 0.6 },
-    { "clip": "Player_Fall", "status": "PROCEDURAL_ACTIVE", "duration": 0.5 },
-    { "clip": "Player_Land", "status": "PROCEDURAL_ACTIVE", "duration": 0.4 },
-    { "clip": "Player_Interact", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
-    { "clip": "Player_Pickup", "status": "PROCEDURAL_ACTIVE", "duration": 1.2 },
-    { "clip": "Player_Inspect", "status": "PROCEDURAL_ACTIVE", "duration": 1.5 },
-    { "clip": "Player_Crouch_Idle", "status": "PROCEDURAL_ACTIVE", "duration": 1.8 },
-    { "clip": "Player_Crouch_Walk", "status": "PROCEDURAL_ACTIVE", "duration": 1.4 },
-    { "clip": "Player_Climb_Start", "status": "PROCEDURAL_ACTIVE", "duration": 0.8 },
-    { "clip": "Player_Climb_Loop", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
-    { "clip": "Player_Climb_End", "status": "PROCEDURAL_ACTIVE", "duration": 0.8 },
-    { "clip": "Player_Swim", "status": "PROCEDURAL_ACTIVE", "duration": 1.2 },
-    { "clip": "Player_Sit", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
-    { "clip": "Player_Stand", "status": "PROCEDURAL_ACTIVE", "duration": 1.0 },
-    { "clip": "Player_Eat", "status": "PROCEDURAL_ACTIVE", "duration": 2.0 },
-    { "clip": "Player_Drink", "status": "PROCEDURAL_ACTIVE", "duration": 1.8 },
-    { "clip": "Player_Photo", "status": "PROCEDURAL_ACTIVE", "duration": 1.5 }
-  ],
-  "wildlifeAnimations": [
-    { "species": "nilgiri_tahr", "clip": "graze", "status": "READY" },
-    { "species": "nilgiri_tahr", "clip": "flee", "status": "READY" },
-    { "species": "asian_elephant", "clip": "walk", "status": "READY" },
-    { "species": "indian_gaur", "clip": "walk", "status": "READY" },
-    { "species": "white_egret", "clip": "fly", "status": "READY" }
+  "timestamp": "2026-09-26T03:33:40.857Z",
+  "totalAnimations": 43,
+  "readyCount": 43,
+  "missingCount": 0,
+  "animations": [
+    {
+      "asset": "player_hero",
+      "clip": "Player_Idle",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Walk",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Run",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Sprint",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Jump_Start",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Jump",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Fall",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Land",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Interact",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Pickup",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Inspect",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Crouch_Idle",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Crouch_Walk",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Climb_Start",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Climb_Loop",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Climb_End",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Swim",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Sit",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Stand",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Eat",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Drink",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "player_hero",
+      "clip": "Player_Photo",
+      "duration": 1.25,
+      "targetBones": 20,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Authored GLB track"
+    },
+    {
+      "asset": "nilgiri_tahr",
+      "clip": "nilgiri_tahr_walk",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_tahr",
+      "clip": "nilgiri_tahr_graze",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_tahr",
+      "clip": "nilgiri_tahr_idle",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_tahr",
+      "clip": "nilgiri_tahr_flee",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_langur",
+      "clip": "nilgiri_langur_walk",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_langur",
+      "clip": "nilgiri_langur_climb",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_langur",
+      "clip": "nilgiri_langur_idle",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "nilgiri_langur",
+      "clip": "nilgiri_langur_flee",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "indian_gaur",
+      "clip": "indian_gaur_walk",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "indian_gaur",
+      "clip": "indian_gaur_graze",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "indian_gaur",
+      "clip": "indian_gaur_idle",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "indian_gaur",
+      "clip": "indian_gaur_flee",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "asian_elephant",
+      "clip": "asian_elephant_walk",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "asian_elephant",
+      "clip": "asian_elephant_idle",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "asian_elephant",
+      "clip": "asian_elephant_graze",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "asian_elephant",
+      "clip": "asian_elephant_drink",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "asian_elephant",
+      "clip": "asian_elephant_alert",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "white_egret",
+      "clip": "white_egret_walk",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "white_egret",
+      "clip": "white_egret_fly",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "white_egret",
+      "clip": "white_egret_land",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    },
+    {
+      "asset": "white_egret",
+      "clip": "white_egret_idle",
+      "duration": 1.8,
+      "targetBones": 12,
+      "playbackRate": 1,
+      "status": "READY",
+      "note": "Kinematic procedural locomotion and head tracking"
+    }
   ]
 }

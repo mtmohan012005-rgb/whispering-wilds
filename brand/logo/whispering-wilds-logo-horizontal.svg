@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 560" width="1600" height="560" role="img" aria-labelledby="wwTitle wwDesc">
+  <title id="wwTitle">The Whispering Wilds</title>
+  <desc id="wwDesc">Game logo lockup. Letterspaced serif line "The Whispering" above a bold, gold-lit stone wordmark "WILDS", set against layered Western Ghats ridgelines with a temple gopuram silhouette, framed by palmyra and coconut palms, with a flowing river rule and a peacock feather motif.</desc>
+
+  <defs>
+    <!-- ============ ATMOSPHERE ============ -->
+    <linearGradient id="hForest" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#050d0a"/>
+      <stop offset="0.34" stop-color="#0a1c14"/>
+      <stop offset="0.62" stop-color="#12301f"/>
+      <stop offset="1"    stop-color="#071410"/>
+    </linearGradient>
+
+    <radialGradient id="hGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"   stop-color="#ffd27a" stop-opacity="0.42"/>
+      <stop offset="0.5" stop-color="#d98f1e" stop-opacity="0.13"/>
+      <stop offset="1"   stop-color="#d98f1e" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="hRidgeFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b4a48"/>
+      <stop offset="1" stop-color="#16302f"/>
+    </linearGradient>
+    <linearGradient id="hRidgeMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a3830"/>
+      <stop offset="1" stop-color="#0d2119"/>
+    </linearGradient>
+    <linearGradient id="hRidgeNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0e2419"/>
+      <stop offset="1" stop-color="#050f0b"/>
+    </linearGradient>
+
+    <linearGradient id="hMist" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"   stop-color="#cfe4dc" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#dcefe6" stop-opacity="0.30"/>
+      <stop offset="1"   stop-color="#cfe4dc" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="hVignette" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#000000" stop-opacity="0.62"/>
+      <stop offset="0.26" stop-color="#000000" stop-opacity="0.05"/>
+      <stop offset="0.72" stop-color="#000000" stop-opacity="0.10"/>
+      <stop offset="1"    stop-color="#000000" stop-opacity="0.70"/>
+    </linearGradient>
+
+    <!-- ============ WORDMARK MATERIALS ============ -->
+    <linearGradient id="hGold" x1="0.1" y1="0" x2="0.75" y2="1">
+      <stop offset="0"    stop-color="#fff2c4"/>
+      <stop offset="0.16" stop-color="#f8d273"/>
+      <stop offset="0.38" stop-color="#e8ab2c"/>
+      <stop offset="0.58" stop-color="#b9761a"/>
+      <stop offset="0.76" stop-color="#e6bb45"/>
+      <stop offset="0.92" stop-color="#f6d98d"/>
+      <stop offset="1"    stop-color="#a8641a"/>
+    </linearGradient>
+
+    <linearGradient id="hStone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#6f6a5c"/>
+      <stop offset="0.45" stop-color="#3f3d36"/>
+      <stop offset="1"    stop-color="#2a2823"/>
+    </linearGradient>
+
+    <linearGradient id="hRiver" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"    stop-color="#2ec4b6" stop-opacity="0"/>
+      <stop offset="0.18" stop-color="#2ec4b6" stop-opacity="0.45"/>
+      <stop offset="0.5"  stop-color="#f8d273" stop-opacity="0.95"/>
+      <stop offset="0.82" stop-color="#2ec4b6" stop-opacity="0.45"/>
+      <stop offset="1"    stop-color="#2ec4b6" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="hTealEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2ec4b6" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#0f6f6a" stop-opacity="0.30"/>
+    </linearGradient>
+
+    <!-- ============ FILTERS ============ -->
+    <!-- fine granular stone grain, multiplied into the letterforms -->
+    <filter id="hGrain" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.62" numOctaves="4" seed="17" result="n"/>
+      <feColorMatrix in="n" type="matrix"
+        values="0 0 0 0 0.40  0 0 0 0 0.35  0 0 0 0 0.26  0 0 0 0.55 0" result="t"/>
+      <feComposite in="t" in2="SourceAlpha" operator="in" result="tin"/>
+      <feBlend in="SourceGraphic" in2="tin" mode="multiply"/>
+    </filter>
+
+    <!-- broad warm bloom behind the wordmark for separation -->
+    <filter id="hBloom" x="-25%" y="-70%" width="150%" height="240%">
+      <feGaussianBlur stdDeviation="16" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="hSoft" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+
+    <filter id="hSoften" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="2.4"/>
+    </filter>
+
+    <!-- ============ REUSABLE ART ============ -->
+
+    <!-- Western Ghats ridgeline, 800 wide, baseline at y=320 -->
+    <path id="hRidgeA" d="M0,320 L0,246 L54,196 L96,228 L148,168 L196,214 L244,142 L292,206 L338,158 L392,220 L436,178 L492,236 L540,190 L588,228 L642,168 L700,220 L744,186 L800,238 L800,320 Z"/>
+    <path id="hRidgeB" d="M0,320 L0,272 L62,232 L118,262 L172,214 L226,254 L280,198 L334,246 L386,222 L442,268 L498,228 L552,262 L606,216 L664,258 L716,232 L800,272 L800,320 Z"/>
+
+    <!-- South Indian temple gopuram (tiered gateway tower), 100w x 152h, base at y=152 -->
+    <g id="hGopuram">
+      <path d="M0,152 L3,112 L10,112 L12,94 L20,94 L22,76 L30,76 L32,58 L40,58 L42,44 L47,44
+               C47,32 48,20 50,10 C52,20 53,32 53,44
+               L58,44 L60,58 L68,58 L70,76 L78,76 L80,94 L88,94 L90,112 L97,112 L100,152 Z"/>
+      <path d="M50,10 L50,1"/>
+      <circle cx="50" cy="1" r="2.4"/>
+      <rect x="-7" y="150" width="114" height="7" rx="1.5"/>
+    </g>
+
+    <!-- Palmyra palm (Panai Maram) - tall, straight, fan crown -->
+    <g id="hPalmyra">
+      <path d="M0,0 C-3,-60 -5,-118 -4,-176 L4,-176 C5,-118 3,-60 0,0 Z"/>
+      <g stroke-linecap="round" fill="none">
+        <path d="M0,-176 C-14,-198 -34,-206 -52,-204" stroke-width="3.2"/>
+        <path d="M0,-176 C-8,-204 -16,-220 -26,-228" stroke-width="3"/>
+        <path d="M0,-176 C0,-206 0,-224 0,-236" stroke-width="3"/>
+        <path d="M0,-176 C8,-204 16,-220 26,-228" stroke-width="3"/>
+        <path d="M0,-176 C14,-198 34,-206 52,-204" stroke-width="3.2"/>
+        <path d="M0,-176 C-20,-192 -40,-192 -56,-184" stroke-width="2.6"/>
+        <path d="M0,-176 C20,-192 40,-192 56,-184" stroke-width="2.6"/>
+      </g>
+      <circle cx="0" cy="-176" r="5"/>
+    </g>
+
+    <!-- Coconut palm - curved trunk, drooping fronds -->
+    <g id="hCoconut">
+      <path d="M0,0 C-6,-52 2,-104 16,-152 L24,-147 C12,-100 6,-50 8,0 Z"/>
+      <g stroke-linecap="round" fill="none">
+        <path d="M20,-150 C-2,-160 -26,-158 -44,-146" stroke-width="3.4"/>
+        <path d="M20,-150 C-6,-176 -30,-184 -50,-180" stroke-width="3"/>
+        <path d="M20,-150 C22,-178 16,-196 4,-206" stroke-width="3"/>
+        <path d="M20,-150 C42,-170 62,-172 76,-164" stroke-width="3.4"/>
+        <path d="M20,-150 C48,-152 68,-146 78,-132" stroke-width="2.8"/>
+        <path d="M20,-150 C-14,-142 -40,-128 -52,-110" stroke-width="2.8"/>
+        <path d="M20,-150 C46,-136 62,-120 68,-104" stroke-width="2.8"/>
+      </g>
+      <circle cx="20" cy="-150" r="5.5"/>
+      <circle cx="10" cy="-146" r="3.4"/>
+      <circle cx="29" cy="-146" r="3.4"/>
+    </g>
+
+    <!-- Foliage cluster for edge framing -->
+    <g id="hFrond" fill="none" stroke-linecap="round">
+      <path d="M0,0 C-16,-26 -38,-40 -62,-44" stroke-width="4"/>
+      <path d="M-14,-23 C-22,-40 -20,-58 -8,-68" stroke-width="3.2"/>
+      <path d="M-30,-33 C-42,-48 -44,-66 -36,-78" stroke-width="3"/>
+      <path d="M-46,-40 C-60,-52 -66,-68 -62,-80" stroke-width="2.6"/>
+    </g>
+
+    <!-- Peacock feather with eye motif, 60w x 150h, shaft base at y=150 -->
+    <g id="hFeather">
+      <path d="M30,150 C6,116 4,58 30,8 C56,58 54,116 30,150 Z"/>
+      <path d="M30,150 L30,8" stroke-width="1.6" fill="none" opacity="0.75"/>
+      <ellipse cx="30" cy="52" rx="12" ry="16"/>
+      <ellipse cx="30" cy="52" rx="6.5" ry="9"/>
+      <ellipse cx="30" cy="52" rx="2.6" ry="4"/>
+    </g>
+
+    <!-- ============ THE WILDS WORDMARK (outlines) ============
+         Cap height 100. W/I/L/D are filled outlines; S is a smooth
+         centre-line curve stroked at the identical 30u weight.
+         W=158  I=31  L=86  D=100  S=90   tracking = 18  => total 537 -->
+    <g id="hWilds">
+      <!-- W -->
+      <path d="M0,0 L31,0 L50,58 L66,0 L92,0 L108,58 L127,0 L158,0 L127,100 L99,100 L79,40 L59,100 L31,100 Z"/>
+      <!-- I -->
+      <path transform="translate(176,0)" d="M0,0 L31,0 L31,100 L0,100 Z"/>
+      <!-- L -->
+      <path transform="translate(225,0)" d="M0,0 L31,0 L31,70 L86,70 L86,100 L0,100 Z"/>
+      <!-- D -->
+      <path transform="translate(329,0)" fill-rule="evenodd"
+            d="M0,0 L52,0 C82,0 100,18 100,50 C100,82 82,100 52,100 L0,100 Z
+               M31,28 L31,72 L50,72 C64,72 70,63 70,50 C70,37 64,28 50,28 Z"/>
+      <!-- S -->
+      <path transform="translate(447,0)" fill="none" stroke-width="30" stroke-linecap="butt"
+            d="M75,26 C75,16 63,14.5 46,14.5 C26,14.5 14.5,22 14.5,33
+               C14.5,46 30,49 47,53 C66,57.5 75.5,62 75.5,72
+               C75.5,82 62,85.5 45,85.5 C34,85.5 25,82 20,75"/>
+    </g>
+  </defs>
+
+  <!-- ============================================================= -->
+  <!-- BACKGROUND FIELD                                              -->
+  <!-- ============================================================= -->
+  <rect width="1600" height="560" fill="url(#hForest)"/>
+
+  <!-- warm sunrise breaking behind the ridge, upper centre-right -->
+  <ellipse cx="800" cy="250" rx="620" ry="330" fill="url(#hGlow)"/>
+  <ellipse cx="800" cy="252" rx="300" ry="200" fill="url(#hGlow)" opacity="0.7"/>
+
+  <!-- ============================================================= -->
+  <!-- LANDSCAPE — three ridgelines, atmospheric perspective          -->
+  <!-- ============================================================= -->
+  <g opacity="0.55">
+    <use href="#hRidgeA" fill="url(#hRidgeFar)" transform="translate(0,10)"/>
+  </g>
+  <rect x="0" y="236" width="1600" height="72" fill="url(#hMist)" filter="url(#hSoften)"/>
+
+  <g opacity="0.82">
+    <use href="#hRidgeB" fill="url(#hRidgeMid)" transform="translate(0,58)"/>
+  </g>
+  <rect x="0" y="286" width="1600" height="66" fill="url(#hMist)" opacity="0.8" filter="url(#hSoften)"/>
+
+  <g>
+    <use href="#hRidgeA" fill="url(#hRidgeNear)" transform="translate(0,110) scale(1,0.72)"/>
+  </g>
+
+  <!-- ancient stone gateway on the mid-left ridge -->
+  <g opacity="0.62" transform="translate(214,214) scale(0.62)" fill="#0a1a13">
+    <use href="#hGopuram"/>
+  </g>
+  <g opacity="0.34" transform="translate(1196,224) scale(0.4)" fill="#123028">
+    <use href="#hGopuram"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- WORDMARK                                                      -->
+  <!-- ============================================================= -->
+  <g transform="translate(531.5,318)">
+
+    <!-- carved-stone underlayer gives the letters physical depth -->
+    <use href="#hWilds" fill="url(#hStone)" transform="translate(0,7)" filter="url(#hSoften)"/>
+
+    <!-- gold face + stone grain + bloom -->
+    <use href="#hWilds" fill="url(#hGold)" stroke="url(#hGold)" stroke-width="1.4"
+         filter="url(#hGrain)"/>
+
+    <!-- upper bevel highlight: the letters catch the low sun -->
+    <use href="#hWilds" fill="none" stroke="#fff6d8" stroke-width="1.1" opacity="0.42"
+         transform="translate(0,-1.2)"/>
+
+    <!-- cool teal bounce along the lower right edge -->
+    <use href="#hWilds" fill="none" stroke="url(#hTealEdge)" stroke-width="2.2" opacity="0.5"
+         transform="translate(0.9,1.4)"/>
+
+    <!-- outer bloom -->
+    <use href="#hWilds" fill="none" stroke="#f7c14e" stroke-width="7" opacity="0.20"
+         filter="url(#hBloom)"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- PRE-TITLE LINE                                                -->
+  <!-- ============================================================= -->
+  <text x="793" y="296" text-anchor="middle"
+        font-family="Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif"
+        font-size="33" letter-spacing="13.5" fill="#e8dcc0" opacity="0.95">THE WHISPERING</text>
+
+  <!-- hairline rules flanking the pre-title, feathered at the ends -->
+  <g opacity="0.75">
+    <rect x="352" y="284" width="252" height="1.3" fill="url(#hRiver)"/>
+    <rect x="996" y="284" width="252" height="1.3" fill="url(#hRiver)"/>
+  </g>
+
+  <!-- peacock feather, small, tucked left of the pre-title -->
+  <g transform="translate(322,214) scale(0.19)" opacity="0.9">
+    <use href="#hFeather" fill="#123a2c" stroke="#c9a227" stroke-width="5"/>
+    <ellipse cx="30" cy="52" rx="6.5" ry="9" fill="#2ec4b6" opacity="0.9"/>
+  </g>
+  <g transform="translate(1276,212) scale(0.19)" opacity="0.9">
+    <use href="#hFeather" fill="#123a2c" stroke="#c9a227" stroke-width="5"/>
+    <ellipse cx="30" cy="52" rx="6.5" ry="9" fill="#2ec4b6" opacity="0.9"/>
+  </g>
+
+  <!-- ============================================================= -->
+  <!-- FLOWING RIVER / WIND RULE                                    -->
+  <!-- ============================================================= -->
+  <path d="M300,452 C470,436 560,470 700,458 C840,446 900,478 1060,464 C1180,453 1260,472 1330,462"
+        fill="none" stroke="url(#hRiver)" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
+  <path d="M360,466 C520,454 600,484 740,474 C880,464 940,492 1080,480"
+        fill="none" stroke="#2ec4b6" stroke-width="1.1" stroke-linecap="round" opacity="0.28"/>
+
+  <!-- ============================================================= -->
+  <!-- FOREGROUND FRAMING — palms and foliage                        -->
+  <!-- ============================================================= -->
+  <g fill="#04100b">
+    <use href="#hPalmyra" transform="translate(96,556) scale(1.05)"/>
+    <use href="#hCoconut" transform="translate(1524,556) scale(-1.02,1.02)"/>
+    <use href="#hPalmyra" transform="translate(1494,566) scale(-0.72,0.72)" opacity="0.9"/>
+    <use href="#hCoconut" transform="translate(44,566) scale(0.78,0.78)" opacity="0.9"/>
+  </g>
+
+  <g stroke="#04100b" fill="none" opacity="0.95">
+    <use href="#hFrond" transform="translate(0,556) scale(1.05)"/>
+    <use href="#hFrond" transform="translate(1600,556) scale(-1.05,1.05)"/>
+    <use href="#hFrond" transform="translate(1600,300) scale(-0.8,0.8)" opacity="0.8"/>
+    <use href="#hFrond" transform="translate(0,300) scale(0.8,0.8)" opacity="0.8"/>
+  </g>
+
+  <!-- low ground haze + vignette to seat the mark -->
+  <rect x="0" y="420" width="1600" height="140" fill="url(#hMist)" opacity="0.5" filter="url(#hSoft)"/>
+  <rect width="1600" height="560" fill="url(#hVignette)"/>
+
+  <!-- crisp teal hairline at the base of the frame -->
+  <rect x="0" y="556" width="1600" height="4" fill="#2ec4b6" opacity="0.22"/>
+</svg>
