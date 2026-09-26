@@ -16,16 +16,21 @@ Write-Host "========================================================" -Foregroun
 # 1. Check local server
 $serverRunning = $false
 try {
-    $resp = Invoke-WebRequest -Uri "http://localhost:8080" -UseBasicParsing -TimeoutSec 1 -ErrorAction SilentlyContinue
+    $resp = Invoke-WebRequest -Uri "http://localhost:3000/health" -UseBasicParsing -TimeoutSec 1 -ErrorAction SilentlyContinue
     if ($resp.StatusCode -eq 200) { $serverRunning = $true }
 } catch {}
 
 if (-not $serverRunning) {
-    Write-Host "Starting lightweight local game server on port 8080..." -ForegroundColor Green
-    Start-Process -FilePath "powershell.exe" -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$gameDir\serve.ps1`"" -WindowStyle Hidden
+    Write-Host "Starting authoritative game server on port 3000..." -ForegroundColor Green
+    $nodePath = "C:\Program Files\nodejs\node.exe"
+    if (Test-Path $nodePath) {
+        Start-Process -FilePath $nodePath -ArgumentList "server.js" -WorkingDirectory $gameDir -WindowStyle Hidden
+    } else {
+        Start-Process -FilePath "node" -ArgumentList "server.js" -WorkingDirectory $gameDir -WindowStyle Hidden
+    }
     Start-Sleep -Seconds 2
 } else {
-    Write-Host "Local game server is active and healthy!" -ForegroundColor Green
+    Write-Host "Local game server is active and healthy on port 3000!" -ForegroundColor Green
 }
 
 # 2. Locate browser for standalone window
@@ -40,7 +45,7 @@ if (-not (Test-Path $chromePath)) {
 }
 
 $appArgs = @(
-    "--app=http://localhost:8080",
+    "--app=http://localhost:3000",
     "--window-size=1920,1080",
     "--start-maximized",
     "--disable-features=TranslateUI",
@@ -57,7 +62,7 @@ if (Test-Path $edgePath) {
     Start-Process -FilePath $chromePath -ArgumentList $appArgs
 } else {
     Write-Host "Opening in default system browser..." -ForegroundColor Yellow
-    Start-Process "http://localhost:8080"
+    Start-Process "http://localhost:3000"
 }
 
 Write-Host "Game initialized! Have a wonderful expedition." -ForegroundColor Green
