@@ -1,0 +1,238 @@
+/* ==========================================================================
+   Firebase Authentication & Cloud Sync UI Styling
+   The Whispering Wilds (Kaattu Vazhi)
+   ========================================================================== */
+
+.fb-auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(12, 16, 23, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fbFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fb-auth-overlay.hidden {
+  display: none !important;
+}
+
+@keyframes fbFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fb-auth-dialog {
+  width: 440px;
+  max-width: 90vw;
+  background: linear-gradient(145deg, #1b222d, #141922);
+  border: 1px solid rgba(220, 160, 80, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(220, 160, 80, 0.15);
+  padding: 30px;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  position: relative;
+}
+
+.fb-auth-header {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.fb-auth-tamil-title {
+  color: #e59866;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.fb-auth-heading {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 6px 0;
+}
+
+.fb-auth-subtext {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.fb-auth-close {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.fb-auth-close:hover {
+  color: #f8fafc;
+}
+
+.fb-input-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fb-input-group.hidden {
+  display: none;
+}
+
+.fb-input-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  letter-spacing: 0.02em;
+}
+
+.fb-input-group input {
+  background: #0f141c;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.fb-input-group input:focus {
+  border-color: #e59866;
+  box-shadow: 0 0 0 3px rgba(229, 152, 102, 0.2);
+}
+
+.fb-auth-status-msg {
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.fb-auth-status-msg.error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.fb-auth-status-msg.success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #86efac;
+}
+
+.fb-auth-status-msg.info {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
+}
+
+.fb-submit-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, #d35400, #e67e22);
+  border: none;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(211, 84, 0, 0.4);
+  transition: transform 0.1s, box-shadow 0.15s;
+}
+
+.fb-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(211, 84, 0, 0.55);
+}
+
+.fb-auth-footer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.82rem;
+}
+
+.fb-link-btn {
+  background: none;
+  border: none;
+  color: #e59866;
+  cursor: pointer;
+  font-size: 0.82rem;
+  padding: 2px 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+}
+
+.fb-link-btn:hover {
+  color: #f39c12;
+}
+
+.fb-divider {
+  color: #475569;
+}
+
+/* User Status Badge in HUD & Title */
+.fb-user-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(18, 24, 34, 0.85);
+  border: 1px solid rgba(220, 160, 80, 0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.fb-status-icon {
+  font-size: 0.95rem;
+}
+
+.fb-badge-name {
+  font-weight: 500;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fb-badge-btn {
+  background: #2b394d;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  color: #f8fafc;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.fb-badge-btn:hover {
+  background: #d35400;
+  border-color: #e67e22;
+}

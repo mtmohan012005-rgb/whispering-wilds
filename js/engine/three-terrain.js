@@ -26,41 +26,30 @@ class ThreeTerrain {
   // Pichavaram/Delta (X: -100 to 100): Low wetland canals & river basins (Y: -1.5 to 4)
   // Western Ghats/Nilgiris (X: 100 to 300): Dramatic steep mountain peaks (Y: 15 to 65)
   getElevation(x, z) {
-    let y = 1.0;
+    if (typeof window !== 'undefined' && window.TerrainElevationSystem) {
+      return window.TerrainElevationSystem.getElevation(x, z);
+    }
 
+    let y = 1.0;
     if (x < -100) {
-      // 1. Chennai Lowlands & Red Soil Plains
-      // Gentle coastal undulations and subtle red clay mounds
       const nx = (x + 300) / 200;
-      y = 1.2 + Math.sin(x * 0.05) * 0.8 + Math.cos(z * 0.06) * 0.6;
-      // Slight elevation rise towards the west
-      y += nx * 2.0;
+      y = 1.2 + Math.sin(x * 0.05) * 0.8 + Math.cos(z * 0.06) * 0.6 + nx * 2.0;
     } else if (x >= -100 && x < 100) {
-      // 2. Pichavaram & Thanjavur Wetland Delta
-      // River basin depressions and delta marsh mounds
       const riverChannel = Math.sin(z * 0.08 + Math.sin(x * 0.03) * 2.0);
       const canalDepth = Math.exp(-Math.pow(riverChannel * 1.5, 2)) * 3.2;
       y = 2.0 + Math.sin(x * 0.06) * 1.2 - canalDepth;
-      // Ensure tidal canals dip near or below water level
       if (Math.abs(z - 10) < 25 && Math.abs(x) < 70) {
         y = Math.min(y, 0.4);
       }
     } else {
-      // 3. Western Ghats & Nilgiri Mountain Range (Ooty / Valparai)
-      // Steep peaks, craggy ridges, and cascading shola terraces
-      const t = (x - 100) / 200; // 0.0 to 1.0
-      // Exponential mountain gradient
+      const t = (x - 100) / 200;
       const mountainBase = Math.pow(t, 1.4) * 48.0;
-      // Multi-octave mountain peak ridges
       const ridge1 = Math.sin(x * 0.035 + z * 0.04) * 12.0 * t;
       const ridge2 = Math.cos(x * 0.07 - z * 0.06) * 6.5 * t;
       const ridge3 = Math.sin(x * 0.12 + z * 0.14) * 3.0 * t;
-      // Peak summits
       const peakCluster = Math.exp(-Math.pow((x - 240) / 45, 2) - Math.pow((z - 30) / 45, 2)) * 18.0;
-
       y = 4.0 + mountainBase + ridge1 + ridge2 + ridge3 + peakCluster;
     }
-
     return y;
   }
 
@@ -70,6 +59,16 @@ class ThreeTerrain {
     this.createLandmarks();
     this.createRegionalEnvironmentDetails();
     this.scatterBiomeFlora();
+
+    // ─── Production Visual & Landmark Upgrades ──────────────────────────────
+    if (typeof window !== 'undefined') {
+      if (window.LandmarkVisualizer && typeof window.LandmarkVisualizer.populateWorldLandmarks === 'function') {
+        window.LandmarkVisualizer.populateWorldLandmarks(this.scene, window.TerrainElevationSystem);
+      }
+      if (window.VegetationLibrarySystem && typeof window.VegetationLibrarySystem.populateBiomeFoliage === 'function') {
+        window.VegetationLibrarySystem.populateBiomeFoliage(this.scene, window.TerrainElevationSystem);
+      }
+    }
   }
 
   createProceduralGroundTexture() {

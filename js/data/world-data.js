@@ -50,7 +50,20 @@ window.tamilNaduMap = {
     }
 };
 
-window.getRealTamilNaduTelemetry = function(playerX) {
+window.getRealTamilNaduTelemetry = function(playerX, playerZ = 0) {
+  if (typeof window !== 'undefined' && window.TamilNaduGeoMap) {
+    const geo = window.TamilNaduGeoMap.getGeographicTelemetry(playerX, playerZ);
+    return {
+      lat: geo.lat.toFixed(4),
+      lng: geo.lng.toFixed(4),
+      zoneName: geo.regionName,
+      tamilZoneName: geo.tamilName,
+      region: geo.regionId,
+      biome: geo.thinai,
+      formattedCoordinates: geo.formattedCoordinates
+    };
+  }
+
   let lat, lng, zone;
   if (playerX <= 250) {
     lat = 13.0598;

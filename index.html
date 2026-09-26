@@ -25,10 +25,16 @@
   <link rel="stylesheet" href="css/survival-production.css">
   <link rel="stylesheet" href="css/account-security.css">
   <link rel="stylesheet" href="css/story-progression.css">
+  <link rel="stylesheet" href="css/firebase-auth.css">
 
   <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Firebase Web SDK (Auth & Firestore Cloud Database) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <!-- Socket.io Client for Multiplayer Co-op -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -1172,6 +1178,36 @@
   <script src="js/exploration/exploration-discovery.js"></script>
   <script src="js/story/world-memory.js"></script>
   <script src="js/story/story-consequence.js"></script>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- FIREBASE BACKEND: Auth (Email/Password) & Firestore Persistence-->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <script src="js/firebase/firebase-config.js"></script>
+  <script src="js/firebase/firebase-service.js"></script>
+  <script src="js/ui/firebase-auth-ui.js"></script>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- GEOGRAPHIC & VISUAL UPGRADE: TamilNaduGeoMap · PBR · Roads · Flora -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <script src="js/world/tamil-nadu-geo-map.js"></script>
+  <script src="js/engine/terrain-elevation-system.js"></script>
+  <script src="js/engine/road-network-system.js"></script>
+  <script src="js/engine/landmark-visualizer.js"></script>
+  <script src="js/engine/vegetation-library-system.js"></script>
+  <script src="js/engine/production-asset-manifest.js"></script>
+
+  <!-- Firebase Bootstrap -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.FirebaseService) {
+        window.FirebaseService.init().then(() => {
+          if (window.FirebaseAuthUI) {
+            window.FirebaseAuthUI.init();
+          }
+        });
+      }
+    });
+  </script>
 
   <!-- Service Worker Registration for PC & Laptop Offline Play -->
   <script>

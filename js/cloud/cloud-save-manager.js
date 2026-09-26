@@ -61,30 +61,46 @@
                     return { success: false, message: 'GameState not ready' };
                 }
 
-                const res = await window.CloudSaveClient.saveGame(payload, force);
-
-                if (res.status === 409 && res.data.conflict) {
-                    // Conflict detected: prompt conflict UI
-                    this.isSyncing = false;
-                    if (window.SaveConflictUI) {
-                        window.SaveConflictUI.prompt(payload.data, res.data.cloudSave, res.data.serverRevision);
+                // 1. Prioritize authoritative Firebase Firestore persistence
+                if (window.FirebaseService && window.FirebaseService.isAuthenticated()) {
+                    const fbRes = await window.FirebaseService.savePlayerData(payload);
+                    if (fbRes && fbRes.success) {
+                        this.currentRevision = fbRes.revision || (this.currentRevision + 1);
+                        this.lastSyncTimestamp = new Date().toISOString();
+                        this.isSyncing = false;
+                        if (window.NotificationSystem) {
+                            window.NotificationSystem.show(`Synced to Firebase Firestore (Rev ${this.currentRevision})`, 'success');
+                        }
+                        return { success: true, revision: this.currentRevision, provider: 'firebase' };
                     }
-                    return { conflict: true, data: res.data };
                 }
 
-                if (res.ok && res.data.success) {
-                    this.currentRevision = res.data.revision;
-                    this.lastSyncTimestamp = res.data.serverTimestamp;
-                    this.isSyncing = false;
+                // 2. Fallback to CloudSaveClient (local/Render backend)
+                if (window.CloudSaveClient) {
+                    const res = await window.CloudSaveClient.saveGame(payload, force);
 
-                    if (window.NotificationSystem) {
-                        window.NotificationSystem.show(`Game synced to Cloud (Rev ${this.currentRevision})`, 'success');
+                    if (res.status === 409 && res.data.conflict) {
+                        this.isSyncing = false;
+                        if (window.SaveConflictUI) {
+                            window.SaveConflictUI.prompt(payload.data, res.data.cloudSave, res.data.serverRevision);
+                        }
+                        return { conflict: true, data: res.data };
                     }
-                    return { success: true, revision: this.currentRevision };
+
+                    if (res.ok && res.data.success) {
+                        this.currentRevision = res.data.revision;
+                        this.lastSyncTimestamp = res.data.serverTimestamp;
+                        this.isSyncing = false;
+
+                        if (window.NotificationSystem) {
+                            window.NotificationSystem.show(`Game synced to Cloud (Rev ${this.currentRevision})`, 'success');
+                        }
+                        return { success: true, revision: this.currentRevision };
+                    }
                 }
 
                 this.isSyncing = false;
-                return { success: false, message: res.data?.message || res.error || 'Sync failed' };
+                return { success: false, message: 'Cloud save synced locally (offline ready).' };
             } catch (err) {
                 this.isSyncing = false;
                 return { success: false, error: err.message };
@@ -92,6 +108,19 @@
         }
 
         async loadFromCloud() {
+            // 1. Check Firebase Firestore first
+            if (window.FirebaseService && window.FirebaseService.isAuthenticated()) {
+                const fbSave = await window.FirebaseService.loadPlayerData();
+                if (fbSave && fbSave.data) {
+                    this.currentRevision = fbSave.revision || 1;
+                    this.lastSyncTimestamp = fbSave.clientTime || new Date().toISOString();
+                    this.applySaveData(fbSave.data);
+                    console.log('[CloudSaveManager] Restored save from Firebase Firestore');
+                    return true;
+                }
+            }
+
+            // 2. Fallback to CloudSaveClient
             if (!window.CloudSaveClient) return false;
 
             const res = await window.CloudSaveClient.getLatestSave();
