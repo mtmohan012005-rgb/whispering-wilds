@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById('start-game-btn');
   const audioBtn = document.getElementById('toggle-audio-btn');
   const journalBtn = document.getElementById('journal-toggle-btn');
+  const craftingBtn = document.getElementById('crafting-toggle-btn');
   const cameraBtn = document.getElementById('camera-toggle-btn');
   const lanternBtn = document.getElementById('lantern-toggle-btn');
   const campfireBtn = document.getElementById('campfire-btn');
@@ -499,9 +500,14 @@ window.addEventListener('DOMContentLoaded', () => {
       const active = explorerCamera.toggle();
       if (active) audio.playCameraShutter();
     }
-    if (e.code === 'KeyJ') {
-      journal.toggle(audio);
-    }
+  if (e.code === 'KeyJ') {
+    journal.toggle(audio);
+  }
+  if (e.code === 'KeyG') {
+    // C is crouch, so crafting uses G. ui-manager routes CRAFTING to the
+    // journal's crafting tab.
+    window.uiManager && window.uiManager.openModal('CRAFTING');
+  }
     if (e.code === 'KeyL') {
       player.toggleLantern(audio);
       lanternBtn.classList.toggle('active', player.isLanternOn);
@@ -1166,6 +1172,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   journalBtn.addEventListener('click', () => journal.toggle(audio));
   closeJournalBtn?.addEventListener('click', () => journal.toggle(audio));
+  craftingBtn?.addEventListener('click', () => {
+    window.uiManager && window.uiManager.openModal('CRAFTING');
+  });
   closeTeaBtn?.addEventListener('click', () => teaModal.classList.add('hidden'));
   closePuzzleBtn?.addEventListener('click', () => puzzleModal.classList.add('hidden'));
   cameraBtn.addEventListener('click', () => explorerCamera.toggle());

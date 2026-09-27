@@ -39,6 +39,7 @@ An atmospheric open-world exploration, light survival, and narrative mystery adv
 | **E** | Interact with Landmarks, NPCs, Wells, or Tents |
 | **F** | Toggle Explorer Camera Viewfinder (Click 📸 to capture snapshot) |
 | **J** | Open / Close Diegetic Field Journal & Clue Board |
+| **G** | Open the **Crafting Workbench** (Field Journal → Crafting tab). Crafts a Bamboo Torch, Palm Leaf Umbrella, Nilgiri Herbal Poultice, or Chola Stone Axe. *Not* `C`, which is crouch |
 | **L** | Toggle Brass Belt Lantern for night exploration |
 | **B** | Deploy Campfire (requires Wood) |
 | **T** | Pitch Canvas Tent (sleep to gain **Well Rested** buff) |
