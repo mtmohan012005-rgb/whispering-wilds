@@ -541,10 +541,14 @@
     requestCheckpoint(reason = 'milestone') {
       if (this._autosaveDebounceTimer) clearTimeout(this._autosaveDebounceTimer);
       this._autosaveDebounceTimer = setTimeout(() => {
-        if (window.SaveManager && typeof window.SaveManager.saveGame === 'function') {
-          window.SaveManager.saveGame('auto', reason);
-        } else if (window.saveManager && typeof window.saveManager.saveGame === 'function') {
-          window.saveManager.saveGame('auto', reason);
+        // window.SaveManager is the *class*; instance methods live on its
+        // prototype, so this used to fall through to the else-if below every
+        // single time. Resolve the instance directly instead.
+        const sm = window.SaveManagerInstance;
+        if (sm && typeof sm.saveGame === 'function') {
+          sm.saveGame('auto', reason);
+        } else {
+          console.warn('[GameRuntime] Autosave skipped: no save manager instance available.');
         }
       }, 500); // 500ms debounce
     }

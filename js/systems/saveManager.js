@@ -427,6 +427,62 @@ class SaveManager {
     return this.restoreState(validated.sanitized || payload);
   }
 
+  /**
+   * Persist a payload that came from somewhere else (e.g. the cloud) into a
+   * local slot, then apply it to the running game.
+   *
+   * auth-ui.js used to call `window.SaveManager?.save(cloudSave)`, but
+   * window.SaveManager is the *class* (main.js does `new window.SaveManager()`),
+   * and the class has no `save` method at all, so that line threw
+   * "window.SaveManager?.save is not a function" and cloud restore never
+   * happened. There was also no public way to write a supplied payload to a
+   * slot - loadFromPayload only applies to the live game without persisting.
+   *
+   * Mirrors the atomic write/backup/commit sequence used by _performSave.
+   */
+  adoptPayload(payload, slot = 'auto') {
+    if (!payload || typeof payload !== 'object') return false;
+
+    const validated = this.validateSaveData(payload);
+    const state = validated.sanitized || payload;
+    if (!validated.valid && !validated.sanitized) return false;
+
+    try {
+      const key = this.STORAGE_PREFIX + slot;
+      const backupKey = key + '_backup';
+      const tmpKey = key + '_tmp';
+      const serialized = JSON.stringify(state);
+
+      localStorage.setItem(tmpKey, serialized);
+      const readBack = localStorage.getItem(tmpKey);
+      if (!readBack || readBack.length !== serialized.length) {
+        throw new Error('Atomic write validation failed: length mismatch');
+      }
+      JSON.parse(readBack);
+
+      // Preserve any existing valid save as a backup before overwriting it.
+      const existingRaw = localStorage.getItem(key);
+      if (existingRaw) {
+        try {
+          const parsed = JSON.parse(existingRaw);
+          if (parsed && (parsed.saveVersion || parsed.version)) {
+            localStorage.setItem(backupKey, existingRaw);
+          }
+        } catch (_) {}
+      }
+
+      localStorage.setItem(key, readBack);
+      localStorage.removeItem(tmpKey);
+
+      try { localStorage.setItem('ww_last_safe_state', readBack); } catch (_) {}
+
+      return this.loadFromPayload(state);
+    } catch (err) {
+      console.error('[SaveManager] adoptPayload failed:', err);
+      return false;
+    }
+  }
+
   _validateAndSanitizeSurvival(survival) {
     const valObj = { player: { x: 0, y: 0 }, survival };
     const res = this.validateSaveData(valObj);
@@ -828,4 +884,20 @@ class SaveManager {
   }
 }
 
+// The class itself. main.js does `new window.SaveManager()` to build the
+// instance, so this global must stay the constructor.
 window.SaveManager = SaveManager;
+
+// Canonical *instance* accessor. Several call sites used to reach for
+// window.SaveManager and test for instance methods on it, which never worked
+// because instance methods live on the prototype, not the class. main.js sets
+// window.saveManager / window.gameSaveManager once it constructs the instance;
+// getInstance() hides which of those names wins.
+if (!window.SaveManagerInstance) {
+  Object.defineProperty(window, 'SaveManagerInstance', {
+    configurable: true,
+    get() {
+      return window.saveManager || window.gameSaveManager || null;
+    },
+  });
+}

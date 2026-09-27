@@ -101,8 +101,16 @@
 
       // 6. SAVE INTO DEDICATED NG+ SLOT
       const dedicatedSlot = `ngplus_gen${nextGen}`;
-      if (window.SaveManager && typeof window.SaveManager.saveGameImmediate === 'function') {
-        window.SaveManager.saveGameImmediate(dedicatedSlot, `ng_plus_gen_${nextGen}_start`);
+      // NOTE: this previously only ever tested window.SaveManager, which is the
+      // *class* (main.js constructs it with `new window.SaveManager()`).
+      // saveGameImmediate lives on the prototype, so the guard always failed and
+      // the dedicated NG+ slot was silently never written - while the
+      // notification below still claimed the campaign was archived safely.
+      const sm = window.SaveManagerInstance;
+      if (sm && typeof sm.saveGameImmediate === 'function') {
+        sm.saveGameImmediate(dedicatedSlot, `ng_plus_gen_${nextGen}_start`);
+      } else {
+        console.warn(`[NewGamePlus] Could not write dedicated slot "${dedicatedSlot}": no save manager instance available.`);
       }
 
       this.syncWithGameState();

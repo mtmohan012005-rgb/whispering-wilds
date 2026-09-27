@@ -138,7 +138,7 @@
             if (window.AuthState.isGuest) return;
 
             const cloudRes = await window.AuthClient.getCloudSave();
-            const localSave = window.SaveManager?.load();
+            const localSave = window.SaveManagerInstance?.loadGame();
 
             if (!cloudRes.success || !cloudRes.data || !cloudRes.data.cloudSave) {
                 // No cloud save exists, upload local save if local save exists
@@ -151,7 +151,7 @@
             const cloudSave = cloudRes.data.cloudSave;
             if (!localSave) {
                 // No local save, restore cloud save into local storage safely
-                window.SaveManager?.save(cloudSave);
+                window.SaveManagerInstance?.adoptPayload(cloudSave);
                 return;
             }
 
@@ -214,7 +214,7 @@
             });
 
             card.querySelector('#useCloudBtn').addEventListener('click', () => {
-                window.SaveManager?.save(cloudSave);
+                window.SaveManagerInstance?.adoptPayload(cloudSave);
                 this.hide();
             });
 
@@ -226,7 +226,7 @@
         }
 
         async syncLocalToCloud() {
-            const local = window.SaveManager?.load();
+            const local = window.SaveManagerInstance?.loadGame();
             if (local) {
                 await window.AuthClient.saveCloudSave(local);
             }
