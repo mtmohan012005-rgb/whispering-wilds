@@ -257,7 +257,10 @@
 
       // Drain stamina
       if (player.survival) {
-        player.survival.energy = Math.max(0, player.survival.energy - surface.staminaCost * dt);
+        const perkDrain = window.perkSystem
+          ? window.perkSystem.staminaDrainMultiplier()
+          : 1.0;
+        player.survival.energy = Math.max(0, player.survival.energy - surface.staminaCost * perkDrain * dt);
         if (player.survival.energy <= 0) {
           // Exhausted — stop climbing
           this._activeClimbable = null;

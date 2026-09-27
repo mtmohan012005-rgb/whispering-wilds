@@ -299,6 +299,10 @@
         cycleStartTime: this.cycleStartTime
       };
 
+      if (window.perkSystem) {
+        window.perkSystem.adoptEarnedPerks(this.earnedPerks);
+      }
+
       // Strict customization guard
       if (window.GameState.player && window.GameState.player.customizationChangesUsed > 5) {
         window.GameState.player.customizationChangesUsed = 5;
