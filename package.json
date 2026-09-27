@@ -17,6 +17,7 @@
     "desktop:verify": "node desktop/scripts/verify-build.js && node desktop/scripts/check-assets.js && node desktop/scripts/check-platform.js",
     "app": "powershell -ExecutionPolicy Bypass -File Launch-Game-PC.ps1",
     "verify-game": "node scripts/verify-game.js",
+    "audit:features": "node scripts/audit-features.js",
     "smoke": "node scripts/verify-runtime.js",
     "test": "node scripts/verify-runtime.js",
     "verify-assets": "node scripts/verify-assets.js",

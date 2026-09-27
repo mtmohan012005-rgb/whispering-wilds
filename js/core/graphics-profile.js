@@ -119,6 +119,7 @@
 
       // Dynamic resolution state
       this._dynResScale     = 1.0;    // multiplier on profile.renderPixelRatio
+      this._degradeStep     = 0;      // 0 = full preset features, >0 = cheaper (shadows off)
       this._frameTimeHistory = [];
       this._dynResUpTimer   = 0;
       this._dynResDownTimer = 0;
@@ -140,7 +141,10 @@
         window.GPUCapability?.detect();
       }
       const tier = window.GPUCapability?.tier || 'MEDIUM';
-      const map = { ULTRA: 'ULTRA', HIGH: 'HIGH', MEDIUM: 'MEDIUM', LOW: 'LOW' };
+      // VERY_LOW was defined as a preset but had no mapping here, so it could
+      // never be selected automatically - the 0.65-DPR / shadows-off profile
+      // was dead code.
+      const map = { ULTRA: 'ULTRA', HIGH: 'HIGH', MEDIUM: 'MEDIUM', LOW: 'LOW', VERY_LOW: 'VERY_LOW' };
       this.setQuality(map[tier] || 'MEDIUM', true);
       console.log(`[GraphicsProfile] AUTO selected: ${this.currentQuality} (GPU tier: ${tier})`);
     }
@@ -201,13 +205,32 @@
 
     _scaleDown(renderer) {
       const MIN_SCALE = 0.5;
-      if (this._dynResScale <= MIN_SCALE) return;
-      this._dynResScale = Math.max(MIN_SCALE, this._dynResScale - 0.1);
-      this._applyPixelRatio(renderer);
-      console.log(`[GraphicsProfile] DynRes ↓ scale=${this._dynResScale.toFixed(2)}`);
+      if (this._dynResScale > MIN_SCALE) {
+        this._dynResScale = Math.max(MIN_SCALE, this._dynResScale - 0.1);
+        this._applyPixelRatio(renderer);
+        console.log(`[GraphicsProfile] DynRes ↓ scale=${this._dynResScale.toFixed(2)}`);
+        return;
+      }
+      // Resolution is already at the floor and frames are still slow.
+      // Shadow rendering is a fixed per-frame cost that does NOT scale with
+      // the main resolution, so on a weak integrated GPU the only remaining
+      // meaningful lever is to switch shadows off.
+      if (this._degradeStep < 2) {
+        this._degradeStep++;
+        this._applyToRenderer();
+        console.log(`[GraphicsProfile] feature degrade step=${this._degradeStep} (shadows forced off)`);
+      }
     }
 
     _scaleUp(renderer) {
+      // Only restore features once resolution is back at full scale and
+      // frames have been comfortably good for a while.
+      if (this._degradeStep > 0) {
+        this._degradeStep--;
+        this._applyToRenderer();
+        console.log(`[GraphicsProfile] feature restore step=${this._degradeStep}`);
+        return;
+      }
       if (this._dynResScale >= 1.0) return;
       this._dynResScale = Math.min(1.0, this._dynResScale + 0.05);
       this._applyPixelRatio(renderer);
@@ -224,9 +247,11 @@
       const tw = window.threeWorld;
       if (!tw || !tw.renderer) return;
       const r = tw.renderer;
-      // Shadow map
-      r.shadowMap.enabled  = this.profile.shadowsEnabled;
-      if (r.shadowMap.enabled && this.profile.shadowMapSize) {
+      // Shadow map. Degrade step forces shadows off regardless of preset,
+      // because that is the only lever left once resolution has bottomed out.
+      const wantShadows = this.profile.shadowsEnabled && this._degradeStep === 0;
+      r.shadowMap.enabled  = wantShadows;
+      if (wantShadows && this.profile.shadowMapSize) {
         if (tw.lighting && tw.lighting.sun) {
           tw.lighting.sun.shadow.mapSize.set(this.profile.shadowMapSize, this.profile.shadowMapSize);
         }

@@ -114,7 +114,12 @@
       const gpu = window.GPUCapability;
       if (gpu && gpu.detected) {
         this._setText('phud-gpu', gpu.gpuRenderer.substring(0, 28));
-        this._setText('phud-backend', gpu.supportsWebGPU ? 'WebGPU' : (gpu.supportsWebGL2 ? 'WebGL2' : 'WebGL1'));
+        // The game renders with Three.js on WebGL only - there is no WebGPU
+        // renderer in the codebase. Reporting "WebGPU" here just because
+        // navigator.gpu exists was actively misleading during profiling.
+        const actual = gpu.supportsWebGL2 ? 'WebGL2' : 'WebGL1';
+        this._setText('phud-backend', `${actual}${gpu.supportsWebGPU ? ' (webgpu avail, unused)' : ''}`);
+        this._setText('phud-qual', `${window.GraphicsProfileManager ? window.GraphicsProfileManager.currentQuality : '?'}/${gpu.tier || '?'}`);
       }
 
       if (!this._rafId) this._loop();

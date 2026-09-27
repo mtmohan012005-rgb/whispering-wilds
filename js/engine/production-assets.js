@@ -60,21 +60,30 @@ class ProductionAssetsAdapter {
 
   /**
    * Section 137: External Asset Audit
-   * Validates that all streamable production assets are strictly local
+   * Validates that all registered production assets are strictly local.
+   *
+   * NOTE: this previously read `window.WORLD_ASSET_REGISTRY`, a global that no
+   * file in the project ever defines, so the loop always iterated an empty
+   * object and reported `passed: true` without checking anything. It now walks
+   * the real registry map populated by ProductionWorldAssets.
    */
   auditExternalDependencies() {
     const issues = [];
-    const registry = window.WORLD_ASSET_REGISTRY || {};
-    for (const [id, item] of Object.entries(registry)) {
-      const url = item.path || item.url || '';
-      if (/^https?:\/\/|cdn\./i.test(url)) {
+    const registry = this.worldAssets && this.worldAssets.registry;
+    if (!registry) {
+      return { passed: false, issues, count: 0, error: 'asset registry unavailable' };
+    }
+    for (const [id, item] of registry.entries()) {
+      const url = (item && (item.url || item.path)) || '';
+      if (/^https?:\/\//i.test(url) || /^\/\//.test(url) || /(^|\/)cdn\./i.test(url)) {
         issues.push({ id, url });
       }
     }
     return {
       passed: issues.length === 0,
       issues,
-      count: issues.length
+      count: issues.length,
+      audited: registry.size
     };
   }
 }

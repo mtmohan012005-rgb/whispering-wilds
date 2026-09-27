@@ -87,23 +87,50 @@
 
       const renderer = this.gpuRenderer.toLowerCase();
 
+      // ------------------------------------------------------------------
+      // VERY_LOW is checked FIRST, before the MEDIUM patterns.
+      // Previously the MEDIUM Intel pattern ran first and swallowed almost
+      // every integrated GPU, so weak hardware was handed MEDIUM (full-res
+      // + 1024 shadows + antialias) and ran at ~10 FPS on Intel iGPUs.
+      // ------------------------------------------------------------------
+
+      // Software rasteriser / no real GPU at all
+      if (/llvmpipe|swiftshader|software|basic render|microsoft basic/.test(renderer)) return 'VERY_LOW';
+
+      // Intel integrated graphics. All of these are fill-rate bound and must
+      // not get shadows or full-resolution rendering.
+      //   - Arc A-series is handled as discrete below.
+      if (/intel/.test(renderer)) {
+        if (/arc a7/.test(renderer)) return 'HIGH';       // Arc A770 etc = discrete
+        if (/arc a5/.test(renderer)) return 'MEDIUM';     // Arc A530 etc = entry discrete
+        // Iris Xe / UHD 7xx = newest iGPU, still weak in a 3D game
+        if (/iris xe|uhd graphics (7\d\d|8\d\d)|uhd 7\d\d/.test(renderer)) return 'LOW';
+        // Iris Plus / UHD 6xx
+        if (/iris (plus|pro)|uhd graphics 6\d\d|uhd 6\d\d/.test(renderer)) return 'VERY_LOW';
+        // Older UHD 5xx / HD 4xxx-6xxx / GMA
+        return 'VERY_LOW';
+      }
+
+      // Apple silicon is genuinely capable in WebGL
+      if (/apple m/.test(renderer)) return 'MEDIUM';
+
       // ULTRA — modern discrete GPUs
-      if (/rtx [34]\d{3}|rx 7[6-9]\d{2}|radeon rx 7|arc a7|intel arc a7/i.test(renderer)) return 'ULTRA';
+      if (/rtx [34]\d{3}|rx 7[6-9]\d{2}|radeon rx 7/.test(renderer)) return 'ULTRA';
 
       // HIGH — solid mid-high discrete
-      if (/rtx [12]\d{3}|gtx 1[06-9]\d{1}|rx 6[5-9]\d{2}|rx 5[5-9]\d{2}|radeon rx 6|radeon rx 5|arc a5/i.test(renderer)) return 'HIGH';
+      if (/rtx [12]\d{3}|gtx 1[06-9]\d{1}|rx 6[5-9]\d{2}|rx 5[5-9]\d{2}|radeon rx 6|radeon rx 5/.test(renderer)) return 'HIGH';
 
-      // MEDIUM — older discrete or modern integrated
-      if (/gtx 1[0-5]\d{1}|gtx [7-9]\d{2}|rx [56]00|radeon (rx )?[4-5]|intel (iris|uhd|hd) (6[2-9]\d|[7-9]\d\d|[1-9]\d{3})|apple m/i.test(renderer)) return 'MEDIUM';
+      // MEDIUM — older discrete
+      if (/gtx 1[0-5]\d{1}|gtx [7-9]\d{2}|rx [56]00|radeon (rx )?[4-5]/.test(renderer)) return 'MEDIUM';
 
-      // LOW — everything else
-      if (/intel (hd|gma)|intel (4|3)\d{3}|llvmpipe|swiftshader|software|mali|adreno [2-5]|imagination|videocore/i.test(renderer)) return 'LOW';
+      // Other mobile/embedded SoCs
+      if (/mali|adreno [2-5]|imagination|videocore|powervr/.test(renderer)) return 'LOW';
 
-      // Default: if maxTexture is large enough, assume at least MEDIUM
-      if (this.maxTextureSize >= 8192 && this.screenWidth >= 1920) return 'HIGH';
-      if (this.maxTextureSize >= 4096) return 'MEDIUM';
-
-      return 'MEDIUM';
+      // Unknown renderer string: be conservative. Previously this fell through
+      // to MEDIUM, which is how unrecognised (often software) GPUs ended up
+      // with shadows and full resolution.
+      if (this.maxTextureSize >= 8192 && this.screenWidth >= 1920) return 'MEDIUM';
+      return 'LOW';
     },
 
     // Call from renderer selection to get clamped pixel ratio for each tier
@@ -113,8 +140,9 @@
         case 'ULTRA':  return Math.min(dpr, 1.5);
         case 'HIGH':   return Math.min(dpr, 1.25);
         case 'MEDIUM': return Math.min(dpr, 1.0);
-        case 'LOW':
-        default:       return Math.min(dpr, 0.85);
+        case 'LOW':    return Math.min(dpr, 0.85);
+        case 'VERY_LOW':
+        default:       return Math.min(dpr, 0.65);
       }
     },
 
