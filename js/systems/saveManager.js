@@ -217,11 +217,14 @@ class SaveManager {
     }, this._debounceMs);
   }
 
-  // Immediate save (bypass debounce — for manual / critical saves)
-  saveGameImmediate(slot = 'auto', reason = 'manual') {
-    if (this._debounceTimer) clearTimeout(this._debounceTimer);
-    this._performSave(slot, reason);
-  }
+    // Immediate save (bypass debounce — for manual / critical saves)
+    // Returns _performSave's boolean so callers can detect failure. It used to
+    // discard it and return undefined, meaning a failed critical save (NG+ slot,
+    // crash checkpoint) was indistinguishable from a successful one.
+    saveGameImmediate(slot = 'auto', reason = 'manual') {
+      if (this._debounceTimer) clearTimeout(this._debounceTimer);
+      return this._performSave(slot, reason);
+    }
 
   _performSave(slot, reason) {
     if (window.LifecycleValidator && !window.LifecycleValidator.startSaveWatchdog()) {
