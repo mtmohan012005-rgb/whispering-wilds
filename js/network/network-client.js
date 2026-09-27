@@ -4,6 +4,9 @@
 // ============================================================================
 
 class NetworkClient {
+    // Hard expedition cap, mirroring server config MAX_PLAYERS_PER_ROOM / DEFAULT_ROOM_CAP.
+    static MAX_ROOM_CAP = 5;
+
     constructor() {
         this.socket = null;
         this.isConnected = false;
@@ -12,7 +15,8 @@ class NetworkClient {
         this.isHost = false;
         this.role = 'EXPLORER';
         this.playerName = 'Explorer';
-        this.maxPlayers = 5;
+        this.maxPlayers = NetworkClient.MAX_ROOM_CAP;
+        this.roomCap = NetworkClient.MAX_ROOM_CAP;
         this.pingMs = 0;
         this.isOffline = true;
 
@@ -166,9 +170,22 @@ class NetworkClient {
         }, 10000);
     }
 
-    joinRoom(roomCode, playerName, maxPlayers = 8) {
+    joinRoom(roomCode, playerName, maxPlayers = NetworkClient.MAX_ROOM_CAP) {
         this.playerName = playerName || 'Explorer';
         this.currentRoom = (roomCode || 'CHENNAI_EXP').trim().toUpperCase();
+
+        // The 5-player expedition cap is a hard contract (server config
+        // MAX_PLAYERS_PER_ROOM = 5). This method previously defaulted to 8, so a
+        // caller that passed nothing asked the server for a room larger than the
+        // contract allows. The server clamps it in room-manager.getOrCreateRoom,
+        // so this was never a way to overrun the cap, but the lobby UI is fed the
+        // client-side value and would advertise slots that can never fill.
+        // Clamp locally so the client and server always agree.
+        const cap = Math.min(NetworkClient.MAX_ROOM_CAP, Math.max(1, Number(maxPlayers) || NetworkClient.MAX_ROOM_CAP));
+        if (cap !== maxPlayers) {
+            console.warn(`[NetworkClient] Requested room size ${maxPlayers} clamped to ${cap} (expedition cap is ${NetworkClient.MAX_ROOM_CAP}).`);
+        }
+        this.roomCap = cap;
 
         if (!this.socket || !this.isConnected) {
             this.connect();
@@ -177,7 +194,7 @@ class NetworkClient {
                     this.socket.emit('joinRoom', {
                         roomCode: this.currentRoom,
                         playerName: this.playerName,
-                        maxPlayers: maxPlayers
+                        maxPlayers: cap
                     });
                 }
             }, 300);
@@ -187,7 +204,7 @@ class NetworkClient {
         this.socket.emit('joinRoom', {
             roomCode: this.currentRoom,
             playerName: this.playerName,
-            maxPlayers: maxPlayers
+            maxPlayers: cap
         });
     }
 
