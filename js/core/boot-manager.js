@@ -37,11 +37,35 @@
       this._showBootOverlay();
 
       try {
-        // Step 1: Validate environment
+        // Step 1: Validate environment + GPU
         this._webGLOK = this._validateWebGL();
         if (!this._webGLOK) {
           this._showWebGLError();
           return;
+        }
+
+        // Step 1b: GPU Capability Detection (must run before ThreeWorld init)
+        this._updateBootStatus('Detecting GPU…');
+        if (window.GPUCapability && !window.GPUCapability.detected) {
+          window.GPUCapability.detect();
+        }
+
+        // Step 1c: Auto-select graphics quality profile from GPU tier
+        this._updateBootStatus('Selecting graphics profile…');
+        if (window.GraphicsProfileManager && typeof window.GraphicsProfileManager.autoSelect === 'function') {
+          window.GraphicsProfileManager.autoSelect();
+        }
+
+        // Step 1d: Start online connection check (NON-BLOCKING — runs in background)
+        // This starts showing connection overlay if backend is unreachable.
+        // Does NOT block gameplay boot — we check result later.
+        if (window.OnlineConnectionManager) {
+          window.OnlineConnectionManager.start(); // async, non-blocking
+        }
+
+        // Step 1e: Init Performance HUD
+        if (window.PerfHUD && typeof window.PerfHUD.init === 'function') {
+          window.PerfHUD.init();
         }
 
         // Step 2: Apply Settings
@@ -86,6 +110,10 @@
           if (window.performanceManager) window.SystemRegistry.register('Performance', window.performanceManager, { isCritical: false });
           if (window.LocalizationManager) window.SystemRegistry.register('Localization', window.LocalizationManager, { isCritical: false });
           if (window.ProductionAssetRegistry) window.SystemRegistry.register('Assets', window.ProductionAssetRegistry, { isCritical: false });
+          if (window.GPUCapability) window.SystemRegistry.register('GPUCapability', window.GPUCapability, { isCritical: false });
+          if (window.GraphicsProfileManager) window.SystemRegistry.register('GraphicsProfile', window.GraphicsProfileManager, { isCritical: false });
+          if (window.OnlineConnectionManager) window.SystemRegistry.register('ConnectionManager', window.OnlineConnectionManager, { isCritical: false });
+          if (window.AssetManager) window.SystemRegistry.register('AssetManager', window.AssetManager, { isCritical: false });
           if (window.RuntimeValidator && window.GameState) {
             window.RuntimeValidator.validateGameState(window.GameState);
           }
@@ -94,17 +122,23 @@
         // Boot complete
         this._ready = true;
         const bootMs = Date.now() - this._bootStartTime;
-        console.log(`[BootManager] Boot complete in ${bootMs}ms.`);
+        console.log(`[BootManager] Boot complete in ${bootMs}ms. GPU tier: ${window.GPUCapability?.tier || 'unknown'} | Quality: ${window.GraphicsProfileManager?.currentQuality || 'unknown'}`);
         this._hideBootOverlay();
 
         // Proceed to main menu
         lifecycle.transitionTo('MAIN_MENU', { bootMs });
-        if (window.BootScreenUI) {
-          window.BootScreenUI.showSplash(() => {
-            if (window.MainMenuUI) window.MainMenuUI.show();
-          });
-        } else {
+        const showMenu = () => {
           if (window.MainMenuUI) window.MainMenuUI.show();
+        };
+
+        if (typeof navigator !== 'undefined' && navigator.webdriver) {
+          showMenu();
+        } else if (window.IntroCinematic && !window.IntroCinematic.hasSeen()) {
+          window.IntroCinematic.play(showMenu);
+        } else if (window.BootScreenUI) {
+          window.BootScreenUI.showSplash(showMenu);
+        } else {
+          showMenu();
         }
 
       } catch (err) {

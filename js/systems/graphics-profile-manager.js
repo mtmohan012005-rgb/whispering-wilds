@@ -28,6 +28,11 @@
     }
   }
 
-  window.GraphicsProfileManager = GraphicsProfileManager;
-  window.graphicsProfileManager = new GraphicsProfileManager();
+  // The authoritative singleton lives in js/core/graphics-profile.js and is
+  // exposed as window.GraphicsProfileManager with the instance API
+  // (.profile, .getEffectiveDPR, .getSummary, .updateDynamicResolution, .autoSelect).
+  // This shim must NOT overwrite that global, otherwise every consumer of the
+  // real instance loses it and crashes. Expose the shim under its own name.
+  window.GraphicsProfileMigrationShim = GraphicsProfileManager;
+  window.graphicsProfileManager = window.GraphicsProfileManager || new GraphicsProfileManager();
 })();

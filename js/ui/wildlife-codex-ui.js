@@ -35,5 +35,6 @@
         }
     }
 
+    // Static-only helper: consumers use WildlifeCodexUI.renderCards(el).
     window.WildlifeCodexUI = WildlifeCodexUI;
 })();

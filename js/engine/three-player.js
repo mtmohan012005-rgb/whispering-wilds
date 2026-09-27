@@ -49,6 +49,10 @@ class ThreePlayer {
       sprint: 55.0
     };
     this.speed = this.speeds.run;
+    this.velocityX = 0;
+    this.velocityZ = 0;
+    this.currentSpeed = 0;
+    this.slopeFactor = 1.0;
 
     // State machine
     this.state = window.PLAYER_STATE.IDLE;
@@ -85,12 +89,20 @@ class ThreePlayer {
     this.characterLoader = new window.CharacterLoader(this.scene);
     this.avatarMesh.add(this.characterLoader.characterGroup);
 
+    // Custom Animation State Machine & Procedural Bone Blending
+    this.animSystem = (typeof window.CustomAnimationSystem !== 'undefined')
+      ? new window.CustomAnimationSystem(this, this.characterLoader)
+      : null;
+
     // Trigger local GLB character load
     this.characterLoader.loadPlayerCharacter().then((res) => {
       if (res.isProductionAsset) {
         console.log('[ThreePlayer] Rigged production GLB character loaded into scene.');
       } else {
         console.log('[ThreePlayer] Diagnostic Tamil explorer proxy active awaiting production GLB.');
+      }
+      if (this.animSystem && this.characterLoader.characterGroup) {
+        this.animSystem.bindSkeleton(this.characterLoader.characterGroup);
       }
       this.setOutfit(this.outfitId);
     });
@@ -209,7 +221,7 @@ class ThreePlayer {
     }
   }
 
-  update(inputState, deltaTime, terrain) {
+  update(inputState, deltaTime, terrain, cameraController) {
     this.time += deltaTime;
 
     // Handle action lock (e.g. interacting, taking a photo)
@@ -226,25 +238,52 @@ class ThreePlayer {
       return;
     }
 
-    // Input vector calculation
-    let dx = 0;
-    let dz = 0;
-    if (inputState.up) dz -= 1;
-    if (inputState.down) dz += 1;
-    if (inputState.left) dx -= 1;
-    if (inputState.right) dx += 1;
+    // 1. Camera-relative movement input calculation
+    let rawForward = 0;
+    let rawRight = 0;
+    if (inputState.up) rawForward += 1;
+    if (inputState.down) rawForward -= 1;
+    if (inputState.left) rawRight -= 1;
+    if (inputState.right) rawRight += 1;
 
-    const length = Math.sqrt(dx * dx + dz * dz);
-    if (length > 0) {
-      dx /= length;
-      dz /= length;
-      this.isMoving = true;
-      this.targetRotation = Math.atan2(dx, dz);
-    } else {
-      this.isMoving = false;
+    let moveDirX = 0;
+    let moveDirZ = 0;
+    const inputMag = Math.sqrt(rawForward * rawForward + rawRight * rawRight);
+
+    if (inputMag > 0) {
+      const normForward = rawForward / inputMag;
+      const normRight = rawRight / inputMag;
+
+      if (cameraController && cameraController.camera) {
+        const cam = cameraController.camera;
+        const fwdX = this.x - cam.position.x;
+        const fwdZ = this.z - cam.position.z;
+        const fwdLen = Math.sqrt(fwdX * fwdX + fwdZ * fwdZ);
+
+        let camFwdX = 0;
+        let camFwdZ = -1;
+        if (fwdLen > 0.001) {
+          camFwdX = fwdX / fwdLen;
+          camFwdZ = fwdZ / fwdLen;
+        }
+        const camRightX = -camFwdZ;
+        const camRightZ = camFwdX;
+
+        moveDirX = camFwdX * normForward + camRightX * normRight;
+        moveDirZ = camFwdZ * normForward + camRightZ * normRight;
+      } else {
+        moveDirX = normRight;
+        moveDirZ = -normForward;
+      }
+
+      const moveLen = Math.sqrt(moveDirX * moveDirX + moveDirZ * moveDirZ);
+      if (moveLen > 0.001) {
+        moveDirX /= moveLen;
+        moveDirZ /= moveLen;
+      }
     }
 
-    // Input modifiers (Section 18: Exhaustion limits sprint capability)
+    // Input modifiers
     const isExhausted = !!(window.GameState && window.GameState.player && window.GameState.player.survival && window.GameState.player.survival.isExhausted);
     const isSprinting = !isExhausted && !!(inputState.sprint || inputState.shift);
     const isCrouching = !!(inputState.crouch || inputState.ctrl);
@@ -260,73 +299,44 @@ class ThreePlayer {
         this.yOffset = 0.1;
         if (this.characterLoader) this.characterLoader.playAction('Player_Jump', 0.15);
       }
-    } else {
-      // Airborne
-      this.verticalVelocity -= gravity * deltaTime;
-      this.yOffset += this.verticalVelocity * deltaTime;
-
-      if (this.verticalVelocity < 0 && this.state !== window.PLAYER_STATE.FALL) {
-        this.state = window.PLAYER_STATE.FALL;
-        if (this.characterLoader) this.characterLoader.playAction('Player_Fall', 0.2);
-      }
-
-      if (this.yOffset <= 0) {
-        const impactVelocity = Math.abs(this.verticalVelocity);
-        this.yOffset = 0;
-        this.verticalVelocity = 0;
-        this.isGrounded = true;
-        this.state = window.PLAYER_STATE.LAND;
-        this.landTimer = 0.15;
-        if (this.characterLoader) this.characterLoader.playAction('Player_Land', 0.1);
-
-        // Fall damage integration via EmergencySystem (Section 25)
-        if (window.emergencySystem && typeof window.emergencySystem.handleFallDamage === 'function') {
-          window.emergencySystem.handleFallDamage(impactVelocity);
-        }
-      }
     }
 
-    // Land recovery
-    if (this.isGrounded && this.landTimer > 0) {
-      this.landTimer -= deltaTime;
-    }
-
-    // Ground Locomotion State Selection
-    let currentSpeed = 0;
+    // Ground Locomotion Target Speed Selection
+    let targetSpeed = 0;
     let targetClip = 'Player_Idle';
 
     if (this.isGrounded && this.landTimer <= 0) {
       if (window.traversalSystem && window.traversalSystem.isSwimming) {
         this.state = window.PLAYER_STATE.SWIM;
-        currentSpeed = this.speeds.walk * 0.48;
+        targetSpeed = this.speeds.walk * 0.48;
         targetClip = 'Player_Swim';
       } else if (isCrouching) {
-        if (this.isMoving) {
+        if (inputMag > 0) {
           this.state = window.PLAYER_STATE.CROUCH_WALK;
-          currentSpeed = this.speeds.crouch;
+          targetSpeed = this.speeds.crouch;
           targetClip = 'Player_Crouch_Walk';
         } else {
           this.state = window.PLAYER_STATE.CROUCH_IDLE;
-          currentSpeed = this.speeds.idle;
+          targetSpeed = 0;
           targetClip = 'Player_Crouch_Idle';
         }
-      } else if (this.isMoving) {
+      } else if (inputMag > 0) {
         if (isSprinting) {
           this.state = window.PLAYER_STATE.SPRINT;
-          currentSpeed = this.speeds.sprint;
+          targetSpeed = this.speeds.sprint;
           targetClip = 'Player_Sprint';
         } else if (isWalking) {
           this.state = window.PLAYER_STATE.WALK;
-          currentSpeed = this.speeds.walk;
+          targetSpeed = this.speeds.walk;
           targetClip = 'Player_Walk';
         } else {
           this.state = window.PLAYER_STATE.RUN;
-          currentSpeed = this.speeds.run;
+          targetSpeed = this.speeds.run;
           targetClip = 'Player_Run';
         }
       } else {
         this.state = window.PLAYER_STATE.IDLE;
-        currentSpeed = this.speeds.idle;
+        targetSpeed = 0;
         targetClip = 'Player_Idle';
       }
 
@@ -335,53 +345,65 @@ class ThreePlayer {
       }
     }
 
-    // Synchronize Authoritative Movement State for Survival Calculations (Section 6 & 7)
-    if (window.GameState && window.GameState.player) {
-      window.GameState.player.movementState = this.state;
+    // Slope resistance & assistance (grounded incline dynamics)
+    this.slopeFactor = 1.0;
+    if (terrain && typeof terrain.getElevation === 'function' && inputMag > 0) {
+      const curElev = terrain.getElevation(this.x, this.z);
+      const nextElev = terrain.getElevation(this.x + moveDirX * 1.5, this.z + moveDirZ * 1.5);
+      const elevDiff = nextElev - curElev;
+      if (elevDiff > 0.35) {
+        this.slopeFactor = Math.max(0.4, 1.0 - (elevDiff - 0.35) * 0.9);
+      } else if (elevDiff < -0.35) {
+        this.slopeFactor = Math.min(1.2, 1.0 + Math.abs(elevDiff) * 0.25);
+      }
+    }
+    const finalTargetSpeed = targetSpeed * this.slopeFactor;
+
+    // Smooth Velocity Inertia & Acceleration/Deceleration Damping (No foot sliding)
+    const targetVx = inputMag > 0 ? (moveDirX * finalTargetSpeed) : 0;
+    const targetVz = inputMag > 0 ? (moveDirZ * finalTargetSpeed) : 0;
+    const accelRate = (inputMag > 0) ? 14.0 : 18.0;
+    const damp = Math.min(1.0, deltaTime * accelRate);
+    this.velocityX += (targetVx - this.velocityX) * damp;
+    this.velocityZ += (targetVz - this.velocityZ) * damp;
+
+    this.currentSpeed = Math.sqrt(this.velocityX * this.velocityX + this.velocityZ * this.velocityZ);
+
+    if (this.currentSpeed < 0.12) {
+      this.currentSpeed = 0;
+      this.velocityX = 0;
+      this.velocityZ = 0;
+      this.isMoving = false;
+      if (this.characterLoader && typeof this.characterLoader.setTimeScale === 'function') {
+        this.characterLoader.setTimeScale(1.0);
+      }
+    } else {
+      this.isMoving = true;
+      this.targetRotation = Math.atan2(this.velocityX, this.velocityZ);
+
+      // Dynamically scale animation timeScale to eliminate foot sliding
+      if (this.characterLoader && typeof this.characterLoader.setTimeScale === 'function') {
+        let nominalSpeed = this.speeds.run;
+        if (this.state === window.PLAYER_STATE.WALK) nominalSpeed = this.speeds.walk;
+        else if (this.state === window.PLAYER_STATE.SPRINT) nominalSpeed = this.speeds.sprint;
+        else if (this.state === window.PLAYER_STATE.CROUCH_WALK) nominalSpeed = this.speeds.crouch;
+
+        const cadenceScale = nominalSpeed > 0 ? (this.currentSpeed / nominalSpeed) : 1.0;
+        this.characterLoader.setTimeScale(cadenceScale);
+      }
     }
 
-    // Biomechanics & Surface Friction from Locomotion Engine
-    const equivalent2DX = ((this.x + 290) / 580) * 6000;
-    const equivalent2DY = ((this.z + 100) / 200) * 1200;
-    const weatherType = (window.testRef && window.testRef.weather) ? window.testRef.weather.current.type : 'storm';
-    const weatherIntensity = (window.testRef && window.testRef.weather) ? window.testRef.weather.current.intensity : 0.8;
-    const energy = (window.testRef && window.testRef.survival) ? window.testRef.survival.energy : 80;
-    const coreTemp = (window.testRef && window.testRef.survival) ? window.testRef.survival.coreTemp : 36;
+    // Apply horizontal translation
+    if (this.currentSpeed > 0) {
+      this.x += this.velocityX * deltaTime;
+      this.z += this.velocityZ * deltaTime;
 
-    const gait = this.locomotion.updateGait(
-      deltaTime,
-      this.targetRotation,
-      length,
-      currentSpeed * 4.7,
-      equivalent2DX,
-      equivalent2DY,
-      energy,
-      coreTemp,
-      weatherType,
-      weatherIntensity,
-      this.outfitId
-    );
-
-    // Apply movement
-    const effectiveSpeed = (currentSpeed > 0) ? ((gait.effectiveSpeed / (currentSpeed * 4.7)) * currentSpeed) : 0;
-    if (length > 0 && effectiveSpeed > 0) {
-      this.x += dx * effectiveSpeed * deltaTime;
-      this.z += dz * effectiveSpeed * deltaTime;
-
-      // Surface slip
-      if (gait.isSlipping) {
-        this.x -= dx * gait.slipAmount * 0.5 * deltaTime;
-        this.z -= dz * gait.slipAmount * 0.5 * deltaTime;
-      }
-
-      // Obstacle collision resolution against registered production world assets
+      // Obstacle collision resolution
       if (window.productionWorldAssets && typeof window.productionWorldAssets.resolveCollision === 'function') {
         const colResult = window.productionWorldAssets.resolveCollision(this.x, this.z, 0.65);
         this.x = colResult.x;
         this.z = colResult.z;
       }
-
-      // WorldCollision resolution against doors, barriers, walls, and rocks
       if (window.worldCollision && typeof window.worldCollision.resolveCircle === 'function') {
         const wCol = window.worldCollision.resolveCircle(this.x, this.z, this.x, this.z, 0.65);
         this.x = wCol.x;
@@ -397,43 +419,124 @@ class ThreePlayer {
     let rotDiff = this.targetRotation - this.currentRotation;
     while (rotDiff < -Math.PI) rotDiff += Math.PI * 2;
     while (rotDiff > Math.PI) rotDiff -= Math.PI * 2;
-    this.currentRotation += rotDiff * Math.min(1.0, deltaTime * 14.0);
+    this.currentRotation += rotDiff * Math.min(1.0, deltaTime * 12.0);
     this.avatarMesh.rotation.y = this.currentRotation;
 
-    // Terrain elevation alignment
+    // Terrain elevation alignment & ledge fall detection
+    let targetTerrainY = 0;
     if (terrain && typeof terrain.getElevation === 'function') {
-      this.y = terrain.getElevation(this.x, this.z);
+      targetTerrainY = terrain.getElevation(this.x, this.z);
     } else if (terrain && typeof terrain.getInterpolatedHeight === 'function') {
-      this.y = terrain.getInterpolatedHeight(this.x, this.z);
-    } else {
-      this.y = 0;
+      targetTerrainY = terrain.getInterpolatedHeight(this.x, this.z);
     }
 
-    // Update Character Loader mixer
+    if (this.isGrounded) {
+      // Stepped off a ledge or cliff
+      if (this.y - targetTerrainY > 0.65 && this.yOffset <= 0) {
+        this.isGrounded = false;
+        this.verticalVelocity = -2.0;
+        this.yOffset = this.y - targetTerrainY;
+        this.state = window.PLAYER_STATE.FALL;
+        if (this.characterLoader) this.characterLoader.playAction('Player_Fall', 0.2);
+      } else {
+        // Grounded: smoothly adapt to elevation
+        this.y += (targetTerrainY - this.y) * Math.min(1.0, deltaTime * 18.0);
+      }
+    } else {
+      // Airborne simulation
+      this.verticalVelocity -= gravity * deltaTime;
+      this.yOffset += this.verticalVelocity * deltaTime;
+
+      if (this.verticalVelocity < 0 && this.state !== window.PLAYER_STATE.FALL) {
+        this.state = window.PLAYER_STATE.FALL;
+        if (this.characterLoader) this.characterLoader.playAction('Player_Fall', 0.2);
+      }
+
+      if (this.yOffset <= 0) {
+        const impactVelocity = Math.abs(this.verticalVelocity);
+        this.yOffset = 0;
+        this.verticalVelocity = 0;
+        this.isGrounded = true;
+        this.y = targetTerrainY;
+        this.state = window.PLAYER_STATE.LAND;
+        this.landTimer = 0.16;
+        if (this.characterLoader) this.characterLoader.playAction('Player_Land', 0.1);
+
+        if (window.emergencySystem && typeof window.emergencySystem.handleFallDamage === 'function') {
+          window.emergencySystem.handleFallDamage(impactVelocity);
+        }
+      }
+    }
+
+    // Land recovery timer
+    if (this.isGrounded && this.landTimer > 0) {
+      this.landTimer -= deltaTime;
+    }
+
+    // Synchronize Authoritative Movement State for Survival Calculations (Section 6 & 7)
+    if (window.GameState && window.GameState.player) {
+      window.GameState.player.movementState = this.state;
+    }
+
+    // Update Character Loader mixer & biomechanics
     if (this.characterLoader) {
       this.characterLoader.update(deltaTime);
 
       // Procedural biomechanics on diagnostic proxy when real GLB is missing
       if (!this.characterLoader.isProductionAsset && this.characterLoader.diagnosticMeshes) {
-        const dMeshes = this.characterLoader.diagnosticMeshes;
-        if (dMeshes.leftCalf && dMeshes.rightCalf) {
-          const legSwing = (this.isMoving && currentSpeed > 0) ? Math.sin(this.time * (currentSpeed > 40 ? 16 : 10)) * 0.45 : 0;
-          dMeshes.leftCalf.rotation.x = legSwing;
-          dMeshes.rightCalf.rotation.x = -legSwing;
-          if (dMeshes.leftSandal) dMeshes.leftSandal.rotation.x = legSwing * 0.5;
-          if (dMeshes.rightSandal) dMeshes.rightSandal.rotation.x = -legSwing * 0.5;
+        const dm = this.characterLoader.diagnosticMeshes;
+        const speedFactor = this.currentSpeed > 0 ? Math.min(this.currentSpeed / this.speeds.sprint, 1.0) : 0;
+        const cadence = this.isMoving ? (10 + speedFactor * 8) : 2; // Hz
+        const phase = this.time * cadence;
+
+        // ── LEG SWING (pivot-based, natural gait) ──────────────────
+        if (dm.leftLegPivot && dm.rightLegPivot) {
+          const legAmplitude = this.isMoving ? (0.3 + speedFactor * 0.5) : 0;
+          dm.leftLegPivot.rotation.x = Math.sin(phase) * legAmplitude;
+          dm.rightLegPivot.rotation.x = Math.sin(phase + Math.PI) * legAmplitude;
         }
 
-        // Torso bob and lean
-        if (dMeshes.torso) {
-          const bob = (this.isMoving) ? Math.abs(Math.sin(this.time * 12)) * 0.05 : Math.sin(this.time * 2) * 0.01;
-          dMeshes.torso.position.y = 1.2 + bob;
-          dMeshes.torso.rotation.x = (this.isMoving) ? (isSprinting ? 0.25 : 0.1) : 0;
+        // ── ARM SWING (opposite to legs, natural counter-balance) ──
+        if (dm.leftArmPivot && dm.rightArmPivot) {
+          const armAmplitude = this.isMoving ? (0.25 + speedFactor * 0.45) : 0;
+          // Arms swing opposite to legs
+          dm.leftArmPivot.rotation.x = Math.sin(phase + Math.PI) * armAmplitude;
+          dm.rightArmPivot.rotation.x = Math.sin(phase) * armAmplitude;
+
+          // Elbow bend during forward swing
+          if (dm.leftElbowPivot && dm.rightElbowPivot) {
+            const elbowBend = this.isMoving ? 0.3 + speedFactor * 0.3 : 0.1;
+            dm.leftElbowPivot.rotation.x = -elbowBend - Math.max(0, Math.sin(phase + Math.PI)) * 0.3;
+            dm.rightElbowPivot.rotation.x = -elbowBend - Math.max(0, Math.sin(phase)) * 0.3;
+          }
         }
 
-        // Angavasthram thundu inertia sway
-        if (dMeshes.thundu) {
-          dMeshes.thundu.rotation.z = Math.sin(this.time * 8) * 0.08;
+        // ── TORSO bob, lean, and breathing ──────────────────────────
+        if (dm.torso) {
+          const bob = this.isMoving
+            ? Math.abs(Math.sin(phase * 2)) * 0.04 * speedFactor
+            : Math.sin(this.time * 1.5) * 0.008; // idle breathing
+          dm.torso.position.y = 1.15 + bob;
+          dm.torso.rotation.x = this.isMoving ? (0.05 + speedFactor * 0.18) : 0;
+          // Slight lateral sway during walk
+          dm.torso.rotation.z = this.isMoving ? Math.sin(phase) * 0.03 : 0;
+        }
+
+        // ── HEAD (subtle nod, look direction) ──────────────────────
+        if (dm.head) {
+          dm.head.position.y = 1.62 + (this.isMoving ? Math.abs(Math.sin(phase * 2)) * 0.02 : Math.sin(this.time * 1.5) * 0.005);
+          dm.head.rotation.x = this.isMoving ? -0.05 : Math.sin(this.time * 0.7) * 0.02;
+        }
+
+        // ── THUNDU (angavasthram cloth inertia sway) ───────────────
+        if (dm.thundu) {
+          dm.thundu.rotation.z = 0.15 + Math.sin(phase * 0.8) * (this.isMoving ? 0.12 : 0.03);
+          dm.thundu.rotation.x = this.isMoving ? Math.sin(phase) * 0.06 : 0;
+        }
+
+        // ── SATCHEL (bag sway with movement) ───────────────────────
+        if (dm.satchel) {
+          dm.satchel.rotation.z = -0.1 + (this.isMoving ? Math.sin(phase * 0.9) * 0.08 : 0);
         }
       }
     }
@@ -447,6 +550,12 @@ class ThreePlayer {
       this.lanternGroup.rotation.z = sway;
       const flicker = Math.sin(this.time * 11) * 0.18 + Math.cos(this.time * 19) * 0.12 + (Math.random() - 0.5) * 0.15;
       this.lanternLight.intensity = Math.max(1.8, 2.6 + flicker);
+    }
+
+    // ── CUSTOM ANIMATION SYSTEM & GAIT CADENCE ─────────────────
+    if (this.animSystem) {
+      this.animSystem.transitionTo(this.state);
+      this.animSystem.update(deltaTime, this.currentSpeed, this.currentRotation, this.slopeFactor);
     }
   }
 

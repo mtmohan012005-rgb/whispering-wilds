@@ -31,5 +31,6 @@
         }
     }
 
+    // Static-only helper: consumers use CultureCodexUI.renderCards(el).
     window.CultureCodexUI = CultureCodexUI;
 })();

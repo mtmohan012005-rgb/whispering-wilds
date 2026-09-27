@@ -98,7 +98,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const journal = new window.FieldJournal();
   const quests = new window.QuestManager();
   const entities = new window.EntityManager();
-  const player = new window.Player(220, 630);
+  const player = new window.Player(560, 610);
   window.gamePlayer = player;
 
   if (window.GameState && typeof window.GameState.bindLegacyAdapters === 'function') {
@@ -359,6 +359,10 @@ window.addEventListener('DOMContentLoaded', () => {
       if (window.GameState && typeof window.GameState.bindLegacyAdapters === 'function') {
         window.GameState.bindLegacyAdapters();
       }
+      // 3D is now the sole renderer — activate immediately
+      threeWorld.syncPlayerFrom2D(player);
+      threeWorld.setActive(true);
+      console.log('[Main] 3D World activated as sole renderer.');
     } catch (e) {
       console.warn("ThreeWorld initialization error:", e);
     }
@@ -483,7 +487,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Hotkeys
     if (e.code === 'KeyV') {
-      toggle3DMode();
+      if (window.SurvivalUI) window.SurvivalUI.toggle();
     }
     if (e.code === 'KeyP') {
       if (customizationUI) customizationUI.toggle();
@@ -512,11 +516,8 @@ window.addEventListener('DOMContentLoaded', () => {
       handleInteraction();
     }
     if (e.code === 'KeyM') {
-      if (threeWorld && threeWorld.isActive) {
-        toggleMacroView();
-      } else {
-        const muted = audio.toggleMute();
-        audioBtn.textContent = muted ? '🔇 Unmute' : '🔊 Audio';
+      if (window.uiManager) {
+        window.uiManager.toggleModal('MAP');
       }
     }
   });
@@ -605,13 +606,22 @@ window.addEventListener('DOMContentLoaded', () => {
       quests.showQuestNotification('Documented rare Neelakurinji 12-year bloom! (+180 XP)');
     } else if (item.id === 'high_court_gates') {
       quests.completeObjective('main_prologue', 'inspect_heist', audio);
+      quests.completeObjective('main_missing_trail', 'find_first_clue', audio);
+      quests.completeObjective('main_missing_trail', 'explore_starting_area', audio);
       if (window.investigationSystem) window.investigationSystem.inspectObject('high_court_gates');
+      quests.showQuestNotification('📜 Clue Discovered: Torn Chola Hydro-Sanctuary Blueprint! Logged in Field Journal.');
+      audio.playDiscoveryJingle();
       journal.toggle(audio);
       journal.switchTab('quests', audio);
-    } else if (item.id === 'enfield_tracks_site') {
+    } else if (item.id === 'enfield_tracks_site' || item.id === 'crime_scene_mud') {
       quests.completeObjective('main_prologue', 'follow_tracks', audio);
+      quests.completeObjective('main_missing_trail', 'investigate_location', audio);
+      quests.completeObjective('main_missing_trail', 'follow_tracks', audio);
+      quests.completeObjective('main_missing_trail', 'find_additional_evidence', audio);
       if (window.investigationSystem) window.investigationSystem.inspectObject('enfield_tracks_site');
-      quests.showQuestNotification('Discovered: Deep tyre tracks curve towards Pichavaram!');
+      quests.showQuestNotification('🔍 Tyre Skid Investigation: Distinct vintage Enfield chevron treads curve south towards Pichavaram!');
+      audio.playDiscoveryJingle();
+      applyGeorgeTownConsequence();
     } else if (item.id === 'panchayat_well') {
       survival.refillCanteen();
       audio.playFootstep('water');
@@ -650,6 +660,24 @@ window.addEventListener('DOMContentLoaded', () => {
     // Event notification to quest progression
     if (window.questProgression) {
       window.questProgression.onInteraction(item.id, { audio });
+    }
+  }
+
+  function applyGeorgeTownConsequence() {
+    if (window.GameState) {
+      window.GameState.story = window.GameState.story || {};
+      if (!window.GameState.story.georgeTownInvestigated) {
+        window.GameState.story.georgeTownInvestigated = true;
+        // Visual & NPC World Consequence:
+        quests.showQuestNotification('🌍 World Reaction: Auto Driver Velu flagged the road clear! Highway bypass to Delta & Pichavaram is now open.');
+        if (audio && typeof audio.playDiscoveryJingle === 'function') {
+          audio.playDiscoveryJingle();
+        }
+        // Auto-save diegetic story progress
+        if (saveManager && typeof saveManager.saveGame === 'function') {
+          saveManager.saveGame('auto', 'george_town_clues_found');
+        }
+      }
     }
   }
 
@@ -796,6 +824,7 @@ window.addEventListener('DOMContentLoaded', () => {
     teaModal.classList.remove('hidden');
     audio.playTeaPour();
     quests.completeObjective('main_prologue', 'talk_murugan', audio);
+    quests.completeObjective('main_missing_trail', 'talk_murugan', audio);
 
     const bannerTitle = document.querySelector('.tea-kadai-banner h3');
     if (bannerTitle) bannerTitle.textContent = "🍵 Murugan Annan's Tea Kadai (டீக்கடை)";
@@ -811,7 +840,14 @@ window.addEventListener('DOMContentLoaded', () => {
       btn.className = 'tea-choice-btn';
       btn.textContent = opt.label;
       btn.onclick = () => {
-        if (opt.action === 'buy_veshti') {
+        if (opt.id === 'enfield_intel') {
+          quests.completeObjective('main_missing_trail', 'talk_murugan', audio);
+          if (window.investigationSystem) {
+            window.investigationSystem.addEvidence('clue_enfield_tread');
+          }
+          quests.showQuestNotification('🏍️ Enfield Lead Confirmed: Murugan Annan identified the sound heading towards the Pichavaram bypass!');
+          document.getElementById('tea-dialogue-text').textContent = opt.response;
+        } else if (opt.action === 'buy_veshti') {
           const res = window.tradeOrBuyClothing(player, 'cloth_veshti', 'Chennai Plains');
           if (res.success) {
             document.getElementById('tea-dialogue-text').textContent = opt.response;
@@ -954,6 +990,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const detected = explorerCamera.scanSubjects(player, window.WORLD_DATA, entities, renderer.camera);
     
     // Check specific quest photo triggers
+    if (detected && (detected.data.id === 'high_court_gates' || detected.data.id === 'madras_high_court')) {
+      quests.completeObjective('main_missing_trail', 'photo_clue', audio);
+      quests.showQuestNotification('📸 Crime Scene Photo Logged: High Court gate perimeter documented!');
+    }
     if (detected && detected.data.id === 'jallikattu_bull') {
       quests.completeObjective('side_bull', 'photo_bull', audio);
       quests.showQuestNotification('Photo Taken: Farmer Selvam’s prize bull identified!');
@@ -1048,6 +1088,14 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const titleSettingsBtn = document.getElementById('title-settings-btn');
+  if (titleSettingsBtn) {
+    titleSettingsBtn.addEventListener('click', () => {
+      if (window.unifiedSettingsUI?.show) window.unifiedSettingsUI.show();
+      else if (window.UnifiedSettingsUI) new window.UnifiedSettingsUI().show();
+    });
+  }
+
   if (window.GameLifecycle && typeof window.GameLifecycle.on === 'function') {
     window.GameLifecycle.on('enter:PLAYING', (data) => {
       if (titleScreen) {
@@ -1083,6 +1131,9 @@ window.addEventListener('DOMContentLoaded', () => {
         audio.resume();
         audio.startExplorationMusic();
       }
+      if (audioManager) {
+        audioManager.resume();
+      }
 
       // Set Input context to GAMEPLAY
       if (window.InputManager && typeof window.InputManager.setContext === 'function') {
@@ -1102,10 +1153,15 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   audioBtn.addEventListener('click', () => {
-    audio.init();
-    audio.resume();
-    const muted = audio.toggleMute();
-    audioBtn.textContent = muted ? '🔇 Unmute' : '🔊 Audio';
+    if (audio) {
+      audio.init();
+      audio.resume();
+      const muted = audio.toggleMute();
+      audioBtn.textContent = muted ? '🔇 Unmute' : '🔊 Audio';
+    }
+    if (audioManager) {
+      audioManager.resume();
+    }
   });
 
   journalBtn.addEventListener('click', () => journal.toggle(audio));
@@ -1266,7 +1322,9 @@ window.addEventListener('DOMContentLoaded', () => {
     return window.WORLD_DATA.biomes.western_ghats;
   }
 
-  // 10. Main Game Loop
+  // 10. Main Game Loop (SINGLE AUTHORITATIVE LOOP)
+  // This is the ONE requestAnimationFrame loop for the entire game.
+  // ThreeWorld.step(dt) is called from here — it no longer has its own RAF.
   let lastTime = performance.now();
   let lastBiomeName = null; // Track biome transitions for autosave
 
@@ -1281,6 +1339,17 @@ window.addEventListener('DOMContentLoaded', () => {
     const simActive = lc ? lc.isSimulationActive() : true;
     // ────────────────────────────────────────────────────────────────────────
 
+    const is3DActive = !!(threeWorld && threeWorld.isActive);
+
+    // ── DRIVE 3D WORLD (single authoritative call per frame) ─────────────────
+    // ThreeWorld.step() handles: input, player, camera, weather, lighting,
+    // living world, assets, streaming, occlusion, and the THREE.js render call.
+    // NEVER runs its own requestAnimationFrame.
+    if (is3DActive && !threeWorld.isTabHidden) {
+      threeWorld.step(deltaTime, simActive);
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     const currentBiome = getCurrentBiome(player.x);
     const worldBounds = { minX: 0, maxX: 6000, minY: 100, maxY: 1100 };
 
@@ -1292,43 +1361,40 @@ window.addEventListener('DOMContentLoaded', () => {
       }
       lastBiomeName = currentBiome.name;
 
-      // Update Systems
+      // Survival, legacy weather & lighting always update (needed for HUD & audio)
       weather.update(deltaTime, player.x, audio);
       lighting.update(deltaTime, weather);
 
-      // Check if player is near campfire
       const isNearFire = survival.campfires.some(f => Math.hypot(f.x - player.x, f.y - player.y) < 130);
       survival.update(deltaTime, player.x, weather, isNearFire);
 
-      // Update Player & Entities (Single Movement Authority)
-      if (!threeWorld || !threeWorld.isActive) {
+      // Update 2D player ONLY when 3D world is not active (avoids duplicate update)
+      if (!is3DActive) {
         player.update(input, deltaTime, worldBounds, tracksManager, audio, survival, weather);
       }
+
       entities.update(deltaTime);
       tracksManager.update(weather.current, deltaTime);
       particles.update(weather.current, deltaTime, canvas.width, canvas.height, renderer.camera);
 
       // TransitionSystem boundary approach check (preloads next region)
       if (window.TransitionSystem) {
-        const pPos = (threeWorld && threeWorld.isActive && threeWorld.player)
+        const pPos = (is3DActive && threeWorld.player)
           ? threeWorld.player.getPosition()
           : { x: player.x, z: player.y };
         window.TransitionSystem.checkBoundaryApproach(pPos, deltaTime);
       }
 
-      // Master Large World Streaming update
-      if (window.WorldStreaming && typeof window.WorldStreaming.update === 'function') {
-        const pPos = (threeWorld && threeWorld.isActive && threeWorld.player)
-          ? threeWorld.player.getPosition()
-          : { x: player.x, z: player.y };
+      // Master Large World Streaming update (2D fallback path — 3D path is in ThreeWorld.step)
+      if (!is3DActive && window.WorldStreaming && typeof window.WorldStreaming.update === 'function') {
         window.WorldStreaming.update({
-          pos: { x: pPos.x, y: pPos.y || 0, z: pPos.z !== undefined ? pPos.z : pPos.y },
+          pos: { x: player.x, y: 0, z: player.y },
           velocity: { x: player.vx || 0, y: 0, z: player.vy || 0 },
-          inVehicle: !!(player.vehicleState && player.vehicleState.inVehicle)
-        }, threeWorld ? threeWorld.scene : null, audioManager);
+          inVehicle: false
+        }, null, audioManager);
       }
 
-      // Update Environmental Physics, Water, Vegetation & Spatial Interaction
+      // Environmental Physics, Water, Vegetation
       if (window.PhysicsInteractionSystem) {
         window.PhysicsInteractionSystem.update(deltaTime, player);
       }
@@ -1338,9 +1404,8 @@ window.addEventListener('DOMContentLoaded', () => {
       if (window.VegetationReactionSystem) {
         window.VegetationReactionSystem.update(deltaTime, player, weather);
       }
-      if (window.EnvironmentInteractionSystem) {
-        const cam = (threeWorld && threeWorld.isActive) ? threeWorld.camera : renderer.camera;
-        window.EnvironmentInteractionSystem.update(deltaTime, player, cam);
+      if (!is3DActive && window.EnvironmentInteractionSystem) {
+        window.EnvironmentInteractionSystem.update(deltaTime, player, renderer.camera);
       }
     } // end simActive
 
@@ -1399,64 +1464,78 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // --- RENDERING PIPELINE ---
-    const ctx = renderer.ctx;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // --- 2D CANVAS RENDERING PIPELINE (Skipped when 3D engine is active) ---
+    if (!is3DActive) {
+      const ctx = renderer.ctx;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 1. Terrain & Water Channels
-    renderer.drawTerrain(window.WORLD_DATA, weather.current, deltaTime);
+      // 1. Terrain & Water Channels
+      renderer.drawTerrain(window.WORLD_DATA, weather.current, deltaTime);
 
-    // 2. Footprints & Tyre Tracks Decals
-    tracksManager.draw(ctx, renderer.camera);
+      // 2. Footprints & Tyre Tracks Decals
+      tracksManager.draw(ctx, renderer.camera);
 
-    // 3. Depth-sorted Entities & World Objects
-    const renderList = [];
+      // 3. Depth-sorted Entities & World Objects
+      const renderList = [];
 
-    // Add trees/foliage
-    generatedTrees.forEach(t => {
-      if (t.x >= renderer.camera.x - 100 && t.x <= renderer.camera.x + renderer.camera.viewportWidth + 100) {
-        renderList.push({ type: 'tree', y: t.y, obj: t });
-      }
-    });
+      // Add trees/foliage
+      generatedTrees.forEach(t => {
+        if (t.x >= renderer.camera.x - 100 && t.x <= renderer.camera.x + renderer.camera.viewportWidth + 100) {
+          renderList.push({ type: 'tree', y: t.y, obj: t });
+        }
+      });
 
-    // Add landmarks
-    window.WORLD_DATA.landmarks.forEach(lm => {
-      if (lm.x >= renderer.camera.x - 200 && lm.x <= renderer.camera.x + renderer.camera.viewportWidth + 200) {
-        renderList.push({ type: 'landmark', y: lm.y, obj: lm });
-      }
-    });
+      // Add landmarks
+      window.WORLD_DATA.landmarks.forEach(lm => {
+        if (lm.x >= renderer.camera.x - 200 && lm.x <= renderer.camera.x + renderer.camera.viewportWidth + 200) {
+          renderList.push({ type: 'landmark', y: lm.y, obj: lm });
+        }
+      });
 
-    // Add camp items
-    survival.campfires.forEach(f => renderList.push({ type: 'campfire', y: f.y, obj: f }));
-    survival.tents.forEach(t => renderList.push({ type: 'tent', y: t.y, obj: t }));
+      // Add camp items
+      survival.campfires.forEach(f => renderList.push({ type: 'campfire', y: f.y, obj: f }));
+      survival.tents.forEach(t => renderList.push({ type: 'tent', y: t.y, obj: t }));
 
-    // Add player
-    renderList.push({ type: 'player', y: player.y, obj: player });
+      // Add player
+      renderList.push({ type: 'player', y: player.y, obj: player });
 
-    // Sort by Y for 2.5D depth
-    renderList.sort((a, b) => a.y - b.y);
+      // Sort by Y for 2.5D depth
+      renderList.sort((a, b) => a.y - b.y);
 
-    // Draw sorted items
-    renderList.forEach(item => {
-      if (item.type === 'tree') {
-        renderer.drawFoliage(ctx, item.obj, renderer.camera);
-      } else if (item.type === 'landmark') {
-        renderer.drawStructure(ctx, item.obj, renderer.camera);
-      } else if (item.type === 'campfire') {
-        renderer.drawCampItems(ctx, [item.obj], [], renderer.camera);
-        particles.spawnEmbers(item.obj.x, item.obj.y - 6);
-      } else if (item.type === 'tent') {
-        renderer.drawCampItems(ctx, [], [item.obj], renderer.camera);
-      } else if (item.type === 'player') {
-        player.draw(ctx, renderer.camera, survival, explorerCamera);
-      }
-    });
+      // Draw sorted items
+      renderList.forEach(item => {
+        if (item.type === 'tree') {
+          renderer.drawFoliage(ctx, item.obj, renderer.camera);
+        } else if (item.type === 'landmark') {
+          renderer.drawStructure(ctx, item.obj, renderer.camera);
+        } else if (item.type === 'campfire') {
+          renderer.drawCampItems(ctx, [item.obj], [], renderer.camera);
+          particles.spawnEmbers(item.obj.x, item.obj.y - 6);
+        } else if (item.type === 'tent') {
+          renderer.drawCampItems(ctx, [], [item.obj], renderer.camera);
+        } else if (item.type === 'player') {
+          player.draw(ctx, renderer.camera, survival, explorerCamera);
+        }
+      });
 
-    // 4. Update and Draw Living Entities
-    entities.update(deltaTime, player, survival, lighting.timeOfDay, weather.current);
-    entities.draw(ctx, renderer.camera);
+      // 4. Update and Draw Living Entities in 2D
+      entities.update(deltaTime, player, survival, lighting.timeOfDay, weather.current);
+      entities.draw(ctx, renderer.camera);
 
-    // 4b. Update Footstep & Biomechanics Audio & Spatial Listener
+      // 5. World particles (Ripples, Embers, Mountain Fog)
+      particles.drawWorldParticles(ctx, renderer.camera, weather.current);
+
+      // 6. Dynamic Day/Night Lighting Pass
+      lighting.drawLightingPass(ctx, renderer.camera, player, survival.campfires);
+
+      // 7. Screen-space Weather Rain Streaks
+      particles.drawWeather(ctx, canvas.width, canvas.height);
+
+      // 8. Interaction Prompt overlay
+      renderer.drawInteractionPrompt(ctx, player, renderer.camera);
+    }
+
+    // 4b. Update Footstep & Biomechanics Audio & Spatial Listener (Both modes)
     if (audioManager && audioManager.footsteps) {
       const activeP = (threeWorld && threeWorld.isActive && threeWorld.player) ? threeWorld.player : player;
       audioManager.footsteps.update(deltaTime, activeP);
@@ -1465,22 +1544,10 @@ window.addEventListener('DOMContentLoaded', () => {
       audioManager.spatial.updateListener(threeWorld.camera);
     }
 
-    // 5. World particles (Ripples, Embers, Mountain Fog)
-    particles.drawWorldParticles(ctx, renderer.camera, weather.current);
-
-    // 6. Dynamic Day/Night Lighting Pass
-    lighting.drawLightingPass(ctx, renderer.camera, player, survival.campfires);
-
-    // 7. Screen-space Weather Rain Streaks
-    particles.drawWeather(ctx, canvas.width, canvas.height);
-
     // Sync 3D lightning flash if active
     if (weather.isLightning && threeWorld && threeWorld.isActive) {
       threeWorld.triggerLightning(1.0);
     }
-
-    // 8. Interaction Prompt overlay
-    renderer.drawInteractionPrompt(ctx, player, renderer.camera);
 
     // 9. Sync 2D position with multiplayer room if 3D engine is inactive
     if ((!threeWorld || !threeWorld.isActive) && multiplayer && multiplayer.isConnected && multiplayer.currentRoom) {
@@ -1536,7 +1603,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Professional PC Game HUD update
     if (gameHUD) {
-      gameHUD.update(player.angle || 0, survival, player.nearbyInteractable);
+      const activeReg = (biome && biome.name) ? biome.name : 'GEORGE TOWN • CHENNAI';
+      gameHUD.update(player.angle || 0, survival, player.nearbyInteractable, activeReg);
     }
   }
 

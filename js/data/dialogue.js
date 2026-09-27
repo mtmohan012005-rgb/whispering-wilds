@@ -38,6 +38,26 @@ window.DIALOGUE_DATA = {
         response: "Simple thala! Namma shop-ku right side-la oru palmyra forest vara pogum. Anga Selvam oda Jallikattu bull nikudhu. Adha cross panni straight-ah pona, Chola boat jetty kedaikum. Rain adhigamaana canal water level yeridum, paathu ponga!"
       },
       {
+        id: "murugan_moral_trust",
+        label: "🤝 'Annan, keep this ₹50 tip to support your stall. Alert me discreetly if the rider comes back.'",
+        tamilDialogue: "ரொம்ப நன்றி தம்பி! நீங்க கேட்டதுக்கு மேல நான் உங்களுக்கு உதவி பண்றேன். டீ குடிக்க எப்ப வேணா வாங்க, விலை கம்மி!",
+        englishSubtitle: "Thank you friend! I will keep watch on the bypass for you. Trusted tea prices unlocked!",
+        response: "Romba periya manasu thambi! Indha tea stall unga sontha veedu madhiri. Bullet kaaran vandha odaney information kudukaren. Inimey ungallukku tea cut rate dhaan! (+25 Murugan Trust, 30% Tea Discount Unlocked)",
+        affinityChanges: { murugan: 25 },
+        flagsGranted: ["flag_murugan_trusted_ally", "enfield_intel_acquired"],
+        consequenceSummary: "🤝 Murugan is now a Trusted Ally! Tea and snacks discounted by 30%."
+      },
+      {
+        id: "murugan_moral_police",
+        label: "⚖️ 'We should file an official complaint with George Town Police Station immediately.'",
+        tamilDialogue: "போலீஸா? வேணாம் தம்பி, ஏழைங்க பொழப்பு வீணாயிடும். நீங்களே பாத்துக்கோங்க.",
+        englishSubtitle: "Police? Please don't involve authorities, friend. We working folks prefer to stay clear.",
+        response: "Aiyo thambi, police station case aana tea kadai licence cancel panniduvaanga. Neengaley thedunga, aana naan veliya sollala.",
+        affinityChanges: { murugan: -5 },
+        flagsGranted: ["flag_murugan_police_report"],
+        consequenceSummary: "⚖️ Murugan remains cautious. Local shop prices remain standard."
+      },
+      {
         id: "farewell",
         label: "👋 'Nandri Annan! I must hit the trail.'",
         tamilDialogue: "சரி தம்பி! கவனமா போங்க, காட்டு வழி இருட்டாயிடும்.",
@@ -61,6 +81,25 @@ window.DIALOGUE_DATA = {
         response: "Aaha! Namma auto stand pakkam thaan splash-ah water adichutu ponan thala! Bullet 350 standard, vintage cast-iron engine. High Court back gate vazhiya bypass highway thirumbinaan. Pichavaram mangroves pakkam hide aaga plan pola!"
       },
       {
+        id: "velu_moral_bribe",
+        label: "💰 'Here is ₹50 extra, Velu. Show me the shortcut through the back alleys to bypass the flood.'",
+        tamilDialogue: "சூப்பர் சார்! மெயின் ரோடு பிளாக், நான் உங்களை குறுக்கு சந்து வழியா கூட்டிட்டு போறேன்!",
+        englishSubtitle: "Super sir! The main bypass is flooded, but I'll guide you through the hidden driver alleyways!",
+        response: "Appadi podu aruvaala! Madras auto union secret route-ah ungalukku kaatren! Villupuram semman road 10 minutes munnaadi reach aayidalaam! (+25 Velu Trust, Auto Discount Unlocked)",
+        affinityChanges: { velu: 25 },
+        flagsGranted: ["flag_velu_route_revealed"],
+        consequenceSummary: "🛺 Velu revealed the secret alley bypass! Villupuram & Pichavaram unlocked."
+      },
+      {
+        id: "velu_moral_strict",
+        label: "🚖 'I will only pay standard government meter rate. Let's take the official highway.'",
+        tamilDialogue: "சரிங்க சார், கவர்மெண்ட் ரூல்ஸ் படி போவோம். ஆனா மழைல லேட் ஆகும்.",
+        englishSubtitle: "Understood sir. We'll stick to official roads, but the monsoon water will slow us down.",
+        response: "Seri thala, meter padiyae polam. Aana highway-la water log aagi irukku, slow-ah dhaan poga mudiyum.",
+        flagsGranted: ["flag_velu_strict_fare"],
+        consequenceSummary: "🚖 Standard transit route taken."
+      },
+      {
         id: "advice",
         label: "🗺️ 'Any advice for surviving the red clay and delta trails?'",
         tamilDialogue: "செம்மண் நிலத்துல டயர் தடம் தெரியும். மழை வந்தா அழிஞ்சிடும், வேகமா போங்க!",
@@ -80,13 +119,35 @@ window.DIALOGUE_DATA = {
     greeting: "Veyil romba adikkuthu, paathu nadanthu po! (வெயில் ரொம்ப அடிக்குது, பாத்து நடந்து போ!) Aiyya saamy, en kombu kaalai-ah paatheengala?",
     options: [
       {
+        id: "selvam_moral_water_rights",
+        label: "🌾 'Selvam, let's open the ancient Chola sluice to save your parched crops first!'",
+        tamilDialogue: "ஐயா! என் விவசாய நிலம் தப்பிச்சது! இந்த கிராமமே உங்களுக்கு கடன் பட்டிருக்கு!",
+        englishSubtitle: "Ayya! You saved our drying paddy fields! The entire village is forever indebted to you!",
+        response: "Kadavul madhiri vandhu kaapathi irukkeenga thambi! Enga veetu nellu, thengai ellam ungalukku sontham. Indhanga mooligai marundhu! (+30 Selvam Trust, 35% Village Produce Discount)",
+        affinityChanges: { selvam: 30 },
+        flagsGranted: ["flag_selvam_water_diverted", "flag_selvam_ally", "complete_report_selvam", "has_chola_sluice_seal"],
+        consequenceSummary: "🌾 Sluice diverted to village fields! Selvam offers 35% discount on all provisions."
+      },
+      {
+        id: "selvam_moral_heritage_protect",
+        label: "🏛️ 'The Chola stone sluice is an ancient protected monument. We must preserve its integrity.'",
+        tamilDialogue: "புரிதுங்க ஐயா, பழங்காலத்து பொக்கிஷத்தை காப்பது முக்கியம் தான். ஆனா கஷ்டம் தான்.",
+        englishSubtitle: "We understand, sir. Protecting the historical monument matters, though our fields will thirst.",
+        response: "Neenga sonnadhum serithaan. Chola kalvettu adhu, udamai aaka koodadhu. Heritage officers-kitta pesi legal water release kekuren. (+25 Archaeological Society Alignment)",
+        affinityChanges: { selvam: 5 },
+        flagsGranted: ["flag_heritage_sluice_intact", "has_chola_sluice_seal"],
+        consequenceSummary: "🏛️ Heritage monument protected! Archaeological Society alignment increased."
+      },
+      {
         id: "report_bull_photo",
         label: "📸 'Here is the photo of your Kangayam bull resting safely by the palmyra grove!'",
         tamilDialogue: "ஐயா சாமி! என் வீரக் காளையை கண்டுபிடிச்சுட்டீங்களா! ரொம்ப நன்றிங்க ஐயா!",
         englishSubtitle: "Ayya! You found my champion bull! Thank you from the bottom of my heart!",
         response: "Aaha! En Kangayam kaalai! Romba nandri saamy! Neenga High Court archivist thaaney? Andha Enfield kaaran unga bag-ah thookitu odunadha paathen. Avan pocket-la irundhu oru copper seal keela vizhundhuchu, indhanga eduthukonga! (Handed: Ancient Chola Sluice Seal & ₹100 Reward)",
         action: "complete_report_selvam",
-        requiresPhoto: "jallikattu_bull"
+        requiresPhoto: "jallikattu_bull",
+        affinityChanges: { selvam: 25 },
+        flagsGranted: ["flag_selvam_ally", "has_chola_sluice_seal"]
       },
       {
         id: "bull_spotted",

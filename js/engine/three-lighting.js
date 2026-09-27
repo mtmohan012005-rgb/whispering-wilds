@@ -8,15 +8,15 @@ class ThreeLighting {
     constructor(scene) {
         this.scene = scene;
 
-        // 1. Ambient & Directional Lighting (Simulating Storm / Night from user boilerplate)
-        this.ambientLight = new THREE.AmbientLight(0x404050, 0.7);
+        // 1. Ambient & Directional Lighting (Atmospheric nocturnal storm ambience)
+        this.ambientLight = new THREE.AmbientLight(0x606c7e, 0.95);
         this.scene.add(this.ambientLight);
 
-        this.hemiLight = new THREE.HemisphereLight(0x2d4363, 0x0b0f19, 0.3);
+        this.hemiLight = new THREE.HemisphereLight(0x4a6b8c, 0x1a202c, 0.55);
         this.scene.add(this.hemiLight);
 
         // 2. Directional Moonlight / Storm Light (Shadow Caster)
-        this.moonLight = new THREE.DirectionalLight(0x88bbff, 1.2);
+        this.moonLight = new THREE.DirectionalLight(0x99ccff, 1.35);
         this.moonLight.position.set(20, 60, 30);
         this.moonLight.castShadow = true;
 
@@ -44,13 +44,13 @@ class ThreeLighting {
         this.flashIntensity = 0;
         this.currentTimePhase = 'night';
         this.timePresets = {
-            morning:   { sunCol: 0xffd194, sunInt: 1.3, ambCol: 0x78909c, ambInt: 0.8, hemiSky: 0xffd8a8, hemiGround: 0x3e2723 },
-            day:       { sunCol: 0xfff8e7, sunInt: 1.5, ambCol: 0xb0bec5, ambInt: 0.9, hemiSky: 0x90caf9, hemiGround: 0x4e342e },
-            afternoon: { sunCol: 0xffb74d, sunInt: 1.4, ambCol: 0x90a4ae, ambInt: 0.8, hemiSky: 0xffcc80, hemiGround: 0x3e2723 },
-            sunset:    { sunCol: 0xff7043, sunInt: 1.2, ambCol: 0x5c6bc0, ambInt: 0.6, hemiSky: 0xf4511e, hemiGround: 0x1a237e },
-            night:     { sunCol: 0x88bbff, sunInt: 1.0, ambCol: 0x404050, ambInt: 0.7, hemiSky: 0x2d4363, hemiGround: 0x0b0f19 },
-            rain:      { sunCol: 0x64b5f6, sunInt: 0.8, ambCol: 0x37474f, ambInt: 0.6, hemiSky: 0x455a64, hemiGround: 0x102027 },
-            mist:      { sunCol: 0x90a4ae, sunInt: 0.7, ambCol: 0x546e7a, ambInt: 0.8, hemiSky: 0x78909c, hemiGround: 0x263238 }
+            morning:   { sunCol: 0xffd194, sunInt: 1.4, ambCol: 0x88a0b0, ambInt: 0.95, hemiSky: 0xffd8a8, hemiGround: 0x3e2723 },
+            day:       { sunCol: 0xfff8e7, sunInt: 1.6, ambCol: 0xb8c5cc, ambInt: 1.05, hemiSky: 0x90caf9, hemiGround: 0x4e342e },
+            afternoon: { sunCol: 0xffb74d, sunInt: 1.5, ambCol: 0x9cb0bc, ambInt: 0.95, hemiSky: 0xffcc80, hemiGround: 0x3e2723 },
+            sunset:    { sunCol: 0xff7043, sunInt: 1.3, ambCol: 0x6e7ec8, ambInt: 0.75, hemiSky: 0xf4511e, hemiGround: 0x1a237e },
+            night:     { sunCol: 0x99ccff, sunInt: 1.15, ambCol: 0x556075, ambInt: 0.85, hemiSky: 0x3d5373, hemiGround: 0x151b26 },
+            rain:      { sunCol: 0x74bbf6, sunInt: 0.95, ambCol: 0x4a5b66, ambInt: 0.8, hemiSky: 0x556a74, hemiGround: 0x1c2b33 },
+            mist:      { sunCol: 0xa0b4be, sunInt: 0.85, ambCol: 0x647e8a, ambInt: 0.9, hemiSky: 0x88a0ac, hemiGround: 0x323e44 }
         };
     }
 

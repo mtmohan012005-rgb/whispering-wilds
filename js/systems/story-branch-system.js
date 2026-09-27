@@ -164,31 +164,135 @@
       return Math.round(sum / scores.length);
     }
 
-    getStorySummaryMetrics() {
-      // Calculate evidence count from StoryContentSystem or GameState
-      let evidenceCount = 0;
-      if (window.StoryContentSystem && window.StoryContentSystem.collectedEvidence) {
-        evidenceCount = window.StoryContentSystem.collectedEvidence.size;
-      } else if (window.GameState && window.GameState.quests && Array.isArray(window.GameState.quests.evidence)) {
-        evidenceCount = window.GameState.quests.evidence.length;
+    // -------------------------------------------------------------------------
+    // 3-TIER CAMPAIGN PROGRESSION ARCHITECTURE
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns current active campaign tier:
+     * Tier 1: Urban Investigation (Chennai & George Town)
+     * Tier 2: Agricultural Heritage & Moral Dilemmas (Villupuram & Pichavaram)
+     * Tier 3: Ecological Preservation & Sanctuary Destiny (Nilgiris & Western Ghats)
+     */
+    getCampaignTier() {
+      if (this.hasFlag('milestone_inner_vault_unlocked') || this.selectedDestiny || this.hasFlag('flag_sanctuary_decision_reached')) {
+        return { tier: 3, id: 'ECOLOGICAL_SANCTUARY', name: 'Tier 3: Ecological Sanctuary Destiny (மேற்குத் தொடர்ச்சி மலை)' };
+      }
+      if (this.hasFlag('flag_selvam_water_diverted') || this.hasFlag('flag_heritage_sluice_intact') || this.hasFlag('flag_selvam_ally') || this.hasFlag('complete_report_selvam')) {
+        return { tier: 2, id: 'AGRICULTURAL_HERITAGE', name: 'Tier 2: Agricultural Heritage & Delta Stewardship (விழுப்புரம் & பிச்சாவரம்)' };
+      }
+      return { tier: 1, id: 'INVESTIGATION_URBAN', name: 'Tier 1: Urban Clues & Missing Trail (சென்னை & ஜார்ஜ் டவுன்)' };
+    }
+
+    /**
+     * Calculates dynamic merchant pricing multipliers based on player moral choices & NPC trust
+     * @param {string} merchantId - e.g. 'murugan', 'tea', 'velu', 'transport', 'selvam', 'farmer'
+     * @returns {number} Price multiplier (e.g. 0.70 for 30% discount, 1.25 for markup)
+     */
+    getMerchantPriceMultiplier(merchantId = 'general') {
+      const id = (merchantId || '').toLowerCase();
+
+      // Tea Stall / Murugan pricing
+      if (id.includes('tea') || id.includes('murugan')) {
+        if (this.hasFlag('flag_murugan_trusted_ally') || this.getNpcAffinity('murugan') >= 45) {
+          return 0.70; // 30% friendship discount
+        }
+        if (this.hasFlag('flag_murugan_police_report')) {
+          return 1.15; // Distrust surcharge
+        }
       }
 
-      // Check exploration milestones completed
-      let milestonesCompletedCount = 0;
-      if (this.hasFlag('milestone_inscriptions_all')) milestonesCompletedCount++;
-      if (this.hasFlag('milestone_botanical_folios_complete')) milestonesCompletedCount++;
-      if (this.hasFlag('milestone_all_wildlife_observed')) milestonesCompletedCount++;
-      if (this.hasFlag('milestone_inner_vault_unlocked')) milestonesCompletedCount++;
+      // Auto Driver Velu / Transport pricing
+      if (id.includes('auto') || id.includes('velu') || id.includes('transport')) {
+        if (this.hasFlag('flag_velu_route_revealed') || this.getNpcAffinity('velu') >= 45) {
+          return 0.75; // 25% driver guild discount
+        }
+        if (this.hasFlag('flag_velu_strict_fare')) {
+          return 1.0;
+        }
+      }
 
-      return {
-        factionAffinity: { ...this.factionAffinity },
-        npcAffinity: { ...this.npcAffinity },
-        npcTrustAverage: this.getAverageNpcTrust(),
-        evidenceCount,
-        milestonesCompletedCount,
-        selectedDestiny: this.selectedDestiny || 'sanctuary_living_trust',
-        flags: Array.from(this.flags)
-      };
+      // Farmer Selvam / Village produce pricing
+      if (id.includes('selvam') || id.includes('farmer') || id.includes('produce') || id.includes('market')) {
+        if (this.hasFlag('flag_selvam_water_diverted') || this.getNpcAffinity('selvam') >= 45) {
+          return 0.65; // 35% village benefactor discount
+        }
+      }
+
+      // General fallback based on average regional trust
+      const avgTrust = this.getAverageNpcTrust();
+      if (avgTrust >= 60) return 0.85;
+      if (avgTrust >= 40) return 0.95;
+      if (avgTrust < 20) return 1.15;
+      return 1.0;
+    }
+
+    /**
+     * Checks dynamic region unlock availability based on discoveries and moral outcomes
+     * @param {string} regionId - e.g. 'george_town', 'villupuram', 'pichavaram', 'nilgiris', 'thanjavur'
+     */
+    isRegionUnlocked(regionId) {
+      const r = (regionId || '').toLowerCase().replace(/-/g, '_');
+      if (r === 'george_town' || r === 'chennai') return true;
+
+      if (r === 'villupuram') {
+        return this.hasFlag('flag_velu_route_revealed') ||
+               this.hasFlag('enfield_intel_acquired') ||
+               this.getNpcAffinity('velu') >= 25 ||
+               this.getCampaignTier().tier >= 2;
+      }
+
+      if (r === 'pichavaram') {
+        return this.hasFlag('flag_selvam_ally') ||
+               this.hasFlag('flag_selvam_water_diverted') ||
+               this.hasFlag('complete_report_selvam') ||
+               this.hasFlag('has_chola_sluice_seal') ||
+               this.getCampaignTier().tier >= 2;
+      }
+
+      if (r === 'nilgiris' || r === 'western_ghats') {
+        return this.getCampaignTier().tier >= 3 ||
+               this.hasFlag('flag_sanctuary_decision_reached') ||
+               this.hasFlag('flag_heritage_sluice_intact') ||
+               this.hasFlag('flag_selvam_water_diverted');
+      }
+
+      if (r === 'thanjavur' || r === 'madurai') {
+        return this.hasFlag('has_chola_sluice_seal') ||
+               this.getFactionAffinity('heritage_council') >= 40 ||
+               this.getFactionAffinity('archaeological_society') >= 40;
+      }
+
+      return true;
+    }
+
+    /**
+     * Applies interactive dialogue choice outcomes directly into story state
+     */
+    applyDialogueOutcome(npcId, choiceData) {
+      if (!choiceData) return;
+
+      if (choiceData.affinityChanges) {
+        for (const [npc, delta] of Object.entries(choiceData.affinityChanges)) {
+          if (this.npcAffinity[npc] !== undefined) {
+            this.npcAffinity[npc] = Math.max(0, Math.min(100, this.npcAffinity[npc] + delta));
+          }
+        }
+      }
+
+      if (choiceData.flagsGranted && Array.isArray(choiceData.flagsGranted)) {
+        choiceData.flagsGranted.forEach(f => this.flags.add(f));
+      }
+
+      if (choiceData.flag) {
+        this.flags.add(choiceData.flag);
+      }
+
+      this.syncWithGameState();
+
+      if (window.quests && typeof window.quests.showQuestNotification === 'function' && choiceData.consequenceSummary) {
+        window.quests.showQuestNotification(choiceData.consequenceSummary);
+      }
     }
 
     syncWithGameState() {

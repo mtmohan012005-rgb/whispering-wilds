@@ -354,6 +354,28 @@
       }
     }
 
+    lockBackgroundToRegion(regionKey) {
+      this._stopBackgroundCarousel();
+      const validator = window.LocationArtValidator;
+      const artUrl = validator ? validator.getArtworkForRegion(regionKey) : 'assets/ui/menu/menu-chennai.jpg';
+      const info = validator ? validator.getRegionDisplayInfo(regionKey) : null;
+      const bg1 = document.getElementById('ww-menu-bg-1');
+      if (bg1) {
+        bg1.style.backgroundImage = `url("${artUrl}")`;
+        bg1.classList.add('active');
+      }
+      const bg2 = document.getElementById('ww-menu-bg-2');
+      if (bg2) bg2.classList.remove('active');
+      const caption = document.getElementById('ww-menu-caption');
+      if (caption && info) {
+        caption.innerHTML = `📍 <span>${info.canonicalRegion}</span> <span class="tamil-label">• ${info.tamilName}</span>`;
+      }
+    }
+
+    unlockBackground() {
+      this._startBackgroundCarousel();
+    }
+
     _transitionBackground() {
       if (!this._visible || !this._container) return;
       const bg1 = document.getElementById('ww-menu-bg-1');
@@ -362,6 +384,12 @@
 
       this._bgIndex = (this._bgIndex + 1) % MENU_ARTWORKS.length;
       const nextArt = MENU_ARTWORKS[this._bgIndex];
+
+      // Automatic Location Art Validation: verify region and artwork match
+      let validatedUrl = nextArt.url;
+      if (window.LocationArtValidator) {
+        validatedUrl = window.LocationArtValidator.enforceValidArtwork(nextArt.id, nextArt.url);
+      }
 
       // Preload image after next
       const lookahead = MENU_ARTWORKS[(this._bgIndex + 1) % MENU_ARTWORKS.length];
@@ -374,7 +402,7 @@
       const activeBg = bg1.classList.contains('active') ? bg1 : bg2;
       const nextBg   = activeBg === bg1 ? bg2 : bg1;
 
-      nextBg.style.backgroundImage = `url("${nextArt.url}")`;
+      nextBg.style.backgroundImage = `url("${validatedUrl}")`;
       nextBg.classList.add('active');
       activeBg.classList.remove('active');
 
@@ -550,21 +578,34 @@
 
     _onCoopClick() {
       this._playSound('select');
-      window.ConfirmDialogUI?.show({
-        title: '👥 Co-op Expedition (Max 5P)',
-        message: 'Multiplayer room server is currently offline or unreachable. Single-player exploration remains fully functional and accessible without restrictions.',
-        confirmLabel: 'PLAY SINGLE-PLAYER',
-        cancelLabel: 'CLOSE',
-        onConfirm: () => {
-          this._onNewGame();
+      const lobby = document.getElementById('lobbyUI');
+      if (lobby) {
+        lobby.classList.remove('hidden');
+        lobby.style.display = 'flex';
+        const lobbyStatus = document.getElementById('lobbyStatus');
+        if (lobbyStatus) {
+          lobbyStatus.textContent = 'Multiplayer room server checking... Single-player ready.';
+          lobbyStatus.style.color = '#bdc3c7';
         }
-      });
+      } else {
+        window.ConfirmDialogUI?.show({
+          title: '👥 Co-op Expedition (Max 5P)',
+          message: 'Multiplayer room server is currently offline or unreachable. Single-player exploration remains fully functional and accessible without restrictions.',
+          confirmLabel: 'PLAY SINGLE-PLAYER',
+          cancelLabel: 'CLOSE',
+          onConfirm: () => {
+            this._onNewGame();
+          }
+        });
+      }
     }
 
     // -------------------------------------------------------------------------
     // NEW GAME: PLAYER SETUP & CHARACTER PREVIEW MODAL
     // -------------------------------------------------------------------------
     _showPlayerSetupModal(onProceed) {
+      document.getElementById('ww-setup-modal')?.remove();
+      this.lockBackgroundToRegion('george_town');
       const modal = document.createElement('div');
       modal.id = 'ww-setup-modal';
       modal.className = 'ww-modal-backdrop';
@@ -690,8 +731,14 @@
       });
 
       // Actions
-      modal.querySelector('#ww-setup-close')?.addEventListener('click', () => modal.remove());
-      modal.querySelector('#ww-setup-back')?.addEventListener('click', () => modal.remove());
+      modal.querySelector('#ww-setup-close')?.addEventListener('click', () => {
+        this.unlockBackground();
+        modal.remove();
+      });
+      modal.querySelector('#ww-setup-back')?.addEventListener('click', () => {
+        this.unlockBackground();
+        modal.remove();
+      });
       modal.querySelector('#ww-setup-proceed')?.addEventListener('click', () => {
         this._playSound('select');
         const nameVal = modal.querySelector('#ww-player-name-input')?.value.trim() || 'Explorer';
@@ -712,6 +759,7 @@
     // NEW GAME: PROLOGUE / STORY INTRODUCTION MODAL
     // -------------------------------------------------------------------------
     _showPrologueModal({ isReplay = false, onStart = null } = {}) {
+      this.lockBackgroundToRegion('george_town');
       const modal = document.createElement('div');
       modal.id = 'ww-prologue-modal';
       modal.className = 'ww-modal-backdrop';
@@ -750,11 +798,15 @@
       const triggerStart = () => {
         this._playSound('select');
         modal.remove();
-        // Mark intro completed in GameState
+        // Mark intro completed in GameState and storage
         if (window.GameState) {
           window.GameState.story = window.GameState.story || {};
           window.GameState.story.introCompleted = true;
         }
+        try {
+          localStorage.setItem('ww_intro_completed', 'true');
+        } catch (_) {}
+
         if (onStart) {
           onStart();
         } else {
@@ -766,6 +818,7 @@
       modal.querySelector('#ww-prologue-begin')?.addEventListener('click', triggerStart);
       modal.querySelector('#ww-prologue-skip')?.addEventListener('click', triggerStart);
       modal.querySelector('#ww-prologue-cancel')?.addEventListener('click', () => {
+        this.unlockBackground();
         modal.remove();
       });
     }

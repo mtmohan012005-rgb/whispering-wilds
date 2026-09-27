@@ -7,6 +7,7 @@
 const WORLD_ASSETS = {
   chennai: {
     buildings: [
+      "madras_high_court",
       "street_row",
       "tea_kadai",
       "market_building",
@@ -20,12 +21,16 @@ const WORLD_ASSETS = {
       "brass_vessels",
       "water_pot",
       "street_sign",
-      "electrical_pole"
+      "electrical_pole",
+      "palmyra_palm"
     ],
     vehicles: [
       "auto_rickshaw",
       "old_motorcycle",
       "city_bus"
+    ],
+    characters: [
+      "velu"
     ]
   },
 
@@ -59,7 +64,8 @@ const WORLD_ASSETS = {
       "fish_crate",
       "boat_dock",
       "paddle",
-      "rope"
+      "rope",
+      "mangrove_dock"
     ]
   },
 
@@ -99,6 +105,7 @@ const WORLD_ASSETS = {
       "coastal_rock"
     ],
     buildings: [
+      "shore_temple",
       "stone_workshop",
       "heritage_structure"
     ],
@@ -111,6 +118,8 @@ const WORLD_ASSETS = {
 
   nilgiris: {
     buildings: [
+      "tea_factory_heritage",
+      "toda_mund_hut",
       "hill_house",
       "forest_station"
     ],
@@ -126,6 +135,9 @@ const WORLD_ASSETS = {
       "wooden_fence",
       "tea_basket",
       "forest_sign"
+    ],
+    wildlife: [
+      "nilgiri_tahr"
     ]
   }
 };
@@ -136,6 +148,17 @@ const WORLD_ASSETS = {
  */
 const WORLD_ASSET_METADATA = {
   // --- CHENNAI ---
+  "madras_high_court": {
+    region: "chennai",
+    category: "buildings",
+    path: "assets/landmarks/chennai/madras_high_court.glb",
+    collider: { type: "box", size: [32.0, 16.0, 24.0] },
+    interactable: true,
+    interactionType: "landmark",
+    interactionPrompt: "Inspect Madras High Court Indo-Saracenic Red Brick Portico",
+    isHeroLandmark: true,
+    lod: { lod0: 45, lod1: 120, lod2: 250 }
+  },
   "street_row": {
     region: "chennai",
     category: "buildings",
@@ -147,8 +170,8 @@ const WORLD_ASSET_METADATA = {
   "tea_kadai": {
     region: "chennai",
     category: "buildings",
-    path: "assets/architecture/chennai/tea_kadai.glb",
-    collider: { type: "box", size: [12.0, 6.0, 7.0] },
+    path: "assets/architecture/chennai/tea_kadai_stall.glb",
+    collider: { type: "box", size: [8.0, 4.5, 6.0] },
     interactable: true,
     interactionType: "tea_shop",
     interactionPrompt: "Order Fresh Meter Chai (சூடான டீ)",
@@ -250,12 +273,30 @@ const WORLD_ASSET_METADATA = {
   "auto_rickshaw": {
     region: "chennai",
     category: "vehicles",
-    path: "assets/vehicles/auto/auto_rickshaw.glb",
+    path: "assets/vehicles/auto_rickshaw/chennai_auto.glb",
     collider: { type: "box", size: [3.2, 2.2, 1.8] },
     interactable: true,
     interactionType: "auto",
     interactionPrompt: "Talk to Auto Annan Velu",
     lod: { lod0: 25, lod1: 65, lod2: 140 }
+  },
+  "velu": {
+    region: "chennai",
+    category: "characters",
+    path: "assets/characters/npcs/velu.glb",
+    collider: { type: "cylinder", radius: 0.45, height: 1.8 },
+    interactable: true,
+    interactionType: "npc",
+    interactionPrompt: "Speak with Velu (ஆட்டோ வேலு)",
+    lod: { lod0: 20, lod1: 50, lod2: 100 }
+  },
+  "palmyra_palm": {
+    region: "chennai",
+    category: "props",
+    path: "assets/vegetation/trees/palmyra_palm.glb",
+    collider: { type: "cylinder", radius: 0.5, height: 10.0 },
+    interactable: false,
+    lod: { lod0: 30, lod1: 80, lod2: 180 }
   },
   "old_motorcycle": {
     region: "chennai",
@@ -338,7 +379,7 @@ const WORLD_ASSET_METADATA = {
   "irrigation_sluice": {
     region: "cauvery_delta",
     category: "props",
-    path: "assets/props/agriculture/irrigation_sluice.glb",
+    path: "assets/architecture/delta/irrigation_sluice.glb",
     collider: { type: "box", size: [5.0, 3.5, 3.0] },
     interactable: true,
     interactionType: "irrigation_sluice",
@@ -388,7 +429,7 @@ const WORLD_ASSET_METADATA = {
   "mangrove_cluster": {
     region: "pichavaram",
     category: "environment",
-    path: "assets/vegetation/mangroves/mangrove_cluster.glb",
+    path: "assets/vegetation/trees/rhizophora_mangrove.glb",
     collider: { type: "cylinder", radius: 2.8, height: 6.0 },
     interactable: false,
     lod: { lod0: 25, lod1: 70, lod2: 150 }
@@ -412,7 +453,7 @@ const WORLD_ASSET_METADATA = {
   "wooden_boat": {
     region: "pichavaram",
     category: "props",
-    path: "assets/vehicles/boat/wooden_boat.glb",
+    path: "assets/vehicles/boats/mangrove_rowboat.glb",
     collider: { type: "box", size: [5.2, 1.6, 2.0] },
     interactable: true,
     interactionType: "boat",
@@ -442,6 +483,14 @@ const WORLD_ASSET_METADATA = {
     region: "pichavaram",
     category: "props",
     path: "assets/props/fishing/boat_dock.glb",
+    collider: { type: "box", size: [8.0, 1.2, 3.5] },
+    interactable: false,
+    lod: { lod0: 25, lod1: 65, lod2: 140 }
+  },
+  "mangrove_dock": {
+    region: "pichavaram",
+    category: "props",
+    path: "assets/landmarks/pichavaram/mangrove_dock.glb",
     collider: { type: "box", size: [8.0, 1.2, 3.5] },
     interactable: false,
     lod: { lod0: 25, lod1: 65, lod2: 140 }
@@ -639,6 +688,17 @@ const WORLD_ASSET_METADATA = {
     interactable: false,
     lod: { lod0: 30, lod1: 80, lod2: 160 }
   },
+  "shore_temple": {
+    region: "mamallapuram",
+    category: "buildings",
+    path: "assets/landmarks/mamallapuram/shore_temple.glb",
+    collider: { type: "box", size: [18.0, 14.0, 16.0] },
+    interactable: true,
+    interactionType: "landmark",
+    interactionPrompt: "Inspect Shore Temple (கடற்கரை கோவில்)",
+    isHeroLandmark: true,
+    lod: { lod0: 45, lod1: 110, lod2: 230 }
+  },
   "stone_workshop": {
     region: "mamallapuram",
     category: "buildings",
@@ -690,6 +750,27 @@ const WORLD_ASSET_METADATA = {
   },
 
   // --- NILGIRIS ---
+  "tea_factory_heritage": {
+    region: "nilgiris",
+    category: "buildings",
+    path: "assets/landmarks/nilgiris/tea_factory_heritage.glb",
+    collider: { type: "box", size: [24.0, 10.0, 16.0] },
+    interactable: true,
+    interactionType: "door",
+    interactionPrompt: "Enter Heritage Tea Factory",
+    isHeroLandmark: true,
+    lod: { lod0: 35, lod1: 90, lod2: 190 }
+  },
+  "toda_mund_hut": {
+    region: "nilgiris",
+    category: "buildings",
+    path: "assets/architecture/nilgiris/toda_mund_hut.glb",
+    collider: { type: "box", size: [8.0, 5.0, 7.0] },
+    interactable: true,
+    interactionType: "door",
+    interactionPrompt: "Inspect Toda Barrel-Vaulted Mund",
+    lod: { lod0: 25, lod1: 70, lod2: 150 }
+  },
   "hill_house": {
     region: "nilgiris",
     category: "buildings",
@@ -713,7 +794,7 @@ const WORLD_ASSET_METADATA = {
   "tea_rows": {
     region: "nilgiris",
     category: "environment",
-    path: "assets/vegetation/tea/tea_rows.glb",
+    path: "assets/vegetation/bushes/tea_hedge.glb",
     collider: null,
     interactable: true,
     interactionType: "paddy_field",
@@ -787,6 +868,21 @@ const WORLD_ASSET_METADATA = {
     interactionType: "quest_item",
     interactionPrompt: "Read Wildlife Trail Warning Sign",
     lod: { lod0: 20, lod1: 45, lod2: 90 }
+  },
+  "nilgiri_tahr": {
+    region: "nilgiris",
+    category: "wildlife",
+    path: "assets/wildlife/nilgiri_tahr.glb",
+    collider: { type: "cylinder", radius: 0.8, height: 1.4 },
+    interactable: true,
+    interactionType: "wildlife",
+    interactionPrompt: "Observe Nilgiri Tahr (வரையாடு) through camera lens",
+    lod: { lod0: 25, lod1: 60, lod2: 130 }
+  },
+  "player": {
+    region: "chennai",
+    category: "characters",
+    path: "assets/characters/player/player.glb"
   }
 };
 

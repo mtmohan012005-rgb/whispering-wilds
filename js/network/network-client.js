@@ -12,7 +12,7 @@ class NetworkClient {
         this.isHost = false;
         this.role = 'EXPLORER';
         this.playerName = 'Explorer';
-        this.maxPlayers = 8;
+        this.maxPlayers = 5;
         this.pingMs = 0;
         this.isOffline = true;
 
@@ -98,7 +98,7 @@ class NetworkClient {
             this.myId = data.playerId;
             this.isHost = data.isHost;
             this.role = data.role;
-            this.maxPlayers = data.maxPlayers || 8;
+            this.maxPlayers = data.maxPlayers || 5;
             this.emitEvent('joinedSuccess', data);
         });
 

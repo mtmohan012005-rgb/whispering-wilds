@@ -77,9 +77,32 @@
         }
     };
 
+    // Aliases for uppercase context names used across engine modules
+    CONTEXT_RULES.GAMEPLAY = CONTEXT_RULES.GameplayContext;
+    CONTEXT_RULES.MENU = CONTEXT_RULES.MenuContext;
+    CONTEXT_RULES.INVENTORY = CONTEXT_RULES.InventoryContext;
+    CONTEXT_RULES.JOURNAL = CONTEXT_RULES.JournalContext;
+    CONTEXT_RULES.MAP = CONTEXT_RULES.MapContext;
+    CONTEXT_RULES.DIALOGUE = CONTEXT_RULES.DialogueContext;
+    CONTEXT_RULES.PHOTO = CONTEXT_RULES.PhotoContext;
+    CONTEXT_RULES.PUZZLE = CONTEXT_RULES.PuzzleContext;
+    CONTEXT_RULES.BOAT = CONTEXT_RULES.BoatContext;
+    CONTEXT_RULES.CUSTOMIZATION = CONTEXT_RULES.CustomizationContext;
+    CONTEXT_RULES.AUTH = CONTEXT_RULES.AuthContext;
+
     class InputContextManager {
         constructor() {
             this.stack = ['GameplayContext'];
+        }
+
+        _resolve(name) {
+            if (!name) return 'GameplayContext';
+            if (CONTEXT_RULES[name]) return name;
+            const withContext = name + 'Context';
+            if (CONTEXT_RULES[withContext]) return withContext;
+            const upper = name.toUpperCase();
+            if (CONTEXT_RULES[upper]) return upper;
+            return null;
         }
 
         getCurrentContext() {
@@ -87,16 +110,18 @@
         }
 
         setContext(contextName) {
-            if (!CONTEXT_RULES[contextName]) {
+            const resolved = this._resolve(contextName);
+            if (!resolved) {
                 console.warn(`[InputContext] Unknown context: ${contextName}`);
                 return;
             }
-            this.stack = [contextName];
+            this.stack = [resolved];
         }
 
         pushContext(contextName) {
-            if (!CONTEXT_RULES[contextName]) return;
-            this.stack.push(contextName);
+            const resolved = this._resolve(contextName);
+            if (!resolved) return;
+            this.stack.push(resolved);
         }
 
         popContext() {

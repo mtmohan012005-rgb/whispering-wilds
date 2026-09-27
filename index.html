@@ -27,10 +27,13 @@
   <link rel="stylesheet" href="css/account-security.css">
   <link rel="stylesheet" href="css/story-progression.css">
   <link rel="stylesheet" href="css/firebase-auth.css">
+  <link rel="stylesheet" href="css/intro.css">
 
-  <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Three.js 3D Graphics Engine & GLTF Rigged Model Loader (Local with CDN fallback) -->
+  <script src="js/lib/three.min.js"></script>
+  <script>if (typeof THREE === 'undefined') document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>');</script>
+  <script src="js/lib/GLTFLoader.js"></script>
+  <script>if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader === 'undefined') document.write('<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"><\\/script>');</script>
 
   <!-- Firebase Web SDK (Auth & Firestore Cloud Database) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -39,16 +42,39 @@
 
   <!-- Socket.io Client for Multiplayer Co-op -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       PERFORMANCE & ARCHITECTURE SYSTEMS (load before game body scripts)
+       ═══════════════════════════════════════════════════════════════════ -->
+
+  <!-- 1. GPU Capability Detection — must run first, before ThreeWorld init -->
+  <script src="js/core/gpu-capability.js"></script>
+
+  <!-- 2. Graphics Profile Manager (AUTO/LOW/MEDIUM/HIGH/ULTRA + dynamic res) -->
+  <script src="js/core/graphics-profile.js"></script>
+
+  <!-- 3. Online Connection Manager (ONLINE/CONNECTING/OFFLINE/SERVER_ERROR) -->
+  <script src="js/core/connection-manager.js"></script>
+
+  <!-- 4. Central Asset Manager (priority queue, dedup, timeout, retry) -->
+  <script src="js/core/asset-manager.js"></script>
+
+  <!-- 5. Three.js Resource Disposal Manager (ref-counted, per-region) -->
+  <script src="js/core/resource-disposal.js"></script>
+
+  <!-- 6. Dev Performance HUD (auto-hidden in production; Ctrl+Shift+P to toggle) -->
+  <script src="js/debug/perf-hud.js"></script>
+
 </head>
 <body>
 
-  <!-- Game Canvas Viewport (2D) -->
-  <div id="canvas-wrapper">
+  <!-- Legacy 2D Canvas (deprecated, hidden) -->
+  <div id="canvas-wrapper" style="display:none;">
     <canvas id="gameCanvas"></canvas>
   </div>
 
-  <!-- Three.js 3D Open-World Viewport -->
-  <div id="three-canvas-container" class="hidden">
+  <!-- Three.js 3D Open-World Viewport (PRIMARY) -->
+  <div id="three-canvas-container">
     <canvas id="threeCanvas"></canvas>
   </div>
 
@@ -58,25 +84,44 @@
   <!-- Diegetic Save Feedback Toast -->
   <div id="save-toast" class="hidden"></div>
 
-  <!-- Cinematic Title Screen & Prologue Modal (Hidden at startup, displayed on New Game Intro or Replay) -->
-  <div id="title-screen" class="hidden">
+  <!-- Legacy Title Screen (Deprecated in favor of MainMenuUI; kept hidden for DOM compatibility) -->
+  <div id="title-screen" class="hidden" style="display:none !important;">
     <div class="title-card-container">
+      <div class="title-location-badge">
+        <span class="loc-pin">📍</span>
+        <span class="loc-text">GEORGE TOWN, CHENNAI</span>
+        <span class="loc-tamil">• ஜார்ஜ் டவுன், சென்னை</span>
+      </div>
+
       <div class="tamil-title">காட்டு வழி • தடம்</div>
       <h1 class="main-title">The Whispering Wilds</h1>
       <div class="subtitle">An Open-World Narrative Exploration of Tamil Nadu</div>
 
       <div class="prologue-synopsis">
-        <p><strong>Prologue: The Inciting Incident at Madras High Court</strong></p>
-        <p>As you review a century-old inherited blueprint outside the red-brick gates of George Town during a sudden downpour, a mysterious rider on a vintage Royal Enfield speeds past, splashes through the mud, and steals critical records.</p>
-        <p style="margin-top: 8px; color: #a4b0be; font-size: 0.88rem;">Follow tyre tracks across red-clay plains, navigate Pichavaram mangrove canals, and unlock the lost underground eco-sanctuary high in the Western Ghats.</p>
+        <p class="synopsis-heading"><strong>The Inciting Incident at Madras High Court</strong></p>
+        <p class="synopsis-body">As you examine an inherited blueprint outside George Town's historic gates in a sudden downpour, a rider on a vintage Enfield steals critical records. Follow the tracks into the wilderness.</p>
       </div>
 
       <div class="title-actions">
-        <button id="start-game-btn" class="btn-primary">▶ Begin Journey (George Town, Chennai)</button>
-        <button id="skip-intro-btn" class="btn-secondary">⏩ Skip Intro</button>
-        <button id="back-to-menu-btn" class="btn-secondary">↩ Main Menu</button>
-        <button id="multiplayer-title-btn" class="btn-secondary hidden" style="display:none;">👥 Co-op Expedition (Max 5P)</button>
-        <button id="toggle-audio-btn" class="btn-secondary hidden" style="display:none;">🔊 Enable Acoustic Audio</button>
+        <!-- PRIMARY ACTION: Immediately Understandable -->
+        <button id="start-game-btn" class="btn-primary" title="Enter George Town, Chennai">
+          ▶ BEGIN JOURNEY
+        </button>
+
+        <!-- SECONDARY ACTIONS: Lower Visual Priority -->
+        <div class="title-secondary-row">
+          <button id="multiplayer-title-btn" class="btn-secondary-compact" title="Co-op Expedition">👥 Co-op (5P)</button>
+          <button id="toggle-audio-btn" class="btn-secondary-compact" title="Configure Audio">🔊 Audio</button>
+          <button id="title-settings-btn" class="btn-secondary-compact" title="Open Settings">⚙️ Settings</button>
+          <button id="skip-intro-btn" class="btn-secondary-compact" title="Skip Prologue">⏩ Skip</button>
+          <button id="back-to-menu-btn" class="btn-secondary-compact" title="Return to Main Menu">↩ Menu</button>
+        </div>
+
+        <!-- SUBTLE OFFLINE STATUS -->
+        <div class="title-status-subtle">
+          <span class="subtle-dot online" id="title-net-dot"></span>
+          <span id="title-net-text">Single-Player: Ready (Standalone)</span>
+        </div>
       </div>
     </div>
   </div>
@@ -106,10 +151,7 @@
 
       <!-- 3D Open-World Mode & Macro-Map Controls -->
       <div class="hud-top-actions">
-        <button id="toggle-3d-view-btn" class="hud-mode-btn" title="Toggle between 2D View and 3D Open-World [V]">
-          <span id="view-mode-label">🌐 3D World</span>
-          <span class="key-hint">V</span>
-        </button>
+        <!-- 2D/3D toggle removed: 3D is now the sole renderer -->
         <button id="toggle-macro-map-btn" class="hud-mode-btn hidden" title="Toggle Macro-Map Bird's-Eye View [M]">
           <span id="macro-map-label">🗺️ Map</span>
           <span class="key-hint">M</span>
@@ -507,6 +549,9 @@
   <script src="js/ui/festival-ui.js"></script>
 
   <!-- Three.js 3D Open-World Engine Modules -->
+  <script src="js/engine/lighting-shaders.js"></script>
+  <script src="js/engine/dynamic-foliage.js"></script>
+  <script src="js/animation/custom-anim-system.js"></script>
   <script src="js/engine/three-terrain.js"></script>
   <script src="js/engine/character-loader.js"></script>
   <script src="js/engine/three-player.js"></script>
@@ -753,9 +798,11 @@
   <script src="js/systems/audio.js"></script>
   <script src="js/systems/cloud-save.js"></script>
   <script src="js/systems/account-system.js"></script>
+  <script src="js/ui/intro-cinematic.js"></script>
   <script src="js/ui/boot-screen.js"></script>
   <script src="js/ui/confirm-dialog-ui.js"></script>
   <script src="js/ui/recovery-ui.js"></script>
+  <script src="js/core/location-art-validator.js"></script>
   <script src="js/ui/loading-screen-ui.js"></script>
   <script src="js/ui/main-menu-ui.js"></script>
   <script src="js/ui/pause-menu-ui.js"></script>

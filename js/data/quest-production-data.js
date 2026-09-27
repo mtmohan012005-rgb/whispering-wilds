@@ -34,8 +34,8 @@ window.QUEST_PRODUCTION_DATA = [
         target: "madras_high_court",
         text: "Explore the starting area outside Madras High Court gates",
         requiredAmount: 1,
-        currentAmount: 1,
-        completed: true,
+        currentAmount: 0,
+        completed: false,
         hidden: false
       },
       {
@@ -44,8 +44,8 @@ window.QUEST_PRODUCTION_DATA = [
         target: "high_court_gates",
         text: "Find and inspect the torn parchment left behind at the gates",
         requiredAmount: 1,
-        currentAmount: 1,
-        completed: true,
+        currentAmount: 0,
+        completed: false,
         hidden: false
       },
       {

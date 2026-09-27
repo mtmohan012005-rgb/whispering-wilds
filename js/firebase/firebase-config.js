@@ -18,11 +18,22 @@
     authDomain: 'debug-c26abc33.firebaseapp.com',
     storageBucket: 'debug-c26abc33.firebasestorage.app',
     // Standard web configuration for debug-c26abc33
-    appId: '1:debug-c26abc33:web:whispering-wilds-production'
+    appId: '1:debug-c26abc33:web:whispering-wilds-production',
+    // Populated from your own Firebase console project settings.
+    // Left blank, the game runs fully in offline / guest mode.
+    apiKey: ''
   };
+
+  // Firebase's default demo project. initializeApp() against it always fails
+  // with auth/invalid-api-key, so treat it as "not configured".
+  const PLACEHOLDER_PROJECT_IDS = ['debug-c26abc33'];
 
   return {
     config: FIREBASE_CONFIG,
-    isConfigured: () => Boolean(FIREBASE_CONFIG.projectId)
+    isConfigured: () => Boolean(
+      FIREBASE_CONFIG.apiKey &&
+      FIREBASE_CONFIG.projectId &&
+      !PLACEHOLDER_PROJECT_IDS.includes(FIREBASE_CONFIG.projectId)
+    )
   };
 });

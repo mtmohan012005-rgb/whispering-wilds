@@ -92,6 +92,14 @@ class DialogueController {
     this.isPaused = true;
     this.choiceUI.show(choices, (selectedIdx) => {
       this.isPaused = false;
+      const selected = choices[selectedIdx];
+      if (selected && window.StoryBranchSystem) {
+        if (selected.branchId && selected.id) {
+          window.StoryBranchSystem.recordChoice(selected.branchId, selected.id);
+        } else {
+          window.StoryBranchSystem.applyDialogueOutcome(this.activeLine?.speaker || 'npc', selected);
+        }
+      }
       if (onSelect) onSelect(selectedIdx);
       this.advance();
     });

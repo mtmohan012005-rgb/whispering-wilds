@@ -20,16 +20,26 @@
       this.db = null;
       this.currentUser = null;
       this.isInitialized = false;
+      this._disabled = false;
       this._authListeners = new Set();
       this._offlineQueue = [];
     }
 
     async init() {
       if (this.isInitialized) return true;
+      if (this._disabled) return false;
 
-      const config = (typeof window !== 'undefined' && window.FirebaseConfig)
-        ? window.FirebaseConfig.config
-        : { projectId: 'debug-c26abc33', authDomain: 'debug-c26abc33.firebaseapp.com' };
+      const cfg = (typeof window !== 'undefined' && window.FirebaseConfig) ? window.FirebaseConfig : null;
+
+      // No real credentials -> stay in offline / guest mode instead of letting
+      // initializeApp() throw auth/invalid-api-key on every boot.
+      if (!cfg || typeof cfg.isConfigured !== 'function' || !cfg.isConfigured()) {
+        this._disabled = true;
+        console.warn('[FirebaseService] No Firebase credentials configured - running offline/guest mode.');
+        return false;
+      }
+
+      const config = cfg.config;
 
       if (typeof firebase === 'undefined') {
         console.warn('[FirebaseService] Firebase SDK not yet loaded from CDN. Retrying on window load.');

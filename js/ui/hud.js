@@ -38,6 +38,7 @@ class GameHUD {
         proLayer.innerHTML = `
             <!-- COMPASS RIBBON -->
             <div class="pc-compass-container">
+                <div class="pc-location-ribbon-badge" id="pc-location-badge">GEORGE TOWN • CHENNAI</div>
                 <div class="pc-compass-ticker"></div>
                 <div class="pc-compass-tape" id="pc-compass-tape">
                     <span>N</span> <span>NE</span> <span>E</span> <span>SE</span> <span>S</span> <span>SW</span> <span>W</span> <span>NW</span>
@@ -121,9 +122,21 @@ class GameHUD {
         this.trackerChapter = document.getElementById('pc-tracker-chapter');
         this.trackerTitle = document.getElementById('pc-tracker-title');
         this.trackerStep = document.getElementById('pc-tracker-step');
+        this.locationBadge = document.getElementById('pc-location-badge');
     }
 
-    update(headingRad = 0, survival = null, nearbyInteractable = null) {
+    update(headingRad = 0, survival = null, nearbyInteractable = null, regionName = null) {
+        // 0. Location Badge
+        if (this.locationBadge) {
+            let reg = regionName;
+            if (!reg && window.GameState && window.GameState.world && window.GameState.world.region) {
+                reg = window.GameState.world.region.toUpperCase();
+            }
+            if (reg) {
+                this.locationBadge.textContent = reg.includes('CHENNAI') || reg.includes('GEORGE') ? 'GEORGE TOWN • CHENNAI' : reg;
+            }
+        }
+
         // 1. Compass Heading
         const deg = Math.round(((headingRad * (180 / Math.PI)) % 360 + 360) % 360);
         let cardinal = 'NORTH';

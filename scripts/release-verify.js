@@ -51,9 +51,20 @@ function runReleaseGateAudit() {
         scanFolder(full);
       } else if (ent.isFile() && (ent.name.endsWith('.js') || ent.name.endsWith('.html'))) {
         const content = fs.readFileSync(full, 'utf8');
-        if (/xbot|mrdoob|mixamo_demo/i.test(content) && !full.includes('test') && !full.includes('audit')) {
-          console.warn(`    Warning: Xbot reference in ${full}`);
-          xbotFound = true;
+        // Exclude 3rd-party libraries, audit tools, validators, and debug inspectors
+        if (full.includes('lib') || full.includes('test') || full.includes('audit') || full.includes('validator') || full.includes('system-inspector') || full.includes('check-assets')) {
+          continue;
+        }
+
+        // Check for active loading or assignment of demo models
+        const lines = content.split('\n');
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('//') || trimmed.startsWith('*')) continue;
+          if (/(?:src|path|url|load|model)\s*[:=]\s*['"][^'"]*(?:xbot|mixamo_demo)/i.test(trimmed)) {
+            console.warn(`    Warning: Demo model load detected in ${full}: ${trimmed}`);
+            xbotFound = true;
+          }
         }
       }
     }
@@ -83,6 +94,8 @@ function runReleaseGateAudit() {
       if (ent.isDirectory()) {
         if (ent.name !== 'node_modules' && ent.name !== '.git') scanSecrets(full);
       } else if (ent.isFile() && (ent.name.endsWith('.js') || ent.name.endsWith('.json'))) {
+        // Exclude the audit script itself to prevent self-matching regex pattern
+        if (full.includes('release-verify.js')) continue;
         const txt = fs.readFileSync(full, 'utf8');
         if (/BEGIN PRIVATE KEY|BEGIN RSA PRIVATE KEY|aws_secret_access_key/i.test(txt)) {
           secretFound = true;

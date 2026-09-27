@@ -33,11 +33,28 @@ app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'ok',
         game: 'The Whispering Wilds (Kaattu Vazhi)',
-        players: playerManager.players ? playerManager.players.size : 0,
-        rooms: roomManager.rooms ? roomManager.rooms.size : 0,
+        players: playerManager ? (playerManager.players ? playerManager.players.size : 0) : 0,
+        rooms: roomManager ? (roomManager.rooms ? roomManager.rooms.size : 0) : 0,
         uptime: Math.floor((Date.now() - startTime) / 1000),
         uptimeSec: Math.floor((Date.now() - startTime) / 1000),
         timestamp: new Date().toISOString()
+    });
+});
+
+// Versioned health endpoint — used by OnlineConnectionManager client-side check
+app.get('/api/v1/health', (req, res) => {
+    const memory = process.memoryUsage();
+    res.status(200).json({
+        status: 'ok',
+        version: '1',
+        game: 'The Whispering Wilds',
+        uptime: Math.floor((Date.now() - startTime) / 1000),
+        timestamp: new Date().toISOString(),
+        server: {
+            players: playerManager ? (playerManager.players ? playerManager.players.size : 0) : 0,
+            rooms: roomManager ? (roomManager.rooms ? roomManager.rooms.size : 0) : 0,
+            memoryMB: Math.round(memory.heapUsed / 1024 / 1024)
+        }
     });
 });
 

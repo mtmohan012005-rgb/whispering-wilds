@@ -98,6 +98,9 @@ class ProductionWorldAssets {
     if (this.loadedAssets.has(id)) {
       return this.loadedAssets.get(id);
     }
+    if (this._loadingPromises && this._loadingPromises.has(id)) {
+      return this._loadingPromises.get(id);
+    }
 
     const meta = this.registry.get(id);
     if (!meta) {
@@ -107,47 +110,78 @@ class ProductionWorldAssets {
 
     const url = meta.url;
 
-    // Production Missing Asset Rule Contract:
-    // Check local availability via fetch HEAD or GET
-    let assetExists = false;
-    try {
-      if (typeof fetch !== 'undefined') {
-        const res = await fetch(url, { method: 'HEAD' });
-        if (res.ok) {
-          assetExists = true;
-        }
+    if (!this.gltfLoader) {
+      if (typeof THREE !== 'undefined' && THREE.GLTFLoader) {
+        this.gltfLoader = new THREE.GLTFLoader();
       }
-    } catch (e) {
-      assetExists = false;
     }
 
-    if (!assetExists || !this.gltfLoader) {
-      // Mandatory Contract Output:
-      console.warn(`[ProductionWorldAssets] Missing: ${url}`);
-      console.warn(`[WORLD ASSET MISSING]\nRegion: ${meta.region}\nAsset: ${id}\nExpected:\n${url}`);
-      this.missingAssets.set(id, { region: meta.region, expected: url });
+    if (!this.gltfLoader) {
+      console.warn(`[ProductionWorldAssets] GLTFLoader not ready for: ${url}`);
       return null;
     }
 
-    return new Promise((resolve) => {
+    if (!this._loadingPromises) this._loadingPromises = new Map();
+
+    const loadPromise = new Promise((resolve) => {
       this.gltfLoader.load(
         url,
         (gltf) => {
           const model = gltf.scene || gltf.scenes[0];
           model.userData.assetId = id;
           model.userData.isProductionAsset = true;
+
+          model.traverse(child => {
+            if (child.isMesh) {
+              child.castShadow = true;
+              child.receiveShadow = true;
+              if (child.material) {
+                if (Array.isArray(child.material)) {
+                  child.material.forEach(m => { m.side = THREE.DoubleSide; });
+                } else {
+                  child.material.side = THREE.DoubleSide;
+                }
+              }
+            }
+          });
+
           this.loadedAssets.set(id, model);
+          this._loadingPromises.delete(id);
+
+          // Retroactively update active instances waiting for this asset
+          for (const inst of this.activeInstances) {
+            if (inst.userData && inst.userData.assetId === id && !inst.userData.hasProductionMesh) {
+              const toRemove = [];
+              inst.children.forEach(c => {
+                if (c.userData && c.userData.isDiagnosticProxy) toRemove.push(c);
+              });
+              toRemove.forEach(c => {
+                inst.remove(c);
+                if (c.geometry) c.geometry.dispose();
+                if (c.material) c.material.dispose();
+              });
+              const clone = model.clone(true);
+              clone.userData.isProductionAsset = true;
+              inst.add(clone);
+              inst.userData.hasProductionMesh = true;
+            }
+          }
+
           resolve(model);
         },
         undefined,
         (err) => {
-          console.warn(`[ProductionWorldAssets] Missing: ${url}`);
+          console.warn(`[ProductionWorldAssets] Missing or failed load: ${url}`);
           console.warn(`[WORLD ASSET MISSING]\nRegion: ${meta.region}\nAsset: ${id}\nExpected:\n${url}`);
           this.missingAssets.set(id, { region: meta.region, expected: url });
+          this._loadingPromises.delete(id);
           resolve(null);
         }
       );
     });
+
+    this._loadingPromises.set(id, loadPromise);
+    return loadPromise;
   }
 
   /**
@@ -223,20 +257,15 @@ class ProductionWorldAssets {
       group.add(clone);
       group.userData.hasProductionMesh = true;
     } else {
-      // Missing local asset: log notice per Section 21
-      const expectedUrl = meta.url || `assets/architecture/${meta.region}/${id}.glb`;
-      if (!this.missingAssets.has(id)) {
-        console.warn(`[ProductionWorldAssets] Missing: ${expectedUrl}`);
-        console.warn(`[WORLD ASSET MISSING]\nRegion: ${meta.region}\nAsset: ${id}\nExpected:\n${expectedUrl}`);
-        this.missingAssets.set(id, { region: meta.region, expected: expectedUrl });
-      }
-
       // Diagnostic proxy: Clean wireframe bounding marker (Does NOT pretend to be final production asset)
       const proxy = this.createDiagnosticProxy(meta);
       proxy.userData.isDiagnosticProxy = true;
       proxy.userData.isProductionAsset = false;
       group.add(proxy);
       group.userData.hasProductionMesh = false;
+
+      // Trigger asynchronous background load of real production GLB asset
+      this.loadAsset(id).catch(() => {});
     }
 
     // Register simple collision geometry per Section 17
@@ -397,9 +426,37 @@ class ProductionWorldAssets {
     const regionAssets = (typeof WORLD_ASSETS !== 'undefined') ? WORLD_ASSETS[region] : null;
     if (!regionAssets) return;
 
+    // Explicit landmark & hero placement for regional authenticity
+    if (region === 'chennai') {
+      this.instantiate('madras_high_court', { x: -252, z: -22 }, { x: 0, y: 0, z: 0 });
+      this.instantiate('tea_kadai', { x: -242, z: 12 }, { x: 0, y: -0.2, z: 0 });
+      this.instantiate('auto_rickshaw', { x: -238, z: 6 }, { x: 0, y: 0.1, z: 0 });
+      this.instantiate('velu', { x: -236, z: 7 }, { x: 0, y: -1.2, z: 0 });
+      this.instantiate('palmyra_palm', { x: -248, z: 4 }, { x: 0, y: 0.4, z: 0 });
+      this.instantiate('palmyra_palm', { x: -230, z: -15 }, { x: 0, y: 1.1, z: 0 });
+    } else if (region === 'mamallapuram') {
+      this.instantiate('shore_temple', { x: -140, z: 15 }, { x: 0, y: 0.2, z: 0 });
+    } else if (region === 'pichavaram') {
+      this.instantiate('mangrove_dock', { x: -70, z: -5 }, { x: 0, y: 0, z: 0 });
+      this.instantiate('wooden_boat', { x: -68, z: -4 }, { x: 0, y: 0.3, z: 0 });
+    } else if (region === 'cauvery_delta') {
+      this.instantiate('irrigation_sluice', { x: 10, z: -8 }, { x: 0, y: 0, z: 0 });
+    } else if (region === 'chettinad') {
+      this.instantiate('courtyard_mansion', { x: 150, z: 5 }, { x: 0, y: -0.1, z: 0 });
+    } else if (region === 'nilgiris') {
+      this.instantiate('tea_factory_heritage', { x: 235, z: 20 }, { x: 0, y: 0.2, z: 0 });
+      this.instantiate('toda_mund_hut', { x: 245, z: 10 }, { x: 0, y: -0.4, z: 0 });
+      this.instantiate('nilgiri_tahr', { x: 250, z: -25 }, { x: 0, y: 1.5, z: 0 });
+    }
+
     // 1. Buildings (Placed along main path or streets)
     if (regionAssets.buildings) {
       regionAssets.buildings.forEach((bldId, idx) => {
+        // Skip explicitly placed hero landmarks to avoid duplicates
+        if (region === 'chennai' && (bldId === 'madras_high_court' || bldId === 'tea_kadai')) return;
+        if (region === 'mamallapuram' && bldId === 'shore_temple') return;
+        if (region === 'nilgiris' && (bldId === 'tea_factory_heritage' || bldId === 'toda_mund_hut')) return;
+
         const offsetX = (idx - 1.5) * 24.0 + rng.range(-4, 4);
         const offsetZ = ((idx % 2 === 0) ? -1 : 1) * rng.range(18, 32);
         const px = center.x + offsetX;
@@ -412,6 +469,9 @@ class ProductionWorldAssets {
     // 2. Props & Cultural Objects
     if (regionAssets.props) {
       regionAssets.props.forEach((propId, idx) => {
+        if (region === 'chennai' && propId === 'palmyra_palm') return;
+        if (region === 'pichavaram' && (propId === 'wooden_boat' || propId === 'mangrove_dock')) return;
+
         const px = center.x + rng.range(-35, 35);
         const pz = center.z + rng.range(-28, 28);
         const rotY = rng.range(0, Math.PI * 2);
@@ -422,6 +482,8 @@ class ProductionWorldAssets {
     // 3. Vehicles
     if (regionAssets.vehicles) {
       regionAssets.vehicles.forEach((vehId, idx) => {
+        if (region === 'chennai' && vehId === 'auto_rickshaw') return;
+
         const px = center.x + rng.range(-25, 25);
         const pz = center.z + rng.range(-15, 15);
         const rotY = rng.range(-0.2, 0.2);
@@ -429,7 +491,29 @@ class ProductionWorldAssets {
       });
     }
 
-    // 4. Environment Features
+    // 4. Characters & NPCs
+    if (regionAssets.characters) {
+      regionAssets.characters.forEach((charId, idx) => {
+        if (region === 'chennai' && charId === 'velu') return;
+
+        const px = center.x + rng.range(-15, 15);
+        const pz = center.z + rng.range(-15, 15);
+        this.instantiate(charId, { x: px, z: pz });
+      });
+    }
+
+    // 5. Wildlife
+    if (regionAssets.wildlife) {
+      regionAssets.wildlife.forEach((wildId, idx) => {
+        if (region === 'nilgiris' && wildId === 'nilgiri_tahr') return;
+
+        const px = center.x + rng.range(-30, 30);
+        const pz = center.z + rng.range(-30, 30);
+        this.instantiate(wildId, { x: px, z: pz });
+      });
+    }
+
+    // 6. Environment Features
     if (regionAssets.environment) {
       regionAssets.environment.forEach((envId, idx) => {
         const px = center.x + rng.range(-40, 40);

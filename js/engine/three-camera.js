@@ -14,9 +14,9 @@ class ThreeCamera {
         this.mode = 'gameplay';
 
         // Camera offset relative to player in gameplay mode (cinematic third-person)
-        this.defaultGameplayOffset = new THREE.Vector3(-15, 11, 15);
+        this.defaultGameplayOffset = new THREE.Vector3(0, 2.2, 5.0);
         this.gameplayOffset = this.defaultGameplayOffset.clone();
-        this.gameplayTargetOffset = new THREE.Vector3(0, 1.35, 0); // Tracks player chest / root area per Section 20
+        this.gameplayTargetOffset = new THREE.Vector3(0, 1.45, 0); // Tracks player chest / head area
 
         // Contextual framing (PHOTO, INSPECT, INTERACT)
         this.contextFraming = null;
@@ -26,8 +26,8 @@ class ThreeCamera {
         this.macroTarget = new THREE.Vector3(0, 15, 0);
 
         // Current actual position and look target
-        this.currentPos = new THREE.Vector3(-250 + this.gameplayOffset.x, 20, this.gameplayOffset.z);
-        this.currentTarget = new THREE.Vector3(-250, 1.35, 0);
+        this.currentPos = new THREE.Vector3(-244 + this.gameplayOffset.x, 3.5, 2 + this.gameplayOffset.z);
+        this.currentTarget = new THREE.Vector3(-244, 1.45, 2);
 
         this.camera.position.copy(this.currentPos);
         this.camera.lookAt(this.currentTarget);
@@ -74,7 +74,7 @@ class ThreeCamera {
                 const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
                 const currentDist = this.gameplayOffset.length();
                 const nextDist = currentDist * zoomFactor;
-                if (nextDist >= 8.5 && nextDist <= 46.0) {
+                if (nextDist >= 2.2 && nextDist <= 11.0) {
                     this.gameplayOffset.multiplyScalar(zoomFactor);
                 }
             }, { passive: true });
@@ -102,7 +102,7 @@ class ThreeCamera {
 
     setClimbingMode(active) {
         if (active) {
-            this.gameplayOffset.set(-14, 12, 14);
+            this.gameplayOffset.set(0, 2.4, 3.6);
         } else {
             this.gameplayOffset.copy(this.defaultGameplayOffset);
         }
@@ -110,7 +110,7 @@ class ThreeCamera {
 
     setSwimmingMode(active) {
         if (active) {
-            this.gameplayOffset.set(-18, 9, 18);
+            this.gameplayOffset.set(0, 1.8, 5.0);
         } else {
             this.gameplayOffset.copy(this.defaultGameplayOffset);
         }
@@ -118,7 +118,7 @@ class ThreeCamera {
 
     setBoatMode(active) {
         if (active) {
-            this.gameplayOffset.set(-28, 22, 28);
+            this.gameplayOffset.set(0, 3.5, 7.5);
         } else {
             this.gameplayOffset.copy(this.defaultGameplayOffset);
         }
@@ -127,14 +127,38 @@ class ThreeCamera {
     setInspectTarget(target) {
         if (target) {
             this.contextFraming = target;
-            this.gameplayOffset.set(-8, 5, 8);
+            this.gameplayOffset.set(-0.8, 1.6, 2.8);
         } else {
             this.contextFraming = null;
             this.gameplayOffset.copy(this.defaultGameplayOffset);
         }
     }
 
-    update(playerPos, deltaTime) {
+    setInteriorMode(active) {
+        if (active) {
+            this.gameplayOffset.set(0, 1.9, 3.2);
+            this.camera.fov = 68;
+            this.camera.updateProjectionMatrix();
+        } else {
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
+            this.camera.fov = this.fov;
+            this.camera.updateProjectionMatrix();
+        }
+    }
+
+    setVehicleMode(active) {
+        if (active) {
+            this.gameplayOffset.set(0, 2.8, 7.0);
+            this.camera.fov = 65;
+            this.camera.updateProjectionMatrix();
+        } else {
+            this.gameplayOffset.copy(this.defaultGameplayOffset);
+            this.camera.fov = this.fov;
+            this.camera.updateProjectionMatrix();
+        }
+    }
+
+    update(playerPos, deltaTime, terrain, collision) {
         if (this.isTransitioning) {
             this.transitionProgress += deltaTime / this.transitionDuration;
             const t = Math.min(1.0, this.transitionProgress);
@@ -173,7 +197,7 @@ class ThreeCamera {
                 // Orbit-adjusted follow position
                 const rotatedOffset = this.gameplayOffset.clone();
                 rotatedOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.orbitAngleH);
-                rotatedOffset.y += this.orbitAngleV * 14.0;
+                rotatedOffset.y += this.orbitAngleV * 2.6;
 
                 const desiredPos = new THREE.Vector3(
                     playerPos.x + rotatedOffset.x,
@@ -191,8 +215,24 @@ class ThreeCamera {
                 this.currentPos.lerp(desiredPos, lerpFactor);
                 this.currentTarget.lerp(desiredTarget, lerpFactor);
 
-                // Anti-clipping clamp: camera never dips below ground level
-                this.currentPos.y = Math.max(this.currentPos.y, playerPos.y + 1.5);
+                // Robust anti-clipping: camera never dips below terrain elevation
+                let minCameraY = playerPos.y + 1.2;
+                if (terrain) {
+                    if (typeof terrain.getElevation === 'function') {
+                        minCameraY = Math.max(minCameraY, terrain.getElevation(this.currentPos.x, this.currentPos.z) + 1.25);
+                    } else if (typeof terrain.getInterpolatedHeight === 'function') {
+                        minCameraY = Math.max(minCameraY, terrain.getInterpolatedHeight(this.currentPos.x, this.currentPos.z) + 1.25);
+                    }
+                }
+                this.currentPos.y = Math.max(this.currentPos.y, minCameraY);
+
+                // Obstacle collision resolution: prevent camera clipping inside structures/walls
+                const activeCol = collision || window.worldCollision;
+                if (activeCol && typeof activeCol.resolveCircle === 'function') {
+                    const resolved = activeCol.resolveCircle(this.currentPos.x, this.currentPos.z, this.currentPos.x, this.currentPos.z, 0.85);
+                    this.currentPos.x = resolved.x;
+                    this.currentPos.z = resolved.z;
+                }
 
                 this.camera.position.copy(this.currentPos);
                 this.camera.lookAt(this.currentTarget);

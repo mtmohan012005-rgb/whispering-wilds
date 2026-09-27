@@ -175,5 +175,5 @@
         }
     }
 
-    window.AchievementUI = AchievementUI;
+    window.AchievementUI = new AchievementUI();
 })();

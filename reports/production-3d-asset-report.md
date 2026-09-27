@@ -9,7 +9,7 @@
 The 3D asset validation pipeline enforces strict physical, skeletal, texture, and cultural fidelity standards for all in-game models.
 
 - **Hero Character Model**: `READY` (13 meshes, 7 materials, 24 animations)
-- **Textures**: 8 audited.
+- **Textures**: 34 audited.
 - **Animations**: 24 tracks active in Hero GLB.
 - **Polycount Compliance**: Target budgets verified.
 
@@ -27,9 +27,10 @@ The 3D asset validation pipeline enforces strict physical, skeletal, texture, an
 | **REFERENCE** | 5 | 5 | 0 |
 | **ICON** | 1 | 1 | 0 |
 | **METADATA** | 3 | 3 | 0 |
+| **UI** | 8 | 8 | 0 |
 
 ---
 
 ## 3. Cultural Authenticity & Licensing (Measured)
-- Approved / Documented Licenses: **28**
+- Approved / Documented Licenses: **36**
 - Pending Documentation: **0**

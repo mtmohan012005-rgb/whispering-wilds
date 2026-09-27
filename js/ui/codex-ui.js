@@ -287,5 +287,5 @@
         }
     }
 
-    window.CodexUI = CodexUI;
+    window.CodexUI = new CodexUI();
 })();

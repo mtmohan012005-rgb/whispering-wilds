@@ -19,7 +19,7 @@ class InvestigationSystem {
         source: "high_court_gates",
         category: "document",
         photoRequired: false,
-        discovered: true,
+        discovered: false,
         linkedEvidence: ["clue_enfield_tread", "clue_chola_seal"]
       },
       clue_enfield_tread: {

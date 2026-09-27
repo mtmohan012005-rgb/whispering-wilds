@@ -81,6 +81,9 @@ class MultiplayerManager {
         this.client.on('playerMoved', (data) => {
             const remote = this.remotePlayers[data.id];
             if (remote) {
+                if (remote.interpolator) {
+                    remote.interpolator.pushSnapshot(data.position.x, data.position.y, data.position.z, data.rotationY, data.currentAnim || 'walk');
+                }
                 remote.targetPos.set(data.position.x, data.position.y, data.position.z);
                 remote.targetRotY = data.rotationY;
                 remote.currentAnim = data.currentAnim || 'walk';
@@ -213,6 +216,9 @@ class MultiplayerManager {
         this.socket.on('playerMoved', (data) => {
             const remote = this.remotePlayers[data.id];
             if (remote) {
+                if (remote.interpolator) {
+                    remote.interpolator.pushSnapshot(data.position.x, data.position.y, data.position.z, data.rotationY, data.currentAnim || 'walk');
+                }
                 remote.targetPos.set(data.position.x, data.position.y, data.position.z);
                 remote.targetRotY = data.rotationY;
                 remote.currentAnim = data.currentAnim || 'walk';
@@ -368,10 +374,18 @@ class MultiplayerManager {
 
         scene.add(group);
 
+        const interpolator = (typeof NetworkInterpolator !== 'undefined')
+            ? new NetworkInterpolator(80)
+            : null;
+        if (interpolator) {
+            interpolator.pushSnapshot(playerData.position.x || 0, playerData.position.y || 0, playerData.position.z || 0, playerData.rotationY || 0, playerData.currentAnim || 'idle');
+        }
+
         this.remotePlayers[playerData.id] = {
             data: playerData,
             mesh: group,
             bodyMesh: torso,
+            interpolator: interpolator,
             targetPos: new THREE.Vector3(playerData.position.x || 0, playerData.position.y || 0, playerData.position.z || 0),
             targetRotY: playerData.rotationY || 0,
             currentAnim: playerData.currentAnim || 'idle',
@@ -456,6 +470,16 @@ class MultiplayerManager {
                 p.mesh.visible = isNearOrInteracting;
                 if (!isNearOrInteracting) {
                     p.mesh.position.copy(p.targetPos);
+                    continue;
+                }
+            }
+
+            if (p.interpolator) {
+                const interp = p.interpolator.interpolate();
+                if (interp) {
+                    p.mesh.position.set(interp.x, interp.y, interp.z);
+                    p.mesh.rotation.y = interp.rotY;
+                    p.currentAnim = interp.anim;
                     continue;
                 }
             }

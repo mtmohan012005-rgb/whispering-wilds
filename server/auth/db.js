@@ -5,6 +5,13 @@
 const fs = require('fs');
 const path = require('path');
 
+let pg = null;
+try {
+    pg = require('pg');
+} catch (e) {
+    // pg optional in light environments
+}
+
 const DB_DIR = path.join(__dirname, '..', 'data');
 const DB_FILE = path.join(DB_DIR, 'auth_database.json');
 const BACKUP_FILE = path.join(DB_DIR, 'auth_database.json.bak');
@@ -17,9 +24,13 @@ class Database {
             sessions: {},
             password_reset_tokens: {},
             email_verification_tokens: {},
-            cloud_saves: {}
+            cloud_saves: {},
+            profiles: {}
         };
+        this.pgPool = null;
+        this.pgReady = false;
         this.init();
+        this.initPg();
     }
 
     init() {
@@ -62,6 +73,71 @@ class Database {
         }
     }
 
+    async initPg() {
+        if (!process.env.DATABASE_URL || !pg) {
+            console.log('[AuthDB] Running in local transactional file mode (DATABASE_URL not set). Single-player and local dev ready.');
+            return;
+        }
+        try {
+            const poolConfig = {
+                connectionString: process.env.DATABASE_URL,
+                ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false },
+                max: 10,
+                idleTimeoutMillis: 30000,
+                connectionTimeoutMillis: 5000
+            };
+            this.pgPool = new pg.Pool(poolConfig);
+
+            // Verify connection and bootstrap schema
+            const client = await this.pgPool.connect();
+            try {
+                await client.query(`
+                    CREATE TABLE IF NOT EXISTS ww_users (
+                        id VARCHAR(128) PRIMARY KEY,
+                        email VARCHAR(255) UNIQUE NOT NULL,
+                        normalized_email VARCHAR(255) UNIQUE NOT NULL,
+                        password_hash VARCHAR(255) NOT NULL,
+                        display_name VARCHAR(128),
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        email_verified BOOLEAN DEFAULT FALSE,
+                        last_login_at TIMESTAMP WITH TIME ZONE,
+                        status VARCHAR(32) DEFAULT 'ACTIVE'
+                    );
+                    CREATE TABLE IF NOT EXISTS ww_sessions (
+                        id VARCHAR(128) PRIMARY KEY,
+                        user_id VARCHAR(128) REFERENCES ww_users(id) ON DELETE CASCADE,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                        remember BOOLEAN DEFAULT FALSE
+                    );
+                    CREATE TABLE IF NOT EXISTS ww_cloud_saves (
+                        user_id VARCHAR(128) PRIMARY KEY,
+                        revision INT DEFAULT 1,
+                        checksum VARCHAR(128),
+                        client_timestamp TIMESTAMP WITH TIME ZONE,
+                        server_timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        device_id VARCHAR(128),
+                        data JSONB NOT NULL,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    );
+                    CREATE TABLE IF NOT EXISTS ww_profiles (
+                        user_id VARCHAR(128) PRIMARY KEY,
+                        data JSONB NOT NULL,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    );
+                `);
+                this.pgReady = true;
+                console.log('[AuthDB] Connected to Neon PostgreSQL database and bootstrapped tables.');
+            } finally {
+                client.release();
+            }
+        } catch (err) {
+            console.warn('[AuthDB] Neon PostgreSQL initialization warning (falling back to local JSON file):', err.message);
+            this.pgReady = false;
+        }
+    }
+
     // --- Users ---
     findUserByEmail(email) {
         if (!email) return null;
@@ -94,6 +170,23 @@ class Database {
         };
         this.data.users[id] = record;
         this.save();
+
+        if (this.pgReady && this.pgPool) {
+            this.pgPool.query(
+                `INSERT INTO ww_users (id, email, normalized_email, password_hash, display_name, created_at, updated_at, email_verified, status)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                 ON CONFLICT (id) DO UPDATE SET
+                    email = EXCLUDED.email,
+                    normalized_email = EXCLUDED.normalized_email,
+                    password_hash = EXCLUDED.password_hash,
+                    display_name = EXCLUDED.display_name,
+                    updated_at = EXCLUDED.updated_at,
+                    email_verified = EXCLUDED.email_verified,
+                    status = EXCLUDED.status`,
+                [record.id, record.email, record.normalized_email, record.password_hash, record.display_name, record.created_at, record.updated_at, record.email_verified, record.status]
+            ).catch(err => console.error('[AuthDB-PG] Async user create error:', err.message));
+        }
+
         return { ...record };
     }
 
@@ -105,6 +198,24 @@ class Database {
             updated_at: new Date().toISOString()
         };
         this.save();
+
+        if (this.pgReady && this.pgPool) {
+            const u = this.data.users[id];
+            this.pgPool.query(
+                `UPDATE ww_users SET
+                    email = $2,
+                    normalized_email = $3,
+                    password_hash = $4,
+                    display_name = $5,
+                    updated_at = $6,
+                    email_verified = $7,
+                    last_login_at = $8,
+                    status = $9
+                 WHERE id = $1`,
+                [id, u.email, u.normalized_email, u.password_hash, u.display_name, u.updated_at, u.email_verified, u.last_login_at, u.status]
+            ).catch(err => console.error('[AuthDB-PG] Async user update error:', err.message));
+        }
+
         return { ...this.data.users[id] };
     }
 
@@ -118,6 +229,18 @@ class Database {
             remember
         };
         this.save();
+
+        if (this.pgReady && this.pgPool) {
+            this.pgPool.query(
+                `INSERT INTO ww_sessions (id, user_id, created_at, expires_at, remember)
+                 VALUES ($1, $2, $3, $4, $5)
+                 ON CONFLICT (id) DO UPDATE SET
+                    expires_at = EXCLUDED.expires_at,
+                    remember = EXCLUDED.remember`,
+                [sessionId, userId, this.data.sessions[sessionId].created_at, expiresAt, remember]
+            ).catch(err => console.error('[AuthDB-PG] Async session create error:', err.message));
+        }
+
         return { ...this.data.sessions[sessionId] };
     }
 
@@ -135,6 +258,11 @@ class Database {
         if (this.data.sessions[sessionId]) {
             delete this.data.sessions[sessionId];
             this.save();
+
+            if (this.pgReady && this.pgPool) {
+                this.pgPool.query(`DELETE FROM ww_sessions WHERE id = $1`, [sessionId])
+                    .catch(err => console.error('[AuthDB-PG] Async session delete error:', err.message));
+            }
         }
     }
 
@@ -218,6 +346,23 @@ class Database {
             updated_at: new Date().toISOString()
         };
         this.save();
+
+        if (this.pgReady && this.pgPool) {
+            this.pgPool.query(
+                `INSERT INTO ww_cloud_saves (user_id, revision, checksum, client_timestamp, server_timestamp, device_id, data, updated_at)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                 ON CONFLICT (user_id) DO UPDATE SET
+                    revision = EXCLUDED.revision,
+                    checksum = EXCLUDED.checksum,
+                    client_timestamp = EXCLUDED.client_timestamp,
+                    server_timestamp = EXCLUDED.server_timestamp,
+                    device_id = EXCLUDED.device_id,
+                    data = EXCLUDED.data,
+                    updated_at = EXCLUDED.updated_at`,
+                [userId, revision, checksum, clientTimestamp || new Date().toISOString(), new Date().toISOString(), deviceId, JSON.stringify(saveData), new Date().toISOString()]
+            ).catch(err => console.error('[AuthDB-PG] Async cloud save error:', err.message));
+        }
+
         return { ...this.data.cloud_saves[userId] };
     }
 
@@ -241,6 +386,18 @@ class Database {
             updated_at: new Date().toISOString()
         };
         this.save();
+
+        if (this.pgReady && this.pgPool) {
+            this.pgPool.query(
+                `INSERT INTO ww_profiles (user_id, data, updated_at)
+                 VALUES ($1, $2, $3)
+                 ON CONFLICT (user_id) DO UPDATE SET
+                    data = EXCLUDED.data,
+                    updated_at = EXCLUDED.updated_at`,
+                [userId, JSON.stringify(this.data.profiles[userId]), new Date().toISOString()]
+            ).catch(err => console.error('[AuthDB-PG] Async profile upsert error:', err.message));
+        }
+
         return { ...this.data.profiles[userId] };
     }
 

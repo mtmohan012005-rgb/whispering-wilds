@@ -1,5 +1,5 @@
 // ============================================================================
-// THE WHISPERING WILDS - SERVER ROOM MANAGER (8-16 PLAYERS & DYNAMIC HOST REASSIGNMENT)
+// THE WHISPERING WILDS - SERVER ROOM MANAGER (MAX 5 PLAYERS & DYNAMIC HOST REASSIGNMENT)
 // ============================================================================
 
 const RoomWorldState = require('./world-state');

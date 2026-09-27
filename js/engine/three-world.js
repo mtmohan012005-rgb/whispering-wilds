@@ -17,18 +17,29 @@ class ThreeWorld {
         this.onTelemetryUpdate = null;
         this.frameCount = 0;
 
-        // 1. WebGL Renderer
+        // 0. GPU Capability Detection & Auto Graphics Profile Selection
+        // Must happen before renderer creation to set correct pixel ratio.
+        if (window.GPUCapability && !window.GPUCapability.detected) {
+            window.GPUCapability.detect();
+        }
+        if (window.GraphicsProfileManager && typeof window.GraphicsProfileManager.autoSelect === 'function') {
+            window.GraphicsProfileManager.autoSelect();
+        }
+        const _gpm = window.GraphicsProfileManager;
+        const _targetDPR = _gpm ? _gpm.profile.renderPixelRatio : Math.min(window.devicePixelRatio, 1.5);
+
+        // 1. WebGL Renderer — pixel ratio comes from auto-selected profile
         const width = this.container.clientWidth || window.innerWidth;
         const height = this.container.clientHeight || window.innerHeight;
 
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            antialias: true,
+            antialias: _gpm ? _gpm.profile.antialiasEnabled : true,
             powerPreference: 'high-performance'
         });
         this.renderer.setSize(width, height);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.setPixelRatio(_targetDPR);
+        this.renderer.shadowMap.enabled = _gpm ? _gpm.profile.shadowsEnabled : true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.05;
@@ -41,8 +52,24 @@ class ThreeWorld {
         this.terrain = new ThreeTerrain(this.scene);
         this.lighting = new ThreeLighting(this.scene);
         this.cameraController = new ThreeCamera(width / height, this.container);
-        this.player = new ThreePlayer(this.scene, -250, 0);
+        this.player = new ThreePlayer(this.scene, -244, 2);
         this.weather = new ThreeWeather(this.scene);
+
+        // 3b. Advanced PBR Lighting Shaders & Dynamic Foliage Systems
+        this.lightingShaders = (typeof window.LightingShaders !== 'undefined')
+            ? (window.lightingShaders || new window.LightingShaders())
+            : null;
+        window.lightingShaders = this.lightingShaders;
+
+        this.dynamicFoliage = (typeof window.DynamicFoliageSystem !== 'undefined')
+            ? new window.DynamicFoliageSystem(this.scene)
+            : null;
+        window.dynamicFoliageSystem = this.dynamicFoliage;
+
+        // Apply advanced PBR shader to terrain if available
+        if (this.terrain && this.terrain.mesh && this.terrain.mesh.material && this.lightingShaders) {
+            this.lightingShaders.applyPBRShader(this.terrain.mesh.material, { receiveWetness: true });
+        }
 
         // 4. Production Living World System (NPCs & Wildlife)
         if (typeof LivingWorldSystem !== 'undefined') {
@@ -249,10 +276,14 @@ class ThreeWorld {
             const h = this.container.clientHeight || window.innerHeight;
             this.renderer.setSize(w, h);
             this.cameraController.handleResize(w, h);
+            this.cameraController.setMode('gameplay');
             this.lastTime = performance.now();
-            this.renderLoop();
+            // NOTE: No longer starts its own requestAnimationFrame here.
+            // The single authoritative game loop in main.js calls this.step(dt) every frame.
+            console.log('[ThreeWorld] Activated as primary renderer. Driven by main game loop.');
         } else {
             this.container.classList.add('hidden');
+            // Cancel any stale RAF id if somehow left over
             if (this.animationFrameId) {
                 cancelAnimationFrame(this.animationFrameId);
                 this.animationFrameId = null;
@@ -260,50 +291,52 @@ class ThreeWorld {
         }
     }
 
-    renderLoop() {
+    /**
+     * step(dt, simActive) — called ONCE per frame by the single authoritative
+     * game loop in main.js. NEVER starts its own requestAnimationFrame.
+     * @param {number} dt - delta time in seconds (clamped upstream)
+     * @param {boolean} simActive - false while paused/loading
+     */
+    step(dt, simActive = true) {
         if (!this.isActive) return;
 
-        // Skip heavy frame rendering if browser tab is hidden
-        if (this.isTabHidden) {
-            this.animationFrameId = requestAnimationFrame(() => this.renderLoop());
-            return;
-        }
+        // Skip heavy work when tab is hidden (battery/GPU conservation)
+        if (this.isTabHidden) return;
 
         if (this.performanceManager) {
             this.performanceManager.beginFrame();
         }
 
-        const now = performance.now();
-        let dt = (now - this.lastTime) / 1000.0;
-        this.lastTime = now;
         this.frameCount++;
-        // Update Central Input Manager
+
+        // ── INPUT ───────────────────────────────────────────────────────────
         const lc = window.GameLifecycle;
-        const simActive = lc ? lc.isSimulationActive() : true;
-        const inputLocked = (lc && lc.isInputLocked()) || (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked());
+        const inputLocked = (lc && lc.isInputLocked()) ||
+            (window.uiManager && typeof window.uiManager.isInputLocked === 'function' && window.uiManager.isInputLocked());
 
         if (window.InputManager) {
             window.InputManager.update();
             if (inputLocked) {
                 this.clearInputState();
             } else {
-                this.inputState.up = window.InputManager.isDown('MOVE_FORWARD');
-                this.inputState.down = window.InputManager.isDown('MOVE_BACK');
-                this.inputState.left = window.InputManager.isDown('MOVE_LEFT');
-                this.inputState.right = window.InputManager.isDown('MOVE_RIGHT');
-                this.inputState.sprint = window.InputManager.isDown('SPRINT');
-                this.inputState.jump = window.InputManager.wasPressed('JUMP') || window.InputManager.isDown('JUMP');
-                this.inputState.crouch = window.InputManager.isDown('CROUCH');
+                this.inputState.up     = window.InputManager.isDown('MOVE_FORWARD') || !!window.InputManager.keyboard?.isDown('KeyW') || !!window.InputManager.keyboard?.isDown('ArrowUp');
+                this.inputState.down   = window.InputManager.isDown('MOVE_BACK') || !!window.InputManager.keyboard?.isDown('KeyS') || !!window.InputManager.keyboard?.isDown('ArrowDown');
+                this.inputState.left   = window.InputManager.isDown('MOVE_LEFT') || !!window.InputManager.keyboard?.isDown('KeyA') || !!window.InputManager.keyboard?.isDown('ArrowLeft');
+                this.inputState.right  = window.InputManager.isDown('MOVE_RIGHT') || !!window.InputManager.keyboard?.isDown('KeyD') || !!window.InputManager.keyboard?.isDown('ArrowRight');
+                this.inputState.sprint = window.InputManager.isDown('SPRINT') || !!window.InputManager.keyboard?.isDown('ShiftLeft') || !!window.InputManager.keyboard?.isDown('ShiftRight');
+                this.inputState.jump   = window.InputManager.wasPressed('JUMP') || window.InputManager.isDown('JUMP') || !!window.InputManager.keyboard?.isDown('Space');
+                this.inputState.crouch = window.InputManager.isDown('CROUCH') || !!window.InputManager.keyboard?.isDown('ControlLeft') || !!window.InputManager.keyboard?.isDown('KeyC');
             }
         }
 
+        // ── SIMULATION ──────────────────────────────────────────────────────
         if (simActive) {
-            // 1. Update Player Avatar
-            this.player.update(this.inputState, dt, this.terrain);
+            // 1. Player avatar (camera-relative locomotion & inertia)
+            this.player.update(this.inputState, dt, this.terrain, this.cameraController);
         }
         const playerPos = this.player.getPosition();
 
-        // Synchronize with Authoritative GameState
+        // Sync with authoritative GameState
         if (window.GameState && window.GameState.player) {
             window.GameState.player.position.x = playerPos.x;
             window.GameState.player.position.y = playerPos.y;
@@ -311,78 +344,84 @@ class ThreeWorld {
             window.GameState.player.rotation.y = this.player.currentRotation;
         }
 
-        // 2. Update Camera
-        this.cameraController.update(playerPos, dt);
+        // 2. Camera
+        this.cameraController.update(playerPos, dt, this.terrain, this.collision);
 
-        // 3. Update Weather (Rain particles & fog follow camera view)
+        // 3. Weather
         this.weather.update(this.cameraController.camera.position, dt);
 
-        // 4. Update Lighting (Directional shadow camera tracks player)
+        // 4. Lighting
         this.lighting.update(playerPos, dt);
 
-        // 4b. Update Multiplayer Remote Players & Broadcast 3D Transform (20Hz)
+        // 4a. Advanced PBR Lighting Shaders & Dynamic Foliage
+        if (this.lightingShaders) {
+            this.lightingShaders.update(dt, this.weather, this.lighting);
+        }
+        if (this.dynamicFoliage) {
+            this.dynamicFoliage.update(dt, this.weather);
+        }
+
+        // 4b. Multiplayer remote players & transform broadcast (rate-limited in NetworkClient)
         if (window.multiplayerManager) {
             window.multiplayerManager.updateRemotePlayers(dt);
-            const anim = this.player.isMoving ? (this.inputState.shift ? 'sprint' : 'walk') : 'idle';
+            const anim = this.player.isMoving ? (this.inputState.sprint ? 'sprint' : 'walk') : 'idle';
             window.multiplayerManager.emitMyTransform(playerPos, this.player.currentRotation, anim);
         }
 
-        // 4c. Update Production Living World System (NPC Schedules & Wildlife)
-        if (this.livingWorld) {
-            let worldClockMinutes = 540;
-            if (window.testRef && window.testRef.lighting) {
-                worldClockMinutes = (window.testRef.lighting.timeOfDay * 60) % 1440;
+        if (simActive) {
+            // 4c. Living World (NPCs & wildlife) — skipped while paused
+            if (this.livingWorld) {
+                let worldClockMinutes = 540;
+                if (window.testRef && window.testRef.lighting) {
+                    worldClockMinutes = (window.testRef.lighting.timeOfDay * 60) % 1440;
+                }
+                this.livingWorld.update(dt, worldClockMinutes, playerPos);
             }
-            this.livingWorld.update(dt, worldClockMinutes, playerPos);
-        }
 
-        // 4d. Update Traversal, Exploration & Environmental Interaction
-        if (this.traversal) {
-            this.traversal.update(this.inputState, dt, playerPos);
-        }
-        if (this.exploration) {
-            this.exploration.update(playerPos, dt);
-        }
-        if (this.environmentInteraction) {
-            this.environmentInteraction.update(playerPos, this.player.currentRotation, dt);
-        }
+            // 4d. Traversal, Exploration & Environment
+            if (this.traversal)            this.traversal.update(this.inputState, dt, playerPos);
+            if (this.exploration)          this.exploration.update(playerPos, dt);
+            if (this.environmentInteraction) this.environmentInteraction.update(playerPos, this.player.currentRotation, dt);
 
-        // 4e. Update Cultural Life & Markets
-        if (this.dailyRoutine) {
-            let worldHour = 9.0;
-            if (window.testRef && window.testRef.lighting) {
-                worldHour = window.testRef.lighting.timeOfDay;
+            // 4e. Cultural life & markets
+            if (this.dailyRoutine) {
+                let worldHour = 9.0;
+                if (window.testRef && window.testRef.lighting) worldHour = window.testRef.lighting.timeOfDay;
+                const weatherType = (window.testRef && window.testRef.weather) ? window.testRef.weather.current.type : 'clear';
+                this.dailyRoutine.update(worldHour, weatherType);
             }
-            const weather = (window.testRef && window.testRef.weather) ? window.testRef.weather.current.type : 'clear';
-            this.dailyRoutine.update(worldHour, weather);
-        }
-        if (this.marketLife) {
-            this.marketLife.update(playerPos, dt);
+            if (this.marketLife) this.marketLife.update(playerPos, dt);
+
+            // 4f. World assets (LOD, streaming, distance culling)
+            if (this.worldAssets) this.worldAssets.update(playerPos, dt);
+
+            // 4g. World streaming & occlusion
+            if (this.worldStreaming) {
+                const movementMode = this.inputState.sprint ? 'SPRINT' : (this.player.isMoving ? 'WALK' : 'STATIONARY');
+                this.worldStreaming.update(playerPos, dt, this.cameraController?.camera, movementMode);
+            }
+            if (this.occlusionManager) {
+                this.occlusionManager.updateFrustum(this.cameraController.camera);
+            }
         }
 
-        // 4f. Update Production World Assets (Region Streaming, Distance LOD & Culling)
-        if (this.worldAssets) {
-            this.worldAssets.update(playerPos, dt);
-        }
-
-        // 4e. Update PC World Streaming & Occlusion Frustum
-        if (this.worldStreaming) {
-            const movementMode = this.inputState.sprint ? 'SPRINT' : (this.player.isMoving ? 'WALK' : 'STATIONARY');
-            this.worldStreaming.update(playerPos, dt, this.cameraController?.camera, movementMode);
-        }
-        if (this.occlusionManager) {
-            this.occlusionManager.updateFrustum(this.cameraController.camera);
-        }
-
-        // 5. Render Scene
+        // ── RENDER ──────────────────────────────────────────────────────────
         this.renderer.render(this.scene, this.cameraController.camera);
 
-        // 5b. End Performance Frame & Metrics
+        // Dynamic resolution update
+        if (window.GraphicsProfileManager && this.performanceManager) {
+            window.GraphicsProfileManager.updateDynamicResolution(
+                this.performanceManager.frameTimeMs || (dt * 1000),
+                this.renderer
+            );
+        }
+
+        // End frame metrics
         if (this.performanceManager) {
             this.performanceManager.endFrame(this.renderer, this.scene);
         }
 
-        // 6. Telemetry Callback for HUD updates
+        // Telemetry callback for HUD updates
         if (this.onTelemetryUpdate) {
             const p2D = this.world3DTo2D(playerPos.x, playerPos.z);
             this.onTelemetryUpdate({
@@ -395,8 +434,14 @@ class ThreeWorld {
                 isMacro: this.isMacroView()
             });
         }
+        // NO requestAnimationFrame here — driven by main.js game loop
+    }
 
-        this.animationFrameId = requestAnimationFrame(() => this.renderLoop());
+    /**
+     * @deprecated Use step(dt) instead. Kept as no-op for backward compat.
+     */
+    renderLoop() {
+        console.warn('[ThreeWorld] renderLoop() called directly — this is deprecated. ThreeWorld is now driven by the main game loop.');
     }
 }
 

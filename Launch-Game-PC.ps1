@@ -13,15 +13,30 @@ Write-Host "========================================================" -Foregroun
 Write-Host "  THE WHISPERING WILDS (KAATTU VAZHI) - PC & LAPTOP APP  " -ForegroundColor Yellow
 Write-Host "========================================================" -ForegroundColor Cyan
 
-# 1. Check local server
+# 1. Check local server port (prefer active port 8090, fallback to 3000)
+$gamePort = 8090
 $serverRunning = $false
+
 try {
-    $resp = Invoke-WebRequest -Uri "http://localhost:3000/health" -UseBasicParsing -TimeoutSec 1 -ErrorAction SilentlyContinue
-    if ($resp.StatusCode -eq 200) { $serverRunning = $true }
+    $resp8090 = Invoke-WebRequest -Uri "http://localhost:8090/" -UseBasicParsing -TimeoutSec 1 -ErrorAction SilentlyContinue
+    if ($resp8090.StatusCode -eq 200) {
+        $serverRunning = $true
+        $gamePort = 8090
+    }
 } catch {}
 
 if (-not $serverRunning) {
-    Write-Host "Starting authoritative game server on port 3000..." -ForegroundColor Green
+    try {
+        $resp3000 = Invoke-WebRequest -Uri "http://localhost:3000/health" -UseBasicParsing -TimeoutSec 1 -ErrorAction SilentlyContinue
+        if ($resp3000.StatusCode -eq 200) {
+            $serverRunning = $true
+            $gamePort = 3000
+        }
+    } catch {}
+}
+
+if (-not $serverRunning) {
+    Write-Host "Starting authoritative game server..." -ForegroundColor Green
     $nodePath = "C:\Program Files\nodejs\node.exe"
     if (Test-Path $nodePath) {
         Start-Process -FilePath $nodePath -ArgumentList "server.js" -WorkingDirectory $gameDir -WindowStyle Hidden
@@ -29,8 +44,9 @@ if (-not $serverRunning) {
         Start-Process -FilePath "node" -ArgumentList "server.js" -WorkingDirectory $gameDir -WindowStyle Hidden
     }
     Start-Sleep -Seconds 2
+    $gamePort = 3000
 } else {
-    Write-Host "Local game server is active and healthy on port 3000!" -ForegroundColor Green
+    Write-Host "Local game server is active and healthy on port $gamePort!" -ForegroundColor Green
 }
 
 # 2. Locate browser for standalone window
@@ -45,7 +61,7 @@ if (-not (Test-Path $chromePath)) {
 }
 
 $appArgs = @(
-    "--app=http://localhost:3000",
+    "--app=http://localhost:$gamePort",
     "--window-size=1920,1080",
     "--start-maximized",
     "--disable-features=TranslateUI",
@@ -62,7 +78,7 @@ if (Test-Path $edgePath) {
     Start-Process -FilePath $chromePath -ArgumentList $appArgs
 } else {
     Write-Host "Opening in default system browser..." -ForegroundColor Yellow
-    Start-Process "http://localhost:3000"
+    Start-Process "http://localhost:$gamePort"
 }
 
 Write-Host "Game initialized! Have a wonderful expedition." -ForegroundColor Green
