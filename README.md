@@ -74,19 +74,54 @@ An atmospheric open-world exploration, light survival, and narrative mystery adv
 
 ---
 
-### C. Run Locally
-This is a lightweight, zero-dependency HTML5 Canvas application:
-```bash
-# Option 1: Using npx serve
-npx serve .
+### C. Run Locally on Windows (Full Game)
 
-# Option 2: Using Python (if installed)
-python -m http.server 8080
+> **There is no `npm run dev` and no Vite in this project.** The game is a static
+> site (`main: index.html`) served together with the Express + Socket.io backend by
+> a single Node process, so `npm start` is the only command that runs the
+> *complete* game.
 
-# Option 3: PowerShell (Windows)
-powershell -ExecutionPolicy Bypass -File .\serve.ps1 -Port 8080
+**Prerequisite:** Node.js **v18 or higher** (`package.json` sets `engines.node >= 18.0.0`).
+Verify with `node --version`. Git is optional — you can download the ZIP instead.
+
+```powershell
+# 1. Get the source
+git clone https://github.com/mtmohan012005-rgb/whispering-wilds.git
+cd whispering-wilds
+
+# 2. Install dependencies (required for Socket.io, /health, and the /api/* routes)
+npm install
+
+# 3. Start the server
+npm start
 ```
-Then open `http://localhost:8080` in any web browser!
+
+Then open **http://localhost:3000** in Edge, Chrome, or Firefox.
+Confirm it is healthy at **http://localhost:3000/health** (`status: "ok"`).
+
+**One-click launch (Windows):** `npm run app` starts the server if it is not already
+running, waits for it to report healthy, then opens the game in a borderless Edge app
+window. `install-laptop.ps1` additionally creates Desktop and Start Menu shortcuts.
+
+**Electron desktop build:** `npm run desktop` launches the packaged-shell app from
+`desktop/electron/main.js`.
+
+#### Why a plain static server will not work
+
+The backend and the frontend are one process, and the game page calls backend routes.
+Measured against a static file server:
+
+| Capability | `npm start` | Static server (`npx serve`, `python -m http.server`, `serve.ps1`) |
+| :--- | :--- | :--- |
+| Game page | `200` | `200` |
+| `/health`, `/ready` | `200` | `404` |
+| `/api/auth`, `/api/saves` | `401` (routed) | `404` |
+| Socket.io handshake | OK | **Fails** |
+
+A static server loads the page but silently breaks co-op multiplayer (no Socket.io),
+cloud save/account routes (no `/api/*`), and the health check used by the launchers.
+Those options remain valid **only for offline single-player with no cloud saves** —
+prefer `npm start`.
 
 ---
 
