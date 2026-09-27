@@ -46,7 +46,7 @@ const WILDLIFE_SPECIES_DATA = {
     homeLocation: { x: 260, z: 32, label: 'High Granite Precipice (Nilgiris)' },
     wanderRadius: 35.0,
     minElevation: 22.0, // Requires steep high-altitude terrain
-    modelPath: 'assets/characters/wildlife/nilgiri-tahr.glb',
+    modelPath: 'assets/wildlife/nilgiri_tahr.glb',
     validStates: ['IDLE', 'GRAZE', 'GROUP_MOVE', 'ALERT', 'FLEE', 'RETURN', 'REST'],
     defaultState: 'GRAZE',
     silhouetteColor: 0x5a4a42,

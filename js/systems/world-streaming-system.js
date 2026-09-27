@@ -670,6 +670,54 @@
     getActiveCellCount() {
       return this.cellManager.activeCellIds.size;
     }
+
+    /**
+     * Streaming statistics for the debug HUD.
+     *
+     * The HUD guards on `ws.getStats` and silently kept showing "—" for the
+     * Chunks row because this method did not exist at all.
+     */
+    getStats() {
+      const regions = this.regions || {};
+      const ids = Object.keys(regions);
+      let activeInstances = 0;
+      for (const id of ids) {
+        const r = regions[id];
+        if (r && r.activeInstances) activeInstances += r.activeInstances.size;
+      }
+
+      let activeCells = 0;
+      let totalCells = 0;
+      let warmCells = 0;
+      let queued = 0;
+      try {
+        if (this.cellManager) {
+          activeCells = this.cellManager.activeCellIds.size;
+          // cellDefinitions is a plain object (WORLD_CELL_DATA.CELLS), so it has
+          // no .size; cellRecords is a Map pre-seeded with every known cell and
+          // is the reliable total.
+          totalCells = this.cellManager.cellRecords
+            ? this.cellManager.cellRecords.size
+            : Object.keys(this.cellManager.cellDefinitions || {}).length;
+        }
+        warmCells = this.cache ? this.cache.warm.size : 0;
+        queued = this.assetManager && this.assetManager.getQueueLength
+          ? this.assetManager.getQueueLength() : 0;
+      } catch (e) { /* streaming sub-systems not ready yet */ }
+
+      return {
+        // NOTE: each region's `loaded` flag is initialised to false and is never
+        // set back to true anywhere in this class, so it is dead state. Report
+        // real cell activity instead of a count that would always read zero.
+        regions: ids.length,
+        activeCells,
+        totalCells,
+        warmCells,
+        queued,
+        currentRegionId: this.currentRegionId,
+        currentPlayerCellId: this.currentPlayerCellId,
+      };
+    }
   }
 
   return WorldStreamingSystem;

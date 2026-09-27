@@ -174,17 +174,29 @@
       }
 
       // World chunks
-      const ws = window.worldStreamingSystem || window.WorldStreaming;
-      if (ws?.getStats) {
+      const ws = window.worldStreamingSystem || window.WorldStreaming
+        || (window.threeWorld && window.threeWorld.worldStreaming);
+      if (ws && typeof ws.getStats === 'function') {
         const s = ws.getStats();
-        this._setText('phud-chunks', `${s.loaded ?? '?'}/${s.total ?? '?'}`);
+        this._setText('phud-chunks', `${s.activeCells ?? 0}/${s.totalCells ?? 0}`);
       }
 
-      // NPCs & wildlife
+      // NPCs & wildlife.
+      // LivingWorldSystem stores these in Maps (living-world.js), so `.size`
+      // is correct - the previous `.length` lookup was undefined on a Map and
+      // always fell through to "?", making these two rows useless.
       const lw = tw?.livingWorld;
       if (lw) {
-        this._setText('phud-npcs',    (lw.activeNPCs?.size ?? lw.npcs?.length ?? '?').toString());
-        this._setText('phud-wildlife',(lw.activeWildlife?.size ?? lw.wildlife?.length ?? '?').toString());
+        const sizeOf = (v) => {
+          if (v == null) return 0;
+          if (typeof v.size === 'number') return v.size;
+          if (typeof v.length === 'number') return v.length;
+          return 0;
+        };
+        const npcC = lw.activeNPCs != null ? sizeOf(lw.activeNPCs) : sizeOf(lw.npcs);
+        const wildC = lw.activeWildlife != null ? sizeOf(lw.activeWildlife) : sizeOf(lw.wildlife);
+        this._setText('phud-npcs', npcC.toString());
+        this._setText('phud-wildlife', wildC.toString());
       }
 
       // Network
