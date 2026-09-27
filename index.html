@@ -1016,6 +1016,10 @@
   <script src="js/content/content-registry.js"></script>
   <script src="js/content/content-data-bundle.js"></script>
   <script src="js/content/content-validator.js"></script>
+  <!-- Crafting: must load after content-registry.js (registers items/recipes for
+       the validator) and before content-loader.js (which runs validateAll). -->
+  <script src="js/data/crafting-data.js"></script>
+  <script src="js/systems/crafting-system.js"></script>
   <script src="js/content/quest-machine.js"></script>
   <script src="js/content/dialogue-system.js"></script>
   <script src="js/content/cultural-activity-system.js"></script>

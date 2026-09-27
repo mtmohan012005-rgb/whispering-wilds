@@ -86,8 +86,22 @@
       s.hunger = Math.max(0, s.hunger - hungerDrain);
 
       // 4. Wetness Management (0 - 100)
+      // Crafted equipment modifies these rates. A palm-leaf umbrella slows the
+      // soak rate while you are in the water and sheds rain entirely.
+      const craftFx = (window.CraftingSystem &&
+        typeof window.CraftingSystem.getActiveEffects === 'function')
+        ? window.CraftingSystem.getActiveEffects()
+        : null;
+      const soakMult = craftFx ? craftFx.wetnessGainMultiplier : 1.0;
+      const isRaining = !!(context.isRaining || context.rainIntensity > 0);
+      const rainedOn = isRaining && !(craftFx && craftFx.rainShelter);
+
       if (moveState === 'SWIM' || context.waterExposure) {
-        s.wetness = Math.min(100, s.wetness + ((drainConfig.wetnessGain || 60.0) * dt));
+        s.wetness = Math.min(100, s.wetness + ((drainConfig.wetnessGain || 60.0) * dt * soakMult));
+      } else if (rainedOn) {
+        // Rain soaks you, but slower than immersion. Previously rain added no
+        // wetness at all, so only swimming and water exposure mattered.
+        s.wetness = Math.min(100, s.wetness + ((drainConfig.wetnessGain || 60.0) * 0.35 * dt * soakMult));
       } else if (context.isNearCampfire) {
         s.wetness = Math.max(0, s.wetness - ((this.data.thresholds.wetnessEvaporationRate || 3.5) * 3.0 * dt));
       } else if (context.shelter || context.isIndoor) {

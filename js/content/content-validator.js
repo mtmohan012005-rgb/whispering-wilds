@@ -264,6 +264,54 @@
           this.warnings.push({ code: 'ITEM_INVALID_VALUE', type: 'item', id: it.id, message: `Item '${it.id}' value must be non-negative` });
         }
       }
+
+      this._validateRecipes(reg);
+    }
+
+    /**
+     * Recipe integrity: every ingredient and the result must reference a
+     * registered item, quantities must be positive integers, and a recipe
+     * must actually produce something.
+     */
+    _validateRecipes(reg) {
+      if (!reg || typeof reg.getAll !== 'function') return;
+
+      const recipes = reg.getAll('crafting');
+      if (!Array.isArray(recipes) || recipes.length === 0) return;
+
+      const itemIds = new Set(reg.getAll('item').map((i) => i.id));
+
+      for (const r of recipes) {
+        // Ingredients reference real items with usable quantities.
+        const ings = Array.isArray(r.ingredients) ? r.ingredients : [];
+        if (ings.length === 0) {
+          this.errors.push({ code: 'RECIPE_NO_INGREDIENTS', type: 'crafting', id: r.id, message: `Recipe '${r.id}' has no ingredients` });
+        }
+        for (const ing of ings) {
+          if (!ing || typeof ing.itemId !== 'string') {
+            this.errors.push({ code: 'RECIPE_BAD_INGREDIENT', type: 'crafting', id: r.id, message: `Recipe '${r.id}' has an ingredient with a missing itemId` });
+            continue;
+          }
+          if (!itemIds.has(ing.itemId)) {
+            this.errors.push({ code: 'RECIPE_UNKNOWN_INGREDIENT', type: 'crafting', id: r.id, message: `Recipe '${r.id}' requires unregistered item '${ing.itemId}'` });
+          }
+          if (!Number.isInteger(ing.quantity) || ing.quantity < 1) {
+            this.errors.push({ code: 'RECIPE_BAD_QUANTITY', type: 'crafting', id: r.id, message: `Recipe '${r.id}' ingredient '${ing.itemId}' quantity must be a positive integer` });
+          }
+        }
+
+        // The recipe produces a real item, in a usable quantity.
+        if (!r.result || typeof r.result.itemId !== 'string') {
+          this.errors.push({ code: 'RECIPE_NO_RESULT', type: 'crafting', id: r.id, message: `Recipe '${r.id}' has no result.itemId` });
+        } else {
+          if (!itemIds.has(r.result.itemId)) {
+            this.errors.push({ code: 'RECIPE_UNKNOWN_RESULT', type: 'crafting', id: r.id, message: `Recipe '${r.id}' produces unregistered item '${r.result.itemId}'` });
+          }
+          if (!Number.isInteger(r.result.quantity) || r.result.quantity < 1) {
+            this.errors.push({ code: 'RECIPE_BAD_QUANTITY', type: 'crafting', id: r.id, message: `Recipe '${r.id}' result quantity must be a positive integer` });
+          }
+        }
+      }
     }
 
     _validateShops(shops, reg) {

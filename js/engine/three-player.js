@@ -183,6 +183,23 @@ class ThreePlayer {
       new THREE.MeshBasicMaterial({ color: 0xffe57f })
     );
     this.lanternGroup.add(bulb);
+
+    // Crafted bamboo torch: a wider, warmer light than the brass lantern.
+    // Hidden by default; CraftingSystem enables it when a torch is carried.
+    this.torchGroup = new THREE.Group();
+    this.torchGroup.position.set(0.32, 0.10, -0.18);
+    this.torchGroup.visible = false;
+    this.group.add(this.torchGroup);
+
+    this.torchLight = new THREE.PointLight(0xff7a2a, 0.0, 30, 1.7);
+    this.torchLight.castShadow = false; // budget: lantern already pays for shadows
+    this.torchGroup.add(this.torchLight);
+
+    const torchHead = new THREE.Mesh(
+      new THREE.SphereGeometry(0.09, 6, 6),
+      new THREE.MeshBasicMaterial({ color: 0xffa64d })
+    );
+    this.torchGroup.add(torchHead);
   }
 
   /**
@@ -550,6 +567,24 @@ class ThreePlayer {
       this.lanternGroup.rotation.z = sway;
       const flicker = Math.sin(this.time * 11) * 0.18 + Math.cos(this.time * 19) * 0.12 + (Math.random() - 0.5) * 0.15;
       this.lanternLight.intensity = Math.max(1.8, 2.6 + flicker);
+    }
+
+    // Crafted torch: lit only at night, and only while carried.
+    if (this.torchLight && this.torchGroup) {
+      const cs = window.CraftingSystem;
+      const bonus = (cs && typeof cs.getActiveEffects === 'function')
+        ? cs.getActiveEffects().nightLightBonus
+        : 0;
+      const clock = window.GameClock;
+      const isNight = clock ? !!clock.isNight : false;
+      const lit = isNight && bonus > 0;
+
+      this.torchGroup.visible = lit;
+      if (lit) {
+        const tflicker = Math.sin(this.time * 13) * 0.30 + Math.cos(this.time * 23) * 0.18 + (Math.random() - 0.5) * 0.22;
+        this.torchLight.intensity = Math.max(1.2, 2.2 * bonus + tflicker);
+        this.torchGroup.rotation.z = this.isMoving ? Math.sin(this.time * 9) * 0.22 : 0.04;
+      }
     }
 
     // ── CUSTOM ANIMATION SYSTEM & GAIT CADENCE ─────────────────
