@@ -1,200 +1,117 @@
-# 🌿 The Whispering Wilds (காட்டு வழி / Thadam)
+# 🌿 The Whispering Wilds (காட்டு வழி • தடம்)
 
-### 🌐 [Play Live Online (GitHub Pages)](https://mtmohan012005-rgb.github.io/whispering-wilds/) • 🚶 [Standalone 3D Skeletal Locomotion Demo](https://mtmohan012005-rgb.github.io/whispering-wilds/3d-locomotion.html)
+[![Unity 6](https://img.shields.io/badge/Engine-Unity%206%20(6000.6.3f1)-black?style=for-the-badge&logo=unity)](https://unity.com/)
+[![Render Pipeline](https://img.shields.io/badge/Render%20Pipeline-HDRP%2017.7.0-blue?style=for-the-badge)](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@17.0/manual/index.html)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20x64%20(DirectX%2011%2F12)-brightgreen?style=for-the-badge&logo=windows)](https://github.com/mtmohan012005-rgb/whispering-wilds)
+[![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)](LICENSE)
 
-[![Play Live Game](https://img.shields.io/badge/Play%20Live-GitHub%20Pages-2ecc71?style=for-the-badge&logo=github)](https://mtmohan012005-rgb.github.io/whispering-wilds/)
-[![3D Locomotion Demo](https://img.shields.io/badge/3D%20Real%20Locomotion-WebGL%20Demo-3498db?style=for-the-badge&logo=three.js)](https://mtmohan012005-rgb.github.io/whispering-wilds/3d-locomotion.html)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mtmohan012005-rgb/whispering-wilds)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mtmohan012005-rgb/whispering-wilds)
-
-An atmospheric open-world exploration, light survival, and narrative mystery adventure set across authentic Tamil Nadu landscapes—featuring a true Three.js 3D WebGL skeletal animation pipeline loading rigged 3D human models (`.glb`/`.gltf`) with animation mixers, smooth weight blending, soft ground shadows, and third-person cinematic tracking.
+An atmospheric open-world exploration, cultural mystery investigation, and survival adventure set across authentic Tamil Nadu landscapes—now built as a native **Unity 6 PC Game** with zero dependency on browsers, Node.js, Electron, or localhost runtimes.
 
 ---
 
-## 🏛️ 1. Main Story & Prologue
-* **The Starting Point:** Outside the red-brick gates of the **Madras High Court** in George Town, Chennai.
-* **The Inciting Incident:** As you review an inherited century-old architectural blueprint during a sudden Chennai downpour, a mysterious rider on a vintage Royal Enfield 350 speeds past, splashes a massive puddle, and steals critical records.
-* **The Goal:** Follow muddy tyre treads across real Tamil Nadu geography, decode ancient Chola hydraulic engineering, and unlock **Pasumai Thadam**—a lost subterranean eco-sanctuary high in the Western Ghats—before a corporate syndicate destroys it.
+## 🎮 1. Unity 6 Standalone PC Release
 
----
+The game is delivered as a standalone Windows x64 executable:
 
-## 🗺️ 2. Progressive Open-World Biomes
-1. **Phase 1: Chennai & Red-Soil Plains (0 – 2000px)**:
-   - Red clay trails (*semman*), towering *Panai Maram* (Palmyra palms) with weaver bird nests, vintage gas lamps, Panchayat village well, classic Madras black-and-yellow auto-rickshaw, tender coconut cart, and Murugan Annan's Tea Kadai.
-2. **Phase 2: Pichavaram Wetlands & Delta (2000 – 4000px)**:
-   - Labyrinthine mangrove aerial roots, tidal water channels with real-time wave animation, wooden catamarans (*thoni*), wading white egrets, and the ancient Chola granite waterwheel mechanism.
-3. **Phase 3: Nilgiris & Western Ghats (4000 – 6000px)**:
-   - Stepped emerald tea terraces, high mountain pines, freezing fog, Sacred Toda tribal barrel-vault huts (*Mund*), rare 12-year Neelakurinji blossoms, endangered Nilgiri Tahr, and the fabled eco-sanctuary portal.
+- **Executable**: `Build/Windows/TheWhisperingWilds.exe`
+- **Engine Version**: Unity 6000.6.3f1 (Release x64)
+- **Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0)
+- **Target Graphics API**: Direct3D 11 & Direct3D 12
+- **Unity Project Directory**: [`unity/`](./unity/)
+- **Architecture Documentation**: [`unity/UNITY_MIGRATION.md`](./unity/UNITY_MIGRATION.md)
+- **QA & Verification Guide**: [`unity/QA_AND_VERIFICATION.md`](./unity/QA_AND_VERIFICATION.md)
+- **Asset License Ledger**: [`unity/ASSET_LICENSE_MANIFEST.md`](./unity/ASSET_LICENSE_MANIFEST.md)
 
----
-
-## 🎮 3. Controls & Gameplay Guide
-
-| Key | Action |
-| :--- | :--- |
-| **W / A / S / D** or **Arrow Keys** | Walk through Tamil Nadu landscapes |
-| **Left Shift** | Sprint (consumes Stamina / Energy) |
-| **Spacebar** | Jump |
-| **C / Left Ctrl** | Crouch (stealth / narrow mangrove paths) |
-| **E** | Interact with Landmarks, NPCs, Wells, or Tents |
-| **F** | Toggle Explorer Camera Viewfinder (Click 📸 to capture snapshot) |
-| **J** | Open / Close Diegetic Field Journal & Clue Board |
-| **G** | Open the **Crafting Workbench** (Field Journal → Crafting tab). Crafts a Bamboo Torch, Palm Leaf Umbrella, Nilgiri Herbal Poultice, or Chola Stone Axe. *Not* `C`, which is crouch |
-| **L** | Toggle Brass Belt Lantern for night exploration |
-| **B** | Deploy Campfire (requires Wood) |
-| **T** | Pitch Canvas Tent (sleep to gain **Well Rested** buff) |
-| **V** | Toggle 2D Canvas vs. 3D Photorealistic Open-World Engine |
-| **P** | Open / Close Co-op Expedition Lobby (Host/Join Max 5 Players) |
-| **M** | Toggle Macro-Map Survey (in 3D) or Audio Mute (in 2D) |
-
----
-
-## 🚀 4. Deployment Instructions
-
-### A. Deploy to Netlify (Zero-Config)
-1. Fork or push this repository to your GitHub account (`https://github.com/mtmohan012005-rgb/whispering-wilds`).
-2. Go to **[Netlify](https://app.netlify.com/)** and click **"Add new site"** $\rightarrow$ **"Import an existing project"**.
-3. Select **GitHub** and choose `whispering-wilds`.
-4. Netlify will automatically detect `netlify.toml`:
-   - **Publish directory:** `.` (root)
-   - **Build command:** *(leave blank)*
-5. Click **"Deploy site"**. Your game will be live with free SSL in ~15 seconds!
-
-*Or click the one-click button above!*
-
----
-
-### B. Deploy to Render
-1. Go to **[Render Dashboard](https://dashboard.render.com/)**.
-2. Click **"New +"** $\rightarrow$ **"Static Site"**.
-3. Connect your GitHub repository `whispering-wilds`.
-4. Render automatically reads `render.yaml`:
-   - **Build Command:** *(leave empty)*
-   - **Publish Directory:** `.`
-5. Click **"Create Static Site"**.
-
----
-
-### C. Run Locally on Windows (Full Game)
-
-> **There is no `npm run dev` and no Vite in this project.** The game is a static
-> site (`main: index.html`) served together with the Express + Socket.io backend by
-> a single Node process, so `npm start` is the only command that runs the
-> *complete* game.
-
-**Prerequisite:** Node.js **v18 or higher** (`package.json` sets `engines.node >= 18.0.0`).
-Verify with `node --version`. Git is optional — you can download the ZIP instead.
-
+### Running the Standalone PC Game
 ```powershell
-# 1. Get the source
-git clone https://github.com/mtmohan012005-rgb/whispering-wilds.git
-cd whispering-wilds
-
-# 2. Install dependencies (required for Socket.io, /health, and the /api/* routes)
-npm install
-
-# 3. Start the server
-npm start
+# Double-click or launch directly from PowerShell / Command Prompt:
+& ".\Build\Windows\TheWhisperingWilds.exe"
 ```
 
-Then open **http://localhost:3000** in Edge, Chrome, or Firefox.
-Confirm it is healthy at **http://localhost:3000/health** (`status: "ok"`).
+### Opening in Unity 6 Editor
+1. Open **Unity Hub**.
+2. Click **Add** $\rightarrow$ **Add project from disk**.
+3. Select the `unity/` folder (or `C:\Users\mohan\My project`).
+4. Ensure the Editor version is **Unity 6 (6000.6.3f1)** with HDRP.
+5. Open `Assets/_Project/Scenes/00_Boot.unity` and click **Play**.
 
-**One-click launch (Windows):** `npm run app` starts the server if it is not already
-running, waits for it to report healthy, then opens the game in a borderless Edge app
-window. `install-laptop.ps1` additionally creates Desktop and Start Menu shortcuts.
+---
 
-**Electron desktop build:** `npm run desktop` launches the packaged-shell app from
-`desktop/electron/main.js`.
+## 🛡️ 2. Core Rule: Strict 5-Permanent Appearance Changes
 
-#### Why a plain static server will not work
+The game strictly enforces an absolute ceiling of **5 permanent appearance changes** across the entire playthrough:
 
-The backend and the frontend are one process, and the game page calls backend routes.
-Measured against a static file server:
+- **Runtime Logic (`PlayerAppearanceManager.cs`)**: Tracks remaining change tokens (`5/5`). Once `0/5` is reached, further physical customization is permanently rejected.
+- **HUD & Title UI (`HUDManager.cs` & `TitleMenuController.cs`)**: Continuously displays `Appearance Changes: X / 5` on screen and displays the bilingual rule notice on the main menu:
+  > *"விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும் (Rule: Strict maximum of 5 permanent appearance changes across the entire journey)."*
+- **Save Integrity (`SaveSystem.cs`)**: Save files store `remainingPermanentAppearanceChanges` and enforce `Mathf.Clamp(count, 0, 5)` upon deserialization.
+- **Regional Attire Swaps**: Cultural outfit swaps (Chennai everyday veshti, Cauvery village cottons, Thanjavur silks, Pichavaram boatman wear, Nilgiri mountain wools) are unrestricted and do not consume permanent appearance tokens.
 
-| Capability | `npm start` | Static server (`npx serve`, `python -m http.server`, `serve.ps1`) |
+---
+
+## 🏛️ 3. Main Story & Investigation
+
+* **Prologue:** Outside the Indo-Saracenic red-brick arches of the **Madras High Court** in George Town, Chennai.
+* **Inciting Incident:** While reviewing an inherited century-old architectural blueprint during a sudden Chennai downpour, a mysterious rider on a vintage Royal Enfield steals critical records and speeds away into George Town's alleyways.
+* **Objective:** Follow tyre treads across authentic Tamil Nadu geography, interrogate local figures (Murugan the tea stall owner, Velu the auto driver), gather forensic clues, decode ancient Chola hydraulic engineering, and uncover **Pasumai Thadam** (a subterranean sanctuary in the Western Ghats).
+
+---
+
+## 🗺️ 4. Regional Progression
+
+1. **Chennai George Town & High Court Perimeter**:
+   - Monsoonal wet asphalt, Murugan's authentic Tea Kadai, auto-rickshaws, street row architecture, and colonial High Court plaza.
+2. **Pichavaram Wetlands & Delta**:
+   - Mangrove root mazes, tidal waterways, wooden catamarans, and ancient Chola granite waterwheel sluices.
+3. **Cauvery Delta & Thanjavur**:
+   - Thanjavur Brihadisvara gopuram, bronze sculpting workshops, and lush green paddy field irrigation canals.
+4. **Chettinad Mansions**:
+   - Carved teak woodwork, Athangudi handmade tiles, courtyards, and ancestral antique archives.
+5. **Mamallapuram Shore**:
+   - Granite stone carving, rock-cut cave temples, and coastal shores.
+6. **Nilgiris & Western Ghats**:
+   - Stepped tea plantations, Shola cloud forests, Toda tribal *mund* barrel-vault huts, wild Nilgiri Tahr, and the lost eco-sanctuary portal.
+
+---
+
+## 🎮 5. PC Controls
+
+| Action | Keyboard & Mouse | Gamepad (Xbox / PlayStation) |
 | :--- | :--- | :--- |
-| Game page | `200` | `200` |
-| `/health`, `/ready` | `200` | `404` |
-| `/api/auth`, `/api/saves` | `401` (routed) | `404` |
-| Socket.io handshake | OK | **Fails** |
-
-A static server loads the page but silently breaks co-op multiplayer (no Socket.io),
-cloud save/account routes (no `/api/*`), and the health check used by the launchers.
-Those options remain valid **only for offline single-player with no cloud saves** —
-prefer `npm start`.
-
----
-
-## 🚶 5. Photorealistic 3D Human Locomotion & Character Customization
-
-The game includes a full Three.js WebGL skeletal animation pipeline loading rigged 3D human models (`.glb`/`.gltf`) with dynamic animation mixers and cross-fading:
-
-- **Vector Math & Turn Smoothing**: Smoothly rotates character mesh toward movement vector.
-- **Animation Mixer & Cross-Fade**: Seamless blending between `Idle`, `Walk`, and `Sprint` without popping.
-- **Cinematic Third-Person Follow Camera**: Dampened camera tracking with interactive mouse drag orbit controls.
-
-### How to Plug in Your Custom Real Tamil Character (.glb)
-1. **Export an avatar** from MakeHuman, Ready Player Me, or Blender (with traditional cotton shirt, folded veshti, and boots).
-2. **Bundle into a single `.glb` file** with animations (`idle`, `walk`, `sprint`).
-3. **Place in assets**: Copy your file to `assets/characters/player/player.glb`.
-4. The system automatically loads this local asset on start without external CDN dependencies.
+| **Move / Locomotion** | `W`, `A`, `S`, `D` | Left Analog Stick |
+| **Walk** (analog gentle) | Minor analog tilt / partial press | Left Stick gentle tilt (< 0.6) |
+| **Run** (standard) | Normal WASD / full tilt | Left Stick full tilt (≥ 0.6) |
+| **Sprint** | Hold `Left Shift` | Click Left Stick (L3) |
+| **Crouch** | `C` | `B` / `Circle` |
+| **Jump** | `Spacebar` | `A` / `Cross` |
+| **Orbit Camera** | Mouse Movement | Right Analog Stick |
+| **Interact** | `E` | `X` / `Square` |
+| **Inventory & Codex** | `Tab` / `I` | `View` / `Touchpad` |
+| **Crafting Workbench** | `G` | D-Pad Down |
+| **Belt Lantern** | `L` | D-Pad Left |
+| **Deploy Campfire** | `B` | D-Pad Right |
+| **Pitch Tent (Rest)** | `T` | D-Pad Up |
 
 ---
 
-## 🌿 6. Production Living World System (NPC Schedules & Wildlife AI)
+## 📦 6. Real 3D Assets Breakdown (No Placeholders)
 
-*The Whispering Wilds* features an authentic, PC-optimized Living World system:
+All models in the game are authored 3D models imported natively:
 
-### A. Realistic NPC Schedules & Waypoints
-* **Occupations**: Tea stall owner, paddy farmer, catamaran fisher, bronze artisan, tea estate worker, forest guide, Chettinad antique merchant, and temple stone sculptor.
-* **Cultural Regions**: Chennai George Town, Cauvery Delta, Pichavaram Wetlands, Chettinad, Thanjavur, Mamallapuram, and Nilgiris / Western Ghats.
-* **Daily Schedules**: Minute-by-minute timetable (00:00 – 24:00) tracking AI states (`SLEEPING`, `HOME`, `MORNING_ROUTINE`, `TRAVELING`, `WORKING`, `EATING`, `RESTING`, `MARKET`, `COMMUNITY`, `TALKING`, `RETURNING_HOME`).
-* **No-Teleport Waypoint Navigation**: NPCs traverse authentic routes with smooth turning and terrain height conformance.
-
-### B. Species-Specific Wildlife Behaviors
-* **Nilgiri Tahr**: Mountain cliff grazing, ridge leaping, skittish flee, group return.
-* **Nilgiri Langur**: Shola canopy climbing, foraging, sentinel observe, vocal alert.
-* **Asian Elephant**: Herd movement, water drinking, defensive standoff (defends only if threatened < 4.5m).
-* **Gaur**: Heavy herd grazing, watchful standoff, slow retreat.
-* **Great Egret**: Mangrove tidal wading, spear-feeding, flight takeoff (`FLY`), glide, water landing (`LAND`).
-* **Kingfisher**: Overhanging reed perch, water observation, swift dive catch, return to perch.
-* **Indian Peafowl**: Ground strut, plumage display, screech alert, flee into scrub.
-* **Kangayam Cattle**: Village pasture grazing, herd amble, evening return to cattle shed.
-* **Tamil Village Goat**: Mound climbing, flocking, nimble flee.
-
-### C. Distance-Based Simulation LOD
-* **Tier 1 (< 65m)**: Full 3D rendering, skeletal animation mixer, terrain IK grounding, and player perception.
-* **Tier 2 (65m – 160m)**: Throttled animation, simplified awareness.
-* **Tier 3 (> 160m)**: Mesh culled/invisible, zero animation mixer cost, fast mathematical waypoint/habitat updates for 60 FPS PC performance.
+| Asset | Model File | Cultural & Technical Details |
+| :--- | :--- | :--- |
+| **Player Character** | `Assets/_Project/Art/Models/Characters/Player/player.glb` | Rigged 3D model with 23 bones, `Player_LOD0` SkinnedMeshRenderer, 24 animations, and cotton veshti attire. |
+| **NPC Murugan** | `Assets/_Project/Art/Models/Characters/NPCs/murugan.glb` | George Town tea stall vendor with red-bordered cotton lungi, shoulder towel (*thundu*), moustache, and tea glass. |
+| **NPC Velu** | `Assets/_Project/Art/Models/Characters/NPCs/velu.glb` | Chennai auto-rickshaw driver and guide in khaki uniform. |
+| **Tea Kadai Stall** | `Assets/_Project/Art/Models/Architecture/chennai/tea_kadai_stall.glb` | Green wooden tea stall with tin canopy, bench, and brass boiling samovar. |
+| **Chennai Auto** | `Assets/_Project/Art/Models/Vehicles/auto_rickshaw/chennai_auto.glb` | Yellow-and-black 3-wheeled auto-rickshaw with canvas roof. |
+| **Street Row** | `Assets/_Project/Art/Models/Architecture/chennai/street_row.glb` | Indo-Saracenic colonial shopfronts with arched verandas. |
+| **Old Tamil House** | `Assets/_Project/Art/Models/Architecture/chennai/old_tamil_house.glb` | Heritage residential facade with traditional raised front *thinnai* veranda. |
+| **Degree Kaapi Tumbler**| `Assets/_Project/Art/Models/Props/food/filter_coffee_tumbler.glb` | Traditional brass davarah and tumbler with frothy filter coffee. |
+| **Agal Vilakku** | `Assets/_Project/Art/Models/Props/cultural/agal_lamp.glb` | Terracotta earthen oil lamp. |
+| **Flower Cart** | `Assets/_Project/Art/Models/Props/market/flower_cart.glb` | Wooden pushcart with jasmine (*malli*) and marigold garlands. |
 
 ---
 
-## 👥 7. Multiplayer Co-op Expedition Engine (Max 5 Players)
-
-*The Whispering Wilds* features real-time 5-player cooperative networking powered by **Node.js, Express, and Socket.io**:
-
-* **Host / Explorer Roles**: The first player to create or join a room code becomes the **Expedition Host** (crowned with gold visual trim and warm amber lantern `#d4af37`), while subsequent joiners become **Explorers** (azure blue trim and cyan lantern `#3498db`).
-* **Strict 5-Player Room Cap**: Servers reject extra join requests with a descriptive `Room full (Max 5 players)` response once capacity is reached.
-* **Dynamic Host Reassignment**: If the host disconnects, the server automatically promotes the next senior player to Expedition Host and updates all player visuals and telemetry in real time.
-* **20Hz Interpolated Synchronization**: 3D positions, horizontal rotations, and movement states (`idle`, `walk`, `sprint`) are broadcast at 20Hz and smoothly lerped on connected clients.
-* **Billboard Name Tags**: Remote avatars feature in-world floating canvas sprites indicating name and role.
-* **Solo Offline Play**: No backend server is required to enjoy the full game—offline exploration and all survival systems remain 100% playable.
-
-### Running the Multiplayer Server Locally
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Launch server (serves web client + Socket.io on Port 3000)
-npm start
-
-# 3. Open in browser:
-# Player 1 (Host): http://localhost:3000
-# Player 2 (Explorer): http://localhost:3000 (enter same room code, e.g. CHENNAI_EXP)
-```
-
----
-
-## 📜 License
-MIT License • Created for the Whispering Wilds (Kaattu Vazhi / Thadam) Open-World Adventure.
+## 📜 7. License
+MIT License • Created for **The Whispering Wilds (காட்டு வழி • தடம்)**.
