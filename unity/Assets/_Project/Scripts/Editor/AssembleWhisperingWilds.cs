@@ -116,15 +116,21 @@ namespace WhisperingWilds.Editor
             var managersObj = GameObject.Find("--- MANAGERS ---");
             if (managersObj == null) managersObj = new GameObject("--- MANAGERS ---");
 
+            // PHASE 2 - SINGLE AUTHORITIES
             if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
-            if (managersObj.GetComponent<QualityPresetManager>() == null) managersObj.AddComponent<QualityPresetManager>();
-            if (managersObj.GetComponent<AutoQualityDetector>() == null) managersObj.AddComponent<AutoQualityDetector>();
-            if (managersObj.GetComponent<AdaptiveQualityManager>() == null) managersObj.AddComponent<AdaptiveQualityManager>();
-            if (managersObj.GetComponent<MemoryBudgetManager>() == null) managersObj.AddComponent<MemoryBudgetManager>();
+            if (managersObj.GetComponent<GraphicsPerformanceManager>() == null) managersObj.AddComponent<GraphicsPerformanceManager>();
+            if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
+            if (managersObj.GetComponent<WorldStreamingManager>() == null) managersObj.AddComponent<WorldStreamingManager>();
+            if (managersObj.GetComponent<AssetManager>() == null) managersObj.AddComponent<AssetManager>();
+            if (managersObj.GetComponent<InputManager>() == null) managersObj.AddComponent<InputManager>();
+            if (managersObj.GetComponent<QuestManager>() == null) managersObj.AddComponent<QuestManager>();
+            if (managersObj.GetComponent<SaveManager>() == null) managersObj.AddComponent<SaveManager>();
+            if (managersObj.GetComponent<RealtimeManager>() == null) managersObj.AddComponent<RealtimeManager>();
+
+            // Gameplay & Environmental Subsystems
             if (managersObj.GetComponent<RegionalSceneManager>() == null) managersObj.AddComponent<RegionalSceneManager>();
             if (managersObj.GetComponent<InventoryManager>() == null) managersObj.AddComponent<InventoryManager>();
             if (managersObj.GetComponent<CraftingManager>() == null) managersObj.AddComponent<CraftingManager>();
-            if (managersObj.GetComponent<QuestManager>() == null) managersObj.AddComponent<QuestManager>();
             if (managersObj.GetComponent<InvestigationManager>() == null) managersObj.AddComponent<InvestigationManager>();
             if (managersObj.GetComponent<WeatherSystem>() == null) managersObj.AddComponent<WeatherSystem>();
             if (managersObj.GetComponent<AudioManager>() == null) managersObj.AddComponent<AudioManager>();
@@ -157,12 +163,13 @@ namespace WhisperingWilds.Editor
                 cc.center = new Vector3(0f, 0.9f, 0f);
                 cc.stepOffset = 0.4f;
                 cc.slopeLimit = 45f;
-
-                player.AddComponent<PlayerInputHandler>();
-                player.AddComponent<PlayerMovement>();
-                player.AddComponent<PlayerAppearanceManager>();
-                player.AddComponent<PlayerInteractor>();
             }
+
+            if (player.GetComponent<PlayerInputHandler>() == null) player.AddComponent<PlayerInputHandler>();
+            if (player.GetComponent<PlayerMovement>() == null) player.AddComponent<PlayerMovement>();
+            if (player.GetComponent<PlayerAppearanceManager>() == null) player.AddComponent<PlayerAppearanceManager>();
+            if (player.GetComponent<PlayerManager>() == null) player.AddComponent<PlayerManager>();
+            if (player.GetComponent<PlayerInteractor>() == null) player.AddComponent<PlayerInteractor>();
 
             // Remove legacy capsule visual if present
             var existingVisual = player.transform.Find("VisualModel");

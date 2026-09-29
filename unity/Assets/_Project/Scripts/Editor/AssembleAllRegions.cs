@@ -100,10 +100,13 @@ namespace WhisperingWilds.Editor
         {
             var managersObj = new GameObject("--- MANAGERS ---");
             if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
-            if (managersObj.GetComponent<QualityPresetManager>() == null) managersObj.AddComponent<QualityPresetManager>();
-            if (managersObj.GetComponent<AutoQualityDetector>() == null) managersObj.AddComponent<AutoQualityDetector>();
-            if (managersObj.GetComponent<AdaptiveQualityManager>() == null) managersObj.AddComponent<AdaptiveQualityManager>();
-            if (managersObj.GetComponent<MemoryBudgetManager>() == null) managersObj.AddComponent<MemoryBudgetManager>();
+            if (managersObj.GetComponent<GraphicsPerformanceManager>() == null) managersObj.AddComponent<GraphicsPerformanceManager>();
+            if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
+            if (managersObj.GetComponent<WorldStreamingManager>() == null) managersObj.AddComponent<WorldStreamingManager>();
+            if (managersObj.GetComponent<AssetManager>() == null) managersObj.AddComponent<AssetManager>();
+            if (managersObj.GetComponent<InputManager>() == null) managersObj.AddComponent<InputManager>();
+            if (managersObj.GetComponent<SaveManager>() == null) managersObj.AddComponent<SaveManager>();
+            if (managersObj.GetComponent<RealtimeManager>() == null) managersObj.AddComponent<RealtimeManager>();
             if (managersObj.GetComponent<RegionalSceneManager>() == null) managersObj.AddComponent<RegionalSceneManager>();
             if (managersObj.GetComponent<InventoryManager>() == null) managersObj.AddComponent<InventoryManager>();
             if (managersObj.GetComponent<CraftingManager>() == null) managersObj.AddComponent<CraftingManager>();
@@ -139,6 +142,7 @@ namespace WhisperingWilds.Editor
             player.AddComponent<PlayerInputHandler>();
             player.AddComponent<PlayerMovement>();
             player.AddComponent<PlayerAppearanceManager>();
+            player.AddComponent<PlayerManager>();
             player.AddComponent<PlayerInteractor>();
 
             var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Models/Characters/Player/player.glb");

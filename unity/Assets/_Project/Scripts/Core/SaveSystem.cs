@@ -60,10 +60,24 @@ namespace WhisperingWilds.Core
 
         public static bool SaveExists() => File.Exists(SaveFilePath);
 
-        public static bool SaveGame(GameObject playerObject)
+        public static void DeleteSave()
+        {
+            if (File.Exists(SaveFilePath))
+            {
+                File.Delete(SaveFilePath);
+                Debug.Log("<color=#FFAA00><b>[SaveSystem]</b></color> Save file deleted.");
+            }
+        }
+
+        public static GameSaveData SaveGame(GameObject playerObject = null)
         {
             try
             {
+                if (playerObject == null)
+                {
+                    playerObject = GameObject.FindWithTag("Player");
+                }
+
                 var data = new GameSaveData
                 {
                     schemaVersion = 1,
@@ -127,12 +141,12 @@ namespace WhisperingWilds.Core
                 File.WriteAllText(SaveFilePath, json);
 
                 Debug.Log($"<color=#00FF88><b>[SaveSystem]</b></color> Game saved successfully to: {SaveFilePath}");
-                return true;
+                return data;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[SaveSystem] Failed to save game: {ex.Message}");
-                return false;
+                return null;
             }
         }
 

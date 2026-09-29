@@ -31,13 +31,10 @@ namespace WhisperingWilds.Quality
 
         [Header("Cleanup Thresholds")]
         [SerializeField] private float memoryWarningThresholdRatio = 0.85f;
-        [SerializeField] private float autoCleanupIntervalSeconds = 60.0f;
 
         public long TotalAllocatedBytes => Profiler.GetTotalAllocatedMemoryLong();
         public long TotalReservedBytes => Profiler.GetTotalReservedMemoryLong();
         public long TotalUnusedReservedBytes => Profiler.GetTotalUnusedReservedMemoryLong();
-
-        private float cleanupTimer = 0f;
 
         private void Awake()
         {
@@ -58,12 +55,8 @@ namespace WhisperingWilds.Quality
 
         private void Update()
         {
-            cleanupTimer += Time.unscaledDeltaTime;
-            if (cleanupTimer >= autoCleanupIntervalSeconds)
-            {
-                cleanupTimer = 0f;
-                CheckAndCleanMemory();
-            }
+            // Normal gameplay: No periodic forced GC or purge to prevent stutter.
+            // Cleanup is strictly invoked at boundary transitions by MemoryManager.
         }
 
         public void ConfigureBudgetsForHardware()

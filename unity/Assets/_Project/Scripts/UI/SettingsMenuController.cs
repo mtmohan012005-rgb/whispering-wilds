@@ -116,7 +116,11 @@ namespace WhisperingWilds.UI
         public void ApplyAllSettings()
         {
             // Quality
-            if (QualityPresetManager.Instance != null)
+            if (GraphicsPerformanceManager.Instance != null)
+            {
+                GraphicsPerformanceManager.Instance.ApplyProfile(activeTier);
+            }
+            else if (QualityPresetManager.Instance != null)
             {
                 QualityPresetManager.Instance.ApplyPreset(activeTier);
             }
