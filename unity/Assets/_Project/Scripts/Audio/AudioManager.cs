@@ -111,5 +111,11 @@ namespace WhisperingWilds.Audio
             if (clip == null || uiSource == null) return;
             uiSource.PlayOneShot(clip, uiVolume * masterVolume);
         }
+
+        public void SetMasterVolume(float vol) => masterVolume = Mathf.Clamp01(vol);
+        public void SetMusicVolume(float vol) => musicVolume = Mathf.Clamp01(vol);
+        public void SetAmbientVolume(float vol) => ambientVolume = Mathf.Clamp01(vol);
+        public void SetSFXVolume(float vol) => sfxVolume = Mathf.Clamp01(vol);
+        public void SetVoiceVolume(float vol) => voiceVolume = Mathf.Clamp01(vol);
     }
 }

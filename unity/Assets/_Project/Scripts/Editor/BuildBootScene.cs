@@ -81,6 +81,7 @@ namespace WhisperingWilds.Editor
                 // Buttons
                 var btnNew = CreateButton("Btn_NewGame", menuContainer.transform, font, "New Game • புதிய ஆட்டம்", new Color(0.15f, 0.45f, 0.35f));
                 var btnCont = CreateButton("Btn_Continue", menuContainer.transform, font, "Continue • தொடர", new Color(0.2f, 0.35f, 0.5f));
+                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "Settings • அமைப்புகள்", new Color(0.25f, 0.35f, 0.45f));
                 var btnCodex = CreateButton("Btn_Codex", menuContainer.transform, font, "Cultural Archive • கலைக் களஞ்சியம்", new Color(0.35f, 0.3f, 0.45f));
                 var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "Quit • வெளியேறு", new Color(0.45f, 0.2f, 0.2f));
 
@@ -91,6 +92,7 @@ namespace WhisperingWilds.Editor
                 var serializedTitle = new SerializedObject(titleCtrl);
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
                 serializedTitle.FindProperty("continueButton").objectReferenceValue = btnCont.GetComponent<Button>();
+                serializedTitle.FindProperty("settingsButton").objectReferenceValue = btnSettings.GetComponent<Button>();
                 serializedTitle.FindProperty("codexButton").objectReferenceValue = btnCodex.GetComponent<Button>();
                 serializedTitle.FindProperty("quitButton").objectReferenceValue = btnQuit.GetComponent<Button>();
                 serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
@@ -99,13 +101,7 @@ namespace WhisperingWilds.Editor
                 // Save Boot Scene
                 EditorSceneManager.SaveScene(scene, "Assets/_Project/Scenes/00_Boot.unity");
 
-                // Configure Build Settings scenes
-                var buildScenes = new EditorBuildSettingsScene[]
-                {
-                    new EditorBuildSettingsScene("Assets/_Project/Scenes/00_Boot.unity", true),
-                    new EditorBuildSettingsScene("Assets/_Project/Scenes/02_Chennai_GeorgeTown.unity", true)
-                };
-                EditorBuildSettings.scenes = buildScenes;
+                AssembleAllRegions.RegisterAllScenesInBuildSettings();
 
                 Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> 00_Boot scene created and registered in Build Settings!");
             }

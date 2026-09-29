@@ -107,11 +107,47 @@ All models in the game are authored 3D models imported natively:
 | **Chennai Auto** | `Assets/_Project/Art/Models/Vehicles/auto_rickshaw/chennai_auto.glb` | Yellow-and-black 3-wheeled auto-rickshaw with canvas roof. |
 | **Street Row** | `Assets/_Project/Art/Models/Architecture/chennai/street_row.glb` | Indo-Saracenic colonial shopfronts with arched verandas. |
 | **Old Tamil House** | `Assets/_Project/Art/Models/Architecture/chennai/old_tamil_house.glb` | Heritage residential facade with traditional raised front *thinnai* veranda. |
+| **Brihadisvara Gopuram**| `Assets/_Project/Art/Models/Architecture/thanjavur_gopuram.glb` | Chola granite vimana and gopuram temple architecture. |
+| **Courtyard Mansion** | `Assets/_Project/Art/Models/Architecture/chettinad/courtyard_mansion.glb` | Chettinad heritage courtyard palace with Athangudi flooring and carved doors. |
+| **Shore Temple Shrine** | `Assets/_Project/Art/Models/Architecture/mamallapuram/heritage_structure.glb`| Pallava 7th-century coastal rock-cut granite shrine. |
+| **Toda Mund Hut** | `Assets/_Project/Art/Models/Architecture/nilgiris/toda_mund_hut.glb` | Indigenous Nilgiri Toda barrel-vaulted thatch-and-stone dwelling. |
+| **Nilgiri Tahr** | `Assets/_Project/Art/Models/Wildlife/nilgiri_tahr.glb` | Western Ghats endangered mountain ungulate with autonomous wandering. |
 | **Degree Kaapi Tumbler**| `Assets/_Project/Art/Models/Props/food/filter_coffee_tumbler.glb` | Traditional brass davarah and tumbler with frothy filter coffee. |
 | **Agal Vilakku** | `Assets/_Project/Art/Models/Props/cultural/agal_lamp.glb` | Terracotta earthen oil lamp. |
+| **Ammi Kallu** | `Assets/_Project/Art/Models/Props/cultural/ammi_kallu.glb` | Authentic heritage granite grinding stone and roller. |
+| **Kuthu Vilakku** | `Assets/_Project/Art/Models/Props/cultural/kuthu_vilakku.glb` | Five-spout ceremonial brass oil lamp. |
 | **Flower Cart** | `Assets/_Project/Art/Models/Props/market/flower_cart.glb` | Wooden pushcart with jasmine (*malli*) and marigold garlands. |
 
 ---
 
-## 📜 7. License
+## ⚡ 7. Hardware Scalability & Quality Profiles
+
+The game includes full low-end laptop to high-end 4K gaming PC support:
+
+- **Auto Quality Detection (`AutoQualityDetector.cs`)**: Evaluates GPU VRAM, CPU threads, and system RAM to select the optimal default profile upon initial boot.
+- **5 Granular Presets (`QualityPresetManager.cs`)**:
+  - **Very Low**: 0.70x render scale, 20m shadow distance, 1 cascade, 256MB texture budget, 30 FPS target.
+  - **Low**: 0.80x render scale, 40m shadow distance, 2 cascades, 512MB texture budget, 30 FPS target.
+  - **Medium**: 0.90x render scale, 75m shadow distance, 2 cascades, 1024MB texture budget, 60 FPS target.
+  - **High**: 1.00x render scale, 150m shadow distance, 4 cascades, 2048MB texture budget, 60 FPS target.
+  - **Ultra**: 1.00x render scale, 250m shadow distance, 4 cascades, 8x MSAA, 4096MB texture budget, 120 FPS target.
+- **Adaptive Performance Adaptation (`AdaptiveQualityManager.cs`)**: Automatically adapts dynamic render scale and LOD bias with hysteresis to guarantee 60 FPS frame pacing.
+- **Memory & Mipmap Streaming (`MemoryBudgetManager.cs`)**: Enforces subsystem memory budgets and deterministic asset unloads on regional transitions.
+
+---
+
+## 📊 8. Automated Performance Benchmarks
+
+The project includes 4 automated benchmark suites:
+- `WW_Benchmark_Chennai` — Dense urban market stress testing.
+- `WW_Benchmark_Pichavaram` — Mangrove wetland and water overdraw stress testing.
+- `WW_Benchmark_Delta` — Alluvial landscape and shadow cascade stress testing.
+- `WW_Benchmark_Nilgiris` — High-altitude montane foliage and physics stress testing.
+
+Benchmarks execute automated 15-second passes, compute average/1% low FPS, and write structured JSON logs to:
+`Application.persistentDataPath/benchmark_report.json`.
+
+---
+
+## 📜 9. License
 MIT License • Created for **The Whispering Wilds (காட்டு வழி • தடம்)**.

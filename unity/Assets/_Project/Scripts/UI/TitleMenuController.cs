@@ -11,6 +11,7 @@ namespace WhisperingWilds.UI
         [Header("Menu Buttons")]
         [SerializeField] private Button newGameButton;
         [SerializeField] private Button continueButton;
+        [SerializeField] private Button settingsButton;
         [SerializeField] private Button codexButton;
         [SerializeField] private Button quitButton;
 
@@ -32,6 +33,7 @@ namespace WhisperingWilds.UI
                 continueButton.onClick.AddListener(OnContinueClicked);
                 continueButton.interactable = SaveSystem.SaveExists();
             }
+            if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
             if (codexButton != null) codexButton.onClick.AddListener(OnOpenCodexClicked);
             if (closeCodexButton != null) closeCodexButton.onClick.AddListener(OnCloseCodexClicked);
             if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
@@ -64,6 +66,15 @@ namespace WhisperingWilds.UI
             {
                 SceneManager.LoadScene("02_Chennai_GeorgeTown");
             }
+        }
+
+        public void OnSettingsClicked()
+        {
+            if (SettingsMenuController.Instance != null)
+            {
+                SettingsMenuController.Instance.ApplyAllSettings();
+            }
+            Debug.Log("<color=#00D2FF><b>[Whispering Wilds]</b></color> Settings menu accessed.");
         }
 
         public void OnOpenCodexClicked()

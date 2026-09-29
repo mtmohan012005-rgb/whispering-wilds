@@ -9,11 +9,21 @@ This document provides complete, line-by-line verification procedures for every 
 
 - **Target Executable**: `Build/Windows/TheWhisperingWilds.exe`
 - **Engine**: Unity 6 (6000.6.3f1)
-- **Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0)
-- **Input System**: Unity New Input System (`com.unity.inputsystem` v1.18.0)
-- **Scenes Included**:
-  1. `00_Boot.unity` (Build Index 0) — Title screen, New Game, Continue, Codex archive, Appearance limit rules display.
-  2. `02_Chennai_GeorgeTown.unity` (Build Index 1) — George Town street level, Madras High Court perimeter, Murugan Tea Kadai, Velu auto-rickshaw, full NPC interactions.
+- **Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0) with scalable quality presets
+- **Input System**: Unity New Input System (`com.unity.inputsystem` v1.20.0)
+- **Scenes Included in Build (12 Scenes)**:
+  1. `00_Boot.unity` (Build Index 0) — Title screen, New Game, Continue, Settings, Codex archive, Appearance limit rules display.
+  2. `01_StateMap_TamilNadu.unity` (Build Index 1) — State-level macro relief map and highway transit system.
+  3. `02_Chennai_GeorgeTown.unity` (Build Index 2) — George Town street level, Madras High Court perimeter, Murugan Tea Kadai, Velu auto-rickshaw, full NPC interactions.
+  4. `03_Pichavaram_Wetlands.unity` (Build Index 3) — Tidal mangrove waterways, wooden docks, rowboats, fisher Mani NPC.
+  5. `04_Thanjavur_Delta.unity` (Build Index 4) — Cauvery alluvial paddy fields, Brihadisvara granite gopuram, irrigation sluice, granary, farmer Arumugam NPC.
+  6. `05_Chettinad_Mansion.unity` (Build Index 5) — Kanadukathan courtyard palace, Athangudi floor tiles, teak pillars, domestic brass utensils, elder Kamalam NPC.
+  7. `06_Mamallapuram_Shore.unity` (Build Index 6) — Coastal granite shoreline, Shore Temple heritage structure, stone carving workshop, sculptor Sundaram NPC.
+  8. `07_Nilgiris_Sanctuary.unity` (Build Index 7) — Montane shola forest, Toda mund huts, tea terrace hedges, Nilgiri Tahr wildlife, forest guide Raman NPC.
+  9. `WW_Benchmark_Chennai.unity` (Build Index 8) — Automated 15-second urban market stress benchmark.
+  10. `WW_Benchmark_Pichavaram.unity` (Build Index 9) — Automated 15-second wetland and overdraw benchmark.
+  11. `WW_Benchmark_Delta.unity` (Build Index 10) — Automated 15-second open terrain and shadow cascade benchmark.
+  12. `WW_Benchmark_Nilgiris.unity` (Build Index 11) — Automated 15-second foliage and physics benchmark.
 
 ---
 
@@ -27,8 +37,9 @@ This document provides complete, line-by-line verification procedures for every 
 | **Sprint** | Hold `Left Shift` | Click `Left Stick` (L3) | 8.5 m/s sprint speed driving `Player_Sprint` animation. |
 | **Crouch** | `C` | `B` / `Circle` | 2.0 m/s crouch locomotion driving `Player_Crouch_Idle` & `Player_Crouch_Walk`. |
 | **Jump** | `Space` | `A` / `Cross` | Vertical jump (`1.4m` peak height, `gravity: -18 m/s²`) with coyote time (`0.12s`) and jump buffering (`0.15s`). Triggers `Jump` animation state. |
-| **Camera Orbit** | Mouse Delta | Right Stick | 3rd-person orbital framing with `SphereCast` occlusion pushout (min distance `0.8m`, normal distance `4.0m`). |
+| **Camera Orbit** | Mouse Delta | Right Stick | 3rd-person orbital framing with `SphereCast` occlusion pushout (min distance `0.8m`, normal distance `3.5m`). |
 | **Interact** | `E` | `X` / `Square` | Contextual interaction (`Talk`, `Inspect`, `Pickup`, `Photograph`). |
+| **State Map** | `M` | Select / Back | Toggles interactive Tamil Nadu highway and regional travel map. |
 | **Inventory / Codex**| `Tab` / `I` | `View` / `Touchpad` | Opens bilingual cultural codex and inventory bag. |
 
 ---
@@ -53,52 +64,40 @@ This document provides complete, line-by-line verification procedures for every 
 
 #### Verification Steps:
 1. Start a New Game. Verify HUD displays `Appearance Changes: 5/5`.
-2. Open Appearance Customizer (or call `PlayerAppearanceManager.TryApplyPermanentAppearance()`).
-3. Apply 5 modifications. Observe the counter decrementing: `4/5`, `3/5`, `2/5`, `1/5`, `0/5`.
-4. Attempt a 6th modification. Verify that the UI and console reject the change with:
+2. Apply 5 modifications. Observe the counter decrementing: `4/5`, `3/5`, `2/5`, `1/5`, `0/5`.
+3. Attempt a 6th modification. Verify that the UI and console reject the change with:
    `[Appearance] Permanent appearance change REJECTED: Maximum of 5 permanent changes reached!`
-5. Save the game and reload. Verify the remaining count remains strictly `0/5`.
+4. Save the game and reload. Verify the remaining count remains strictly `0/5`.
 
 ---
 
-### 4. Real 3D Assets Breakdown (No Placeholders)
+### 4. Hardware Scalability & Quality Profiles Verification
 
-All assets utilized in the game are authored 3D models imported via Unity glTFast:
-
-| Category | Model Asset Path | Key Visual / Cultural Elements |
-| :--- | :--- | :--- |
-| **Player Character** | `Assets/_Project/Art/Models/Characters/Player/player.glb` | Rigged character with `Player_LOD0` SkinnedMeshRenderer, 23 bones, 24 embedded animations, and white cotton veshti attire. |
-| **NPC Murugan** | `Assets/_Project/Art/Models/Characters/NPCs/murugan.glb` | Traditional George Town tea stall owner with red-bordered cotton lungi, shoulder thundu, moustache, and hand-held tea glass. |
-| **NPC Velu** | `Assets/_Project/Art/Models/Characters/NPCs/velu.glb` | Chennai auto-rickshaw driver and guide in khaki driver's uniform. |
-| **Murugan's Tea Kadai**| `Assets/_Project/Art/Models/Architecture/chennai/tea_kadai_stall.glb`| Authentic wood-framed green tea stall with corrugated tin canopy, wooden customer bench, and brass boiling samovar. |
-| **Chennai Auto-Rickshaw**| `Assets/_Project/Art/Models/Vehicles/auto_rickshaw/chennai_auto.glb`| Classic yellow-and-black 3-wheeled autorickshaw with canvas weather top and spoke wheels. |
-| **George Town Street Row**| `Assets/_Project/Art/Models/Architecture/chennai/street_row.glb` | Indo-Saracenic colonial shopfronts, arched verandas, and Madras terrace roofing. |
-| **Old Tamil House** | `Assets/_Project/Art/Models/Architecture/chennai/old_tamil_house.glb` | Heritage Chettinad/Madras residential facade with raised front *thinnai* (veranda) and clay tile eaves. |
-| **Filter Kaapi Tumbler**| `Assets/_Project/Art/Models/Props/food/filter_coffee_tumbler.glb` | Brass davarah and tumbler with frothy South Indian degree filter coffee. |
-| **Agal Vilakku** | `Assets/_Project/Art/Models/Props/cultural/agal_lamp.glb` | Traditional terracotta earthen oil lamp. |
-| **Flower Cart** | `Assets/_Project/Art/Models/Props/market/flower_cart.glb` | Wooden pushcart laden with jasmine (*malli*), marigold strings, and banana leaves. |
-
----
-
-### 5. Investigation Board & Narrative Systems
-
-- **Bilingual Support**: All quests, dialogue, item descriptions, and clues provide simultaneous Tamil (தமிழ்) and English text.
-- **George Town Case**:
-  - Clue 1: `clue_murugan_ledger` — Murugan's old tea stall account book recording suspicious midnight visitors near Madras High Court.
-  - Clue 2: `clue_temple_inscription` — Inscription rubbings from the nearby temple corridor.
-  - Clue 3: `clue_chola_coin` — Authentic Chola bronze coin discovered under the veranda floorboards.
-- **Deduction Engine**:
-  - Combining Clue 1 + Clue 3 unlocks the deduction: *"Midnight Smuggling Route through Pichavaram Mangroves"*, granting access to the next regional travel stage with Velu's auto.
+1. **Auto Quality Detection (`AutoQualityDetector.cs`)**:
+   - On first launch, queries `SystemInfo.graphicsDeviceName`, `SystemInfo.graphicsMemorySize`, `SystemInfo.processorCount`, and `SystemInfo.systemMemorySize`.
+   - Recommends and applies the appropriate preset (Very Low for < 2GB VRAM/integrated GPU, Low for 2-4GB, Medium for 4-6GB, High for 6-8GB, Ultra for 8GB+).
+2. **Quality Presets (`QualityPresetManager.cs`)**:
+   - `VeryLow`: 0.70x render scale, 20m shadow distance, 1 cascade, 256MB texture budget, 30 FPS target.
+   - `Low`: 0.80x render scale, 40m shadow distance, 2 cascades, 512MB texture budget, 30 FPS target.
+   - `Medium`: 0.90x render scale, 75m shadow distance, 2 cascades, 1024MB texture budget, 60 FPS target.
+   - `High`: 1.00x render scale, 150m shadow distance, 4 cascades, 2048MB texture budget, 60 FPS target.
+   - `Ultra`: 1.00x render scale, 250m shadow distance, 4 cascades, 4096MB texture budget, 120 FPS target.
+3. **Adaptive Performance Adaptation (`AdaptiveQualityManager.cs`)**:
+   - Monitors rolling average frame time. If FPS drops below 85% of target for > 3.0s, scales render scale down by 0.05 steps (minimum 0.65).
+   - Once FPS stabilizes above 96% of target for > 8.0s, gracefully restores quality step by step. Hysteresis prevents rapid oscillation.
+4. **Memory Budget & Texture Streaming (`MemoryBudgetManager.cs`)**:
+   - Dynamic mipmap texture streaming budget active on all cameras.
+   - Triggers `Resources.UnloadUnusedAssets()` and GC sweep on regional scene transitions to guarantee zero memory accumulation over long play sessions.
 
 ---
 
-### 6. Environmental Simulation & Day/Night Cycle
+### 5. Automated Benchmark Suite Verification
 
-- **24-Hour Cycle**: Driven by `TimeOfDayManager.cs` (`dayDurationMinutes: 20`).
-- **Dynamic Lighting**:
-  - `06:00` — Soft golden sunrise over the Bay of Bengal.
-  - `12:00` — High-intensity Chennai midday sun (`intensity: 1.35f`).
-  - `18:00` — Deep amber and violet evening twilight over George Town.
-  - `22:00 - 05:00` — Cool midnight moonlight with warm street lamp illumination.
-- **Monsoon Weather**:
-  - `WeatherSystem.cs` simulates tropical coastal showers and North-East Monsoon rainstorms with surface wetness reflections on the asphalt and road puddles.
+Run any of the 4 benchmark scenes:
+- `WW_Benchmark_Chennai`
+- `WW_Benchmark_Pichavaram`
+- `WW_Benchmark_Delta`
+- `WW_Benchmark_Nilgiris`
+
+The engine samples unscaled delta times over 15.0 seconds, computes average FPS, 1% low FPS, minimum FPS, peak RAM, and exports a verified log to:
+`Application.persistentDataPath/benchmark_report.json`

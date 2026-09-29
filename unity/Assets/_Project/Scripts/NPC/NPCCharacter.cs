@@ -60,6 +60,26 @@ namespace WhisperingWilds.NPC
 
         public event Action<NPCCharacter, DialogueNode> OnDialogueStarted;
 
+        public void SetCharacterProfile(string nameEn, string nameTa, string prof, string initialDialogue)
+        {
+            displayNameEn = nameEn;
+            displayNameTa = nameTa;
+            profession = prof;
+            npcId = nameEn.ToLowerInvariant().Replace(" ", "_");
+
+            if (dialogueNodes == null) dialogueNodes = new List<DialogueNode>();
+            if (dialogueNodes.Count == 0)
+            {
+                dialogueNodes.Add(new DialogueNode
+                {
+                    nodeIndex = 0,
+                    speakerTextEn = $"Vanakkam! I am {nameEn}. Welcome to {profession}.",
+                    speakerTextTa = $"வணக்கம்! நான் {nameTa}. {initialDialogue}",
+                    choices = new List<DialogueChoice>()
+                });
+            }
+        }
+
         private void Start()
         {
             if (TimeOfDayManager.Instance != null)

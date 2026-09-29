@@ -1,4 +1,7 @@
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 using WhisperingWilds.Player;
 
 namespace WhisperingWilds.Cameras
@@ -70,7 +73,9 @@ namespace WhisperingWilds.Cameras
 
         private void HandleCursorToggle()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+#if ENABLE_INPUT_SYSTEM
+            var kb = Keyboard.current;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 if (Cursor.lockState == CursorLockMode.Locked)
                 {
@@ -83,6 +88,7 @@ namespace WhisperingWilds.Cameras
                     Cursor.visible = false;
                 }
             }
+#endif
         }
 
         private void HandleOrbitInput()
@@ -96,11 +102,17 @@ namespace WhisperingWilds.Cameras
 
         private void HandleZoomInput()
         {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (Mathf.Abs(scroll) > 0.01f)
+#if ENABLE_INPUT_SYSTEM
+            var mouse = Mouse.current;
+            if (mouse != null)
             {
-                targetDistance = Mathf.Clamp(targetDistance - scroll * 3f, minDistance, maxDistance);
+                float scroll = mouse.scroll.ReadValue().y;
+                if (Mathf.Abs(scroll) > 0.01f)
+                {
+                    targetDistance = Mathf.Clamp(targetDistance - Mathf.Sign(scroll) * 0.5f, minDistance, maxDistance);
+                }
             }
+#endif
         }
 
         private void UpdateCameraPosition()

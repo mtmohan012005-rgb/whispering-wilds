@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WhisperingWilds.Core;
 using WhisperingWilds.Player;
@@ -13,6 +14,10 @@ using WhisperingWilds.World;
 using WhisperingWilds.NPC;
 using WhisperingWilds.UI;
 using WhisperingWilds.Audio;
+using WhisperingWilds.Quality;
+using WhisperingWilds.Wildlife;
+using WhisperingWilds.Profiling;
+using WhisperingWilds.Online;
 
 namespace WhisperingWilds.Editor
 {
@@ -23,6 +28,17 @@ namespace WhisperingWilds.Editor
         {
             try
             {
+                string scenePath = "Assets/_Project/Scenes/02_Chennai_GeorgeTown.unity";
+                Scene scene;
+                if (EditorSceneManager.GetActiveScene().path != scenePath)
+                {
+                    scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+                }
+                else
+                {
+                    scene = EditorSceneManager.GetActiveScene();
+                }
+
                 Debug.Log("<color=#00D2FF><b>[Whispering Wilds]</b></color> Assembling standalone PC scene: Chennai George Town with REAL 3D Models...");
 
                 // 1. Setup Lighting & Sun
@@ -47,7 +63,8 @@ namespace WhisperingWilds.Editor
                 SetupNPCs();
 
                 // Save Scene
-                EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                EditorSceneManager.MarkSceneDirty(scene);
+                EditorSceneManager.SaveScene(scene);
                 AssetDatabase.SaveAssets();
 
                 Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> Playable Chennai George Town scene successfully built with real assets and ready for PC testing!");
@@ -60,23 +77,31 @@ namespace WhisperingWilds.Editor
 
         private static Light SetupLighting()
         {
-            var sunObj = GameObject.Find("Directional Light");
-            Light sun;
-            if (sunObj == null)
+            var allLights = UnityEngine.Object.FindObjectsByType<Light>();
+            Light sun = null;
+            foreach (var l in allLights)
             {
-                sunObj = new GameObject("Directional Light");
+                if (l.type == LightType.Directional)
+                {
+                    if (sun == null) sun = l;
+                    else
+                    {
+                        UnityEngine.Object.DestroyImmediate(l.gameObject);
+                    }
+                }
+            }
+
+            if (sun == null)
+            {
+                var sunObj = new GameObject("Directional Light");
                 sun = sunObj.AddComponent<Light>();
                 sun.type = LightType.Directional;
-            }
-            else
-            {
-                sun = sunObj.GetComponent<Light>();
             }
 
             sun.color = new Color(1.0f, 0.95f, 0.88f); // Chennai tropical morning sunlight
             sun.intensity = 1.25f;
             sun.shadows = LightShadows.Soft;
-            sunObj.transform.rotation = Quaternion.Euler(45f, -30f, 0f);
+            sun.transform.rotation = Quaternion.Euler(45f, -30f, 0f);
 
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(0.6f, 0.75f, 0.9f);
@@ -92,12 +117,24 @@ namespace WhisperingWilds.Editor
             if (managersObj == null) managersObj = new GameObject("--- MANAGERS ---");
 
             if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
+            if (managersObj.GetComponent<QualityPresetManager>() == null) managersObj.AddComponent<QualityPresetManager>();
+            if (managersObj.GetComponent<AutoQualityDetector>() == null) managersObj.AddComponent<AutoQualityDetector>();
+            if (managersObj.GetComponent<AdaptiveQualityManager>() == null) managersObj.AddComponent<AdaptiveQualityManager>();
+            if (managersObj.GetComponent<MemoryBudgetManager>() == null) managersObj.AddComponent<MemoryBudgetManager>();
+            if (managersObj.GetComponent<RegionalSceneManager>() == null) managersObj.AddComponent<RegionalSceneManager>();
             if (managersObj.GetComponent<InventoryManager>() == null) managersObj.AddComponent<InventoryManager>();
             if (managersObj.GetComponent<CraftingManager>() == null) managersObj.AddComponent<CraftingManager>();
             if (managersObj.GetComponent<QuestManager>() == null) managersObj.AddComponent<QuestManager>();
             if (managersObj.GetComponent<InvestigationManager>() == null) managersObj.AddComponent<InvestigationManager>();
             if (managersObj.GetComponent<WeatherSystem>() == null) managersObj.AddComponent<WeatherSystem>();
             if (managersObj.GetComponent<AudioManager>() == null) managersObj.AddComponent<AudioManager>();
+            if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddComponent<SettingsMenuController>();
+            if (managersObj.GetComponent<CloudSaveManager>() == null) managersObj.AddComponent<CloudSaveManager>();
+            if (managersObj.GetComponent<NPCScheduleManager>() == null) managersObj.AddComponent<NPCScheduleManager>();
+            if (managersObj.GetComponent<NPCPerformanceTierManager>() == null) managersObj.AddComponent<NPCPerformanceTierManager>();
+            if (managersObj.GetComponent<WildlifeManager>() == null) managersObj.AddComponent<WildlifeManager>();
+            if (managersObj.GetComponent<TrafficSystem>() == null) managersObj.AddComponent<TrafficSystem>();
+            if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
 
             var timeManager = managersObj.GetComponent<TimeOfDayManager>();
             if (timeManager == null) timeManager = managersObj.AddComponent<TimeOfDayManager>();
