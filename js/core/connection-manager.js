@@ -8,28 +8,28 @@
   'use strict';
 
   const CONNECTION_STATE = {
-    ONLINE:        'ONLINE',
-    CONNECTING:    'CONNECTING',
-    RECONNECTING:  'RECONNECTING',
-    OFFLINE:       'OFFLINE',
-    SERVER_ERROR:  'SERVER_ERROR',
+    ONLINE: 'ONLINE',
+    CONNECTING: 'CONNECTING',
+    RECONNECTING: 'RECONNECTING',
+    OFFLINE: 'OFFLINE',
+    SERVER_ERROR: 'SERVER_ERROR',
   };
 
   class OnlineConnectionManager {
     constructor() {
-      this.state         = CONNECTION_STATE.CONNECTING;
-      this.backendOk     = false;
-      this.networkOk     = navigator.onLine !== false;
-      this.retryCount    = 0;
-      this.maxRetries    = 5;
-      this.retryDelayMs  = 2000;
+      this.state = CONNECTION_STATE.CONNECTING;
+      this.backendOk = false;
+      this.networkOk = navigator.onLine !== false;
+      this.retryCount = 0;
+      this.maxRetries = 5;
+      this.retryDelayMs = 2000;
 
-      this._listeners    = {};
-      this._abortCtrl    = null;
-      this._healthTimer  = null;
+      this._listeners = {};
+      this._abortCtrl = null;
+      this._healthTimer = null;
       this._checkInterval = 30_000; // re-check every 30 s while playing
 
-      this._onlineHandler  = () => { this.networkOk = true;  this._onNetworkChange(); };
+      this._onlineHandler = () => { this.networkOk = true; this._onNetworkChange(); };
       this._offlineHandler = () => { this.networkOk = false; this._setState(CONNECTION_STATE.OFFLINE); };
     }
 
@@ -45,14 +45,14 @@
       this._listeners[event] = this._listeners[event].filter(f => f !== cb);
     }
 
-    getState()    { return this.state; }
-    isOnline()    { return this.state === CONNECTION_STATE.ONLINE; }
+    getState() { return this.state; }
+    isOnline() { return this.state === CONNECTION_STATE.ONLINE; }
 
     // ------------------------------------------------------------------
     // START — call once during boot sequence
     // ------------------------------------------------------------------
     async start() {
-      window.addEventListener('online',  this._onlineHandler);
+      window.addEventListener('online', this._onlineHandler);
       window.addEventListener('offline', this._offlineHandler);
 
       if (!this.networkOk) {
@@ -67,7 +67,7 @@
     // STOP — cleanup
     // ------------------------------------------------------------------
     stop() {
-      window.removeEventListener('online',  this._onlineHandler);
+      window.removeEventListener('online', this._onlineHandler);
       window.removeEventListener('offline', this._offlineHandler);
       clearTimeout(this._healthTimer);
       this._abortCtrl?.abort();
@@ -100,7 +100,7 @@
 
         this.retryCount++;
         const delay = Math.min(this.retryDelayMs * Math.pow(1.5, this.retryCount), 30_000);
-        console.warn(`[ConnectionManager] Backend unreachable (attempt ${this.retryCount}/${this.maxRetries}). Retry in ${(delay/1000).toFixed(1)}s`);
+        console.warn(`[ConnectionManager] Backend unreachable (attempt ${this.retryCount}/${this.maxRetries}). Retry in ${(delay / 1000).toFixed(1)}s`);
 
         if (this.retryCount >= this.maxRetries) break;
 
@@ -127,10 +127,10 @@
 
       try {
         const resp = await fetch(`${baseUrl}/api/v1/health`, {
-          method:  'GET',
-          signal:  AbortSignal.timeout ? AbortSignal.timeout(6000) : this._abortCtrl.signal,
+          method: 'GET',
+          signal: AbortSignal.timeout ? AbortSignal.timeout(6000) : this._abortCtrl.signal,
           headers: { 'Accept': 'application/json' },
-          cache:   'no-store',
+          cache: 'no-store',
         });
         if (resp.ok) {
           const json = await resp.json().catch(() => ({}));
@@ -184,7 +184,7 @@
 
     _emit(event, data) {
       const cbs = this._listeners[event] || [];
-      cbs.forEach(cb => { try { cb(data); } catch(e) {} });
+      cbs.forEach(cb => { try { cb(data); } catch (e) { } });
     }
 
     _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
@@ -260,44 +260,44 @@
         document.body.appendChild(overlay);
       }
 
-      const icon   = overlay.querySelector('#ww-conn-icon');
-      const title  = overlay.querySelector('#ww-conn-title');
-      const sub    = overlay.querySelector('#ww-conn-sub');
-      const bar    = overlay.querySelector('#ww-conn-bar-inner');
-      const acts   = overlay.querySelector('#ww-conn-actions');
+      const icon = overlay.querySelector('#ww-conn-icon');
+      const title = overlay.querySelector('#ww-conn-title');
+      const sub = overlay.querySelector('#ww-conn-sub');
+      const bar = overlay.querySelector('#ww-conn-bar-inner');
+      const acts = overlay.querySelector('#ww-conn-actions');
       acts.innerHTML = '';
 
       switch (state) {
         case CONNECTION_STATE.CONNECTING:
-          icon.textContent  = '🌐';
+          icon.textContent = '🌐';
           title.textContent = 'Connecting to Servers';
-          sub.textContent   = 'Establishing connection to Whispering Wilds online services…';
+          sub.textContent = 'Establishing connection to Whispering Wilds online services…';
           bar.style.animation = 'ww-loading 1.5s ease-in-out infinite';
           break;
         case CONNECTION_STATE.RECONNECTING:
-          icon.textContent  = '🔄';
+          icon.textContent = '🔄';
           title.textContent = 'Reconnecting…';
-          sub.textContent   = `Attempt ${this.retryCount}/${this.maxRetries} — Server temporarily unreachable.`;
+          sub.textContent = `Attempt ${this.retryCount}/${this.maxRetries} — Server temporarily unreachable.`;
           bar.style.animation = 'ww-loading 1.0s ease-in-out infinite';
           this._addButton(acts, 'Cancel', 'secondary', () => { this._setState(CONNECTION_STATE.OFFLINE); });
           break;
         case CONNECTION_STATE.OFFLINE:
-          icon.textContent  = '📡';
+          icon.textContent = '📡';
           title.textContent = 'No Network Connection';
-          sub.textContent   = 'The Whispering Wilds requires an internet connection for online services.';
+          sub.textContent = 'The Whispering Wilds requires an internet connection for online services.';
           bar.style.animation = 'none';
           bar.style.width = '0';
-          this._addButton(acts, '🔁 Retry',  'primary',   () => this.retry());
-          this._addButton(acts, '❌ Exit',   'secondary', () => window.close?.());
+          this._addButton(acts, '🔁 Retry', 'primary', () => this.retry());
+          this._addButton(acts, '❌ Exit', 'secondary', () => window.close?.());
           break;
         case CONNECTION_STATE.SERVER_ERROR:
-          icon.textContent  = '⚠️';
+          icon.textContent = '⚠️';
           title.textContent = 'Service Unavailable';
-          sub.textContent   = 'Servers are temporarily unavailable. Please try again later.';
+          sub.textContent = 'Servers are temporarily unavailable. Please try again later.';
           bar.style.animation = 'none';
           bar.style.width = '0';
-          this._addButton(acts, '🔁 Retry',  'primary',   () => this.retry());
-          this._addButton(acts, '❌ Exit',   'secondary', () => window.close?.());
+          this._addButton(acts, '🔁 Retry', 'primary', () => this.retry());
+          this._addButton(acts, '❌ Exit', 'secondary', () => window.close?.());
           break;
       }
     }

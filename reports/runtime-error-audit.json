@@ -1,0 +1,1274 @@
+{
+  "generatedAt": "2026-09-27T19:34:43.233Z",
+  "commit": "not-captured",
+  "target": "http://localhost:3000",
+  "browser": {
+    "engine": "Edge (Chromium) via puppeteer-core",
+    "headless": true,
+    "viewport": "1600x900",
+    "flags": [
+      "--enable-unsafe-swiftshader",
+      "--use-gl=angle",
+      "--mute-audio"
+    ],
+    "note": "headless run with software WebGL (SwiftShader fallback allowed)"
+  },
+  "verdict": {
+    "worldActivated": true,
+    "uncaughtExceptions": 0,
+    "consoleErrors": 29,
+    "consoleWarnings": 153,
+    "failedRequests": 29,
+    "graphicsAvailable": true
+  },
+  "console": {
+    "totalMessages": 260,
+    "byType": {
+      "log": 76,
+      "info": 0,
+      "warn": 153,
+      "error": 29,
+      "debug": 0,
+      "other": 2
+    },
+    "byBucket": {
+      "other": {
+        "count": 197,
+        "sample": "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js."
+      },
+      "graphics": {
+        "count": 8,
+        "sample": "[LaptopOptimization] Hardware: Laptop=true, LowPowerGPU=true, Cores=8, Memory=8GB"
+      },
+      "http-other": {
+        "count": 1,
+        "sample": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+      },
+      "http-404": {
+        "count": 28,
+        "sample": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      },
+      "world-asset-missing": {
+        "count": 26,
+        "sample": "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/street_row.glb"
+      }
+    },
+    "unique": [
+      {
+        "type": "warn",
+        "count": 69,
+        "bucket": "other",
+        "text": "[WorldCellManager] Illegal state transition for CELL_CAU_001: QUEUED -> LOADED"
+      },
+      {
+        "type": "error",
+        "count": 28,
+        "bucket": "http-404",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      },
+      {
+        "type": "warn",
+        "count": 6,
+        "bucket": "other",
+        "text": "[RuntimeValidator][Self-Healing] ITEM_QUANTITY_REPAIRED: JSHandle@object"
+      },
+      {
+        "type": "warn",
+        "count": 4,
+        "bucket": "other",
+        "text": "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js."
+      },
+      {
+        "type": "warn",
+        "count": 4,
+        "bucket": "other",
+        "text": "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js."
+      },
+      {
+        "type": "warn",
+        "count": 4,
+        "bucket": "other",
+        "text": "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js."
+      },
+      {
+        "type": "warn",
+        "count": 4,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/goat.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "log",
+        "count": 4,
+        "bucket": "other",
+        "text": "[LivingWorld] Loaded local production wildlife GLB: assets/wildlife/nilgiri_tahr.glb"
+      },
+      {
+        "type": "warn",
+        "count": 4,
+        "bucket": "other",
+        "text": "THREE.MeshLambertMaterial: 'roughness' is not a property of this material."
+      },
+      {
+        "type": "warn",
+        "count": 3,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/egret.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 3,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/cattle.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 3,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/nilgiri-langur.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 3,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/gaur.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "log",
+        "count": 2,
+        "bucket": "other",
+        "text": "[InteractiveDoor] Registered interactive door entity class."
+      },
+      {
+        "type": "log",
+        "count": 2,
+        "bucket": "other",
+        "text": "[PerformanceManager] 🚀 Authority initialized with profile: VERY_LOW"
+      },
+      {
+        "type": "log",
+        "count": 2,
+        "bucket": "graphics",
+        "text": "[GraphicsProfile] AUTO selected: VERY_LOW (GPU tier: VERY_LOW)"
+      },
+      {
+        "type": "other",
+        "count": 2,
+        "bucket": "other",
+        "text": "[DOM] Password field is not contained in a form: (More info: https://www.chromium.org/developers/design-documents/create-amazing-password-forms) %o"
+      },
+      {
+        "type": "warn",
+        "count": 2,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/artisan.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 2,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/kingfisher.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 2,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/peafowl.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 2,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local wildlife asset: assets/characters/wildlife/elephant.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[HardwareDetectionSystem] Detected: ANGLE (Intel, Intel(R) UHD Graphics (0x000046D0) Direct3D11 vs_5_0 ps_5_0, D3D11) | Cores: 8 | RAM: 8GB | Profile: VERY_LOW"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "graphics",
+        "text": "[LaptopOptimization] Hardware: Laptop=true, LowPowerGPU=true, Cores=8, Memory=8GB"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LaptopOptimization] Battery: 68%, Discharging=true"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "graphics",
+        "text": "[LaptopOptimization] Detected battery/integrated GPU operation. Recommending Eco Mode."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] ⚙ Applied hardware profile MEDIUM: Active=75m, Preload=130m, Unload=180m"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[InteractionData] Loaded authoritative interaction categories & priority mappings."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[EnvironmentPropData] Registered 21 production environmental props."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WaterInteractionData] Loaded water depth classifications & regional water body profiles."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[DestructionData] Registered 5 authored breakable props with strict heritage safeguards."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[InteractiveProp] Registered base interactive prop entity class."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[InteractiveGate] Registered interactive gate entity class."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[InteractiveLamp] Registered interactive lamp entity class."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[InteractiveContainer] Registered interactive container entity class."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[PropStateSystem] Initialized authoritative environmental state manager."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[EnvironmentInteractionSystem] Initialized interaction detection & priority system."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[PhysicsInteractionSystem] Initialized soft-push lightweight physics system."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldReactivitySystem] Initialized world reactivity & environmental response engine."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WaterInteractionSystem] Initialized water interaction, ripples & wading engine."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[VegetationReactionSystem] Initialized procedural vegetation bending & spring recovery engine."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[EnvironmentPhysicsBridge] Initialized Three.js environment physics adapter."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ThreeVegetationReactionAdapter] Initialized Three.js vegetation reaction adapter."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ThreeWaterReactionAdapter] Initialized Three.js water reaction adapter."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[EnvironmentInteractionUI] Initialized contextual interaction HUD."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GameLifecycle] BOOT → INITIALIZING JSHandle@object"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "graphics",
+        "text": "[BootManager] WebGL: OK, GLTF: true, Audio: true, Storage: true"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "graphics",
+        "text": "[GPUCapability] GPU: \"ANGLE (Intel, Intel(R) UHD Graphics (0x000046D0) Direct3D11 vs_5_0 ps_5_0, D3D11)\" | Vendor: \"Google Inc. (Intel)\" | WebGPU: true | WebGL2: true | MaxTex: 16384 | DPR: 1 | Tier: VERY_LOW"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] ⚙ Applied hardware profile VERY_LOW: Active=40m, Preload=75m, Unload=110m"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[PerformanceManager] Applied profile: VERY_LOW"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GameRuntime] 🌟 Authoritative Core Runtime initialized."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[AudioBusMatrix] Initialized 10 authoritative audio buses rolling into MASTER."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[FootstepAudioSystem] Initialized surface footstep and cloth dynamics engine."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WildlifeAudioSystem] Initialized authentic species behavioral vocalization engine."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LandmarkVisualizer] 5 authentic Tamil Nadu landmarks instantiated in 3D world"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[VegetationLibrarySystem] Instanced 200+ native Tamil Nadu botanical specimens"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Registered 8 production NPCs across Tamil Nadu biomes."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Registered 26 production wildlife entities across habitats."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ProductionAssets] Initialized Production Asset Adapter for Tamil Nadu Open-World (PC 60 FPS Target)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ThreeWorld] Activated as primary renderer. Driven by main game loop."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[Main] 3D World activated as sole renderer."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "graphics",
+        "text": "[GPUResourceManager] Attached WebGL context lifecycle listeners to canvas."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[RuntimeValidator][Self-Healing] PLAYER_POSITION_RESTORED: JSHandle@object"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "graphics",
+        "text": "[BootManager] Boot complete in 2297ms. GPU tier: VERY_LOW | Quality: VERY_LOW"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GameLifecycle] INITIALIZING → MAIN_MENU JSHandle@object"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[FirebaseService] No Firebase credentials configured - running offline/guest mode."
+      },
+      {
+        "type": "error",
+        "count": 1,
+        "bucket": "http-other",
+        "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[CharacterLoader] Production character successfully loaded: assets/characters/player/player.glb"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ThreePlayer] Rigged production GLB character loaded into scene."
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[CustomAnimationSystem] Rigged skeleton bones bound: JSHandle@object"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/murugan.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/selvam.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/meenakshi.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/fisher.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/farmer.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LivingWorld] Missing local NPC asset: assets/characters/npcs/forest-guide.glb. Using modular procedural silhouette."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/street_row.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: street_row\nExpected:\nassets/architecture/chennai/street_row.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/market_building.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: market_building\nExpected:\nassets/architecture/chennai/market_building.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/old_tamil_house.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: old_tamil_house\nExpected:\nassets/architecture/chennai/old_tamil_house.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/props/market/flower_cart.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: flower_cart\nExpected:\nassets/props/market/flower_cart.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/props/food/tea_stall.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: tea_stall\nExpected:\nassets/props/food/tea_stall.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/vehicles/bicycle/old_bicycle.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: old_bicycle\nExpected:\nassets/vehicles/bicycle/old_bicycle.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/props/household/wooden_bench.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: wooden_bench\nExpected:\nassets/props/household/wooden_bench.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/props/food/brass_vessels.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: brass_vessels\nExpected:\nassets/props/food/brass_vessels.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/props/household/water_pot.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: water_pot\nExpected:\nassets/props/household/water_pot.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/props/market/street_sign.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: street_sign\nExpected:\nassets/props/market/street_sign.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/electrical_pole.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: electrical_pole\nExpected:\nassets/architecture/chennai/electrical_pole.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/vehicles/motorcycle/old_motorcycle.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: old_motorcycle\nExpected:\nassets/vehicles/motorcycle/old_motorcycle.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[ProductionWorldAssets] Missing or failed load: assets/vehicles/bus/city_bus.glb"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "world-asset-missing",
+        "text": "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: city_bus\nExpected:\nassets/vehicles/bus/city_bus.glb"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ConnectionManager] Backend health OK: ok"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[ConnectionManager] State: CONNECTING → ONLINE"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GraphicsProfile] DynRes ↓ scale=0.90"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[PWA] Service Worker registered with scope: http://localhost:3000/"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GameLifecycle] MAIN_MENU → LOADING_GAME JSHandle@object"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GraphicsProfile] DynRes ↓ scale=0.80"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[AUDIO MISSING] chennai_market_bed assets/audio/ambience/chennai/george_town_market.mp3"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🧹 All gameplay cells unloaded. Active cell count: 0"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🟢 Cell ACTIVATED: CELL_CHE_001 (CHENNAI)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 💾 Restored world streaming for george_town (CELL_CHE_001)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[LoadingManager] Load complete: george_town in 967ms. Failed: 0"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GameLifecycle] LOADING_GAME → PLAYING JSHandle@object"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] ▶ Streaming simulation RESUMED."
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[AUDIO MISSING] landmark_discover assets/audio/music/discovery/temple_chime_stinger.mp3"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🌄 SEAMLESS REGION TRANSITION: george_town ➔ CHENNAI"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🎵 Crossfading regional audio theme ➔ busy_bazaar_auto_horns_vendors"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🟢 Cell ACTIVATED: CELL_CHE_002 (CHENNAI)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🟢 Cell ACTIVATED: CELL_CHE_004 (CHENNAI)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldStreamingSystem] 🟢 Cell ACTIVATED: CELL_CHE_003 (CHENNAI)"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[AdaptiveQualitySystem] 📉 Scaled down quality step to 90%"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[SaveManager] ✓ Game saved (slot: auto, reason: landmark_discovery) at 28/9/2026, 1:04:30 am"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[GraphicsProfile] DynRes ↓ scale=0.70"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldCellManager] Illegal state transition for CELL_CHE_002: ACTIVE -> LOADED"
+      },
+      {
+        "type": "warn",
+        "count": 1,
+        "bucket": "other",
+        "text": "[WorldCellManager] Illegal state transition for CELL_CHE_003: ACTIVE -> LOADED"
+      },
+      {
+        "type": "log",
+        "count": 1,
+        "bucket": "other",
+        "text": "[MemoryManager] Executing memory pressure management (Level: NORMAL)..."
+      }
+    ]
+  },
+  "rootCauses": [
+    {
+      "id": "world-cell-queued-to-loaded",
+      "match": {},
+      "severity": "medium",
+      "where": "js/systems/world-cell-manager.js:100-115",
+      "why": "The cell state machine at line 100-109 allows QUEUED -> [LOADING, UNLOADED, FAILED] but not QUEUED -> LOADED. A cell is being marked LOADED while it is still QUEUED, so the transition is rejected, the state is never advanced, and the guard warns on every attempt.",
+      "fix": "Route the cell through LOADING before LOADED, or add LOADED to the QUEUED allowed list if a queued cell can legitimately complete without entering LOADING.",
+      "detected": true,
+      "detectedCount": 69,
+      "examples": [
+        "[WorldCellManager] Illegal state transition for CELL_CAU_001: QUEUED -> LOADED"
+      ],
+      "affectedAssets": []
+    },
+    {
+      "id": "lambert-roughness-property",
+      "match": {},
+      "severity": "low",
+      "where": "js/engine/streaming-renderer.js:105-108",
+      "why": "MeshLambertMaterial has no roughness property; it belongs to MeshStandardMaterial / MeshPhysicalMaterial. three.js warns once per constructed instance, so the count scales with the number of streamed terrain chunks built.",
+      "fix": "Use THREE.MeshStandardMaterial with roughness, or drop the roughness key and keep Lambert.",
+      "detected": true,
+      "detectedCount": 4,
+      "examples": [
+        "THREE.MeshLambertMaterial: 'roughness' is not a property of this material."
+      ],
+      "affectedAssets": []
+    },
+    {
+      "id": "living-world-procedural-silhouette",
+      "match": {},
+      "severity": "medium",
+      "where": "js/systems/ (LivingWorld NPC/wildlife spawn path)",
+      "why": "The requested authored model does not exist, so the entity is replaced with a procedural silhouette. This is a degraded visual, not a crash, and it is logged rather than hidden.",
+      "fix": "Author the missing model, or accept the procedural silhouette as the shipped art and remove the expectation of an authored asset from the registry.",
+      "detected": true,
+      "detectedCount": 30,
+      "examples": [
+        "[LivingWorld] Missing local NPC asset: assets/characters/npcs/murugan.glb. Using modular procedural silhouette.",
+        "[LivingWorld] Missing local NPC asset: assets/characters/npcs/selvam.glb. Using modular procedural silhouette.",
+        "[LivingWorld] Missing local NPC asset: assets/characters/npcs/meenakshi.glb. Using modular procedural silhouette."
+      ],
+      "affectedAssets": [
+        "assets/characters/npcs/murugan.glb.",
+        "assets/characters/npcs/selvam.glb.",
+        "assets/characters/npcs/meenakshi.glb.",
+        "assets/characters/npcs/fisher.glb.",
+        "assets/characters/npcs/farmer.glb.",
+        "assets/characters/npcs/forest-guide.glb.",
+        "assets/characters/npcs/artisan.glb.",
+        "assets/characters/wildlife/egret.glb.",
+        "assets/characters/wildlife/kingfisher.glb.",
+        "assets/characters/wildlife/cattle.glb.",
+        "assets/characters/wildlife/goat.glb.",
+        "assets/characters/wildlife/peafowl.glb."
+      ]
+    },
+    {
+      "id": "world-asset-missing",
+      "match": {},
+      "severity": "medium",
+      "where": "js/engine/production-world-assets.js:174-175",
+      "why": "A registry entry points at a file that is not on disk. The loader logs and continues; the prop is simply absent from the world (it is NOT replaced by a fake mesh).",
+      "fix": "Author the asset or point the registry entry at an existing model.",
+      "detected": true,
+      "detectedCount": 26,
+      "examples": [
+        "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/street_row.glb",
+        "[WORLD ASSET MISSING]\nRegion: chennai\nAsset: street_row\nExpected:\nassets/architecture/chennai/street_row.glb",
+        "[ProductionWorldAssets] Missing or failed load: assets/architecture/chennai/market_building.glb"
+      ],
+      "affectedAssets": [
+        "assets/architecture/chennai/street_row.glb",
+        "assets/architecture/chennai/market_building.glb",
+        "assets/architecture/chennai/old_tamil_house.glb",
+        "assets/props/market/flower_cart.glb",
+        "assets/props/food/tea_stall.glb",
+        "assets/vehicles/bicycle/old_bicycle.glb",
+        "assets/props/household/wooden_bench.glb",
+        "assets/props/food/brass_vessels.glb",
+        "assets/props/household/water_pot.glb",
+        "assets/props/market/street_sign.glb",
+        "assets/architecture/chennai/electrical_pole.glb",
+        "assets/vehicles/motorcycle/old_motorcycle.glb"
+      ]
+    },
+    {
+      "id": "runtime-validator-self-heal",
+      "match": {},
+      "severity": "low",
+      "where": "js/core/runtime-validator.js",
+      "why": "The runtime validator detected invalid state and repaired it in place instead of throwing.",
+      "fix": "Inspect the repaired value; a self-heal that fires every session points at an unresolved state bug upstream.",
+      "detected": true,
+      "detectedCount": 7,
+      "examples": [
+        "[RuntimeValidator][Self-Healing] PLAYER_POSITION_RESTORED: JSHandle@object",
+        "[RuntimeValidator][Self-Healing] ITEM_QUANTITY_REPAIRED: JSHandle@object"
+      ],
+      "affectedAssets": []
+    },
+    {
+      "id": "tracking-prevention",
+      "match": {},
+      "severity": "informational",
+      "where": "index.html (Firebase CDN scripts)",
+      "why": "Browser storage partitioning applied to the Firebase CDN scripts. Harmless in this run, but it means Firebase storage access can be blocked by privacy settings.",
+      "fix": "No action required unless Firebase persistence fails for real users.",
+      "detected": true,
+      "detectedCount": 12,
+      "examples": [
+        "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js.",
+        "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js.",
+        "Tracking Prevention blocked access to storage for https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js."
+      ],
+      "affectedAssets": []
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": {
+    "total": 29,
+    "byAssetGroup": {
+      "non-asset": {
+        "count": 1,
+        "examples": [
+          "/api/auth/me"
+        ],
+        "statuses": {
+          "401": 1
+        }
+      },
+      "characters/npcs": {
+        "count": 7,
+        "examples": [
+          "assets/characters/npcs/murugan.glb",
+          "assets/characters/npcs/selvam.glb",
+          "assets/characters/npcs/meenakshi.glb",
+          "assets/characters/npcs/fisher.glb",
+          "assets/characters/npcs/farmer.glb"
+        ],
+        "statuses": {
+          "404": 7
+        }
+      },
+      "characters/wildlife": {
+        "count": 8,
+        "examples": [
+          "assets/characters/wildlife/egret.glb",
+          "assets/characters/wildlife/kingfisher.glb",
+          "assets/characters/wildlife/cattle.glb",
+          "assets/characters/wildlife/goat.glb",
+          "assets/characters/wildlife/peafowl.glb"
+        ],
+        "statuses": {
+          "404": 8
+        }
+      },
+      "architecture/chennai": {
+        "count": 4,
+        "examples": [
+          "assets/architecture/chennai/street_row.glb",
+          "assets/architecture/chennai/market_building.glb",
+          "assets/architecture/chennai/old_tamil_house.glb",
+          "assets/architecture/chennai/electrical_pole.glb"
+        ],
+        "statuses": {
+          "404": 4
+        }
+      },
+      "props/market": {
+        "count": 2,
+        "examples": [
+          "assets/props/market/flower_cart.glb",
+          "assets/props/market/street_sign.glb"
+        ],
+        "statuses": {
+          "404": 2
+        }
+      },
+      "props/food": {
+        "count": 2,
+        "examples": [
+          "assets/props/food/tea_stall.glb",
+          "assets/props/food/brass_vessels.glb"
+        ],
+        "statuses": {
+          "404": 2
+        }
+      },
+      "vehicles/bicycle": {
+        "count": 1,
+        "examples": [
+          "assets/vehicles/bicycle/old_bicycle.glb"
+        ],
+        "statuses": {
+          "404": 1
+        }
+      },
+      "props/household": {
+        "count": 2,
+        "examples": [
+          "assets/props/household/wooden_bench.glb",
+          "assets/props/household/water_pot.glb"
+        ],
+        "statuses": {
+          "404": 2
+        }
+      },
+      "vehicles/motorcycle": {
+        "count": 1,
+        "examples": [
+          "assets/vehicles/motorcycle/old_motorcycle.glb"
+        ],
+        "statuses": {
+          "404": 1
+        }
+      },
+      "vehicles/bus": {
+        "count": 1,
+        "examples": [
+          "assets/vehicles/bus/city_bus.glb"
+        ],
+        "statuses": {
+          "404": 1
+        }
+      }
+    },
+    "all": [
+      {
+        "url": "http://localhost:3000/api/auth/me",
+        "status": 401,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/murugan.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/selvam.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/meenakshi.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/fisher.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/farmer.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/forest-guide.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/npcs/artisan.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/egret.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/kingfisher.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/cattle.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/goat.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/peafowl.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/nilgiri-langur.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/elephant.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/characters/wildlife/gaur.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/architecture/chennai/street_row.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/architecture/chennai/market_building.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/architecture/chennai/old_tamil_house.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/props/market/flower_cart.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/props/food/tea_stall.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/vehicles/bicycle/old_bicycle.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/props/household/wooden_bench.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/props/food/brass_vessels.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/props/household/water_pot.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/props/market/street_sign.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/architecture/chennai/electrical_pole.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/vehicles/motorcycle/old_motorcycle.glb",
+        "status": 404,
+        "kind": "http"
+      },
+      {
+        "url": "http://localhost:3000/assets/vehicles/bus/city_bus.glb",
+        "status": 404,
+        "kind": "http"
+      }
+    ]
+  },
+  "webgl": {
+    "available": true,
+    "vendor": "WebKit",
+    "renderer": "WebKit WebGL",
+    "unmaskedVendor": "Google Inc. (Intel)",
+    "unmaskedRenderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x000046D0) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "glsl": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+    "maxTextureSize": 16384,
+    "maxCubeMapSize": 16384,
+    "maxTextureUnits": 32,
+    "maxVaryings": 30,
+    "maxVertexAttribs": 16,
+    "anisotropy": 16,
+    "shadowsEnabled": false,
+    "shadowType": 2,
+    "pixelRatio": 0.5,
+    "outputColorSpace": null,
+    "toneMapping": 4,
+    "antialias": false,
+    "isWebGL2": true
+  },
+  "performance": {
+    "sampled": {
+      "frames": 281,
+      "avgFps": 56.21,
+      "avgFrameMs": 17.79,
+      "p95FrameMs": 33.2,
+      "worstFrameMs": 50.1,
+      "minFps": 19.96
+    },
+    "rendererInfo": {
+      "calls": 279,
+      "triangles": 44010,
+      "points": 0,
+      "lines": 3200,
+      "geometries": 221,
+      "textures": 4,
+      "programs": 16
+    }
+  },
+  "audio": {
+    "audioElements": 0,
+    "contexts": [
+      {
+        "holder": "audioManager.ctx",
+        "state": "running",
+        "sampleRate": 48000,
+        "currentTime": 19.38
+      },
+      {
+        "holder": "gameAudio.ctx",
+        "state": "running",
+        "sampleRate": 48000,
+        "currentTime": 19.38
+      }
+    ],
+    "contextCount": 2,
+    "runningContexts": 2
+  },
+  "player": {
+    "hasModel": true,
+    "rootType": "Group",
+    "meshes": 6,
+    "skinnedMeshes": 1
+  },
+  "dom": {
+    "visibleCanvas": 3,
+    "loadingOverlayVisible": false,
+    "openModals": 22
+  },
+  "globals": {
+    "threeWorld": "object",
+    "audioManager": "object",
+    "AudioManager": "function",
+    "productionWorldAssets": "object",
+    "ProductionWorldAssets": "function",
+    "GraphicsSettings": "function",
+    "DisplayManager": "object",
+    "CraftingSystem": "object",
+    "AudioContext": "function",
+    "THREE": "object"
+  }
+}
