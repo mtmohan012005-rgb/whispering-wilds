@@ -4,28 +4,26 @@ using UnityEngine;
 namespace WhisperingWilds.World
 {
     /// <summary>
-    /// Manages the 24-hour day/night cycle and drives directional sunlight and NPC schedules.
+    /// Manages the 24-hour visual day/night lighting, sun orbital angles, and color gradients.
+    /// Synchronizes bidirectionally with the authoritative WorldTimeSystem.
     /// </summary>
+    [DisallowMultipleComponent]
     public class TimeOfDayManager : MonoBehaviour
     {
         public static TimeOfDayManager Instance { get; private set; }
-
-        [Header("Time Configuration")]
-        [Range(0f, 24f)] [SerializeField] private float timeOfDay = 9.0f; // 09:00 AM start
-        [SerializeField] private float dayDurationMinutes = 24.0f; // 1 real minute = 1 in-game hour
-        [SerializeField] private bool pauseTime = false;
 
         [Header("Sun & Lighting")]
         [SerializeField] private Light sunLight;
         [SerializeField] private Gradient sunColorGradient;
         [SerializeField] private AnimationCurve sunIntensityCurve;
 
-        public float CurrentHour => timeOfDay;
-        public int WholeHour => Mathf.FloorToInt(timeOfDay);
-        public int Minutes => Mathf.FloorToInt((timeOfDay - WholeHour) * 60f);
+        public float CurrentHour => WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.HourOfDay : localFallbackHour;
+        public int WholeHour => WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.WholeHour : Mathf.FloorToInt(localFallbackHour);
+        public int Minutes => WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.Minutes : Mathf.FloorToInt((localFallbackHour - WholeHour) * 60f);
 
         public event Action<int> OnHourChanged;
 
+        private float localFallbackHour = 9.0f;
         private int lastRecordedHour = -1;
 
         private void Awake()
@@ -36,9 +34,29 @@ namespace WhisperingWilds.World
                 return;
             }
             Instance = this;
+
+            InitDefaultLightingGradients();
         }
 
         private void Start()
+        {
+            AcquireSunLight();
+
+            if (WorldTimeSystem.Instance != null)
+            {
+                WorldTimeSystem.Instance.OnHourChanged += HandleWorldHourChanged;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (WorldTimeSystem.Instance != null)
+            {
+                WorldTimeSystem.Instance.OnHourChanged -= HandleWorldHourChanged;
+            }
+        }
+
+        private void AcquireSunLight()
         {
             if (sunLight == null)
             {
@@ -56,27 +74,36 @@ namespace WhisperingWilds.World
 
         private void Update()
         {
-            if (!pauseTime)
+            if (WorldTimeSystem.Instance == null)
             {
-                // Advance time
-                float hoursPerSecond = 24f / (dayDurationMinutes * 60f);
-                timeOfDay = (timeOfDay + hoursPerSecond * Time.deltaTime) % 24f;
+                // Standalone fallback: 1 real second = 1 in-game minute
+                localFallbackHour = (localFallbackHour + (Time.deltaTime / 60f)) % 24f;
+                int h = Mathf.FloorToInt(localFallbackHour);
+                if (h != lastRecordedHour)
+                {
+                    lastRecordedHour = h;
+                    OnHourChanged?.Invoke(h);
+                }
             }
 
-            UpdateSunPosition();
-            CheckHourChange();
+            UpdateSunPosition(CurrentHour);
         }
 
-        private void UpdateSunPosition()
+        private void HandleWorldHourChanged(int hour)
         {
+            OnHourChanged?.Invoke(hour);
+        }
+
+        private void UpdateSunPosition(float hour)
+        {
+            if (sunLight == null) AcquireSunLight();
             if (sunLight == null) return;
 
             // Rotate sun based on time of day (0 = midnight, 6 = dawn, 12 = noon, 18 = dusk)
-            float sunAngle = (timeOfDay / 24f) * 360f - 90f;
+            float sunAngle = (hour / 24f) * 360f - 90f;
             sunLight.transform.rotation = Quaternion.Euler(sunAngle, 170f, 0f);
 
-            // Sun color & intensity
-            float t = timeOfDay / 24f;
+            float t = hour / 24f;
             if (sunColorGradient != null)
             {
                 sunLight.color = sunColorGradient.Evaluate(t);
@@ -88,21 +115,51 @@ namespace WhisperingWilds.World
             }
         }
 
-        private void CheckHourChange()
-        {
-            int currentHour = WholeHour;
-            if (currentHour != lastRecordedHour)
-            {
-                lastRecordedHour = currentHour;
-                OnHourChanged?.Invoke(currentHour);
-            }
-        }
-
         public void SetTimeOfDay(float hour)
         {
-            timeOfDay = Mathf.Repeat(hour, 24f);
-            UpdateSunPosition();
-            CheckHourChange();
+            if (WorldTimeSystem.Instance != null)
+            {
+                WorldTimeSystem.Instance.SetCalendarAndClock(WorldTimeSystem.Instance.Year, WorldTimeSystem.Instance.Month, WorldTimeSystem.Instance.Day, hour);
+            }
+            else
+            {
+                localFallbackHour = Mathf.Repeat(hour, 24f);
+            }
+
+            UpdateSunPosition(CurrentHour);
+        }
+
+        private void InitDefaultLightingGradients()
+        {
+            if (sunColorGradient == null)
+            {
+                sunColorGradient = new Gradient();
+                var colorKeys = new GradientColorKey[]
+                {
+                    new GradientColorKey(new Color(0.05f, 0.05f, 0.15f), 0.0f),  // Midnight (dark indigo)
+                    new GradientColorKey(new Color(1.0f, 0.55f, 0.35f), 0.25f),  // Dawn (warm saffron)
+                    new GradientColorKey(new Color(1.0f, 0.98f, 0.90f), 0.5f),   // Noon (bright tropical sunlight)
+                    new GradientColorKey(new Color(1.0f, 0.45f, 0.25f), 0.75f),  // Dusk (golden orange)
+                    new GradientColorKey(new Color(0.05f, 0.05f, 0.15f), 1.0f)   // Night
+                };
+                var alphaKeys = new GradientAlphaKey[]
+                {
+                    new GradientAlphaKey(1.0f, 0.0f),
+                    new GradientAlphaKey(1.0f, 1.0f)
+                };
+                sunColorGradient.SetKeys(colorKeys, alphaKeys);
+            }
+
+            if (sunIntensityCurve == null)
+            {
+                sunIntensityCurve = new AnimationCurve(
+                    new Keyframe(0.0f, 0.05f),
+                    new Keyframe(0.25f, 0.6f),
+                    new Keyframe(0.5f, 1.3f),
+                    new Keyframe(0.75f, 0.6f),
+                    new Keyframe(1.0f, 0.05f)
+                );
+            }
         }
     }
 }

@@ -19,6 +19,8 @@ using WhisperingWilds.Quests;
 using WhisperingWilds.UI;
 using WhisperingWilds.Wildlife;
 using WhisperingWilds.World;
+using WhisperingWilds.Vegetation;
+using WhisperingWilds.Persistence;
 
 namespace WhisperingWilds.Editor
 {
@@ -123,6 +125,13 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<TrafficSystem>() == null) managersObj.AddComponent<TrafficSystem>();
             if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
             if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
+
+            // Living World, Ecosystem & Botanical Systems
+            if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();
+            if (managersObj.GetComponent<RegionalClimateSystem>() == null) managersObj.AddComponent<RegionalClimateSystem>();
+            if (managersObj.GetComponent<VegetationManager>() == null) managersObj.AddComponent<VegetationManager>();
+            if (managersObj.GetComponent<WorldPersistenceManager>() == null) managersObj.AddComponent<WorldPersistenceManager>();
+            if (managersObj.GetComponent<WorldSimulationDebugOverlay>() == null) managersObj.AddComponent<WorldSimulationDebugOverlay>();
 
             return managersObj;
         }
