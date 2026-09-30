@@ -58,6 +58,12 @@ namespace WhisperingWilds.Player
         [Header("Animation")]
         [SerializeField] private Animator animator;
 
+        [Header("Crouch Dimensions")]
+        [SerializeField] private float standingHeight = 1.8f;
+        [SerializeField] private float crouchHeight = 1.2f;
+        [SerializeField] private Vector3 standingCenter = new Vector3(0f, 0.9f, 0f);
+        [SerializeField] private Vector3 crouchCenter = new Vector3(0f, 0.6f, 0f);
+
         // Public getters for animation and audio systems
         public bool IsGrounded => isGrounded;
         public float CurrentSpeed => currentSpeed;
@@ -110,11 +116,23 @@ namespace WhisperingWilds.Player
             CheckGrounded();
             HandleGravityAndJump();
             HandleMovement();
+            UpdateCrouchDimensions();
             UpdateAnimator();
+        }
+
+        private void UpdateCrouchDimensions()
+        {
+            if (controller == null) return;
+            bool crouching = input != null && input.IsCrouching;
+            float targetH = crouching ? crouchHeight : standingHeight;
+            Vector3 targetC = crouching ? crouchCenter : standingCenter;
+            controller.height = Mathf.Lerp(controller.height, targetH, Time.deltaTime * 12f);
+            controller.center = Vector3.Lerp(controller.center, targetC, Time.deltaTime * 12f);
         }
 
         private void UpdateAnimator()
         {
+            if (animator == null) animator = GetComponentInChildren<Animator>();
             if (animator == null) return;
             animator.SetFloat("Speed", animationBlend);
             animator.SetBool("Grounded", isGrounded);

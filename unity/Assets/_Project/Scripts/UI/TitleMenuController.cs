@@ -50,6 +50,7 @@ namespace WhisperingWilds.UI
         public void OnNewGameClicked()
         {
             Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> Starting New Game -> Loading Chennai George Town...");
+            SaveManager.PendingSaveToRestore = null;
             SceneManager.LoadScene("02_Chennai_GeorgeTown");
         }
 
@@ -59,11 +60,17 @@ namespace WhisperingWilds.UI
             if (save != null && !string.IsNullOrEmpty(save.currentRegionId))
             {
                 Debug.Log($"<color=#00D2FF><b>[Whispering Wilds]</b></color> Continuing from region: {save.currentRegionId}...");
-                string targetScene = save.currentRegionId == "chennai" ? "02_Chennai_GeorgeTown" : "02_Chennai_GeorgeTown";
+                SaveManager.PendingSaveToRestore = save;
+                string targetScene = "02_Chennai_GeorgeTown";
+                if (World.TamilNaduGeography.TryGetRegion(save.currentRegionId, out var geo) && !string.IsNullOrEmpty(geo.sceneName))
+                {
+                    targetScene = geo.sceneName;
+                }
                 SceneManager.LoadScene(targetScene);
             }
             else
             {
+                SaveManager.PendingSaveToRestore = null;
                 SceneManager.LoadScene("02_Chennai_GeorgeTown");
             }
         }

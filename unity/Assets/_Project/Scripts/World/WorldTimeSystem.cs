@@ -196,6 +196,15 @@ namespace WhisperingWilds.World
         }
 
         /// <summary>
+        /// Directly sets the clock time of day.
+        /// </summary>
+        public void SetTime(float targetHour)
+        {
+            hourOfDay = Mathf.Repeat(targetHour, 24f);
+            UpdateSeasonAndPhase(true);
+        }
+
+        /// <summary>
         /// Directly sets the calendar date and clock time.
         /// </summary>
         public void SetCalendarAndClock(int targetYear, int targetMonth, int targetDay, float targetHour)

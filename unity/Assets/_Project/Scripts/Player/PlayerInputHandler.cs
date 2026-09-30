@@ -22,18 +22,72 @@ namespace WhisperingWilds.Player
         public Vector2 LookInput { get; private set; }
         public bool IsSprinting { get; private set; }
         public bool IsCrouching { get; private set; }
-        public bool JumpTriggered { get; private set; }
-        public bool InteractTriggered { get; private set; }
-        public bool JournalTriggered { get; private set; }
-        public bool PhotoModeTriggered { get; private set; }
+        public bool JumpTriggered => jumpBufferTimer > 0f || simJump;
+        public bool InteractTriggered => interactBufferTimer > 0f || simInteract;
+        public bool JournalTriggered => journalBufferTimer > 0f || simJournal;
+        public bool PhotoModeTriggered => photoBufferTimer > 0f || simPhoto;
 
-        private bool jumpConsumed = false;
-        private bool interactConsumed = false;
-        private bool journalConsumed = false;
-        private bool photoConsumed = false;
+        private float jumpBufferTimer = 0f;
+        private float interactBufferTimer = 0f;
+        private float journalBufferTimer = 0f;
+        private float photoBufferTimer = 0f;
+
+        // Simulation hooks for automated testing
+        private bool isSimulated = false;
+        private Vector2 simMove;
+        private bool simSprint;
+        private bool simCrouch;
+        private bool simJump;
+        private bool simInteract;
+        private bool simJournal;
+        private bool simPhoto;
+
+        public void SetSimulatedMovement(Vector2 move, bool sprint = false, bool crouch = false)
+        {
+            isSimulated = true;
+            simMove = move;
+            simSprint = sprint;
+            simCrouch = crouch;
+        }
+
+        public void TriggerSimulatedJump()
+        {
+            simJump = true;
+        }
+
+        public void TriggerSimulatedInteract()
+        {
+            simInteract = true;
+        }
+
+        public void ClearSimulation()
+        {
+            isSimulated = false;
+            simMove = Vector2.zero;
+            simSprint = false;
+            simCrouch = false;
+            simJump = false;
+            simInteract = false;
+            simJournal = false;
+            simPhoto = false;
+        }
 
         private void Update()
         {
+            // Decrement buffer timers
+            if (jumpBufferTimer > 0f) jumpBufferTimer -= Time.deltaTime;
+            if (interactBufferTimer > 0f) interactBufferTimer -= Time.deltaTime;
+            if (journalBufferTimer > 0f) journalBufferTimer -= Time.deltaTime;
+            if (photoBufferTimer > 0f) photoBufferTimer -= Time.deltaTime;
+
+            if (isSimulated)
+            {
+                MoveInput = simMove;
+                IsSprinting = simSprint;
+                IsCrouching = simCrouch;
+                return;
+            }
+
             ReadInputs();
         }
 
@@ -57,10 +111,10 @@ namespace WhisperingWilds.Player
                 IsSprinting = keyboard.leftShiftKey.isPressed;
                 IsCrouching = keyboard.cKey.isPressed;
 
-                if (keyboard.spaceKey.wasPressedThisFrame) jumpConsumed = false;
-                if (keyboard.eKey.wasPressedThisFrame) interactConsumed = false;
-                if (keyboard.jKey.wasPressedThisFrame) journalConsumed = false;
-                if (keyboard.pKey.wasPressedThisFrame) photoConsumed = false;
+                if (keyboard.spaceKey.wasPressedThisFrame) jumpBufferTimer = 0.15f;
+                if (keyboard.eKey.wasPressedThisFrame) interactBufferTimer = 0.15f;
+                if (keyboard.jKey.wasPressedThisFrame) journalBufferTimer = 0.15f;
+                if (keyboard.pKey.wasPressedThisFrame) photoBufferTimer = 0.15f;
             }
 
             if (gamepad != null)
@@ -75,10 +129,10 @@ namespace WhisperingWilds.Player
                 if (gamepad.leftStickButton.isPressed) IsSprinting = true;
                 if (gamepad.buttonEast.isPressed) IsCrouching = true;
 
-                if (gamepad.buttonSouth.wasPressedThisFrame) jumpConsumed = false;
-                if (gamepad.buttonWest.wasPressedThisFrame) interactConsumed = false;
-                if (gamepad.selectButton.wasPressedThisFrame) journalConsumed = false;
-                if (gamepad.dpad.up.wasPressedThisFrame) photoConsumed = false;
+                if (gamepad.buttonSouth.wasPressedThisFrame) jumpBufferTimer = 0.15f;
+                if (gamepad.buttonWest.wasPressedThisFrame) interactBufferTimer = 0.15f;
+                if (gamepad.selectButton.wasPressedThisFrame) journalBufferTimer = 0.15f;
+                if (gamepad.dpad.up.wasPressedThisFrame) photoBufferTimer = 0.15f;
             }
 
             // Mouse / Gamepad Look
@@ -109,10 +163,10 @@ namespace WhisperingWilds.Player
             IsSprinting = Input.GetKey(KeyCode.LeftShift);
             IsCrouching = Input.GetKey(KeyCode.C);
 
-            if (Input.GetKeyDown(KeyCode.Space)) jumpConsumed = false;
-            if (Input.GetKeyDown(KeyCode.E)) interactConsumed = false;
-            if (Input.GetKeyDown(KeyCode.J)) journalConsumed = false;
-            if (Input.GetKeyDown(KeyCode.P)) photoConsumed = false;
+            if (Input.GetKeyDown(KeyCode.Space)) jumpBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.E)) interactBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.J)) journalBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.P)) photoBufferTimer = 0.15f;
 
             float lookX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float lookY = Input.GetAxis("Mouse Y") * mouseSensitivity * (invertY ? 1f : -1f);
@@ -120,16 +174,30 @@ namespace WhisperingWilds.Player
 #endif
 
             MoveInput = Vector2.ClampMagnitude(new Vector2(moveX, moveZ), 1f);
-
-            JumpTriggered = !jumpConsumed;
-            InteractTriggered = !interactConsumed;
-            JournalTriggered = !journalConsumed;
-            PhotoModeTriggered = !photoConsumed;
         }
 
-        public void ConsumeJump() => jumpConsumed = true;
-        public void ConsumeInteract() => interactConsumed = true;
-        public void ConsumeJournal() => journalConsumed = true;
-        public void ConsumePhotoMode() => photoConsumed = true;
+        public void ConsumeJump()
+        {
+            jumpBufferTimer = 0f;
+            simJump = false;
+        }
+
+        public void ConsumeInteract()
+        {
+            interactBufferTimer = 0f;
+            simInteract = false;
+        }
+
+        public void ConsumeJournal()
+        {
+            journalBufferTimer = 0f;
+            simJournal = false;
+        }
+
+        public void ConsumePhotoMode()
+        {
+            photoBufferTimer = 0f;
+            simPhoto = false;
+        }
     }
 }

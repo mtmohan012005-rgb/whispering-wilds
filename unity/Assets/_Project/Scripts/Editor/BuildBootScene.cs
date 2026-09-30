@@ -29,6 +29,7 @@ namespace WhisperingWilds.Editor
 
                 // 1. Camera
                 var camObj = new GameObject("Boot_Camera", typeof(Camera), typeof(AudioListener));
+                camObj.tag = "MainCamera";
                 var cam = camObj.GetComponent<Camera>();
                 cam.clearFlags = CameraClearFlags.SolidColor;
                 cam.backgroundColor = new Color(0.08f, 0.1f, 0.12f); // Deep midnight blue-gray
@@ -166,18 +167,27 @@ namespace WhisperingWilds.Editor
             var managersObj = new GameObject("[--- MANAGERS ---]");
             if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
             if (managersObj.GetComponent<SaveManager>() == null) managersObj.AddComponent<SaveManager>();
+            if (managersObj.GetComponent<QualityPresetManager>() == null) managersObj.AddComponent<QualityPresetManager>();
             if (managersObj.GetComponent<GraphicsPerformanceManager>() == null) managersObj.AddComponent<GraphicsPerformanceManager>();
+            if (managersObj.GetComponent<AdaptiveQualityManager>() == null) managersObj.AddComponent<AdaptiveQualityManager>();
             if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
+            if (managersObj.GetComponent<MemoryBudgetManager>() == null) managersObj.AddComponent<MemoryBudgetManager>();
             if (managersObj.GetComponent<RealtimeManager>() == null) managersObj.AddComponent<RealtimeManager>();
             if (managersObj.GetComponent<CloudSaveManager>() == null) managersObj.AddComponent<CloudSaveManager>();
             if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();
+            if (managersObj.GetComponent<TimeOfDayManager>() == null) managersObj.AddComponent<TimeOfDayManager>();
             if (managersObj.GetComponent<RegionalClimateSystem>() == null) managersObj.AddComponent<RegionalClimateSystem>();
             if (managersObj.GetComponent<WeatherSystem>() == null) managersObj.AddComponent<WeatherSystem>();
             if (managersObj.GetComponent<RegionalSceneManager>() == null) managersObj.AddComponent<RegionalSceneManager>();
             if (managersObj.GetComponent<WorldPersistenceManager>() == null) managersObj.AddComponent<WorldPersistenceManager>();
             if (managersObj.GetComponent<AudioManager>() == null) managersObj.AddComponent<AudioManager>();
-            if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
+            
+            var pbm = managersObj.GetComponent<PerformanceBenchmarkManager>();
+            if (pbm == null) pbm = managersObj.AddComponent<PerformanceBenchmarkManager>();
+            pbm.AutoStartOnLoad = false;
+
             if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
+            if (managersObj.GetComponent<WhisperingWilds.QA.RuntimeAutomatedSmokeTest>() == null) managersObj.AddComponent<WhisperingWilds.QA.RuntimeAutomatedSmokeTest>();
         }
     }
 }

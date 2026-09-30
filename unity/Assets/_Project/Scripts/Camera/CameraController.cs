@@ -36,6 +36,20 @@ namespace WhisperingWilds.Cameras
         private float targetDistance;
         private PlayerInputHandler input;
 
+        public static CameraController EnsureActiveCameraBound(Transform playerTransform = null)
+        {
+            if (Camera.main == null) return null;
+            var ctrl = Camera.main.GetComponent<CameraController>();
+            if (ctrl == null) ctrl = Camera.main.gameObject.AddComponent<CameraController>();
+            if (playerTransform != null) ctrl.SetTarget(playerTransform);
+            else if (ctrl.target == null)
+            {
+                var p = GameObject.FindWithTag("Player");
+                if (p != null) ctrl.SetTarget(p.transform);
+            }
+            return ctrl;
+        }
+
         public void SetTarget(Transform newTarget)
         {
             target = newTarget;
@@ -51,7 +65,12 @@ namespace WhisperingWilds.Cameras
             targetDistance = defaultDistance;
             currentDistance = defaultDistance;
 
-            if (target != null)
+            if (target == null)
+            {
+                var playerObj = GameObject.FindWithTag("Player");
+                if (playerObj != null) SetTarget(playerObj.transform);
+            }
+            else
             {
                 input = target.GetComponent<PlayerInputHandler>();
                 currentYaw = target.eulerAngles.y;
@@ -63,7 +82,12 @@ namespace WhisperingWilds.Cameras
 
         private void LateUpdate()
         {
-            if (target == null) return;
+            if (target == null)
+            {
+                var playerObj = GameObject.FindWithTag("Player");
+                if (playerObj != null) SetTarget(playerObj.transform);
+                else return;
+            }
 
             HandleCursorToggle();
             HandleOrbitInput();

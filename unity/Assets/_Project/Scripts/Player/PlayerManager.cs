@@ -39,6 +39,7 @@ namespace WhisperingWilds.Player
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
 
             movement = GetComponent<PlayerMovement>();
             interactor = GetComponent<PlayerInteractor>();

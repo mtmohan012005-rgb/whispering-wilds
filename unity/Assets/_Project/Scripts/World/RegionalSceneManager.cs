@@ -150,13 +150,15 @@ namespace WhisperingWilds.World
             }
 
             // 5. Move player to validated spawn point
-            PositionPlayerAtRegionSpawn();
+            PositionPlayerAtRegionSpawn(targetScene);
 
             // 6. Verify and rebind camera / managers
             if (GraphicsPerformanceManager.Instance != null)
             {
                 GraphicsPerformanceManager.Instance.ForceRebindCamera();
             }
+            var activePlayer = GameObject.FindWithTag("Player");
+            WhisperingWilds.Cameras.CameraController.EnsureActiveCameraBound(activePlayer != null ? activePlayer.transform : null);
 
             // 7. Safely unload old region
             if (!string.IsNullOrEmpty(currentSceneName) && currentSceneName != targetSceneName && currentSceneName != "00_Boot")
@@ -185,7 +187,7 @@ namespace WhisperingWilds.World
             OnRegionLoadCompleted?.Invoke(targetGeo.regionId);
         }
 
-        private void PositionPlayerAtRegionSpawn()
+        private void PositionPlayerAtRegionSpawn(Scene targetScene)
         {
             var player = GameObject.FindWithTag("Player");
             if (player == null)
@@ -194,26 +196,42 @@ namespace WhisperingWilds.World
                 return;
             }
 
-            // Locate designated spawn marker. There is deliberately NO fallback to
-            // Vector3.zero: an unvalidated origin can place the player inside or below
-            // terrain. If no marker exists we keep the player where they are and log.
             var spawnObj = GameObject.Find("SpawnPoint") ?? GameObject.Find("PlayerSpawn");
-            if (spawnObj == null)
-            {
-                Debug.LogError($"[RegionalSceneManager] Scene '{SceneManager.GetActiveScene().name}' defines no 'SpawnPoint' or 'PlayerSpawn' marker. Keeping player at current position instead of guessing Vector3.zero. Add a spawn marker to guarantee a valid entry point.");
-                return;
-            }
+            Vector3 targetSpawn = player.transform.position;
+            bool foundMarker = false;
 
-            Vector3 targetSpawn = spawnObj.transform.position;
+            if (spawnObj != null)
+            {
+                targetSpawn = spawnObj.transform.position;
+                foundMarker = true;
+            }
+            else if (targetScene.IsValid() && targetScene.isLoaded)
+            {
+                foreach (var root in targetScene.GetRootGameObjects())
+                {
+                    if (root.name == "SpawnPoint" || root.name == "PlayerSpawn")
+                    {
+                        targetSpawn = root.transform.position;
+                        foundMarker = true;
+                        break;
+                    }
+                }
+            }
 
             var cc = player.GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
 
-            player.transform.position = targetSpawn;
+            if (foundMarker)
+            {
+                player.transform.position = targetSpawn;
+                Debug.Log($"[RegionalSceneManager] Player positioned at validated spawn marker ({targetSpawn}).");
+            }
+            else
+            {
+                Debug.LogWarning($"[RegionalSceneManager] Scene '{targetScene.name}' defines no 'SpawnPoint' marker; keeping player position at {player.transform.position}.");
+            }
 
             if (cc != null) cc.enabled = true;
-
-            Debug.Log($"[RegionalSceneManager] Player positioned at validated spawn '{spawnObj.name}' ({targetSpawn}).");
         }
     }
 }
