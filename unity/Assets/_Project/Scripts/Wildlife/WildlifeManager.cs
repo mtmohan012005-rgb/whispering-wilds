@@ -19,7 +19,7 @@ namespace WhisperingWilds.Wildlife
     /// <summary>
     /// Central governor for regional wildlife ecology.
     /// Implements pooled spawning, strict habitat zone registration, performance density scaling,
-    /// and Tier-3 distant logical population simulation without maintaining live GameObject overhead.
+    /// and distant logical population simulation without maintaining live GameObject overhead.
     /// </summary>
     [DisallowMultipleComponent]
     public class WildlifeManager : MonoBehaviour
@@ -32,22 +32,30 @@ namespace WhisperingWilds.Wildlife
         [SerializeField] private float densityMultiplier = 1.0f;
 
         [Header("Object Pooling")]
-        [SerializeField] private GameObject tahrPrefab;
-        [SerializeField] private GameObject deerPrefab;
-        [SerializeField] private int poolCapacity = 24;
+        [SerializeField] private int poolCapacityPerSpecies = 12;
 
         // Active State Tracking
         [SerializeField] private List<WildlifeHabitatZone> registeredHabitats = new List<WildlifeHabitatZone>();
         [SerializeField] private List<WildlifeEntity> activeVisibleEntities = new List<WildlifeEntity>();
         [SerializeField] private List<LogicalCellPopulation> logicalPopulations = new List<LogicalCellPopulation>();
 
-        // Internal Pool Queue
-        private readonly Queue<WildlifeEntity> pooledEntities = new Queue<WildlifeEntity>();
+        // Internal Pool Dictionaries keyed by WildlifeSpecies
+        private readonly Dictionary<WildlifeSpecies, Queue<WildlifeEntity>> speciesPools = new Dictionary<WildlifeSpecies, Queue<WildlifeEntity>>();
         private Transform poolContainer;
         private Transform playerTransform;
 
+        // Telemetry
         public int VisibleWildlifeCount => activeVisibleEntities.Count;
-        public int PooledWildlifeCount => pooledEntities.Count;
+        public int TotalPooledCount
+        {
+            get
+            {
+                int total = 0;
+                foreach (var q in speciesPools.Values) total += q.Count;
+                return total;
+            }
+        }
+        public int PooledWildlifeCount => TotalPooledCount;
         public int LogicalPopulationTotal
         {
             get
@@ -57,6 +65,8 @@ namespace WhisperingWilds.Wildlife
                 return total;
             }
         }
+        public int TotalSpawns { get; private set; }
+        public int TotalRecycles { get; private set; }
 
         private void Awake()
         {
@@ -82,6 +92,12 @@ namespace WhisperingWilds.Wildlife
             {
                 RegionalSceneManager.Instance.OnRegionLoadCompleted += HandleRegionChanged;
             }
+
+            if (QualityPresetManager.Instance != null)
+            {
+                QualityPresetManager.Instance.OnPresetApplied += HandleQualityPresetApplied;
+                HandleQualityPresetApplied(QualityPresetManager.Instance.CurrentPreset);
+            }
         }
 
         private void OnDestroy()
@@ -89,6 +105,10 @@ namespace WhisperingWilds.Wildlife
             if (RegionalSceneManager.Instance != null)
             {
                 RegionalSceneManager.Instance.OnRegionLoadCompleted -= HandleRegionChanged;
+            }
+            if (QualityPresetManager.Instance != null)
+            {
+                QualityPresetManager.Instance.OnPresetApplied -= HandleQualityPresetApplied;
             }
         }
 
@@ -111,11 +131,23 @@ namespace WhisperingWilds.Wildlife
         public void DiscoverHabitatsInScene()
         {
             registeredHabitats.Clear();
-            registeredHabitats.AddRange(FindObjectsByType<WildlifeHabitatZone>());
+            var foundHabitats = FindObjectsByType<WildlifeHabitatZone>();
+            for (int i = 0; i < foundHabitats.Length; i++)
+            {
+                foundHabitats[i].EnforceRegionalWhitelistDefaults();
+                registeredHabitats.Add(foundHabitats[i]);
+            }
 
             // Also register any pre-existing scene entities
             activeVisibleEntities.Clear();
-            activeVisibleEntities.AddRange(FindObjectsByType<WildlifeEntity>());
+            var foundEntities = FindObjectsByType<WildlifeEntity>();
+            for (int i = 0; i < foundEntities.Length; i++)
+            {
+                if (foundEntities[i] != null && !activeVisibleEntities.Contains(foundEntities[i]))
+                {
+                    activeVisibleEntities.Add(foundEntities[i]);
+                }
+            }
         }
 
         private void HandleRegionChanged(string newRegionId)
@@ -127,13 +159,15 @@ namespace WhisperingWilds.Wildlife
         }
 
         /// <summary>
-        /// Populates registered habitat zones with species strictly matching their whitelist.
+        /// Populates registered habitat zones with species strictly matching their regional whitelist.
         /// Guaranteed zero wild animals spawned in cities, town streets, or residential alleys.
         /// </summary>
         private void PopulateInitialHabitats()
         {
             if (registeredHabitats.Count == 0) return;
 
+            LocatePlayer();
+            Vector3 playerPos = playerTransform != null ? playerTransform.position : Vector3.zero;
             int targetTotal = Mathf.RoundToInt(maxVisibleWildlifeBudget * densityMultiplier);
 
             for (int h = 0; h < registeredHabitats.Count; h++)
@@ -142,24 +176,30 @@ namespace WhisperingWilds.Wildlife
                 if (habitat == null || habitat.AllowedSpecies.Count == 0) continue;
 
                 int toSpawn = Mathf.Min(habitat.Capacity, Mathf.CeilToInt((float)targetTotal / registeredHabitats.Count));
-                WildlifeSpecies targetSpecies = habitat.AllowedSpecies[0];
 
                 for (int i = 0; i < toSpawn; i++)
                 {
                     if (activeVisibleEntities.Count >= targetTotal) break;
-                    SpawnEntityInHabitat(targetSpecies, habitat);
+
+                    WildlifeSpecies targetSpecies = habitat.AllowedSpecies[i % habitat.AllowedSpecies.Count];
+                    SpawnEntityInHabitat(targetSpecies, habitat, playerPos);
                 }
             }
         }
 
-        public WildlifeEntity SpawnEntityInHabitat(WildlifeSpecies species, WildlifeHabitatZone habitat)
+        public WildlifeEntity SpawnEntityInHabitat(WildlifeSpecies species, WildlifeHabitatZone habitat, Vector3 playerPos)
         {
-            WildlifeEntity entity = GetFromPool();
-            Vector3 spawnPos = habitat != null ? habitat.GetSpawnPoint() : Vector3.zero;
+            if (habitat != null && !habitat.IsSpeciesAllowed(species))
+            {
+                // Safety: Species not permitted in this habitat
+                return null;
+            }
+
+            WildlifeEntity entity = GetFromPool(species);
+            Vector3 spawnPos = habitat != null ? habitat.GetSpawnPoint(playerPos) : Vector3.zero;
 
             if (entity == null)
             {
-                // Create minimal instance if pool is depleted
                 GameObject go = new GameObject($"Wildlife_{species}");
                 entity = go.AddComponent<WildlifeEntity>();
                 go.transform.position = spawnPos;
@@ -172,15 +212,20 @@ namespace WhisperingWilds.Wildlife
 
             entity.Initialize(species, habitat);
             activeVisibleEntities.Add(entity);
+            TotalSpawns++;
+
             return entity;
         }
 
-        private WildlifeEntity GetFromPool()
+        private WildlifeEntity GetFromPool(WildlifeSpecies species)
         {
-            while (pooledEntities.Count > 0)
+            if (speciesPools.TryGetValue(species, out var queue) && queue.Count > 0)
             {
-                var ent = pooledEntities.Dequeue();
-                if (ent != null) return ent;
+                while (queue.Count > 0)
+                {
+                    var ent = queue.Dequeue();
+                    if (ent != null) return ent;
+                }
             }
             return null;
         }
@@ -192,7 +237,16 @@ namespace WhisperingWilds.Wildlife
             activeVisibleEntities.Remove(entity);
             entity.gameObject.SetActive(false);
             entity.transform.SetParent(poolContainer);
-            pooledEntities.Enqueue(entity);
+
+            WildlifeSpecies sp = entity.Species;
+            if (!speciesPools.TryGetValue(sp, out var queue))
+            {
+                queue = new Queue<WildlifeEntity>();
+                speciesPools[sp] = queue;
+            }
+
+            queue.Enqueue(entity);
+            TotalRecycles++;
         }
 
         public void RecycleAllToPool()
@@ -210,10 +264,15 @@ namespace WhisperingWilds.Wildlife
 
             // Seed authentic background regional populations for Tamil Nadu
             logicalPopulations.Add(new LogicalCellPopulation { cellId = "nilgiris_plateau_01", regionId = "nilgiris", species = WildlifeSpecies.NilgiriTahr, count = 28 });
-            logicalPopulations.Add(new LogicalCellPopulation { cellId = "nilgiris_shola_02", regionId = "nilgiris", species = WildlifeSpecies.BonnetMacaque, count = 45 });
-            logicalPopulations.Add(new LogicalCellPopulation { cellId = "pichavaram_marsh_01", regionId = "pichavaram", species = WildlifeSpecies.Egret, count = 60 });
-            logicalPopulations.Add(new LogicalCellPopulation { cellId = "delta_wetlands_01", regionId = "delta", species = WildlifeSpecies.SpottedDeer, count = 34 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "nilgiris_shola_02", regionId = "nilgiris", species = WildlifeSpecies.NilgiriLangur, count = 40 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "nilgiris_mudumalai_03", regionId = "nilgiris", species = WildlifeSpecies.AsianElephant, count = 18 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "nilgiris_gaur_04", regionId = "nilgiris", species = WildlifeSpecies.IndianGaur, count = 24 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "pichavaram_marsh_01", regionId = "pichavaram", species = WildlifeSpecies.Egret, count = 65 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "pichavaram_creek_02", regionId = "pichavaram", species = WildlifeSpecies.Kingfisher, count = 30 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "delta_wetlands_01", regionId = "delta", species = WildlifeSpecies.Cattle, count = 50 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "delta_pasture_02", regionId = "delta", species = WildlifeSpecies.Goat, count = 45 });
             logicalPopulations.Add(new LogicalCellPopulation { cellId = "chettinad_scrub_01", regionId = "chettinad", species = WildlifeSpecies.Peafowl, count = 22 });
+            logicalPopulations.Add(new LogicalCellPopulation { cellId = "mamallapuram_coast_01", regionId = "mamallapuram", species = WildlifeSpecies.BonnetMacaque, count = 35 });
         }
 
         public void ApplyDensityFactor(float factor)
@@ -227,9 +286,6 @@ namespace WhisperingWilds.Wildlife
             }
         }
 
-        /// <summary>
-        /// Logical population catch-up simulation when the player sleeps, fast-travels, or re-enters a region.
-        /// </summary>
         public void AdvanceLogicalEcologySimulation(double elapsedHours)
         {
             int daysElapsed = Mathf.FloorToInt((float)elapsedHours / 24f);
@@ -238,9 +294,35 @@ namespace WhisperingWilds.Wildlife
             for (int i = 0; i < logicalPopulations.Count; i++)
             {
                 var pop = logicalPopulations[i];
-                // Subtle seasonal population fluctuation
                 float seasonalFactor = WorldTimeSystem.Instance != null && WorldTimeSystem.Instance.CurrentSeason == TamilNaduSeason.Summer ? 0.98f : 1.02f;
                 pop.count = Mathf.Clamp(Mathf.RoundToInt(pop.count * seasonalFactor), 5, 80);
+            }
+        }
+
+        private void HandleQualityPresetApplied(QualityTier preset)
+        {
+            switch (preset)
+            {
+                case QualityTier.VeryLow:
+                    maxVisibleWildlifeBudget = 6;
+                    ApplyDensityFactor(0.5f);
+                    break;
+                case QualityTier.Low:
+                    maxVisibleWildlifeBudget = 10;
+                    ApplyDensityFactor(0.75f);
+                    break;
+                case QualityTier.Medium:
+                    maxVisibleWildlifeBudget = 16;
+                    ApplyDensityFactor(1.0f);
+                    break;
+                case QualityTier.High:
+                    maxVisibleWildlifeBudget = 24;
+                    ApplyDensityFactor(1.25f);
+                    break;
+                case QualityTier.Ultra:
+                    maxVisibleWildlifeBudget = 36;
+                    ApplyDensityFactor(1.5f);
+                    break;
             }
         }
     }

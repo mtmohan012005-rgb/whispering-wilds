@@ -409,6 +409,22 @@ namespace WhisperingWilds.Editor
                 coffee.transform.position = new Vector3(-5.5f, 1.15f, 6.2f);
                 coffee.transform.localScale = Vector3.one * 1.2f;
             }
+
+            // 8. Chennai Coastal/Urban Wildlife Habitat Zone (Strictly Whitelisted)
+            if (GameObject.Find("WildlifeHabitat_chennai") == null)
+            {
+                var habitatObj = new GameObject("WildlifeHabitat_chennai");
+                habitatObj.transform.SetParent(envRoot.transform, false);
+                habitatObj.transform.position = new Vector3(0f, 0f, 20f);
+                var zone = habitatObj.AddComponent<WildlifeHabitatZone>();
+                var serializedZone = new SerializedObject(zone);
+                serializedZone.FindProperty("regionId").stringValue = "chennai";
+                serializedZone.FindProperty("zoneId").stringValue = "chennai_urban_coast_01";
+                serializedZone.FindProperty("habitatType").enumValueIndex = (int)HabitatType.CoastalShoreline;
+                serializedZone.ApplyModifiedProperties();
+                zone.EnforceRegionalWhitelistDefaults();
+                habitatObj.AddComponent<WildlifeSpawner>();
+            }
         }
 
         private static void SetupNPCs()

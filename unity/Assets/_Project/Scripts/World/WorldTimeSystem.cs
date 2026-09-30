@@ -218,6 +218,21 @@ namespace WhisperingWilds.World
         }
 
         /// <summary>
+        /// Directly switches the active Tamil Nadu seasonal phase.
+        /// </summary>
+        public void SetSeason(TamilNaduSeason targetSeason)
+        {
+            switch (targetSeason)
+            {
+                case TamilNaduSeason.Summer: month = 4; break;
+                case TamilNaduSeason.SouthwestMonsoon: month = 7; break;
+                case TamilNaduSeason.NortheastMonsoon: month = 11; break;
+                case TamilNaduSeason.Winter: month = 1; break;
+            }
+            UpdateSeasonAndPhase(true);
+        }
+
+        /// <summary>
         /// Developer tool fast-forward mode (1x, 10x, 100x, 1000x).
         /// </summary>
         public void SetFastForwardMultiplier(float multiplier)

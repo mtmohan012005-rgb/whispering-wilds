@@ -70,6 +70,12 @@ namespace WhisperingWilds.NPC
             }
         }
 
+        public void ForceEvaluateAllSchedules()
+        {
+            int hour = WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.WholeHour : 9;
+            BroadcastHourToNPCs(hour);
+        }
+
         private void BroadcastHourToNPCs(int hour)
         {
             for (int i = registeredNPCs.Count - 1; i >= 0; i--)

@@ -12,6 +12,8 @@ using WhisperingWilds.Online;
 using WhisperingWilds.Persistence;
 using WhisperingWilds.Audio;
 using WhisperingWilds.Profiling;
+using WhisperingWilds.NPC;
+using WhisperingWilds.Wildlife;
 
 namespace WhisperingWilds.Editor
 {
@@ -182,12 +184,18 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<WorldPersistenceManager>() == null) managersObj.AddComponent<WorldPersistenceManager>();
             if (managersObj.GetComponent<AudioManager>() == null) managersObj.AddComponent<AudioManager>();
             
+            if (managersObj.GetComponent<NPCScheduleManager>() == null) managersObj.AddComponent<NPCScheduleManager>();
+            if (managersObj.GetComponent<NPCPerformanceTierManager>() == null) managersObj.AddComponent<NPCPerformanceTierManager>();
+            if (managersObj.GetComponent<WildlifeManager>() == null) managersObj.AddComponent<WildlifeManager>();
+            if (managersObj.GetComponent<WildlifeSimulation>() == null) managersObj.AddComponent<WildlifeSimulation>();
+            
             var pbm = managersObj.GetComponent<PerformanceBenchmarkManager>();
             if (pbm == null) pbm = managersObj.AddComponent<PerformanceBenchmarkManager>();
             pbm.AutoStartOnLoad = false;
 
             if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
             if (managersObj.GetComponent<WhisperingWilds.QA.RuntimeAutomatedSmokeTest>() == null) managersObj.AddComponent<WhisperingWilds.QA.RuntimeAutomatedSmokeTest>();
+            if (managersObj.GetComponent<WhisperingWilds.QA.RuntimeEcologyAcceptanceTest>() == null) managersObj.AddComponent<WhisperingWilds.QA.RuntimeEcologyAcceptanceTest>();
         }
     }
 }

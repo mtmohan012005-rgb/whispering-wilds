@@ -320,6 +320,8 @@ namespace WhisperingWilds.Editor
                 npcChar.SetCharacterProfile("Mani (Fisher)", "மணி (மீனவர்)", "Pichavaram", "பாரம்பரிய வலை வீசி மீன்பிடிக்கும் படகோட்டி மணி.");
             }
 
+            SetupWildlifeHabitat(envRoot.transform, "pichavaram", HabitatType.WetlandMarsh);
+
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
         }
@@ -377,6 +379,8 @@ namespace WhisperingWilds.Editor
                 npcChar.SetCharacterProfile("Arumugam (Farmer)", "ஆறுமுகம் (விவசாயி)", "CauveryDelta", "காவிரி டெல்டா பாரம்பரிய நெல் விவசாயி ஆறுமுகம்.");
             }
 
+            SetupWildlifeHabitat(envRoot.transform, "delta", HabitatType.PastoralFarmBoundary);
+
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
         }
@@ -422,6 +426,8 @@ namespace WhisperingWilds.Editor
                 npcChar.SetCharacterProfile("Kamalam (Heritage Elder)", "கமலம் அம்மாள்", "Chettinad", "செட்டிநாடு மாளிகையின் பாரம்பரிய மூத்த காப்பாளர் கமலம் அம்மாள்.");
             }
 
+            SetupWildlifeHabitat(envRoot.transform, "chettinad", HabitatType.PastoralFarmBoundary);
+
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
         }
@@ -466,6 +472,8 @@ namespace WhisperingWilds.Editor
                 var npcChar = npcSundaram.AddComponent<NPCCharacter>();
                 npcChar.SetCharacterProfile("Sundaram (Stone Sculptor)", "சுந்தரம் (சிற்பி)", "Mamallapuram", "பல்லவ மரபுவழி கருங்கல் சிற்பி சுந்தரம்.");
             }
+
+            SetupWildlifeHabitat(envRoot.transform, "mamallapuram", HabitatType.CoastalShoreline);
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
@@ -518,6 +526,8 @@ namespace WhisperingWilds.Editor
                 npcChar.SetCharacterProfile("Raman (Forest Guide)", "ராமன் (வன வழிகாட்டி)", "Nilgiris", "நீலகிரி சோலைக்காடு மற்றும் தோடர் பண்பாட்டு வழிகாட்டி ராமன்.");
             }
 
+            SetupWildlifeHabitat(envRoot.transform, "nilgiris", HabitatType.SholaGrassland);
+
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
         }
@@ -569,6 +579,23 @@ namespace WhisperingWilds.Editor
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved benchmark scene: {path}");
+        }
+
+        private static void SetupWildlifeHabitat(Transform parent, string regionId, HabitatType type)
+        {
+            var habitatObj = new GameObject($"WildlifeHabitat_{regionId}");
+            habitatObj.transform.SetParent(parent, false);
+            habitatObj.transform.position = Vector3.zero;
+
+            var zone = habitatObj.AddComponent<WildlifeHabitatZone>();
+            var serializedZone = new SerializedObject(zone);
+            serializedZone.FindProperty("regionId").stringValue = regionId;
+            serializedZone.FindProperty("zoneId").stringValue = $"{regionId}_habitat_zone_01";
+            serializedZone.FindProperty("habitatType").enumValueIndex = (int)type;
+            serializedZone.ApplyModifiedProperties();
+            zone.EnforceRegionalWhitelistDefaults();
+
+            habitatObj.AddComponent<WildlifeSpawner>();
         }
 
         private static GameObject InstantiateModel(string assetPath, Transform parent, Vector3 localPos, Quaternion localRot, Vector3 localScale)

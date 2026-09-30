@@ -38,9 +38,11 @@ namespace WhisperingWilds.NPC
 
     /// <summary>
     /// Autonomous community resident implementing 11-state FSM, living daily routines,
-    /// authentic occupation actions (farming, fishing, tea plucking, shopkeeping),
+    /// authentic occupation actions (farming, fishing, tea plucking, shopkeeping, artisan carving),
     /// throttled AI ticks, and branching bilingual dialogue with player memory.
+    /// Completely eliminates direct transform teleportation for ordinary movement.
     /// </summary>
+    [RequireComponent(typeof(NPCNavigationController))]
     [DisallowMultipleComponent]
     public class NPCCharacter : MonoBehaviour, IInteractable
     {
@@ -49,11 +51,14 @@ namespace WhisperingWilds.NPC
         [SerializeField] private string displayNameEn = "Villager";
         [SerializeField] private string displayNameTa = "ஊரார்";
         [SerializeField] private NPCOccupation occupation = NPCOccupation.Resident;
+        [SerializeField] private string profession = "Resident";
+        [SerializeField] private string profileDescription = "Local resident";
 
         public void SetCharacterProfile(string nameEn, string nameTa, string location, string description)
         {
             displayNameEn = nameEn;
             displayNameTa = nameTa;
+            profileDescription = description;
             npcId = nameEn.ToLowerInvariant().Replace(" ", "_").Replace("(", "").Replace(")", "");
         }
 
@@ -64,19 +69,21 @@ namespace WhisperingWilds.NPC
         [SerializeField] private Vector3 targetDestination;
         [SerializeField] private float stateActionTimer = 0f;
 
+        [Header("Daily Schedule")]
+        [SerializeField] private List<NPCScheduleAction> structuredSchedule = new List<NPCScheduleAction>();
+        [SerializeField] private List<ScheduleWaypoint> legacySchedule = new List<ScheduleWaypoint>();
+
         [Header("Dialogue Content")]
         [SerializeField] private List<DialogueNode> dialogueNodes = new List<DialogueNode>();
 
-        [Header("Daily Schedule")]
-        [SerializeField] private List<ScheduleWaypoint> schedule = new List<ScheduleWaypoint>();
-
-        [Header("Work Anchors")]
+        [Header("Work & Living Anchors")]
         [SerializeField] private Transform workAnchor;
         [SerializeField] private Transform homeAnchor;
         [SerializeField] private Transform socialAnchor;
 
-        // Components
-        private NavMeshAgent navAgent;
+        // Subsystems
+        private NPCNavigationController navController;
+        private NPCStateMachine stateMachine;
         private Animator animator;
         private Collider interactionCollider;
 
@@ -88,8 +95,24 @@ namespace WhisperingWilds.NPC
         public string DisplayNameEn => displayNameEn;
         public string DisplayNameTa => displayNameTa;
         public NPCOccupation Occupation => occupation;
-        public NPCState CurrentState => currentState;
+        public NPCState CurrentState => stateMachine != null ? stateMachine.CurrentState : currentState;
         public NPCTier CurrentTier => currentTier;
+        public NPCNavigationController NavController => navController;
+        public NPCScheduleAction ActiveSchedule { get; private set; }
+        public NPCActivityAnchor CurrentAnchor { get; private set; }
+
+        public void InteractWithAnchor(NPCActivityAnchor anchor)
+        {
+            if (anchor == null) return;
+            if (CurrentAnchor != null && CurrentAnchor != anchor)
+            {
+                CurrentAnchor.Release(this);
+            }
+            CurrentAnchor = anchor;
+            anchor.Occupy(this);
+            transform.position = anchor.DockPosition;
+            transform.rotation = anchor.DockRotation;
+        }
 
         // IInteractable implementation
         public string InteractionPrompt => $"Talk to {displayNameEn} ({displayNameTa}) [E]";
@@ -100,15 +123,19 @@ namespace WhisperingWilds.NPC
 
         private void Awake()
         {
-            navAgent = GetComponent<NavMeshAgent>();
+            navController = GetComponent<NPCNavigationController>();
             animator = GetComponentInChildren<Animator>();
             interactionCollider = GetComponent<Collider>();
 
-            if (navAgent != null)
+            stateMachine = new NPCStateMachine();
+            stateMachine.Initialize(currentState);
+            stateMachine.OnStateTransition += HandleStateTransition;
+
+            if (navController != null)
             {
-                navAgent.speed = 1.6f;
-                navAgent.stoppingDistance = 0.8f;
-                navAgent.acceleration = 4.0f;
+                navController.OnDestinationReached += HandleDestinationReached;
+                navController.OnStuckRecovered += HandleStuckRecovered;
+                navController.OnPathFailed += HandlePathFailed;
             }
 
             if (string.IsNullOrEmpty(npcId))
@@ -134,6 +161,10 @@ namespace WhisperingWilds.NPC
                 TimeOfDayManager.Instance.OnHourChanged += HandleHourChanged;
                 EvaluateScheduleForHour((int)TimeOfDayManager.Instance.CurrentTime24);
             }
+            else
+            {
+                EvaluateScheduleForHour(8);
+            }
         }
 
         private void OnDestroy()
@@ -151,6 +182,13 @@ namespace WhisperingWilds.NPC
             {
                 TimeOfDayManager.Instance.OnHourChanged -= HandleHourChanged;
             }
+
+            if (navController != null)
+            {
+                navController.OnDestinationReached -= HandleDestinationReached;
+                navController.OnStuckRecovered -= HandleStuckRecovered;
+                navController.OnPathFailed -= HandlePathFailed;
+            }
         }
 
         /// <summary>
@@ -161,45 +199,49 @@ namespace WhisperingWilds.NPC
         {
             if (currentTier == NPCTier.Hibernating)
             {
-                // In hibernation, only minimal state progression
+                // In hibernation, update only logical schedule progression
                 return;
             }
 
-            stateActionTimer += dt;
+            stateMachine.Tick(dt);
+            stateActionTimer = stateMachine.StateTimer;
 
-            switch (currentState)
+            // Tick active navigation controller
+            if (navController != null)
+            {
+                navController.TickNavigation(dt);
+            }
+
+            switch (stateMachine.CurrentState)
             {
                 case NPCState.GoToTarget:
-                    UpdateTravelState();
+                case NPCState.ReturningHome:
+                    // Movement is driven by navController
                     break;
 
                 case NPCState.Working:
                     PerformOccupationWork(dt);
                     break;
 
-                case NPCState.ReturningHome:
-                    UpdateHomeTravelState();
-                    break;
-
                 case NPCState.Talking:
                 case NPCState.Interrupted:
-                    // Await player dialogue completion or timeout
+                    // Await player dialogue completion or auto-resume on timeout
                     if (stateActionTimer > 25.0f)
                     {
                         ResumeScheduledActivity();
                     }
                     break;
 
-                case NPCState.Resting:
                 case NPCState.Eating:
+                case NPCState.Resting:
                 case NPCState.Socializing:
                 case NPCState.Sleeping:
                 case NPCState.Idle:
                 default:
-                    // Periodic idle variation
-                    if (stateActionTimer > 6.0f)
+                    // Periodic idle activity variation
+                    if (stateActionTimer > 8.0f)
                     {
-                        stateActionTimer = 0f;
+                        TriggerSubtleStateAction();
                     }
                     break;
             }
@@ -226,14 +268,15 @@ namespace WhisperingWilds.NPC
                         animator.cullingMode = AnimatorCullingMode.CullCompletely;
                         break;
                     case NPCTier.Hibernating:
+                        // Suspend animator execution in hibernation without breaking state
                         animator.enabled = false;
                         break;
                 }
             }
 
-            if (navAgent != null && navAgent.isOnNavMesh)
+            if (navController != null && tier == NPCTier.Hibernating)
             {
-                navAgent.isStopped = (tier == NPCTier.Hibernating);
+                navController.StopNavigation();
             }
 
             if (interactionCollider != null)
@@ -243,23 +286,32 @@ namespace WhisperingWilds.NPC
             }
         }
 
-        private void UpdateTravelState()
+        private void HandleDestinationReached()
         {
-            float dist = Vector3.Distance(transform.position, targetDestination);
-            if (dist <= 1.2f || (navAgent != null && navAgent.isOnNavMesh && !navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance))
+            if (stateMachine.CurrentState == NPCState.GoToTarget)
             {
-                TransitionToState(scheduledState);
+                stateMachine.TransitionTo(scheduledState);
+            }
+            else if (stateMachine.CurrentState == NPCState.ReturningHome)
+            {
+                stateMachine.TransitionTo(NPCState.Sleeping);
             }
         }
 
-        private void UpdateHomeTravelState()
+        private void HandleStuckRecovered()
         {
-            Vector3 homePos = homeAnchor != null ? homeAnchor.position : transform.position;
-            float dist = Vector3.Distance(transform.position, homePos);
-            if (dist <= 1.5f || (navAgent != null && navAgent.isOnNavMesh && !navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance))
+            // Successfully shifted off collision obstacle; continue towards destination
+            if (stateMachine.CurrentState == NPCState.GoToTarget || stateMachine.CurrentState == NPCState.ReturningHome)
             {
-                TransitionToState(NPCState.Sleeping);
+                navController.SetDestination(targetDestination);
             }
+        }
+
+        private void HandlePathFailed(Vector3 failedDest)
+        {
+            // Safe fallback: Do not teleport. Transition to resting or idle at current valid location.
+            navController.StopNavigation();
+            stateMachine.TransitionTo(NPCState.Resting);
         }
 
         private void PerformOccupationWork(float dt)
@@ -270,7 +322,6 @@ namespace WhisperingWilds.NPC
                     // Tending local farm plot
                     if (stateActionTimer > 15.0f)
                     {
-                        stateActionTimer = 0f;
                         var plot = GetComponentInParent<FarmPlot>() ?? FindNearbyFarmPlot();
                         if (plot != null)
                         {
@@ -280,22 +331,10 @@ namespace WhisperingWilds.NPC
                     break;
 
                 case NPCOccupation.Fisherman:
-                    // Coastal net handling / fish inspection
-                    if (stateActionTimer > 18.0f)
-                    {
-                        stateActionTimer = 0f;
-                        if (animator != null && currentTier == NPCTier.Near)
-                        {
-                            animator.SetTrigger("WorkAction");
-                        }
-                    }
-                    break;
-
                 case NPCOccupation.TeaWorker:
-                    // Plucking tea foliage on slope rows
-                    if (stateActionTimer > 12.0f)
+                case NPCOccupation.CraftWorker:
+                    if (stateActionTimer > 14.0f)
                     {
-                        stateActionTimer = 0f;
                         if (animator != null && currentTier == NPCTier.Near)
                         {
                             animator.SetTrigger("WorkAction");
@@ -305,13 +344,17 @@ namespace WhisperingWilds.NPC
 
                 case NPCOccupation.Shopkeeper:
                 case NPCOccupation.Elder:
-                case NPCOccupation.CraftWorker:
+                case NPCOccupation.Resident:
                 default:
-                    if (stateActionTimer > 20.0f)
-                    {
-                        stateActionTimer = 0f;
-                    }
                     break;
+            }
+        }
+
+        private void TriggerSubtleStateAction()
+        {
+            if (animator != null && currentTier == NPCTier.Near)
+            {
+                animator.SetTrigger("IdleAction");
             }
         }
 
@@ -320,7 +363,7 @@ namespace WhisperingWilds.NPC
             var plots = FindObjectsByType<FarmPlot>();
             foreach (var p in plots)
             {
-                if (Vector3.Distance(transform.position, p.transform.position) < 8.0f)
+                if (p != null && Vector3.Distance(transform.position, p.transform.position) < 10.0f)
                     return p;
             }
             return null;
@@ -333,27 +376,69 @@ namespace WhisperingWilds.NPC
 
         public void EvaluateScheduleForHour(int currentHour)
         {
-            // 1. Check custom authored schedule waypoints first
-            foreach (var waypoint in schedule)
+            // 1. Check structured schedule actions
+            foreach (var action in structuredSchedule)
             {
-                if (waypoint.hour24 == currentHour)
+                if (action != null && action.IsActiveAtHour(currentHour))
                 {
-                    NavigateToDestination(waypoint.position, waypoint.state != NPCState.Idle ? waypoint.state : NPCState.Working);
+                    ActiveSchedule = action;
+                    Vector3 dest = action.ResolvedPosition;
+                    scheduledState = action.state;
+                    stateMachine.SetScheduledState(scheduledState);
+
+                    if (Vector3.Distance(transform.position, dest) > 1.5f)
+                    {
+                        NavigateToDestination(dest, scheduledState);
+                    }
+                    else
+                    {
+                        stateMachine.TransitionTo(scheduledState);
+                    }
                     return;
                 }
             }
 
-            // 2. Fall back to standard occupation routine
-            NPCState defaultState = GetStandardOccupationState(occupation, currentHour);
-            Vector3 dest = GetDestinationForState(defaultState);
-
-            if (Vector3.Distance(transform.position, dest) > 2.0f)
+            // 2. Check legacy schedule waypoints
+            foreach (var waypoint in legacySchedule)
             {
-                NavigateToDestination(dest, defaultState);
+                if (waypoint.hour24 == currentHour)
+                {
+                    scheduledState = waypoint.state != NPCState.Idle ? waypoint.state : NPCState.Working;
+                    ActiveSchedule = new NPCScheduleAction
+                    {
+                        startHour24 = waypoint.hour24,
+                        durationHours = 1f,
+                        state = scheduledState,
+                        targetPosition = waypoint.position,
+                        activityDescriptionEn = waypoint.activityDescription
+                    };
+                    stateMachine.SetScheduledState(scheduledState);
+                    NavigateToDestination(waypoint.position, scheduledState);
+                    return;
+                }
+            }
+
+            // 3. Fall back to standard occupation routine
+            NPCState defaultState = GetStandardOccupationState(occupation, currentHour);
+            Vector3 fallbackDest = GetDestinationForState(defaultState);
+            scheduledState = defaultState;
+            ActiveSchedule = new NPCScheduleAction
+            {
+                startHour24 = currentHour,
+                durationHours = 1f,
+                state = defaultState,
+                targetPosition = fallbackDest,
+                activityDescriptionEn = defaultState.ToString()
+            };
+            stateMachine.SetScheduledState(scheduledState);
+
+            if (Vector3.Distance(transform.position, fallbackDest) > 1.8f)
+            {
+                NavigateToDestination(fallbackDest, defaultState);
             }
             else
             {
-                TransitionToState(defaultState);
+                stateMachine.TransitionTo(defaultState);
             }
         }
 
@@ -362,7 +447,7 @@ namespace WhisperingWilds.NPC
             // Night hours: Sleep
             if (hour >= 22 || hour < 5) return NPCState.Sleeping;
 
-            // Early morning: Wake and commute
+            // Early morning commute: 5 AM
             if (hour == 5) return NPCState.ReturningHome;
 
             // Afternoon lunch / rest: 12 to 14
@@ -401,56 +486,82 @@ namespace WhisperingWilds.NPC
         {
             targetDestination = dest;
             scheduledState = nextState;
-            TransitionToState(NPCState.GoToTarget);
+            stateMachine.SetScheduledState(scheduledState);
 
-            if (navAgent != null && navAgent.isOnNavMesh)
+            NPCState travelState = (nextState == NPCState.Sleeping) ? NPCState.ReturningHome : NPCState.GoToTarget;
+            stateMachine.TransitionTo(travelState);
+
+            if (navController != null && navController.HasValidNavMesh)
             {
-                navAgent.isStopped = false;
-                navAgent.SetDestination(targetDestination);
+                navController.SetDestination(targetDestination);
             }
             else
             {
-                // Fallback: direct placement or step
-                transform.position = dest;
-                TransitionToState(nextState);
+                // Safe failure: never teleport transform. Transition directly to state in place.
+                stateMachine.TransitionTo(nextState);
             }
         }
 
-        private void TransitionToState(NPCState newState)
+        private void HandleStateTransition(NPCState oldState, NPCState newState)
         {
             currentState = newState;
-            stateActionTimer = 0f;
+
+            // Stop navigation before stationary states
+            if (newState == NPCState.Sleeping || 
+                newState == NPCState.Resting || 
+                newState == NPCState.Eating || 
+                newState == NPCState.Talking || 
+                newState == NPCState.Interacting)
+            {
+                if (navController != null)
+                {
+                    navController.StopNavigation();
+                }
+            }
 
             if (animator != null && currentTier != NPCTier.Hibernating)
             {
-                animator.SetInteger("State", (int)currentState);
-                animator.SetBool("IsWalking", currentState == NPCState.GoToTarget || currentState == NPCState.ReturningHome);
-                animator.SetBool("IsSleeping", currentState == NPCState.Sleeping);
+                animator.SetInteger("State", (int)newState);
+                animator.SetBool("IsWalking", newState == NPCState.GoToTarget || newState == NPCState.ReturningHome);
+                animator.SetBool("IsSleeping", newState == NPCState.Sleeping);
+                animator.SetBool("IsWorking", newState == NPCState.Working);
+                animator.SetBool("IsTalking", newState == NPCState.Talking);
             }
 
-            OnStateChanged?.Invoke(this, currentState);
+            OnStateChanged?.Invoke(this, newState);
         }
 
         public void ResumeScheduledActivity()
         {
-            TransitionToState(scheduledState);
+            stateMachine.ResumeScheduledState();
         }
 
         // --- IInteractable Implementation ---
 
-        public bool CanInteract(PlayerInteractor interactor) => currentState != NPCState.Sleeping;
+        public bool CanInteract(PlayerInteractor interactor) => stateMachine.CurrentState != NPCState.Sleeping;
 
         public void Interact(PlayerInteractor interactor)
         {
             if (!CanInteract(interactor)) return;
 
             // Stop walking during conversation
-            if (navAgent != null && navAgent.isOnNavMesh)
+            if (navController != null)
             {
-                navAgent.isStopped = true;
+                navController.StopNavigation();
             }
 
-            TransitionToState(NPCState.Talking);
+            // Face interactor smoothly
+            if (interactor != null)
+            {
+                Vector3 toPlayer = interactor.transform.position - transform.position;
+                toPlayer.y = 0;
+                if (toPlayer.sqrMagnitude > 0.01f)
+                {
+                    transform.rotation = Quaternion.LookRotation(toPlayer);
+                }
+            }
+
+            stateMachine.TransitionTo(NPCState.Talking);
 
             if (dialogueNodes != null && dialogueNodes.Count > 0)
             {

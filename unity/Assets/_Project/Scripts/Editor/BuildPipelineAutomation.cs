@@ -40,8 +40,10 @@ namespace WhisperingWilds.Editor
             string exePath = Path.Combine(buildDir, "TheWhisperingWilds.exe");
             if (!Directory.Exists(buildDir)) Directory.CreateDirectory(buildDir);
 
-            // Re-generate authoritative 00_Boot.unity with all managers and acceptance harness
+            // Re-generate authoritative 00_Boot.unity and regional scenes with living ecology
             BuildBootScene.CreateBootScene();
+            AssembleWhisperingWilds.BuildPlayableChennaiScene();
+            AssembleAllRegions.BuildAllScenes();
 
             // Register only gameplay scenes in build settings
             EditorBuildSettingsScene[] buildScenes = new EditorBuildSettingsScene[ProductionGameplayScenes.Length];

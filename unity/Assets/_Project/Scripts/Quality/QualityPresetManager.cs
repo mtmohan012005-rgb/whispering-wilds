@@ -46,8 +46,10 @@ namespace WhisperingWilds.Quality
         [Header("Current Configuration")]
         [SerializeField] private QualityTier currentTier = QualityTier.High;
         public QualityTier CurrentTier => currentTier;
+        public QualityTier CurrentPreset => currentTier;
 
         public event Action<QualityTier, QualityPresetSettings> OnQualityPresetChanged;
+        public event Action<QualityTier> OnPresetApplied;
 
         private static readonly QualityPresetSettings VeryLowPreset = new QualityPresetSettings
         {
@@ -208,6 +210,7 @@ namespace WhisperingWilds.Quality
             Debug.Log($"<color=#00FF99><b>[QualityPresetManager]</b></color> Applied preset: {tier} ({settings.name}) - ShadowDist: {settings.shadowDistance}m, Budget: {settings.textureStreamingBudgetMB}MB");
 
             OnQualityPresetChanged?.Invoke(tier, settings);
+            OnPresetApplied?.Invoke(tier);
         }
     }
 }

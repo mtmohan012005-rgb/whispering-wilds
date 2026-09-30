@@ -124,6 +124,12 @@ namespace WhisperingWilds.QA
             // 8. Quality System Presets
             yield return StartCoroutine(TestQualityPresets());
 
+            // 9. Step 2 Living NPC Ecology & Wildlife Verification
+            if (RuntimeEcologyAcceptanceTest.Instance != null)
+            {
+                yield return StartCoroutine(RuntimeEcologyAcceptanceTest.Instance.RunEcologyAcceptanceRoutine(summary));
+            }
+
             // Write report to file and console
             WriteReportAndConclude();
         }
