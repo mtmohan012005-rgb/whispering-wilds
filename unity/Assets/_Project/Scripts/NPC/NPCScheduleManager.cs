@@ -16,20 +16,9 @@ namespace WhisperingWilds.NPC
         Socializing
     }
 
-    [Serializable]
-    public struct ScheduleSlot
-    {
-        public float startHour; // 0.0 - 24.0
-        public float endHour;
-        public NPCScheduleActivity activity;
-        public string locationName;
-        public Vector3 worldPosition;
-        public string animationTrigger;
-    }
-
     /// <summary>
-    /// Profession-based daily schedule system simulating realistic Tamil Nadu community routines.
-    /// Responds continuously to the 24-hour TimeOfDayManager cycle.
+    /// Community schedule coordinator managing NPC registrations and daily routine broadcasts.
+    /// Responds continuously to the authoritative WorldTimeSystem calendar.
     /// </summary>
     [DisallowMultipleComponent]
     public class NPCScheduleManager : MonoBehaviour
@@ -46,11 +35,28 @@ namespace WhisperingWilds.NPC
                 return;
             }
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        private void Start()
+        {
+            if (WorldTimeSystem.Instance != null)
+            {
+                WorldTimeSystem.Instance.OnHourChanged += BroadcastHourToNPCs;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (WorldTimeSystem.Instance != null)
+            {
+                WorldTimeSystem.Instance.OnHourChanged -= BroadcastHourToNPCs;
+            }
         }
 
         public void RegisterNPC(NPCCharacter npc)
         {
-            if (!registeredNPCs.Contains(npc))
+            if (npc != null && !registeredNPCs.Contains(npc))
             {
                 registeredNPCs.Add(npc);
             }
@@ -58,35 +64,26 @@ namespace WhisperingWilds.NPC
 
         public void UnregisterNPC(NPCCharacter npc)
         {
-            registeredNPCs.Remove(npc);
+            if (npc != null)
+            {
+                registeredNPCs.Remove(npc);
+            }
         }
 
-        public static NPCScheduleActivity GetMuruganActivity(float currentHour)
+        private void BroadcastHourToNPCs(int hour)
         {
-            if (currentHour >= 5.0f && currentHour < 6.0f) return NPCScheduleActivity.Commuting;
-            if (currentHour >= 6.0f && currentHour < 12.5f) return NPCScheduleActivity.ServingCustomers;
-            if (currentHour >= 12.5f && currentHour < 15.5f) return NPCScheduleActivity.Resting;
-            if (currentHour >= 15.5f && currentHour < 21.5f) return NPCScheduleActivity.ServingCustomers;
-            if (currentHour >= 21.5f && currentHour < 22.5f) return NPCScheduleActivity.Working; // Cleaning
-            return NPCScheduleActivity.Sleeping;
-        }
-
-        public static NPCScheduleActivity GetVeluActivity(float currentHour)
-        {
-            if (currentHour >= 6.0f && currentHour < 11.5f) return NPCScheduleActivity.Working;
-            if (currentHour >= 11.5f && currentHour < 14.0f) return NPCScheduleActivity.Resting;
-            if (currentHour >= 14.0f && currentHour < 20.5f) return NPCScheduleActivity.Working;
-            if (currentHour >= 20.5f && currentHour < 22.0f) return NPCScheduleActivity.Socializing;
-            return NPCScheduleActivity.Sleeping;
-        }
-
-        public static NPCScheduleActivity GetFarmerActivity(float currentHour)
-        {
-            if (currentHour >= 5.0f && currentHour < 11.5f) return NPCScheduleActivity.Working;
-            if (currentHour >= 11.5f && currentHour < 14.5f) return NPCScheduleActivity.Resting;
-            if (currentHour >= 14.5f && currentHour < 18.5f) return NPCScheduleActivity.Working;
-            if (currentHour >= 18.5f && currentHour < 20.0f) return NPCScheduleActivity.Prayer;
-            return NPCScheduleActivity.Sleeping;
+            for (int i = registeredNPCs.Count - 1; i >= 0; i--)
+            {
+                var npc = registeredNPCs[i];
+                if (npc != null)
+                {
+                    npc.HandleHourChanged(hour);
+                }
+                else
+                {
+                    registeredNPCs.RemoveAt(i);
+                }
+            }
         }
     }
 }

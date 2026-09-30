@@ -134,13 +134,41 @@ namespace WhisperingWilds.World
             Nilgiris
         };
 
-        public static RegionGeoLocation GetRegion(string regionId)
+        public static bool IsValidRegion(string regionId)
         {
+            if (string.IsNullOrEmpty(regionId)) return false;
             foreach (var r in AllRegions)
             {
                 if (r.regionId.Equals(regionId, StringComparison.OrdinalIgnoreCase))
-                    return r;
+                    return true;
             }
+            return false;
+        }
+
+        public static bool TryGetRegion(string regionId, out RegionGeoLocation region)
+        {
+            if (!string.IsNullOrEmpty(regionId))
+            {
+                foreach (var r in AllRegions)
+                {
+                    if (r.regionId.Equals(regionId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        region = r;
+                        return true;
+                    }
+                }
+            }
+            region = default;
+            return false;
+        }
+
+        public static RegionGeoLocation GetRegion(string regionId)
+        {
+            if (TryGetRegion(regionId, out RegionGeoLocation found))
+            {
+                return found;
+            }
+            Debug.LogWarning($"[TamilNaduGeography] Unknown region '{regionId}'. Falling back to default Chennai.");
             return Chennai;
         }
 

@@ -5,15 +5,16 @@ namespace WhisperingWilds.NPC
 {
     public enum NPCTier
     {
-        Near = 0,     // < 20m: Full 60Hz, IK, dialogue
-        Medium = 1,   // 20m - 50m: 10Hz tick, full mesh
-        Far = 2,      // 50m - 120m: 2Hz tick, simplified simulation
-        Hibernating = 3 // > 120m: Culled / sleeping
+        Near = 0,       // < 20m: Full 10Hz AI tick, full Animator, full interaction
+        Medium = 1,     // 20m - 50m: 3Hz AI tick, reduced Animator culling, full visual model
+        Far = 2,        // 50m - 120m: 0.5Hz coarse AI tick, culled Animator, interaction collider off
+        Hibernating = 3 // > 120m: 0.1Hz logical check only, zero Animator, stopped navigation
     }
 
     /// <summary>
     /// Distributes CPU animation and AI simulation budgets across crowds of NPCs
-    /// based on distance to the main camera and active quality preset.
+    /// based on distance to the main camera, staggering updates across frames to prevent CPU spikes.
+    /// Throttles both the Animator and the actual AI logic/navigation.
     /// </summary>
     [DisallowMultipleComponent]
     public class NPCPerformanceTierManager : MonoBehaviour
@@ -25,12 +26,20 @@ namespace WhisperingWilds.NPC
         [SerializeField] private float mediumDistance = 50f;
         [SerializeField] private float farDistance = 120f;
 
-        [Header("Update Pacing")]
-        [SerializeField] private float evaluationInterval = 0.5f;
+        [Header("AI Tick Intervals")]
+        [SerializeField] private float nearTickInterval = 0.1f;    // 10 Hz
+        [SerializeField] private float mediumTickInterval = 0.35f; // ~3 Hz
+        [SerializeField] private float farTickInterval = 2.0f;     // 0.5 Hz
+        [SerializeField] private float hibernatingTickInterval = 10f; // 0.1 Hz
 
-        private List<NPCCharacter> activeNPCs = new List<NPCCharacter>();
+        [Header("Batch Budget")]
+        [SerializeField] private int maxDistanceEvalsPerFrame = 8;
+
+        private readonly List<NPCCharacter> activeNPCs = new List<NPCCharacter>();
+        private readonly List<float> npcTimers = new List<float>();
+
         private Transform playerCameraTransform;
-        private float evalTimer = 0f;
+        private int currentBatchCursor = 0;
 
         private void Awake()
         {
@@ -54,80 +63,128 @@ namespace WhisperingWilds.NPC
         public void RefreshNPCList()
         {
             activeNPCs.Clear();
-            activeNPCs.AddRange(Object.FindObjectsByType<NPCCharacter>());
+            npcTimers.Clear();
+
+            var found = FindObjectsByType<NPCCharacter>();
+            foreach (var npc in found)
+            {
+                if (npc != null)
+                {
+                    activeNPCs.Add(npc);
+                    npcTimers.Add(Random.Range(0f, 0.2f)); // Stagger starting phases
+                }
+            }
+        }
+
+        public void RegisterNPC(NPCCharacter npc)
+        {
+            if (npc != null && !activeNPCs.Contains(npc))
+            {
+                activeNPCs.Add(npc);
+                npcTimers.Add(0f);
+            }
+        }
+
+        public void UnregisterNPC(NPCCharacter npc)
+        {
+            int idx = activeNPCs.IndexOf(npc);
+            if (idx >= 0)
+            {
+                activeNPCs.RemoveAt(idx);
+                npcTimers.RemoveAt(idx);
+            }
         }
 
         private void Update()
         {
-            evalTimer += Time.deltaTime;
-            if (evalTimer >= evaluationInterval)
+            if (activeNPCs.Count == 0) return;
+
+            if (playerCameraTransform == null && Camera.main != null)
             {
-                evalTimer = 0f;
-                UpdateTiers();
+                playerCameraTransform = Camera.main.transform;
+            }
+
+            float dt = Time.deltaTime;
+            Vector3 camPos = playerCameraTransform != null ? playerCameraTransform.position : Vector3.zero;
+
+            // 1. Staggered distance tier evaluation
+            EvaluateTiersBatch(camPos);
+
+            // 2. Throttled AI execution per NPC
+            TickActiveNPCs(dt);
+        }
+
+        private void EvaluateTiersBatch(Vector3 camPos)
+        {
+            int count = activeNPCs.Count;
+            int evals = Mathf.Min(maxDistanceEvalsPerFrame, count);
+
+            float nearSqr = nearDistance * nearDistance;
+            float medSqr = mediumDistance * mediumDistance;
+            float farSqr = farDistance * farDistance;
+
+            for (int i = 0; i < evals; i++)
+            {
+                currentBatchCursor = (currentBatchCursor + 1) % count;
+                var npc = activeNPCs[currentBatchCursor];
+                if (npc == null) continue;
+
+                float distSqr = (npc.transform.position - camPos).sqrMagnitude;
+                NPCTier targetTier;
+
+                if (distSqr < nearSqr)
+                {
+                    targetTier = NPCTier.Near;
+                }
+                else if (distSqr < medSqr)
+                {
+                    targetTier = NPCTier.Medium;
+                }
+                else if (distSqr < farSqr)
+                {
+                    targetTier = NPCTier.Far;
+                }
+                else
+                {
+                    targetTier = NPCTier.Hibernating;
+                }
+
+                if (npc.CurrentTier != targetTier)
+                {
+                    npc.SetTier(targetTier);
+                }
             }
         }
 
-        private void UpdateTiers()
+        private void TickActiveNPCs(float dt)
         {
-            if (playerCameraTransform == null)
-            {
-                if (Camera.main != null) playerCameraTransform = Camera.main.transform;
-                else return;
-            }
-
-            Vector3 camPos = playerCameraTransform.position;
-
             for (int i = 0; i < activeNPCs.Count; i++)
             {
                 var npc = activeNPCs[i];
                 if (npc == null) continue;
 
-                float distSqr = (npc.transform.position - camPos).sqrMagnitude;
+                float timer = npcTimers[i] + dt;
+                float interval = GetIntervalForTier(npc.CurrentTier);
 
-                if (distSqr < nearDistance * nearDistance)
+                if (timer >= interval)
                 {
-                    ApplyNPCTier(npc, NPCTier.Near);
+                    npc.TickAI(timer);
+                    timer = 0f;
                 }
-                else if (distSqr < mediumDistance * mediumDistance)
-                {
-                    ApplyNPCTier(npc, NPCTier.Medium);
-                }
-                else if (distSqr < farDistance * farDistance)
-                {
-                    ApplyNPCTier(npc, NPCTier.Far);
-                }
-                else
-                {
-                    ApplyNPCTier(npc, NPCTier.Hibernating);
-                }
+
+                npcTimers[i] = timer;
             }
         }
 
-        private void ApplyNPCTier(NPCCharacter npc, NPCTier tier)
+        private float GetIntervalForTier(NPCTier tier)
         {
-            var animator = npc.GetComponentInChildren<Animator>();
-            if (animator == null) return;
-
             switch (tier)
             {
-                case NPCTier.Near:
-                    animator.enabled = true;
-                    animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                    break;
-
-                case NPCTier.Medium:
-                    animator.enabled = true;
-                    animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
-                    break;
-
-                case NPCTier.Far:
-                    animator.enabled = true;
-                    animator.cullingMode = AnimatorCullingMode.CullCompletely;
-                    break;
-
-                case NPCTier.Hibernating:
-                    animator.enabled = false;
-                    break;
+                case NPCTier.Near: return nearTickInterval;
+                case NPCTier.Medium: return mediumTickInterval;
+                case NPCTier.Far: return farTickInterval;
+                case NPCTier.Hibernating: return hibernatingTickInterval;
+                default: return 1.0f;
             }
         }
     }

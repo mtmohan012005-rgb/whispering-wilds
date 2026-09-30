@@ -28,9 +28,12 @@ namespace WhisperingWilds.Player
 
         [Header("Grounding")]
         [SerializeField] private bool isGrounded = true;
-        [SerializeField] private float groundedOffset = -0.14f;
-        [SerializeField] private float groundedRadius = 0.35f;
-        [SerializeField] private LayerMask groundLayers = ~0;
+        [Tooltip("Offset above the character feet pivot where the ground detection sphere is centered.")]
+        [SerializeField] private float groundedOffset = 0.15f;
+        [Tooltip("Radius of the ground detection sphere.")]
+        [SerializeField] private float groundedRadius = 0.28f;
+        [Tooltip("Explicit layer mask for ground surfaces (Default, Terrain, Environment). Excludes NPCs, triggers, and character.")]
+        [SerializeField] private LayerMask groundLayers = 1; // Default layer by default
 
         // Runtime variables
         private CharacterController controller;
@@ -66,6 +69,12 @@ namespace WhisperingWilds.Player
             {
                 mainCameraTransform = Camera.main.transform;
             }
+
+            // If groundLayers is unset or all layers (~0), default to a clean mask excluding character & triggers
+            if (groundLayers == ~0 || groundLayers == 0)
+            {
+                groundLayers = ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
+            }
         }
 
         private void Start()
@@ -99,8 +108,15 @@ namespace WhisperingWilds.Player
 
         private void CheckGrounded()
         {
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
-            isGrounded = Physics.CheckSphere(spherePosition, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
+            // Position sphere slightly above the character's feet (transform.position.y + groundedOffset)
+            // so the probe extends through and slightly below the feet without floating above the waist.
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + groundedOffset, transform.position.z);
+            
+            // Mask out the character itself and non-physical layers to avoid false grounding on NPCs/props/triggers
+            int mask = groundLayers.value & ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
+
+            bool sphereHit = Physics.CheckSphere(spherePosition, groundedRadius, mask, QueryTriggerInteraction.Ignore);
+            isGrounded = (controller != null && controller.isGrounded) || sphereHit;
 
             if (isGrounded)
             {
@@ -110,6 +126,16 @@ namespace WhisperingWilds.Player
             {
                 coyoteTimeDelta -= Time.deltaTime;
             }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
+            Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
+
+            Gizmos.color = isGrounded ? transparentGreen : transparentRed;
+            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + groundedOffset, transform.position.z);
+            Gizmos.DrawSphere(spherePosition, groundedRadius);
         }
 
         private void HandleMovement()

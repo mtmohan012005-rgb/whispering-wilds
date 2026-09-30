@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 using WhisperingWilds.Audio;
 
 namespace WhisperingWilds.World
@@ -24,6 +26,7 @@ namespace WhisperingWilds.World
     /// Data-driven weather state machine managing atmospheric transitions, smooth interpolation,
     /// particle emitters, ambient lighting, fog, and global surface wetness/puddles.
     /// Responds continuously to RegionalClimateSystem and the 4 Tamil Nadu seasons.
+    /// Supports HDRP Volume atmospheric fog overrides with seamless legacy fallback.
     /// </summary>
     [DisallowMultipleComponent]
     public class WeatherSystem : MonoBehaviour
@@ -48,6 +51,10 @@ namespace WhisperingWilds.World
         [SerializeField] private float rainFogDensity = 0.025f;
         [SerializeField] private float mistFogDensity = 0.045f;
         [SerializeField] private float heavyFogDensity = 0.065f;
+
+        [Header("HDRP Volume Integration")]
+        [SerializeField] private Volume sceneWeatherVolume;
+        private UnityEngine.Rendering.HighDefinition.Fog hdrpFog;
 
         public WeatherType CurrentWeather => currentWeather;
         public float CurrentWetness => currentWetness;
@@ -80,12 +87,34 @@ namespace WhisperingWilds.World
         private void Start()
         {
             AcquireRainParticleSystem();
+            AcquireHdrpVolume();
             ApplyInstantWeatherVisuals(currentWeather);
 
             if (WorldTimeSystem.Instance != null)
             {
                 WorldTimeSystem.Instance.OnHourChanged += HandleHourTick;
                 WorldTimeSystem.Instance.OnSeasonChanged += HandleSeasonChanged;
+            }
+        }
+
+        private void AcquireHdrpVolume()
+        {
+            if (sceneWeatherVolume == null)
+            {
+                var volumes = FindObjectsByType<Volume>();
+                foreach (var v in volumes)
+                {
+                    if (v.isGlobal || v.gameObject.name.ToLowerInvariant().Contains("fog") || v.gameObject.name.ToLowerInvariant().Contains("sky"))
+                    {
+                        sceneWeatherVolume = v;
+                        break;
+                    }
+                }
+            }
+
+            if (sceneWeatherVolume != null && sceneWeatherVolume.profile != null)
+            {
+                sceneWeatherVolume.profile.TryGet(out hdrpFog);
             }
         }
 
@@ -238,9 +267,19 @@ namespace WhisperingWilds.World
                 float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
                 // Blend fog density & color
+                float currentDensity = Mathf.Lerp(startFog, endFog, smoothT);
+                Color currentColor = Color.Lerp(startFogColor, endFogColor, smoothT);
+
+                if (hdrpFog != null)
+                {
+                    hdrpFog.enabled.value = true;
+                    hdrpFog.albedo.value = currentColor;
+                    hdrpFog.meanFreePath.value = Mathf.Clamp(1.0f / Mathf.Max(0.0001f, currentDensity * 40f), 8f, 600f);
+                }
+
                 RenderSettings.fog = true;
-                RenderSettings.fogDensity = Mathf.Lerp(startFog, endFog, smoothT);
-                RenderSettings.fogColor = Color.Lerp(startFogColor, endFogColor, smoothT);
+                RenderSettings.fogDensity = currentDensity;
+                RenderSettings.fogColor = currentColor;
 
                 // Update rain emitter
                 UpdateRainEmission(target, smoothT, previous);
@@ -356,8 +395,16 @@ namespace WhisperingWilds.World
 
         private void ApplyInstantWeatherVisuals(WeatherType type)
         {
-            RenderSettings.fog = true;
             GetTargetFogSettings(type, out float density, out Color color);
+
+            if (hdrpFog != null)
+            {
+                hdrpFog.enabled.value = true;
+                hdrpFog.albedo.value = color;
+                hdrpFog.meanFreePath.value = Mathf.Clamp(1.0f / Mathf.Max(0.0001f, density * 40f), 8f, 600f);
+            }
+
+            RenderSettings.fog = true;
             RenderSettings.fogDensity = density;
             RenderSettings.fogColor = color;
 

@@ -5,6 +5,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using WhisperingWilds.UI;
+using WhisperingWilds.Core;
+using WhisperingWilds.Quality;
+using WhisperingWilds.World;
+using WhisperingWilds.Online;
+using WhisperingWilds.Persistence;
+using WhisperingWilds.Audio;
+using WhisperingWilds.Profiling;
 
 namespace WhisperingWilds.Editor
 {
@@ -26,8 +33,11 @@ namespace WhisperingWilds.Editor
                 cam.clearFlags = CameraClearFlags.SolidColor;
                 cam.backgroundColor = new Color(0.08f, 0.1f, 0.12f); // Deep midnight blue-gray
 
-                // 2. Event System for UI clicks
-                var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+                // 2. Event System for UI clicks (using modern Unity Input System module)
+                var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
+
+                // 2b. Core Persistent Managers
+                SetupPersistentManagers();
 
                 // 3. Canvas
                 var canvasObj = new GameObject("Title_Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
@@ -149,6 +159,25 @@ namespace WhisperingWilds.Editor
             textObj.GetComponent<Text>().text = label;
 
             return btnObj;
+        }
+
+        private static void SetupPersistentManagers()
+        {
+            var managersObj = new GameObject("[--- MANAGERS ---]");
+            if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
+            if (managersObj.GetComponent<SaveManager>() == null) managersObj.AddComponent<SaveManager>();
+            if (managersObj.GetComponent<GraphicsPerformanceManager>() == null) managersObj.AddComponent<GraphicsPerformanceManager>();
+            if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
+            if (managersObj.GetComponent<OnlineConnectionManager>() == null) managersObj.AddComponent<OnlineConnectionManager>();
+            if (managersObj.GetComponent<CloudSaveManager>() == null) managersObj.AddComponent<CloudSaveManager>();
+            if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();
+            if (managersObj.GetComponent<RegionalClimateSystem>() == null) managersObj.AddComponent<RegionalClimateSystem>();
+            if (managersObj.GetComponent<WeatherSystem>() == null) managersObj.AddComponent<WeatherSystem>();
+            if (managersObj.GetComponent<RegionalSceneManager>() == null) managersObj.AddComponent<RegionalSceneManager>();
+            if (managersObj.GetComponent<WorldPersistenceManager>() == null) managersObj.AddComponent<WorldPersistenceManager>();
+            if (managersObj.GetComponent<AudioManager>() == null) managersObj.AddComponent<AudioManager>();
+            if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
+            if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
         }
     }
 }
