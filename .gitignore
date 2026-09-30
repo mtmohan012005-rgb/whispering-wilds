@@ -19,6 +19,15 @@ test_*.png
 run_tests.*
 desktop/tests/
 
+# Unity build output — compiled binaries (~180 MB), never commit
+Build/
+unity/Build/
+unity/Library/
+unity/Temp/
+unity/Obj/
+unity/Logs/
+unity/UserSettings/
+
 # Report artifacts
 ANIMATION_REPORT.json
 BUILD_REPORT.json

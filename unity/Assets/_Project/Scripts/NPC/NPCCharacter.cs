@@ -50,6 +50,13 @@ namespace WhisperingWilds.NPC
         [SerializeField] private string displayNameTa = "ஊரார்";
         [SerializeField] private NPCOccupation occupation = NPCOccupation.Resident;
 
+        public void SetCharacterProfile(string nameEn, string nameTa, string location, string description)
+        {
+            displayNameEn = nameEn;
+            displayNameTa = nameTa;
+            npcId = nameEn.ToLowerInvariant().Replace(" ", "_").Replace("(", "").Replace(")", "");
+        }
+
         [Header("State Machine")]
         [SerializeField] private NPCState currentState = NPCState.Idle;
         [SerializeField] private NPCState scheduledState = NPCState.Idle;

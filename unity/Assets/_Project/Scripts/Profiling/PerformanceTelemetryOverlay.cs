@@ -82,8 +82,14 @@ namespace WhisperingWilds.Profiling
             frameSamples[sampleHead] = Time.unscaledDeltaTime;
             sampleHead = (sampleHead + 1) % SAMPLE_WINDOW;
 
-            if (Input.GetKeyDown(toggleKey))
+            // Active Input Handling is set to "Input System Package" (activeInputHandler = 1).
+            // Reading UnityEngine.Input here throws InvalidOperationException in a player build,
+            // so the toggle uses the Input System and degrades safely if no device is present.
+#if ENABLE_INPUT_SYSTEM
+            var toggleKeyboard = UnityEngine.InputSystem.Keyboard.current;
+            if (toggleKeyboard != null && toggleKeyboard.f1Key.wasPressedThisFrame)
                 overlayVisible = !overlayVisible;
+#endif
 
             if (!overlayVisible) return;
 
@@ -111,6 +117,9 @@ namespace WhisperingWilds.Profiling
             long reservedMB = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong()  / (1024 * 1024);
 
             string scene = SceneManager.GetActiveScene().name;
+            string region = World.RegionalSceneManager.Instance != null ? World.RegionalSceneManager.Instance.ActiveRegionId : "N/A";
+            var player = GameObject.FindWithTag("Player");
+            string playerPos = player != null ? $"Pos: ({player.transform.position.x:F1}, {player.transform.position.y:F1}, {player.transform.position.z:F1})" : "Pos: N/A";
 
             string fpsCol   = avgFPS >= 55f ? "#00FF88" : avgFPS >= 30f ? "#FFCC00" : "#FF4444";
             string lowCol   = onePercentLow >= 40f ? "#00FF88" : onePercentLow >= 20f ? "#FFCC00" : "#FF4444";
@@ -120,8 +129,8 @@ namespace WhisperingWilds.Profiling
             cachedLine2 = $"1% Low: <color={lowCol}>{onePercentLow:F1} FPS</color>";
             cachedLine3 = $"RenderScale: <color={scaleCol}>{scale:F2}</color>  DynStep: {dynStep:+0;-#;0}";
             cachedLine4 = $"Alloc: {allocMB} MB  Reserved: {reservedMB} MB";
-            cachedLine5 = $"Scene: {scene}";
-            cachedTier  = $"Tier: <b>{tier}</b>  [F3 = Hide]";
+            cachedLine5 = $"Scene: {scene} | Region: {region} | {playerPos}";
+            cachedTier  = $"Tier: <b>{tier}</b>  [F3 = Toggle]";
         }
 
         private float ComputeOnePercentLow()

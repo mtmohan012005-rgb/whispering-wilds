@@ -54,6 +54,7 @@ namespace WhisperingWilds.World
         public int Day => day;
         public float HourOfDay => hourOfDay;
         public int WholeHour => Mathf.FloorToInt(hourOfDay);
+        public int CurrentHour => WholeHour;
         public int Minutes => Mathf.FloorToInt((hourOfDay - WholeHour) * 60f);
         public int Seconds => Mathf.FloorToInt((((hourOfDay - WholeHour) * 60f) - Minutes) * 60f);
 

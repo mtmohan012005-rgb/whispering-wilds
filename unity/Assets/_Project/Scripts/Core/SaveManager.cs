@@ -30,7 +30,7 @@ namespace WhisperingWilds.Core
             DontDestroyOnLoad(gameObject);
         }
 
-        public void SaveGame()
+        public void SaveGame(int slot = 0)
         {
             GameSaveData data = SaveSystem.SaveGame();
             if (data != null)

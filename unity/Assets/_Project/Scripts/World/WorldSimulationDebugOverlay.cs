@@ -40,10 +40,14 @@ namespace WhisperingWilds.World
 
         private void Update()
         {
-            if (Input.GetKeyDown(toggleKey))
+            // Active Input Handling is the Input System Package; UnityEngine.Input throws here.
+#if ENABLE_INPUT_SYSTEM
+            var toggleKeyboard = UnityEngine.InputSystem.Keyboard.current;
+            if (toggleKeyboard != null && toggleKeyboard.f2Key.wasPressedThisFrame)
             {
                 showOverlay = !showOverlay;
             }
+#endif
         }
 
         private void InitializeStyles()

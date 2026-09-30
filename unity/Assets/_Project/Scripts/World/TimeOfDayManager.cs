@@ -18,6 +18,7 @@ namespace WhisperingWilds.World
         [SerializeField] private AnimationCurve sunIntensityCurve;
 
         public float CurrentHour => WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.HourOfDay : localFallbackHour;
+        public float CurrentTime24 => CurrentHour;
         public int WholeHour => WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.WholeHour : Mathf.FloorToInt(localFallbackHour);
         public int Minutes => WorldTimeSystem.Instance != null ? WorldTimeSystem.Instance.Minutes : Mathf.FloorToInt((localFallbackHour - WholeHour) * 60f);
 

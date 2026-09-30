@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using WhisperingWilds.Player;
 using WhisperingWilds.UI;
 
@@ -82,10 +81,30 @@ namespace WhisperingWilds.Core
             OnGameStateChanged?.Invoke(currentState);
         }
 
+        /// <summary>
+        /// Regional travel entry point. Delegates to RegionalSceneManager, which owns the
+        /// safe additive transition (save -> preload -> activate -> reposition -> unload).
+        /// A direct SceneManager.LoadScene would use LoadSceneMode.Single, destroying the
+        /// active region without saving state or repositioning the player.
+        /// </summary>
         public void LoadRegion(string regionSceneName)
         {
-            Debug.Log($"<color=#00D2FF><b>[GameManager]</b></color> Transitioning to region: {regionSceneName}");
-            SceneManager.LoadScene(regionSceneName);
+            string regionId = World.RegionalSceneManager.ResolveRegionIdFromSceneName(regionSceneName);
+
+            if (regionId == null)
+            {
+                Debug.LogError($"[GameManager] '{regionSceneName}' does not map to a known Tamil Nadu region. Region travel refused; current region retained.");
+                return;
+            }
+
+            if (World.RegionalSceneManager.Instance == null)
+            {
+                Debug.LogError("[GameManager] RegionalSceneManager is not present in this scene. Region travel refused; current region retained.");
+                return;
+            }
+
+            Debug.Log($"<color=#00D2FF><b>[GameManager]</b></color> Requesting region travel: {regionId} (via RegionalSceneManager)");
+            World.RegionalSceneManager.Instance.TravelToRegion(regionId);
         }
 
         public void QuickSave()

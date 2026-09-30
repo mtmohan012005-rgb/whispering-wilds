@@ -16,11 +16,10 @@ Write-Host "           Windows x64 Native Standalone Game Client            " -F
 Write-Host "================================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Potential executable locations
+# Potential executable locations (deliverable repo only)
 $candidatePaths = @(
-    (Join-Path $scriptDir "Build\Windows\TheWhisperingWilds.exe"),
     (Join-Path $scriptDir "unity\Build\Windows\TheWhisperingWilds.exe"),
-    "C:\Users\mohan\My project\Build\Windows\TheWhisperingWilds.exe"
+    (Join-Path $scriptDir "Build\Windows\TheWhisperingWilds.exe")
 )
 
 $targetExe = $null
@@ -40,14 +39,36 @@ if (-not $targetExe) {
     Write-Host "  1. Open the project in Unity 6000.6.3f1" -ForegroundColor Gray
     Write-Host "  2. In top menu, select: Tools > Whispering Wilds > Build Production Windows x64 (Retail)" -ForegroundColor Gray
     Write-Host "  or run automated build via batchmode:" -ForegroundColor Gray
-    Write-Host "     & 'C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe' -batchmode -quit -projectPath 'C:\Users\mohan\My project' -executeMethod WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindows" -ForegroundColor DarkCyan
+    Write-Host "     & 'C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe' -batchmode -quit -projectPath '$scriptDir\unity' -executeMethod WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindows" -ForegroundColor DarkCyan
     Write-Host ""
     exit 1
 }
 
 Write-Host "[LAUNCH] Executable found: $targetExe" -ForegroundColor Green
-Write-Host "[LAUNCH] Target Architecture: Windows x64 Standalone (DirectX 12 / HDRP)" -ForegroundColor Green
+Write-Host "[LAUNCH] Target Architecture: Windows x64 Standalone (HDRP)" -ForegroundColor Green
 Write-Host "[LAUNCH] Starting The Whispering Wilds..." -ForegroundColor Cyan
 
-Start-Process -FilePath $targetExe -WorkingDirectory (Split-Path -Parent $targetExe)
-Write-Host "[STATUS] Game process successfully spawned." -ForegroundColor Green
+# Graphics API: let Unity auto-select. Forcing D3D12 fails on hosts where the
+# D3D12 API is denied by the user filter (e.g. Intel integrated GPUs), so the
+# build is allowed to fall back to Direct3D 11.
+$graphicsArgs = @()
+if ($env:WW_FORCE_D3D12 -eq "1") {
+    $graphicsArgs += "-force-d3d12"
+    Write-Host "[LAUNCH] Graphics API: Direct3D 12 (forced via WW_FORCE_D3D12=1)" -ForegroundColor Green
+} else {
+    Write-Host "[LAUNCH] Graphics API: auto (set WW_FORCE_D3D12=1 to force Direct3D 12)" -ForegroundColor Green
+}
+
+if ($graphicsArgs.Count -gt 0) {
+    $proc = Start-Process -FilePath $targetExe -ArgumentList $graphicsArgs -WorkingDirectory (Split-Path -Parent $targetExe) -PassThru
+} else {
+    $proc = Start-Process -FilePath $targetExe -WorkingDirectory (Split-Path -Parent $targetExe) -PassThru
+}
+Start-Sleep -Seconds 3
+
+if ($proc -and -not $proc.HasExited) {
+    Write-Host "[STATUS] Game process successfully spawned (PID $($proc.Id))." -ForegroundColor Green
+} else {
+    Write-Host "[ERROR] Game process exited immediately (exit code $($proc.ExitCode)). Check the Player.log." -ForegroundColor Red
+    exit 1
+}

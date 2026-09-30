@@ -168,7 +168,7 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<SaveManager>() == null) managersObj.AddComponent<SaveManager>();
             if (managersObj.GetComponent<GraphicsPerformanceManager>() == null) managersObj.AddComponent<GraphicsPerformanceManager>();
             if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
-            if (managersObj.GetComponent<OnlineConnectionManager>() == null) managersObj.AddComponent<OnlineConnectionManager>();
+            if (managersObj.GetComponent<RealtimeManager>() == null) managersObj.AddComponent<RealtimeManager>();
             if (managersObj.GetComponent<CloudSaveManager>() == null) managersObj.AddComponent<CloudSaveManager>();
             if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();
             if (managersObj.GetComponent<RegionalClimateSystem>() == null) managersObj.AddComponent<RegionalClimateSystem>();

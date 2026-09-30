@@ -147,9 +147,21 @@ namespace WhisperingWilds.Quality
 
         private void ApplyDynamicScaling()
         {
-            // Dynamic scaling hooks into QualitySettings or URP/HDRP dynamic resolution
-            float shadowScale = Mathf.Clamp01(CurrentRenderScale);
+            // Render resolution is owned exclusively by GraphicsPerformanceManager, which
+            // performs the real HDRP/URP buffer resize (ScalableBufferManager.ResizeBuffers
+            // plus Camera.allowDynamicResolution). Changing QualitySettings.lodBias alone
+            // does NOT change rendering resolution, so this method must not pretend to.
+            //
+            // When the real manager is present we drive it; otherwise we fall back to the
+            // LOD-bias-only approximation and say so, rather than silently no-oping.
+            if (GraphicsPerformanceManager.Instance != null)
+            {
+                GraphicsPerformanceManager.Instance.ApplyEngineRenderResolution(CurrentRenderScale);
+                return;
+            }
+
             QualitySettings.lodBias = Mathf.Clamp(CurrentRenderScale, 0.7f, 1.5f);
+            Debug.LogWarning("[AdaptiveQualityManager] GraphicsPerformanceManager absent: applying LOD-bias approximation only. Actual render resolution is unchanged.");
         }
 
         public void SetAdaptationEnabled(bool enabled)

@@ -31,6 +31,9 @@ namespace WhisperingWilds.Quality
 
         [Header("Cleanup Thresholds")]
         [SerializeField] private float memoryWarningThresholdRatio = 0.85f;
+        [Tooltip("Forced GC is never part of normal gameplay. This must be enabled deliberately; recovery then only runs above the severe threshold below.")]
+        [SerializeField] private bool allowSevereMemoryRecovery = false;
+        [SerializeField] private float severeMemoryRecoveryRatio = 0.95f;
 
         public long TotalAllocatedBytes => Profiler.GetTotalAllocatedMemoryLong();
         public long TotalReservedBytes => Profiler.GetTotalReservedMemoryLong();
@@ -117,10 +120,24 @@ namespace WhisperingWilds.Quality
 
         public void CheckAndCleanMemory()
         {
+            // Forced GC must never run during normal gameplay (see Update()). This path is
+            // reachable only when an operator explicitly enables severe recovery.
+            if (!allowSevereMemoryRecovery)
+            {
+                return;
+            }
+
             long allocatedMB = TotalAllocatedBytes / (1024 * 1024);
+
+            // Warning threshold: report only. Never forces GC during normal gameplay.
             if (allocatedMB > currentBudget.totalBudget * memoryWarningThresholdRatio)
             {
-                Debug.LogWarning($"<color=#FF9900><b>[MemoryBudgetManager]</b></color> High memory usage ({allocatedMB} MB / {currentBudget.totalBudget} MB). Initiating resource purge...");
+                Debug.LogWarning($"<color=#FF9900><b>[MemoryBudgetManager]</b></color> Memory pressure {allocatedMB} MB / {currentBudget.totalBudget} MB (warning threshold). No purge performed.");
+            }
+
+            if (allocatedMB > currentBudget.totalBudget * severeMemoryRecoveryRatio)
+            {
+                Debug.LogWarning($"<color=#FF9900><b>[MemoryBudgetManager]</b></color> Severe memory pressure ({allocatedMB} MB / {currentBudget.totalBudget} MB). Initiating operator-gated resource purge...");
                 ExecuteDeterministicPurge();
             }
         }

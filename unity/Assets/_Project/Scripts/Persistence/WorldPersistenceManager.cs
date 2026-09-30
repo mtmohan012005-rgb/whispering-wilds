@@ -137,6 +137,8 @@ namespace WhisperingWilds.Persistence
             return data;
         }
 
+        public void CaptureAndPersistWorldState() => SaveWorldState();
+
         public void SaveWorldState()
         {
             try

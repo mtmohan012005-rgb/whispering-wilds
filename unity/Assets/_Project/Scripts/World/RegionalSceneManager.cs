@@ -41,6 +41,30 @@ namespace WhisperingWilds.World
             DontDestroyOnLoad(gameObject);
         }
 
+        /// <summary>
+        /// Resolves a Unity scene name (e.g. "05_Chettinad_Mansion") to its canonical
+        /// region id (e.g. "chettinad") using the authoritative geography catalogue.
+        /// Returns null when the scene is not a known region scene, so callers can fail
+        /// explicitly instead of silently defaulting to Chennai.
+        /// </summary>
+        public static string ResolveRegionIdFromSceneName(string sceneName)
+        {
+            if (string.IsNullOrEmpty(sceneName)) return null;
+
+            var regions = TamilNaduGeography.AllRegions;
+            if (regions == null) return null;
+
+            for (int i = 0; i < regions.Count; i++)
+            {
+                if (string.Equals(regions[i].sceneName, sceneName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return regions[i].regionId;
+                }
+            }
+
+            return null;
+        }
+
         public void TravelToRegion(string targetRegionId)
         {
             if (isLoadingRegion)
@@ -164,11 +188,23 @@ namespace WhisperingWilds.World
         private void PositionPlayerAtRegionSpawn()
         {
             var player = GameObject.FindWithTag("Player");
-            if (player == null) return;
+            if (player == null)
+            {
+                Debug.LogError("[RegionalSceneManager] No object tagged 'Player' found; cannot position player at region spawn. Region is still considered loaded.");
+                return;
+            }
 
-            // Locate designated spawn marker or default
+            // Locate designated spawn marker. There is deliberately NO fallback to
+            // Vector3.zero: an unvalidated origin can place the player inside or below
+            // terrain. If no marker exists we keep the player where they are and log.
             var spawnObj = GameObject.Find("SpawnPoint") ?? GameObject.Find("PlayerSpawn");
-            Vector3 targetSpawn = spawnObj != null ? spawnObj.transform.position : Vector3.zero;
+            if (spawnObj == null)
+            {
+                Debug.LogError($"[RegionalSceneManager] Scene '{SceneManager.GetActiveScene().name}' defines no 'SpawnPoint' or 'PlayerSpawn' marker. Keeping player at current position instead of guessing Vector3.zero. Add a spawn marker to guarantee a valid entry point.");
+                return;
+            }
+
+            Vector3 targetSpawn = spawnObj.transform.position;
 
             var cc = player.GetComponent<CharacterController>();
             if (cc != null) cc.enabled = false;
@@ -176,6 +212,8 @@ namespace WhisperingWilds.World
             player.transform.position = targetSpawn;
 
             if (cc != null) cc.enabled = true;
+
+            Debug.Log($"[RegionalSceneManager] Player positioned at validated spawn '{spawnObj.name}' ({targetSpawn}).");
         }
     }
 }
