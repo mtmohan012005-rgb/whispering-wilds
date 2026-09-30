@@ -16,16 +16,33 @@ const { registerSocketHandlers } = require('./connection-handler');
 const authRoutes = require('./auth/auth-routes');
 const profileRoutes = require('./profile/profile-routes');
 const saveRoutes = require('./saves/save-routes');
+const persistenceRoutes = require('./routes/persistence-routes');
 const { socketAuthMiddleware } = require('./auth/auth-middleware');
+const FirebaseAdmin = require('./firebase/admin');
+const { requestContext, requestLogger, errorHandler } = require('./middleware/request-context');
 
 const app = express();
 app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '5mb' }));
 
+// Request identity + structured access log. Registered before routes so every
+// request (including errors) carries a requestId.
+app.use(requestContext());
+app.use(requestLogger());
+
+// ---------------------------------------------------------------------------
 // API Routes
+// ---------------------------------------------------------------------------
+// DEPRECATED (transitional): the custom JWT + JSON/PostgreSQL stack below is
+// being superseded by Firebase. Kept mounted so existing sessions keep working
+// during migration. Do not treat as a persistence authority.
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/saves', saveRoutes);
+
+// CANONICAL: Firebase-backed persistence. Requires a verified ID token.
+app.use('/api/v1/persistence', persistenceRoutes);
+
 
 // Health & Readiness Endpoints
 const startTime = Date.now();
@@ -58,18 +75,50 @@ app.get('/api/v1/health', (req, res) => {
     });
 });
 
-app.get('/ready', (req, res) => {
+// Readiness endpoint. Unlike /health (which is a liveness check and always
+// reports ok while the process is up), /ready actually probes each backing
+// dependency and returns 503 when the service cannot serve traffic.
+app.get('/ready', async (req, res) => {
+    const checks = {};
+    let ready = true;
+
+    // In-process subsystems
+    try {
+        checks.rooms = {
+            ok: typeof roomManager.rooms.size === 'number',
+            activeRooms: roomManager.rooms.size
+        };
+        checks.players = {
+            ok: typeof playerManager.players.size === 'number',
+            activePlayers: playerManager.players.size
+        };
+    } catch (err) {
+        ready = false;
+        checks.rooms = { ok: false, reason: err.message };
+    }
+
+    // Firebase persistence. Reported honestly: when credentials are absent the
+    // service is NOT ready to serve persistent traffic, because the persistence
+    // routes fail closed rather than silently accepting writes.
+    const firebaseProbe = await FirebaseAdmin.probe();
+    checks.firebase = firebaseProbe;
+    if (!firebaseProbe.ok) ready = false;
+
     const memory = process.memoryUsage();
-    res.status(200).json({
-        ready: true,
-        activeRooms: roomManager.rooms.size,
-        activePlayers: playerManager.players.size,
-        memory: {
-            heapUsedMB: Math.round(memory.heapUsed / 1024 / 1024),
-            rssMB: Math.round(memory.rss / 1024 / 1024)
-        }
+    checks.memory = {
+        ok: true,
+        heapUsedMB: Math.round(memory.heapUsed / 1024 / 1024),
+        rssMB: Math.round(memory.rss / 1024 / 1024)
+    };
+
+    res.status(ready ? 200 : 503).json({
+        ready,
+        service: 'whispering-wilds-multiplayer',
+        checks,
+        timestamp: new Date().toISOString()
     });
 });
+
 
 // Test results ingestion endpoint (strictly development-only, isolated from production)
 if (process.env.NODE_ENV === 'development') {
@@ -90,6 +139,11 @@ if (process.env.NODE_ENV === 'development') {
 
 // Serve static game files from project root
 app.use(express.static(path.join(__dirname, '..')));
+
+// Terminal error handler. Must be registered after all routes and static
+// middleware so every thrown/rejected error is converted to a canonical code
+// instead of leaking a stack trace to the client.
+app.use(errorHandler());
 
 const server = http.createServer(app);
 const io = new Server(server, {

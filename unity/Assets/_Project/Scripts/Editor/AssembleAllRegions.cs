@@ -122,6 +122,7 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<WildlifeManager>() == null) managersObj.AddComponent<WildlifeManager>();
             if (managersObj.GetComponent<TrafficSystem>() == null) managersObj.AddComponent<TrafficSystem>();
             if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
+            if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
 
             return managersObj;
         }
@@ -519,13 +520,12 @@ namespace WhisperingWilds.Editor
 
             SetupSun(new Color(1f, 0.95f, 0.88f), 1.25f, Quaternion.Euler(45f, -30f, 0f));
             var managers = SetupCommonManagers(regionId, $"Benchmark ({regionId})", "செயல்திறன் சோதனை");
-            var benchMgr = managers.GetComponent<PerformanceBenchmarkManager>();
-            if (benchMgr != null)
-            {
-                // Trigger auto benchmark on start in benchmark scenes
-                var field = typeof(PerformanceBenchmarkManager).GetField("autoStartOnLoad", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (field != null) field.SetValue(benchMgr, true);
-            }
+
+            // DO NOT set autoStartOnLoad=true on PerformanceBenchmarkManager.
+            // Instead, add BenchmarkSceneBootstrapper which only activates when BenchmarkSessionFlag.IsActive.
+            // This prevents accidental benchmark runs during normal gameplay if these scenes load naturally.
+            var bootstrapperGO = new GameObject("--- BENCHMARK BOOTSTRAPPER ---");
+            bootstrapperGO.AddComponent<BenchmarkSceneBootstrapper>();
 
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
             SetupHUD($"Performance Benchmark ({sceneName})", "தானியங்கி வன்பொருள் சோதனை");
@@ -559,7 +559,7 @@ namespace WhisperingWilds.Editor
             }
 
             EditorSceneManager.SaveScene(scene, path);
-            Debug.Log($"[AssembleAllRegions] Saved: {path}");
+            Debug.Log($"[AssembleAllRegions] Saved benchmark scene: {path}");
         }
 
         private static GameObject InstantiateModel(string assetPath, Transform parent, Vector3 localPos, Quaternion localRot, Vector3 localScale)

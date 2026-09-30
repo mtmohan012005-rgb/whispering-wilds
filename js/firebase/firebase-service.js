@@ -13,6 +13,37 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
+  // ---------------------------------------------------------------------------
+  // CHECKSUM (must stay byte-identical to server/firebase/persistence-service.js)
+  // ---------------------------------------------------------------------------
+  function stableStringify(value) {
+    if (value === null || typeof value !== 'object') return JSON.stringify(value);
+    if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+    const keys = Object.keys(value).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify(value[k])}`).join(',')}}`;
+  }
+
+  function computeChecksum(payload) {
+    const json = stableStringify(payload);
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < json.length; i += 1) {
+      hash ^= json.charCodeAt(i);
+      hash = Math.imul(hash, 0x01000193) >>> 0;
+    }
+    return hash.toString(16).padStart(8, '0');
+  }
+
+  function resolveApiBase() {
+    if (typeof window !== 'undefined' && window.MULTIPLAYER_SERVER_URL) {
+      return String(window.MULTIPLAYER_SERVER_URL).replace(/\/+$/, '');
+    }
+    if (typeof window !== 'undefined' && window.location && window.location.origin
+        && window.location.protocol !== 'file:') {
+      return window.location.origin;
+    }
+    return '';
+  }
+
   class FirebaseService {
     constructor() {
       this.app = null;
@@ -169,87 +200,156 @@
       }
     }
 
-    // ─── CLOUD FIRESTORE PLAYER PERSISTENCE ─────────────────────────────────
+    // ─── CLOUD FIRESTORE PLAYER PERSISTENCE ───────────────────────────────
+    //
+    // WRITE PATH POLICY
+    // -----------------
+    // Saves are NOT written to Firestore directly from the browser. Doing so
+    // would (a) let a modified client write arbitrary economy/achievement
+    // fields, and (b) allow a blind `merge: true` overwrite that silently
+    // destroys a newer cloud save with stale local data.
+    //
+    // Instead the client submits to the server, which validates, authorizes,
+    // and commits inside a Firestore transaction using the Admin SDK (Admin
+    // writes are not subject to client rules). Reads remain direct.
 
     async _syncUserProfile(user, fallbackDisplayName = '') {
       if (!this.db || !user) return;
       const playerRef = this.db.collection('players').doc(user.uid);
 
+      // Client-owned fields ONLY. uid / email / role / maxCustomizationChanges /
+      // appearanceChangeCount / currency / createdAt / lastLogin are
+      // server-authoritative and are rejected by firestore.rules if written here.
+      const clientProfile = {
+        displayName: (user.displayName || fallbackDisplayName
+          || (user.email || 'player').split('@')[0]).slice(0, 40)
+      };
+
       try {
         const doc = await playerRef.get();
-        const profileData = {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || fallbackDisplayName || user.email.split('@')[0],
-          lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
         if (!doc.exists) {
-          profileData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-          profileData.role = 'explorer';
-          profileData.totalPlayTime = 0;
-          profileData.maxCustomizationChanges = 5;
-          await playerRef.set(profileData, { merge: true });
-        } else {
-          await playerRef.update(profileData);
+          await playerRef.set(clientProfile, { merge: true });
+        } else if (doc.data().displayName !== clientProfile.displayName) {
+          await playerRef.update(clientProfile);
         }
       } catch (err) {
         console.warn('[FirebaseService] User profile sync deferred (offline/permission):', err.message);
       }
     }
 
-    async savePlayerData(savePayload) {
+    /**
+     * Submits a save to the server for authoritative commit.
+     *
+     * @param {object} savePayload { revision, data }
+     * @param {object} [opts] { saveId, baseRevision, idempotencyKey }
+     * @returns {Promise<{success:boolean, revision?:number, code?:string, currentRevision?:number}>}
+     */
+    async savePlayerData(savePayload, opts = {}) {
       if (!this.currentUser) {
-        // Queue for when user signs in
-        this._offlineQueue.push({ action: 'save', payload: savePayload, time: Date.now() });
-        return { success: false, message: 'No authenticated Firebase user. Queued locally.' };
+        this._offlineQueue.push({ action: 'save', payload: savePayload, opts, time: Date.now() });
+        return { success: false, code: 'UNAUTHENTICATED', message: 'No authenticated user. Queued locally.' };
       }
 
-      const uid = this.currentUser.uid;
-      const saveRef = this.db.collection('players').doc(uid).collection('saves').doc('slot_0');
-      const playerRef = this.db.collection('players').doc(uid);
+      const apiBase = resolveApiBase();
+      if (!apiBase) {
+        return { success: false, code: 'NO_API_BASE', message: 'No backend URL configured.' };
+      }
 
+      const saveId = opts.saveId || 'slot_0';
+      const data = (savePayload && savePayload.data) || {};
+      // The revision this save was based on. Required for optimistic
+      // concurrency; the server rejects a mismatch with SAVE_CONFLICT instead
+      // of overwriting newer data.
+      const baseRevision = Number.isInteger(opts.baseRevision)
+        ? opts.baseRevision
+        : (Number.isInteger(savePayload && savePayload.revision) ? savePayload.revision - 1 : 0);
+
+      const body = {
+        saveId,
+        saveVersion: data.version === undefined ? 3 : data.version,
+        data,
+        checksum: computeChecksum(data),
+        baseRevision,
+        clientTime: new Date().toISOString()
+      };
+      if (opts.idempotencyKey) body.idempotencyKey = opts.idempotencyKey;
+
+      let response;
       try {
-        const enrichedPayload = {
-          ...savePayload,
-          uid,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          clientTime: new Date().toISOString()
-        };
-
-        await saveRef.set(enrichedPayload, { merge: true });
-
-        // Update player header info
-        await playerRef.set({
-          lastSaveTime: firebase.firestore.FieldValue.serverTimestamp(),
-          currentRegion: savePayload.data?.region || 'george_town',
-          playTime: savePayload.data?.playTime || 0,
-          revision: savePayload.revision || 1
-        }, { merge: true });
-
-        console.log(`[FirebaseService] Authoritative save stored in Firestore for ${uid} (Rev ${savePayload.revision})`);
-        return { success: true, revision: savePayload.revision };
+        response = await fetch(`${apiBase}/api/v1/persistence/saves`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-WW-CSRF': '1',
+            'Authorization': `Bearer ${await this.currentUser.getIdToken()}`
+          },
+          body: JSON.stringify(body)
+        });
       } catch (err) {
-        console.error('[FirebaseService] Firestore save error:', err);
-        return { success: false, error: err.message };
+        this._offlineQueue.push({ action: 'save', payload: savePayload, opts, time: Date.now() });
+        return { success: false, code: 'NETWORK_ERROR', message: err.message };
       }
+
+      let json = null;
+      try { json = await response.json(); } catch (err) { json = null; }
+
+      if (response.status === 409) {
+        // A newer save exists. Do NOT retry blindly: surface the conflict so
+        // the caller can load and merge instead of clobbering.
+        return {
+          success: false,
+          code: (json && json.code) || 'SAVE_CONFLICT',
+          currentRevision: json && json.details ? json.details.currentRevision : undefined,
+          message: (json && json.message) || 'A newer save already exists.'
+        };
+      }
+
+      if (!response.ok) {
+        return {
+          success: false,
+          code: (json && json.code) || `HTTP_${response.status}`,
+          message: (json && json.message) || `Save failed (${response.status}).`
+        };
+      }
+
+      const revision = json ? json.revision : baseRevision + 1;
+      console.log(`[FirebaseService] Save committed by server for ${this.currentUser.uid} (Rev ${revision})`);
+      return { success: true, revision, savedAt: json && json.savedAt };
     }
 
-    async loadPlayerData() {
+    async loadPlayerData(saveId = 'slot_0') {
       if (!this.currentUser) return null;
       const uid = this.currentUser.uid;
-      const saveRef = this.db.collection('players').doc(uid).collection('saves').doc('slot_0');
+      const saveRef = this.db.collection('players').doc(uid).collection('saves').doc(saveId);
 
       try {
         const doc = await saveRef.get();
         if (doc.exists) {
-          console.log(`[FirebaseService] Loaded cloud save for ${uid}`);
-          return doc.data();
+          const data = doc.data();
+          console.log(`[FirebaseService] Loaded cloud save for ${uid} (Rev ${data.revision || 0})`);
+          return data;
         }
         return null;
       } catch (err) {
         console.error('[FirebaseService] Firestore load error:', err);
+        return null;
+      }
+    }
+
+    async getCustomizationBudget() {
+      const apiBase = resolveApiBase();
+      if (!apiBase || !this.currentUser) return null;
+      try {
+        const response = await fetch(`${apiBase}/api/v1/persistence/customization`, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${await this.currentUser.getIdToken()}`
+          }
+        });
+        if (!response.ok) return null;
+        const json = await response.json();
+        return json.budget || null;
+      } catch (err) {
         return null;
       }
     }
@@ -262,12 +362,20 @@
 
       for (const item of queue) {
         if (item.action === 'save' && item.payload) {
-          await this.savePlayerData(item.payload);
+          const res = await this.savePlayerData(item.payload, item.opts || {});
+          // A conflict must not be silently retried forever; drop it and let
+          // the next load reconcile.
+          if (res && res.code === 'SAVE_CONFLICT') {
+            console.warn('[FirebaseService] Queued save rejected as stale (SAVE_CONFLICT); dropped.');
+          }
         }
       }
     }
   }
 
   const instance = new FirebaseService();
+  instance.computeChecksum = computeChecksum;
+  instance.stableStringify = stableStringify;
+  instance.resolveApiBase = resolveApiBase;
   return instance;
 });

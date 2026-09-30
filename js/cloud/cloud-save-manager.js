@@ -8,6 +8,10 @@
     class CloudSaveManager {
         constructor() {
             this.currentRevision = 1;
+            // Separate revision counter for the Firebase/server-authoritative
+            // path. Kept apart from currentRevision so the legacy
+            // CloudSaveClient numbering is not disturbed.
+            this.firebaseRevision = 0;
             this.lastSyncTimestamp = null;
             this.isSyncing = false;
         }
@@ -61,17 +65,34 @@
                     return { success: false, message: 'GameState not ready' };
                 }
 
-                // 1. Prioritize authoritative Firebase Firestore persistence
+                // 1. Prioritize server-authoritative Firebase persistence.
+                //    The server commits inside a transaction; a stale base
+                //    revision returns 409 SAVE_CONFLICT and is routed to the
+                //    merge UI rather than overwriting newer cloud data.
                 if (window.FirebaseService && window.FirebaseService.isAuthenticated()) {
-                    const fbRes = await window.FirebaseService.savePlayerData(payload);
+                    const fbRes = await window.FirebaseService.savePlayerData(payload, {
+                        baseRevision: this.firebaseRevision
+                    });
                     if (fbRes && fbRes.success) {
-                        this.currentRevision = fbRes.revision || (this.currentRevision + 1);
+                        this.firebaseRevision = fbRes.revision || (this.firebaseRevision + 1);
+                        this.currentRevision = this.firebaseRevision;
                         this.lastSyncTimestamp = new Date().toISOString();
                         this.isSyncing = false;
                         if (window.NotificationSystem) {
-                            window.NotificationSystem.show(`Synced to Firebase Firestore (Rev ${this.currentRevision})`, 'success');
+                            window.NotificationSystem.show(`Synced to Firebase Firestore (Rev ${this.firebaseRevision})`, 'success');
                         }
-                        return { success: true, revision: this.currentRevision, provider: 'firebase' };
+                        return { success: true, revision: this.firebaseRevision, provider: 'firebase' };
+                    }
+                    if (fbRes && fbRes.code === 'SAVE_CONFLICT') {
+                        this.isSyncing = false;
+                        if (window.SaveConflictUI) {
+                            window.SaveConflictUI.prompt(
+                                payload.data,
+                                { revision: fbRes.currentRevision, data: fbRes.remoteData || null },
+                                fbRes.currentRevision
+                            );
+                        }
+                        return { conflict: true, code: 'SAVE_CONFLICT', currentRevision: fbRes.currentRevision };
                     }
                 }
 
@@ -112,10 +133,12 @@
             if (window.FirebaseService && window.FirebaseService.isAuthenticated()) {
                 const fbSave = await window.FirebaseService.loadPlayerData();
                 if (fbSave && fbSave.data) {
-                    this.currentRevision = fbSave.revision || 1;
+                    const storedRevision = Number.isInteger(fbSave.revision) ? fbSave.revision : 0;
+                    this.firebaseRevision = storedRevision;
+                    this.currentRevision = storedRevision;
                     this.lastSyncTimestamp = fbSave.clientTime || new Date().toISOString();
                     this.applySaveData(fbSave.data);
-                    console.log('[CloudSaveManager] Restored save from Firebase Firestore');
+                    console.log(`[CloudSaveManager] Restored save from Firebase Firestore (Rev ${storedRevision})`);
                     return true;
                 }
             }

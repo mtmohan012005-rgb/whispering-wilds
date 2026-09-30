@@ -87,7 +87,34 @@ const config = {
     CUSTOMIZATION_RULES: {
         // Maximum number of customization changes allowed.
         MAX_PLAYER_CHANGES: 5
-    }
+    },
+
+    // ------------------------------------------------------------------------
+    // FIREBASE (PERSISTENCE + IDENTITY)
+    // ------------------------------------------------------------------------
+    // None of these are committed to the repository. On Render they are set as
+    // secret environment variables. When FIREBASE_PROJECT_ID is absent the
+    // persistence layer fails closed (503 FIREBASE_NOT_CONFIGURED) instead of
+    // silently accepting writes.
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || '',
+
+    FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL || '',
+
+    // Inline service-account JSON, or rely on GOOGLE_APPLICATION_CREDENTIALS /
+    // Application Default Credentials. Never logged.
+    FIREBASE_SERVICE_ACCOUNT_JSON: process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '',
+
+    // Test-only escape hatch. Enables an in-memory Firestore double.
+    // Hard-refused in production so it can never reach a real deployment.
+    FIREBASE_MOCK: (function () {
+        if (process.env.FIREBASE_MOCK === 'true') {
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error('FIREBASE_MOCK must never be enabled with NODE_ENV=production');
+            }
+            return true;
+        }
+        return false;
+    })()
 };
 
 // ============================================================================

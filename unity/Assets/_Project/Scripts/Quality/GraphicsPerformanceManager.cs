@@ -62,6 +62,26 @@ namespace WhisperingWilds.Quality
             DontDestroyOnLoad(gameObject);
         }
 
+        private void OnEnable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            // Re-acquire the main camera on every scene load.
+            // Camera.main returns null after scene unload, so we must refresh.
+            trackedCamera = null;
+            InitCamera();
+            // Reapply the current render scale to the new camera
+            ApplyEngineRenderResolution(CurrentRenderScale);
+        }
+
         private void Start()
         {
             InitCamera();
@@ -76,6 +96,13 @@ namespace WhisperingWilds.Quality
                 int savedTier = PlayerPrefs.GetInt("WW_QualityTier", (int)QualityTier.High);
                 ApplyProfile((QualityTier)savedTier);
             }
+        }
+
+        /// <summary>Force rebind to the current scene's main camera. Call after spawning a new camera.</summary>
+        public void ForceRebindCamera()
+        {
+            trackedCamera = null;
+            InitCamera();
         }
 
         private void InitCamera()

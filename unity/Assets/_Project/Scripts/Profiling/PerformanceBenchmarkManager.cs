@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.SceneManagement;
 
 namespace WhisperingWilds.Profiling
 {
@@ -36,6 +37,13 @@ namespace WhisperingWilds.Profiling
         [SerializeField] private float benchmarkDurationSeconds = 15.0f;
         [SerializeField] private bool autoStartOnLoad = false;
 
+        /// <summary>Whether this benchmark manager auto-starts on scene load. Only true in WW_Benchmark_* scenes when set explicitly.</summary>
+        public bool AutoStartOnLoad
+        {
+            get => autoStartOnLoad;
+            set => autoStartOnLoad = value;
+        }
+
         public bool IsBenchmarking { get; private set; } = false;
         public BenchmarkResult LastResult { get; private set; }
 
@@ -54,10 +62,36 @@ namespace WhisperingWilds.Profiling
             DontDestroyOnLoad(gameObject);
         }
 
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            // Safety guard: if a non-benchmark scene loads while we're benchmarking, abort immediately.
+            bool isBenchmarkScene = scene.name.StartsWith("WW_Benchmark_");
+            if (IsBenchmarking && !isBenchmarkScene)
+            {
+                StopAllCoroutines();
+                IsBenchmarking = false;
+                Debug.LogWarning($"[PerformanceBenchmarkManager] Benchmark aborted - non-benchmark scene loaded: {scene.name}");
+            }
+        }
+
         private void Start()
         {
+            // autoStartOnLoad is intentionally NOT checked here.
+            // Benchmark scenes use BenchmarkSceneBootstrapper with BenchmarkSessionFlag.
+            // This prevents accidental benchmark runs during normal gameplay.
             if (autoStartOnLoad)
             {
+                Debug.LogWarning("[PerformanceBenchmarkManager] autoStartOnLoad is TRUE - this should only be set in dedicated benchmark sessions, not in production scenes.");
                 StartBenchmark();
             }
         }

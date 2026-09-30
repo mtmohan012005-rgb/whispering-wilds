@@ -1,22 +1,175 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Player profiles and cloud saves
-    match /players/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
 
+    // ==========================================================================
+    // HELPER FUNCTIONS
+    // ==========================================================================
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Fields the client may NEVER write directly. These are server-authoritative
+    // and must only be produced by trusted backend logic (Firebase Admin SDK /
+    // Cloud Functions), never by a game client.
+    function serverOwnedFields() {
+      return [
+        'uid',
+        'email',
+        'role',
+        'currency',
+        'premium',
+        'maxCustomizationChanges',
+        'permanentAppearanceChanges',
+        'appearanceChangeCount',
+        'achievements',
+        'antiCheat',
+        'createdAt',
+        'lastLogin',
+        'lastSaveTime',
+        'serverUpdatedAt',
+        'idempotencyKeys'
+      ];
+    }
+
+    // True if the incoming write touches any server-owned field.
+    function writesServerOwnedField() {
+      return request.resource.data.keys().hasAny(serverOwnedFields());
+    }
+
+    // Guarded types: reject NaN / Infinity sneaking in through JSON.
+    function isFiniteNumber(v) {
+      return v is number && v == v && v < 1.0e15 && v > -1.0e15;
+    }
+
+    // ==========================================================================
+    // PLAYER PROFILE HEADER  -  players/{userId}
+    // ==========================================================================
+    //
+    // Client-editable:  displayName, photoURL, preferences, locale, lastRegion
+    // Server-owned:      uid, email, role, currency, appearance change count,
+    //                    createdAt, lastLogin, antiCheat  (see helper above)
+    //
+    match /players/{userId} {
+
+      // A user may always read their own header.
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      // Create: only client-owned fields, and only for your own uid.
+      allow create: if isOwner(userId)
+                    && !writesServerOwnedField()
+                    && (!('displayName' in request.resource.data)
+                        || (request.resource.data.displayName is string
+                            && request.resource.data.displayName.size() > 0
+                            && request.resource.data.displayName.size() <= 40));
+
+      // Update: no server-owned field may change; validate displayName.
+      allow update: if isOwner(userId)
+                    && !writesServerOwnedField()
+                    && (!('displayName' in request.resource.data)
+                        || (request.resource.data.displayName is string
+                            && request.resource.data.displayName.size() > 0
+                            && request.resource.data.displayName.size() <= 40))
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasAny(serverOwnedFields()) == false;
+
+      // Deleting a profile is a backend-only operation (retain player data).
+      allow delete: if false;
+
+      // ----------------------------------------------------------------------
+      // CLOUD SAVES  -  players/{userId}/saves/{saveId}
+      // ----------------------------------------------------------------------
+      //
+      // The save body is client-supplied game state and is NOT trusted for
+      // economy. Optimistic concurrency is performed atomically by the client
+      // using a Firestore transaction on `revision` (see firebase-service.js).
+      // Privileged economy fields are rejected here outright.
       match /saves/{saveId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+
+        allow get: if isOwner(userId);
+        allow list: if false;
+        allow delete: if isOwner(userId);
+
+        function saveIsWellFormed() {
+          // Bounded payload: Firestore doc limit is ~1 MiB.
+          return request.resource.data.keys().size() <= 64
+              && (!('saveVersion' in request.resource.data)
+                  || request.resource.data.saveVersion is int)
+              && (!('revision' in request.resource.data)
+                  || (request.resource.data.revision is int
+                      && request.resource.data.revision >= 1))
+              // A checksum is required so corruption is detectable.
+              && ('checksum' in request.resource.data)
+              && request.resource.data.checksum is string
+              && request.resource.data.checksum.size() > 0
+              && request.resource.data.checksum.size() <= 128;
+        }
+
+        function noPrivilegedEconomy() {
+          return !request.resource.data.keys().hasAny(
+            ['currency', 'premium', 'achievements', 'permanentAppearanceChanges',
+             'appearanceChangeCount', 'antiCheat', 'role', 'uid', 'serverUpdatedAt']
+          );
+        }
+
+        allow create: if isOwner(userId) && saveIsWellFormed() && noPrivilegedEconomy();
+        allow update: if isOwner(userId) && saveIsWellFormed() && noPrivilegedEconomy();
+      }
+
+      // ----------------------------------------------------------------------
+      // PER-PLAYER SETTINGS  -  players/{userId}/settings/{settingId}
+      // Purely cosmetic client preference data; safe for direct client writes.
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----------------------------------------------------------------------
+      // INVENTORY  -  players/{userId}/inventory/{itemId}
+      // Quantities are economy-critical, so the client may only stage a local
+      // intent. Server (Admin SDK) is the only writer that grants items.
+      // The client may READ its inventory and DELETE a pending stage record.
+      match /inventory/{itemId} {
+        allow get, list: if isOwner(userId);
+        allow create, update, delete: if false;
       }
     }
 
-    // Public game metadata, leaderboards, and world lore (read-only for all, write for authenticated players)
-    match /game_metadata/{document} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    // ==========================================================================
+    // QUEST STATE  -  questState/{userId}/quests/{questId}
+    // Completion is progression-authoritative: server writes only.
+    match /questState/{userId} {
+      allow read: if isOwner(userId);
+      match /quests/{questId} {
+        allow get, list: if isOwner(userId);
+        allow write: if false;
+      }
     }
 
-    // Default deny for all other collections
+    // ==========================================================================
+    // GAME METADATA / LORE  -  public read, SERVER-ONLY write
+    // Previously any authenticated user could write here, which would let a
+    // player rewrite shared lore for everyone. Now write is backend-only.
+    match /game_metadata/{document} {
+      allow read: if true;
+      allow create, update, delete: if false;
+    }
+
+    // ==========================================================================
+    // PUBLIC LEADERBOARD  -  read-only projection maintained by the server
+    match /leaderboards/{boardId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ==========================================================================
+    // DEFAULT DENY
+    // ==========================================================================
     match /{document=**} {
       allow read, write: if false;
     }

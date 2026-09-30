@@ -33,7 +33,8 @@
     "assets:report": "node tools/asset-audit/generate-asset-report.js",
     "animations:validate": "node tools/animation-validation/validate-animations.js",
     "textures:validate": "node tools/texture-validation/validate-textures.js",
-    "production:assets": "node tools/asset-audit/generate-asset-report.js"
+    "production:assets": "node tools/asset-audit/generate-asset-report.js",
+    "test:backend": "node scripts/test-backend-security.js"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -41,6 +42,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "firebase-admin": "^12.7.0",
     "pg": "^8.23.0",
     "socket.io": "^4.7.5"
   },

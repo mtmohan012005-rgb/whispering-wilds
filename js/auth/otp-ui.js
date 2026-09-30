@@ -143,7 +143,7 @@
       try {
         const res = await fetch('/api/auth/verify-otp', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({
             code,
             purpose: this.currentPurpose
@@ -184,7 +184,7 @@
       try {
         const res = await fetch('/api/auth/send-otp', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({ purpose: this.currentPurpose })
         });
         const data = await res.json();

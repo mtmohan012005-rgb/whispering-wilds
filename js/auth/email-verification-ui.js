@@ -84,7 +84,7 @@
       try {
         const res = await fetch('/api/auth/verify-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({ token })
         });
         const data = await res.json();
@@ -111,7 +111,7 @@
       try {
         const res = await fetch('/api/auth/send-verification', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({})
         });
         const data = await res.json();

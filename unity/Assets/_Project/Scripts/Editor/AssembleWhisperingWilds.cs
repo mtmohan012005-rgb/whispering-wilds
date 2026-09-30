@@ -141,6 +141,7 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<WildlifeManager>() == null) managersObj.AddComponent<WildlifeManager>();
             if (managersObj.GetComponent<TrafficSystem>() == null) managersObj.AddComponent<TrafficSystem>();
             if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
+            if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
 
             var timeManager = managersObj.GetComponent<TimeOfDayManager>();
             if (timeManager == null) timeManager = managersObj.AddComponent<TimeOfDayManager>();

@@ -137,7 +137,7 @@
       try {
         const res = await fetch('/api/auth/request-password-reset', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({ email })
         });
         const data = await res.json();
@@ -195,7 +195,7 @@
       try {
         const res = await fetch('/api/auth/reset-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({ token, newPassword, confirmPassword })
         });
         const data = await res.json();
@@ -232,7 +232,7 @@
       try {
         const res = await fetch('/api/auth/revoke-sessions', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-WW-CSRF': '1' },
           body: JSON.stringify({})
         });
         const data = await res.json();
