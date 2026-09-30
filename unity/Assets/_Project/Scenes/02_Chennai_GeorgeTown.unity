@@ -1256,6 +1256,11 @@ GameObject:
   - component: {fileID: 748200775}
   - component: {fileID: 748200774}
   - component: {fileID: 748200781}
+  - component: {fileID: 748200786}
+  - component: {fileID: 748200785}
+  - component: {fileID: 748200784}
+  - component: {fileID: 748200783}
+  - component: {fileID: 748200782}
   m_Layer: 0
   m_Name: --- MANAGERS ---
   m_TagString: Untagged
@@ -1275,9 +1280,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6af2f598e19f911479b32f07d0ce5dec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.World.TimeOfDayManager
-  timeOfDay: 9
-  dayDurationMinutes: 24
-  pauseTime: 0
   sunLight: {fileID: 0}
   sunColorGradient:
     serializedVersion: 2
@@ -1350,10 +1352,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.World.WeatherSystem
   currentWeather: 0
+  targetWeather: 0
+  isTransitioning: 0
+  transitionDuration: 10
   rainParticleSystem: {fileID: 0}
+  rainMaxEmissionRate: 800
+  currentWetness: 0
+  currentPuddleIntensity: 0
+  clearFogDensity: 0.003
+  cloudyFogDensity: 0.008
   rainFogDensity: 0.02
   mistFogDensity: 0.045
-  clearFogDensity: 0.003
+  heavyFogDensity: 0.065
 --- !u!114 &748200756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1480,8 +1490,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d10cad92d3e147438d87896c6f4db5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Wildlife.WildlifeManager
-  currentBiome: Chennai
-  activeEntities: []
+  currentRegionId: nilgiris
+  maxVisibleWildlifeBudget: 16
+  densityMultiplier: 1
+  tahrPrefab: {fileID: 0}
+  deerPrefab: {fileID: 0}
+  poolCapacity: 24
+  registeredHabitats: []
+  activeVisibleEntities: []
+  logicalPopulations: []
 --- !u!114 &748200765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1523,9 +1540,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93f2f3871cdd52348b8f5365d5c70759, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Online.CloudSaveManager
-  supabaseUrl: https://your-supabase-project.supabase.co/rest/v1
-  apiKey: public-anon-key
-  syncOnSave: 1
+  firebaseBaseUrl: http://localhost:3000/api/v1/persistence
+  bearerToken: dev_session_token
+  syncEnabled: 1
 --- !u!114 &748200768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1785,6 +1802,101 @@ MonoBehaviour:
   fontSize: 14
   updateIntervalSeconds: 0.25
   overlayOffset: {x: 10, y: 10}
+--- !u!114 &748200782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748200752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 682d689abcb293c4897fa90a3aea0f1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.World.WorldSimulationDebugOverlay
+  showOverlay: 0
+  toggleKey: 285
+--- !u!114 &748200783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748200752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e33049f4ee9344688563924c177a14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Persistence.WorldPersistenceManager
+  isDirty: 0
+  lastSavedTime: Never
+  savedPlotsCount: 0
+--- !u!114 &748200784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748200752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e69aa3c29339aa74daedeeedddce96aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Vegetation.VegetationManager
+  registeredPlots: []
+  registeredCrops: []
+  registeredTrees: []
+--- !u!114 &748200785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748200752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 808f8051461f254449b6346f47d1861b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.World.RegionalClimateSystem
+  activeRegionId: chennai
+  activeProfile:
+    climateZone: 0
+    regionId: 
+    regionName: 
+    baseTemperature: 30
+    summerTemperatureModifier: 6
+    winterTemperatureModifier: -5
+    diurnalRange: 8
+    baseHumidity: 0.65
+    coastalHumidityBonus: 0.2
+    baseCloudProbability: 0.3
+    averageWindSpeed: 12
+    southwestMonsoonRainChance: 0.35
+    northeastMonsoonRainChance: 0.65
+    drySeasonRainChance: 0.05
+    plantGrowthMultiplier: 1
+    soilMoistureEvaporationRate: 0.05
+    animalActivityMultiplier: 1
+    waterAvailability: 1
+--- !u!114 &748200786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748200752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d0feb82253bea24795c53ead356dfff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.World.WorldTimeSystem
+  year: 2026
+  month: 10
+  day: 15
+  hourOfDay: 9
+  inGameMinutesPerRealSecond: 1
+  fastForwardMultiplier: 1
+  pauseClock: 0
 --- !u!1001 &824064552
 PrefabInstance:
   m_ObjectHideFlags: 0
