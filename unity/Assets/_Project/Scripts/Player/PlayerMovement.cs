@@ -51,6 +51,10 @@ namespace WhisperingWilds.Player
         private float fallTimeoutDelta;
         private float coyoteTimeDelta;
 
+        // Cached once in Awake: LayerMask.GetMask performs string->layer resolution on every call,
+        // so it must never be used from the per-frame ground check.
+        private int cachedGroundMask;
+
         [Header("Animation")]
         [SerializeField] private Animator animator;
 
@@ -75,6 +79,18 @@ namespace WhisperingWilds.Player
             {
                 groundLayers = ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
             }
+
+            RefreshGroundMask();
+        }
+
+        /// <summary>
+        /// Rebuilds the cached ground-check mask. Excludes the character's own layer plus
+        /// non-physical layers so NPCs, props and trigger volumes cannot fake grounding.
+        /// Must be re-invoked if the object's layer changes at runtime.
+        /// </summary>
+        private void RefreshGroundMask()
+        {
+            cachedGroundMask = groundLayers.value & ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
         }
 
         private void Start()
@@ -113,7 +129,7 @@ namespace WhisperingWilds.Player
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y + groundedOffset, transform.position.z);
             
             // Mask out the character itself and non-physical layers to avoid false grounding on NPCs/props/triggers
-            int mask = groundLayers.value & ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
+            int mask = cachedGroundMask;
 
             bool sphereHit = Physics.CheckSphere(spherePosition, groundedRadius, mask, QueryTriggerInteraction.Ignore);
             isGrounded = (controller != null && controller.isGrounded) || sphereHit;
@@ -248,16 +264,6 @@ namespace WhisperingWilds.Player
             {
                 verticalVelocity += gravity * Time.deltaTime;
             }
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
-            Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
-            Gizmos.color = isGrounded ? transparentGreen : transparentRed;
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
-            Gizmos.DrawSphere(spherePosition, groundedRadius);
         }
     }
 }
