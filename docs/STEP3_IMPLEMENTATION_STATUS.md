@@ -58,17 +58,46 @@ Open / not done:
 
 ## Sections 7, 16, 17, 18, 19, 20, 23 — not started
 
-HDRP visual direction, dynamic resolution, post-processing, weather, time/season, vegetation,
-and localized region identity remain as audited but unimplemented. Key carry-over findings:
+### Section 7 dynamic resolution — implemented, unverified at runtime
 
-- `Assets/Settings/HDRP High Fidelity.asset` is the default HDRP asset; its dynamic resolution is
-  enabled but pinned `minPercentage: 100` / `maxPercentage: 100`, i.e. a no-op.
-- `GraphicsPerformanceManager` uses `ScalableBufferManager.ResizeBuffers`, which is not the HDRP
-  path; `DynamicResolutionHandler.SetDynamicResScaler` is required.
-- `QualityPresetManager` owns five C# tiers while Unity registers only three quality levels, and
-  the tier table is duplicated in `GraphicsPerformanceManager`. One authority is needed.
+- `QualityPresetManager.GetPreset` is now the single static owner of the tier table; the duplicate
+  60-line copy in `GraphicsPerformanceManager` is gone and that manager delegates. The two tables
+  had already drifted in intent, and the settings menu would otherwise stop reflecting what the
+  adaptive loop actually applied.
+- `GraphicsPerformanceManager.ApplyEngineRenderResolution` now drives
+  `DynamicResolutionHandler` rather than `ScalableBufferManager.ResizeBuffers`, which HDRP does not
+  honour, so the previous adaptive loop was mutating a value that never reached the GPU.
+- The HDRP asset ships with `minPercentage` and `maxPercentage` both at 100, which clamps the
+  handler's lerp to a fixed 100%. `ApplyHdrpDynamicResolution` widens that range from the tier's
+  bounds before registering the scaler.
+- The handler stores a `PerformDynamicRes` delegate returning a lerp factor between min and max, so
+  the delegate is registered once and reads `CurrentRenderScale` thereafter. Registered with
+  `DynamicResScalePolicyType.ReturnsMinMaxLerpFactor`.
+- Falls back to `ScalableBufferManager` when the active pipeline is not HDRP, so the built-in
+  render pipeline path still works.
+
+Open / not done:
+- **Not verified at runtime.** No player build yet, so actual screen percentages, GPU frame timing,
+  and visible scaling are unproven.
+- The scaler target width/height and upsample filter are left at HDRP asset defaults rather than
+  tuned per tier.
+- No telemetry surfaced to the HUD yet (scale, FPS, tier, dynamic state all exist on the manager
+  but nothing displays them).
+- Unity registers only three quality levels while the C# side has five tiers; the mapping between
+  Unity levels and HDRP asset assignment is still unaddressed.
+
+### Sections 16-20, 23 — not started
+
 - Weather is primarily fog/rain and needs Volume-driven expansion.
+- Time/season, vegetation, post-processing authoring, and localized region identity are
+  unimplemented.
 - No centralized TMP assets; scenes carry few authored materials, LOD groups, and volumes.
+
+## Compile status
+
+The project compiles clean: a `-batchmode -quit` run reported **0 errors** and
+`Exiting batchmode successfully now!`. This covers the localization, display, and quality changes
+above. It does not cover runtime behaviour or rendering.
 
 ## Environment blocker
 
