@@ -14,7 +14,17 @@ namespace WhisperingWilds.NPC
         public string choiceTextEn;
         public string choiceTextTa;
         public int nextNodeIndex;
+
+        /// <summary>Clue that must already be discovered for this choice to be offered.</summary>
         public string requiredClueId;
+
+        /// <summary>Clue revealed when this choice is taken.</summary>
+        public string revealClueId;
+
+        /// <summary>
+        /// Legacy clue reference kept for older authored content. Read as a fallback for
+        /// <see cref="revealClueId"/> so existing dialogue graphs keep working.
+        /// </summary>
         public string questTriggerId;
     }
 
@@ -75,6 +85,19 @@ namespace WhisperingWilds.NPC
 
         [Header("Dialogue Content")]
         [SerializeField] private List<DialogueNode> dialogueNodes = new List<DialogueNode>();
+
+        /// <summary>Dialogue graph for this resident. Exposed so UI can traverse node indices.</summary>
+        public IReadOnlyList<DialogueNode> DialogueNodes => dialogueNodes;
+
+        /// <summary>
+        /// Replaces the dialogue graph from code. Used by the region bootstrap so the opening
+        /// conversation lives beside the other opening content instead of being hand-authored into
+        /// the scene, where its clue ids would silently drift from the catalogue.
+        /// </summary>
+        public void SetDialogueNodes(List<DialogueNode> nodes)
+        {
+            dialogueNodes = nodes ?? new List<DialogueNode>();
+        }
 
         [Header("Work & Living Anchors")]
         [SerializeField] private Transform workAnchor;
@@ -563,6 +586,10 @@ namespace WhisperingWilds.NPC
 
             stateMachine.TransitionTo(NPCState.Talking);
 
+            // Meeting the resident is recorded here as well as in the dialogue UI, so the record
+            // survives even if no dialogue view is present in the scene.
+            RegisterConversationWithPlayer();
+
             if (dialogueNodes != null && dialogueNodes.Count > 0)
             {
                 Debug.Log($"<color=#00D2FF><b>[Dialogue]</b></color> Speaking with {displayNameEn} ({displayNameTa})");
@@ -573,15 +600,31 @@ namespace WhisperingWilds.NPC
         public void OnFocusEnter() { }
         public void OnFocusExit() { }
 
-        public void RecordMemory(string key)
+public void RecordMemory(string key)
         {
             if (!memoryFlags.Contains(key))
             {
                 memoryFlags.Add(key);
-                Debug.Log($"<color=#00FF88><b>[NPC Memory]</b></color> {displayNameEn} remembers: {key}");
+                Debug.Log($"<color=#00FF99><b>[NPC Memory]</b></color> {displayNameEn} remembers: {key}");
             }
         }
 
         public bool HasMemory(string key) => memoryFlags.Contains(key);
+
+        /// <summary>
+        /// Records that this resident has met the player and reports the single gameplay event
+        /// for this conversation.
+        ///
+        /// This is the only place a talk event is emitted: it runs exactly once per interaction,
+        /// before any dialogue node is rendered. The durable record lives in
+        /// <see cref="NPCInteractionLog"/> because scene objects are recreated on travel.
+        /// </summary>
+        public void RegisterConversationWithPlayer()
+        {
+            if (string.IsNullOrEmpty(npcId)) return;
+
+            NPCInteractionLog.Record(npcId);
+            Gameplay.GameplayEventBus.ReportTalkedToNpc(npcId);
+        }
     }
 }

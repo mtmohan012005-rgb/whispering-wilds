@@ -26,11 +26,19 @@ namespace WhisperingWilds.Player
         public bool InteractTriggered => interactBufferTimer > 0f || simInteract;
         public bool JournalTriggered => journalBufferTimer > 0f || simJournal;
         public bool PhotoModeTriggered => photoBufferTimer > 0f || simPhoto;
+        public bool CancelTriggered => cancelBufferTimer > 0f || simCancel;
+        public bool CraftingTriggered => craftingBufferTimer > 0f || simCrafting;
+        public bool QuickSaveTriggered => quickSaveBufferTimer > 0f || simQuickSave;
+        public bool QuickLoadTriggered => quickLoadBufferTimer > 0f || simQuickLoad;
 
         private float jumpBufferTimer = 0f;
         private float interactBufferTimer = 0f;
         private float journalBufferTimer = 0f;
         private float photoBufferTimer = 0f;
+        private float cancelBufferTimer = 0f;
+        private float craftingBufferTimer = 0f;
+        private float quickSaveBufferTimer = 0f;
+        private float quickLoadBufferTimer = 0f;
 
         // Simulation hooks for automated testing
         private bool isSimulated = false;
@@ -41,6 +49,10 @@ namespace WhisperingWilds.Player
         private bool simInteract;
         private bool simJournal;
         private bool simPhoto;
+        private bool simCancel;
+        private bool simCrafting;
+        private bool simQuickSave;
+        private bool simQuickLoad;
 
         public void SetSimulatedMovement(Vector2 move, bool sprint = false, bool crouch = false)
         {
@@ -70,6 +82,40 @@ namespace WhisperingWilds.Player
             simInteract = false;
             simJournal = false;
             simPhoto = false;
+            simCancel = false;
+            simCrafting = false;
+            simQuickSave = false;
+            simQuickLoad = false;
+        }
+
+        public void TriggerSimulatedCancel()
+        {
+            simCancel = true;
+        }
+
+        public void TriggerSimulatedCrafting()
+        {
+            simCrafting = true;
+        }
+
+        public void TriggerSimulatedQuickSave()
+        {
+            simQuickSave = true;
+        }
+
+        public void TriggerSimulatedQuickLoad()
+        {
+            simQuickLoad = true;
+        }
+
+        public void TriggerSimulatedPhotoMode()
+        {
+            simPhoto = true;
+        }
+
+        public void TriggerSimulatedJournal()
+        {
+            simJournal = true;
         }
 
         private void Update()
@@ -79,6 +125,10 @@ namespace WhisperingWilds.Player
             if (interactBufferTimer > 0f) interactBufferTimer -= Time.deltaTime;
             if (journalBufferTimer > 0f) journalBufferTimer -= Time.deltaTime;
             if (photoBufferTimer > 0f) photoBufferTimer -= Time.deltaTime;
+            if (cancelBufferTimer > 0f) cancelBufferTimer -= Time.deltaTime;
+            if (craftingBufferTimer > 0f) craftingBufferTimer -= Time.deltaTime;
+            if (quickSaveBufferTimer > 0f) quickSaveBufferTimer -= Time.deltaTime;
+            if (quickLoadBufferTimer > 0f) quickLoadBufferTimer -= Time.deltaTime;
 
             if (isSimulated)
             {
@@ -115,6 +165,10 @@ namespace WhisperingWilds.Player
                 if (keyboard.eKey.wasPressedThisFrame) interactBufferTimer = 0.15f;
                 if (keyboard.jKey.wasPressedThisFrame) journalBufferTimer = 0.15f;
                 if (keyboard.pKey.wasPressedThisFrame) photoBufferTimer = 0.15f;
+                if (keyboard.escapeKey.wasPressedThisFrame) cancelBufferTimer = 0.15f;
+                if (keyboard.kKey.wasPressedThisFrame) craftingBufferTimer = 0.15f;
+                if (keyboard.f5Key.wasPressedThisFrame) quickSaveBufferTimer = 0.15f;
+                if (keyboard.f9Key.wasPressedThisFrame) quickLoadBufferTimer = 0.15f;
             }
 
             if (gamepad != null)
@@ -133,6 +187,11 @@ namespace WhisperingWilds.Player
                 if (gamepad.buttonWest.wasPressedThisFrame) interactBufferTimer = 0.15f;
                 if (gamepad.selectButton.wasPressedThisFrame) journalBufferTimer = 0.15f;
                 if (gamepad.dpad.up.wasPressedThisFrame) photoBufferTimer = 0.15f;
+                // Start is used for cancel; buttonEast stays reserved for crouch.
+                if (gamepad.startButton.wasPressedThisFrame) cancelBufferTimer = 0.15f;
+                if (gamepad.dpad.down.wasPressedThisFrame) craftingBufferTimer = 0.15f;
+                if (gamepad.leftShoulder.wasPressedThisFrame) quickSaveBufferTimer = 0.15f;
+                if (gamepad.rightShoulder.wasPressedThisFrame) quickLoadBufferTimer = 0.15f;
             }
 
             // Mouse / Gamepad Look
@@ -167,6 +226,10 @@ namespace WhisperingWilds.Player
             if (Input.GetKeyDown(KeyCode.E)) interactBufferTimer = 0.15f;
             if (Input.GetKeyDown(KeyCode.J)) journalBufferTimer = 0.15f;
             if (Input.GetKeyDown(KeyCode.P)) photoBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.Escape)) cancelBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.K)) craftingBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.F5)) quickSaveBufferTimer = 0.15f;
+            if (Input.GetKeyDown(KeyCode.F9)) quickLoadBufferTimer = 0.15f;
 
             float lookX = Input.GetAxis("Mouse X") * mouseSensitivity;
             float lookY = Input.GetAxis("Mouse Y") * mouseSensitivity * (invertY ? 1f : -1f);
@@ -198,6 +261,30 @@ namespace WhisperingWilds.Player
         {
             photoBufferTimer = 0f;
             simPhoto = false;
+        }
+
+        public void ConsumeCancel()
+        {
+            cancelBufferTimer = 0f;
+            simCancel = false;
+        }
+
+        public void ConsumeCrafting()
+        {
+            craftingBufferTimer = 0f;
+            simCrafting = false;
+        }
+
+        public void ConsumeQuickSave()
+        {
+            quickSaveBufferTimer = 0f;
+            simQuickSave = false;
+        }
+
+        public void ConsumeQuickLoad()
+        {
+            quickLoadBufferTimer = 0f;
+            simQuickLoad = false;
         }
     }
 }

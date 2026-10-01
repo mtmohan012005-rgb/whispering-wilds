@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using WhisperingWilds.Core;
+using WhisperingWilds.Campaign;
 using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.UI
@@ -24,8 +24,17 @@ namespace WhisperingWilds.UI
         [Header("Info Displays")]
         [SerializeField] private Text ruleNoticeText;
 
+        private CampaignFlow campaignFlow;
+
         private void Start()
         {
+            campaignFlow = CampaignFlow.Instance;
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetGameState(GameState.MainMenu);
+            }
+
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
@@ -33,7 +42,9 @@ namespace WhisperingWilds.UI
             if (continueButton != null)
             {
                 continueButton.onClick.AddListener(OnContinueClicked);
-                continueButton.interactable = SaveSystem.SaveExists();
+                // Continue is offered only when the save actually parses. A corrupt file must not
+                // present a button that silently drops the player into a fresh campaign.
+                continueButton.interactable = CampaignFlow.CanContinue();
             }
             if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
             if (codexButton != null) codexButton.onClick.AddListener(OnOpenCodexClicked);
@@ -116,29 +127,45 @@ namespace WhisperingWilds.UI
         public void OnNewGameClicked()
         {
             Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> Starting New Game -> Loading Chennai George Town...");
+
+            if (campaignFlow != null)
+            {
+                campaignFlow.StartNewGame();
+                return;
+            }
+
+            // Fallback when the flow component is absent from the scene.
+            CampaignFlow.ResetCampaignForNewGame();
+            SaveSystem.DeleteSave();
             SaveManager.PendingSaveToRestore = null;
-            SceneManager.LoadScene("02_Chennai_GeorgeTown");
+            CampaignFlow.RequestNewGameEnter();
+            UnityEngine.SceneManagement.SceneManager.LoadScene("02_Chennai_GeorgeTown");
         }
 
         public void OnContinueClicked()
         {
-            var save = SaveSystem.LoadGame();
-            if (save != null && !string.IsNullOrEmpty(save.currentRegionId))
+            if (campaignFlow != null)
             {
-                Debug.Log($"<color=#00D2FF><b>[Whispering Wilds]</b></color> Continuing from region: {save.currentRegionId}...");
-                SaveManager.PendingSaveToRestore = save;
-                string targetScene = "02_Chennai_GeorgeTown";
-                if (World.TamilNaduGeography.TryGetRegion(save.currentRegionId, out var geo) && !string.IsNullOrEmpty(geo.sceneName))
-                {
-                    targetScene = geo.sceneName;
-                }
-                SceneManager.LoadScene(targetScene);
+                // ContinueGame returns false when the save is missing or corrupt; the player stays
+                // on the menu with an explanation instead of losing the run.
+                campaignFlow.ContinueGame();
+                return;
             }
-            else
+
+            var save = SaveSystem.LoadGame();
+            if (save == null || string.IsNullOrEmpty(save.currentRegionId))
             {
                 SaveManager.PendingSaveToRestore = null;
-                SceneManager.LoadScene("02_Chennai_GeorgeTown");
+                return;
             }
+
+            SaveManager.PendingSaveToRestore = save;
+            string targetScene = "02_Chennai_GeorgeTown";
+            if (World.TamilNaduGeography.TryGetRegion(save.currentRegionId, out var geo) && !string.IsNullOrEmpty(geo.sceneName))
+            {
+                targetScene = geo.sceneName;
+            }
+            UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
         }
 
         public void OnSettingsClicked()

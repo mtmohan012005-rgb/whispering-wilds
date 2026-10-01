@@ -13,10 +13,33 @@ namespace WhisperingWilds.Data
         Failed
     }
 
+    /// <summary>
+    /// The gameplay event that can satisfy an objective. An objective only advances when its
+    /// own event is actually reported through <c>GameplayEventBus</c>, never because some
+    /// unrelated call happened to name the same quest.
+    /// </summary>
+    public enum QuestObjectiveType
+    {
+        TalkToNPC = 0,
+        DiscoverClue = 1,
+        ReachLocation = 2,
+        CollectItem = 3,
+        InvestigateObject = 4,
+        PhotographTarget = 5,
+        CraftItem = 6
+    }
+
     [Serializable]
     public class QuestObjective
     {
         public string objectiveId;
+
+        [Tooltip("Which gameplay event satisfies this objective.")]
+        public QuestObjectiveType type = QuestObjectiveType.TalkToNPC;
+
+        [Tooltip("Stable identifier the reported event must match: npcId, clueId, locationId, itemId, objectId, photo target id, or recipeId.")]
+        public string targetId;
+
         public string descriptionEn;
         public string descriptionTa;
         public int requiredCount = 1;

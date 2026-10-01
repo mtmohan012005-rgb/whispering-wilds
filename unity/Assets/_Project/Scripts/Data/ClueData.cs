@@ -29,6 +29,11 @@ namespace WhisperingWilds.Data
 
         [Header("Investigation Links")]
         public string relatedClueId;
+
+        /// <summary>Player-facing conclusion unlocked by holding this clue and its link.</summary>
         public string deductionNote;
+
+        /// <summary>Tamil rendering of <see cref="deductionNote"/>. Falls back to English when empty.</summary>
+        [TextArea(2, 3)] public string deductionNoteTa;
     }
 }

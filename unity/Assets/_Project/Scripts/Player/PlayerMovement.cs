@@ -114,10 +114,42 @@ namespace WhisperingWilds.Player
             }
 
             CheckGrounded();
+
+            // Dialogue, the investigation board, and the main menu all freeze time, but a frozen
+            // Update is not a sufficient guarantee on its own. Locomotion is additionally gated so
+            // the player cannot drift or keep a jump buffered while a UI owns the screen.
+            if (!IsLocomotionAllowed())
+            {
+                ZeroHorizontalVelocity();
+                UpdateAnimator();
+                return;
+            }
+
             HandleGravityAndJump();
             HandleMovement();
             UpdateCrouchDimensions();
             UpdateAnimator();
+        }
+
+        /// <summary>
+        /// Locomotion is allowed only while the game is actually playing. PhotoMode deliberately
+        /// does not allow walking, since a photographer repositions with the camera.
+        /// </summary>
+        private static bool IsLocomotionAllowed()
+        {
+            var gm = WhisperingWilds.Core.GameManager.Instance;
+            return gm == null || gm.CurrentState == WhisperingWilds.Core.GameState.Gameplay;
+        }
+
+        /// <summary>Clears residual planar velocity when locomotion is blocked.</summary>
+        private void ZeroHorizontalVelocity()
+        {
+            if (controller == null || !controller.isGrounded) return;
+
+            Vector3 planar = new Vector3(controller.velocity.x, 0f, controller.velocity.z);
+            if (planar.sqrMagnitude < 0.0001f) return;
+
+            controller.Move(-planar * Time.deltaTime);
         }
 
         private void UpdateCrouchDimensions()

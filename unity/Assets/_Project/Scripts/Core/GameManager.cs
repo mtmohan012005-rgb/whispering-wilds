@@ -26,13 +26,20 @@ namespace WhisperingWilds.Core
         public static GameManager Instance { get; private set; }
 
         [Header("Runtime State")]
-        [SerializeField] private GameState currentState = GameState.Gameplay;
-        [SerializeField] private string currentRegion = "Chennai";
+        [SerializeField] private GameState currentState = GameState.Boot;
+        [SerializeField] private string currentRegion = "chennai";
+
+        [Header("Autosave")]
+        [Tooltip("Seconds between autosaves while playing. Disabled when <= 0.")]
+        [SerializeField] private float autosaveIntervalSeconds = 120f;
 
         public GameState CurrentState => currentState;
         public string CurrentRegion => currentRegion;
 
         public event Action<GameState> OnGameStateChanged;
+
+        private float autosaveTimer;
+        private bool autosaveInProgress;
 
         private void Awake()
         {
@@ -43,14 +50,55 @@ namespace WhisperingWilds.Core
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // Opening content must exist before any manager resolves a saved identifier.
+            Gameplay.ChennaiOpeningContent.EnsureInitialized();
         }
 
         private void Start()
         {
-            SetGameState(GameState.Gameplay);
+            // The boot scene owns the menu, so start in Boot and let the menu hand over to
+            // Gameplay. Previously this forced Gameplay immediately, which meant the main menu
+            // was reachable only as an overlay on a running campaign.
+            SetGameState(GameState.Boot);
+
             if (HUDManager.Instance != null)
             {
                 HUDManager.Instance.SetRegionName("George Town, Chennai", "சென்னை ஜார்ஜ் டவுன்");
+            }
+        }
+
+        private void Update()
+        {
+            TickAutosave();
+        }
+
+        /// <summary>
+        /// Conservative autosave: only while actually playing, never while a save is already in
+        /// flight, and never inside a state where the world is deliberately paused.
+        /// </summary>
+        private void TickAutosave()
+        {
+            if (autosaveIntervalSeconds <= 0f) return;
+            if (autosaveInProgress) return;
+            if (currentState != GameState.Gameplay) return;
+
+            autosaveTimer += Time.unscaledDeltaTime;
+            if (autosaveTimer < autosaveIntervalSeconds) return;
+
+            autosaveTimer = 0f;
+            autosaveInProgress = true;
+            try
+            {
+                var player = GameObject.FindWithTag("Player");
+                if (SaveSystem.SaveGame(player) != null)
+                {
+                    Debug.Log("<color=#00FF99><b>[GameManager]</b></color> Autosave written.");
+                }
+            }
+            finally
+            {
+                autosaveInProgress = false;
             }
         }
 
@@ -63,22 +111,55 @@ namespace WhisperingWilds.Core
 
             switch (currentState)
             {
+                case GameState.Boot:
+                case GameState.MainMenu:
+                case GameState.Paused:
+                case GameState.Cinematic:
+                case GameState.Dialogue:
+                case GameState.InvestigationBoard:
+                case GameState.PhotoMode:
+                    // Every non-playing state freezes the world and releases the cursor. Player
+                    // movement and interaction input are additionally gated by IsPlayerInputAllowed
+                    // so a frozen world cannot be walked through.
+                    Time.timeScale = 0.0f;
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                    break;
+
                 case GameState.Gameplay:
                     Time.timeScale = 1.0f;
                     Cursor.lockState = CursorLockMode.Locked;
                     Cursor.visible = false;
                     break;
-
-                case GameState.Paused:
-                case GameState.Dialogue:
-                case GameState.InvestigationBoard:
-                    Time.timeScale = 0.0f;
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-                    break;
             }
 
             OnGameStateChanged?.Invoke(currentState);
+        }
+
+        /// <summary>
+        /// Single gate for player locomotion and interaction. UI states freeze the world, but a
+        /// frozen <c>Update</c> is not enough of a guarantee on its own, so movement, interaction,
+        /// and the interaction scanner all check this.
+        /// </summary>
+        public bool IsPlayerInputAllowed =>
+            currentState == GameState.Gameplay || currentState == GameState.PhotoMode;
+
+        /// <summary>True when the world is simulated, used by systems that should idle otherwise.</summary>
+        public bool IsWorldSimulating => currentState == GameState.Gameplay;
+
+        /// <summary>
+        /// Records which region is active. Called by the region bootstrap so save capture and
+        /// travel decisions agree on one region id instead of each keeping its own copy.
+        /// </summary>
+        public void SetRegion(string regionId)
+        {
+            if (string.IsNullOrEmpty(regionId) || string.Equals(currentRegion, regionId, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            currentRegion = regionId;
+            Debug.Log($"[GameManager] Active region: {currentRegion}");
         }
 
         /// <summary>
@@ -109,37 +190,63 @@ namespace WhisperingWilds.Core
 
         public void QuickSave()
         {
-            var player = GameObject.FindWithTag("Player");
-            if (player != null)
+            if (SaveManager.Instance != null)
             {
-                SaveSystem.SaveGame(player);
-                if (HUDManager.Instance != null)
-                {
-                    HUDManager.Instance.ShowNotification("Game Saved (விளையாட்டு சேமிக்கப்பட்டது)");
-                }
+                SaveManager.Instance.SaveGame();
+                return;
+            }
+
+            var player = GameObject.FindWithTag("Player");
+            if (SaveSystem.SaveGame(player) != null && HUDManager.Instance != null)
+            {
+                HUDManager.Instance.ShowNotification("Game Saved (விளையாட்டு சேமிக்கப்பட்டது)");
             }
         }
 
         public void QuickLoad()
         {
-            var save = SaveSystem.LoadGame();
-            if (save != null)
+            if (SaveManager.Instance != null)
             {
-                var player = GameObject.FindWithTag("Player");
-                if (player != null)
-                {
-                    player.transform.position = new Vector3(save.posX, save.posY, save.posZ);
-                    var appearance = player.GetComponent<PlayerAppearanceManager>();
-                    if (appearance != null)
-                    {
-                        appearance.RestoreState(save.remainingPermanentAppearanceChanges, save.appearanceProfile, save.equippedOutfit);
-                    }
-                }
+                SaveManager.Instance.LoadGame();
+                return;
+            }
 
+            var save = SaveSystem.LoadGame();
+            if (save == null)
+            {
                 if (HUDManager.Instance != null)
                 {
-                    HUDManager.Instance.ShowNotification("Game Loaded (சேமிக்கப்பட்ட விளையாட்டு ஏற்றப்பட்டது)");
+                    HUDManager.Instance.ShowNotification("No save to load (ஏற்ற விளையாட்டு இல்லை)");
                 }
+                return;
+            }
+
+            if (SaveManager.Instance == null)
+            {
+                SaveManager.PendingSaveToRestore = save;
+            }
+            ApplyPlayerTransformFromSave(save);
+        }
+
+        /// <summary>
+        /// Minimal positional restore used when no SaveManager exists in the scene. The full
+        /// restore path (inventory, quests, investigation) belongs to SaveManager.
+        /// </summary>
+        private static void ApplyPlayerTransformFromSave(GameSaveData save)
+        {
+            var player = GameObject.FindWithTag("Player");
+            if (player == null || save == null) return;
+
+            var cc = player.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            player.transform.position = new Vector3(save.posX, save.posY, save.posZ);
+            player.transform.rotation = Quaternion.Euler(0f, save.rotY, 0f);
+            if (cc != null) cc.enabled = true;
+
+            var appearance = player.GetComponent<PlayerAppearanceManager>();
+            if (appearance != null)
+            {
+                appearance.RestoreState(save.remainingPermanentAppearanceChanges, save.appearanceProfile, save.equippedOutfit);
             }
         }
     }

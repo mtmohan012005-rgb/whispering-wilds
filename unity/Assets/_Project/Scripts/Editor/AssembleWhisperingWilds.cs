@@ -21,6 +21,8 @@ using WhisperingWilds.Online;
 using WhisperingWilds.Vegetation;
 using WhisperingWilds.Persistence;
 using WhisperingWilds.Localization;
+using WhisperingWilds.Campaign;
+using WhisperingWilds.Data;
 
 namespace WhisperingWilds.Editor
 {
@@ -64,6 +66,10 @@ namespace WhisperingWilds.Editor
 
                 // 7. Setup Real NPCs (Murugan & Velu)
                 SetupNPCs();
+
+                // 8. Step 4 gameplay: region bootstrap, evidence interactables, ingredient pickups,
+                //    the photographable tea kadai, and the journal/crafting bench.
+                SetupStep4Gameplay();
 
                 // Save Scene
                 EditorSceneManager.MarkSceneDirty(scene);
@@ -181,6 +187,13 @@ namespace WhisperingWilds.Editor
             if (player.GetComponent<PlayerAppearanceManager>() == null) player.AddComponent<PlayerAppearanceManager>();
             if (player.GetComponent<PlayerManager>() == null) player.AddComponent<PlayerManager>();
             if (player.GetComponent<PlayerInteractor>() == null) player.AddComponent<PlayerInteractor>();
+
+            // Photo mode reads its shutter and cancel inputs from the player, so it lives on the
+            // same object rather than needing a serialized reference to it.
+            if (player.GetComponent<Gameplay.PhotoModeController>() == null)
+            {
+                player.AddComponent<Gameplay.PhotoModeController>();
+            }
 
             // Remove legacy capsule visual if present
             var existingVisual = player.transform.Find("VisualModel");
@@ -512,6 +525,192 @@ namespace WhisperingWilds.Editor
                 serializedNPC.FindProperty("occupation").intValue = (int)NPCOccupation.Resident;
                 serializedNPC.ApplyModifiedProperties();
             }
+        }
+
+        /// <summary>
+        /// Places the Step 4 gameplay layer: the region bootstrap that seeds the opening quests and
+        /// pushes catalogue dialogue onto the residents, the evidence interactables the quest
+        /// objectives name, the ingredient pickups that make crafting possible, the photographable
+        /// tea kadai, and the journal/crafting bench.
+        ///
+        /// Everything here is keyed by the stable identifiers declared in
+        /// <c>ChennaiOpeningContent</c>. The builder never invents an identifier, so a scene that
+        /// regenerates cannot silently stop satisfying an objective.
+        /// </summary>
+        private static void SetupStep4Gameplay()
+        {
+            WhisperingWilds.Gameplay.ChennaiOpeningContent.EnsureInitialized();
+
+            SetupRegionBootstrap();
+            SetupEvidenceInteractables();
+            SetupIngredientPickups();
+            SetupPhotoTargets();
+            SetupJournalBench();
+        }
+
+        private static void SetupRegionBootstrap()
+        {
+            var regionObj = GameObject.Find("--- REGION_CHENNAI ---");
+            if (regionObj == null) regionObj = new GameObject("--- REGION_CHENNAI ---");
+
+            var bootstrap = regionObj.GetComponent<Gameplay.GameplayRegionBootstrap>();
+            if (bootstrap == null) bootstrap = regionObj.AddComponent<Gameplay.GameplayRegionBootstrap>();
+
+            var so = new SerializedObject(bootstrap);
+            so.FindProperty("regionId").stringValue = WhisperingWilds.Gameplay.ChennaiOpeningContent.RegionId;
+            so.ApplyModifiedProperties();
+
+            // The Chennai scene is played standalone as often as it is reached from the boot scene,
+            // so the persistent shell is created here too rather than assumed.
+            var managersObj = GameObject.Find("--- MANAGERS ---");
+            if (managersObj != null)
+            {
+                if (managersObj.GetComponent<CampaignFlow>() == null) managersObj.AddComponent<CampaignFlow>();
+            }
+        }
+
+        /// <summary>
+        /// Creates the interactables that satisfy the InvestigateObject and ReachLocation objectives
+        /// and reveal the clues the quests require.
+        /// </summary>
+        private static void SetupEvidenceInteractables()
+        {
+            var root = GameObject.Find("--- EVIDENCE ---");
+            if (root == null) root = new GameObject("--- EVIDENCE ---");
+
+            // The court notice board: satisfying reach_plaza, examine_board, and record_clue.
+            CreateEventInteractable(root.transform, "Investigate_HighCourtNoticeBoard",
+                new Vector3(8f, 1.2f, -6f), new Vector3(1.2f, 2.4f, 0.2f),
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.ObjectHighCourtNoticeBoard,
+                QuestObjectiveType.InvestigateObject, "interaction.investigate",
+                "Read the court notice board", "நீதிமன்ற அறிவிப்புப் பலகையைப் படி",
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.ClueHighCourtSticker, null, 0,
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.LocationHighCourtPlaza, true);
+
+            // Murugan's ledger on the tea kadai counter: reveals the ledger clue in the world as well
+            // as through conversation.
+            CreateEventInteractable(root.transform, "Investigate_TeaKadaiLedger",
+                new Vector3(-5.6f, 1.1f, 5.4f), new Vector3(0.5f, 0.3f, 0.4f),
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.ObjectTeaKadaiLedger,
+                QuestObjectiveType.InvestigateObject, "interaction.read",
+                "Read the tea ledger", "தேயிலைப் பதிவேட்டைப் படி",
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.ClueMuruganTeaLedger, null, 0,
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.LocationTeaKadai, true);
+        }
+
+        /// <summary>
+        /// Creates the pickups that supply the crafting ingredients. Without these the CraftItem
+        /// objective is unreachable, because no recipe ingredient is granted anywhere else.
+        /// </summary>
+        private static void SetupIngredientPickups()
+        {
+            var root = GameObject.Find("--- PICKUPS ---");
+            if (root == null) root = new GameObject("--- PICKUPS ---");
+
+            CreateEventInteractable(root.transform, "Pickup_Velu_TeaLeaves",
+                new Vector3(3.6f, 0.8f, 9.4f), new Vector3(0.45f, 0.45f, 0.45f),
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.PickupTeaLeaves,
+                QuestObjectiveType.CollectItem, "interaction.collect",
+                "Take the tea leaves", "தேயிலைகளை எடு",
+                null, WhisperingWilds.Gameplay.ChennaiOpeningContent.ItemTeaLeaves, 4,
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.LocationVeluRickshaw, true);
+
+            CreateEventInteractable(root.transform, "Pickup_PalmJaggery",
+                new Vector3(-5.9f, 1.25f, 6.6f), new Vector3(0.35f, 0.3f, 0.35f),
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.PickupPalmJaggery,
+                QuestObjectiveType.CollectItem, "interaction.collect",
+                "Take the palm jaggery", "பனை வெல்லத்தை எடு",
+                null, WhisperingWilds.Gameplay.ChennaiOpeningContent.ItemPalmJaggery, 3,
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.LocationTeaKadai, true);
+
+            CreateEventInteractable(root.transform, "Pickup_BambooPole",
+                new Vector3(-5.6f, 0.9f, 14.4f), new Vector3(0.2f, 1.7f, 0.2f),
+                WhisperingWilds.Gameplay.ChennaiOpeningContent.PickupBambooPole,
+                QuestObjectiveType.CollectItem, "interaction.collect",
+                "Take a bamboo pole", "மூங்குக் கம்பத்தை எடு",
+                null, WhisperingWilds.Gameplay.ChennaiOpeningContent.ItemBambooStick, 2,
+                null, false);
+        }
+
+        private static void SetupPhotoTargets()
+        {
+            var stall = GameObject.Find("Murugan_Tea_Kadai");
+            if (stall == null) return;
+
+            // A collider already exists on the stall; PhotoTarget requires one for the photo ray.
+            if (stall.GetComponent<Collider>() == null) stall.AddComponent<BoxCollider>();
+
+            var target = stall.GetComponent<Photography.PhotoTarget>();
+            if (target == null) target = stall.AddComponent<Photography.PhotoTarget>();
+
+            var so = new SerializedObject(target);
+            so.FindProperty("targetId").stringValue = WhisperingWilds.Gameplay.ChennaiOpeningContent.PhotoTargetTeaKadaiStall;
+            so.FindProperty("displayNameEn").stringValue = "Murugan's Tea Kadai";
+            so.FindProperty("displayNameTa").stringValue = "முருகனின் தேய்கடை";
+            so.ApplyModifiedProperties();
+        }
+
+        private static void SetupJournalBench()
+        {
+            var canvasObj = GameObject.Find("HUD_Canvas");
+            if (canvasObj == null)
+            {
+                canvasObj = new GameObject("HUD_Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                canvasObj.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+                var scaler = canvasObj.GetComponent<CanvasScaler>();
+                scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                scaler.referenceResolution = new Vector2(1920, 1080);
+            }
+
+            if (canvasObj.GetComponent<GameplayJournalUI>() == null)
+            {
+                canvasObj.AddComponent<GameplayJournalUI>();
+            }
+        }
+
+        private static GameObject CreateEventInteractable(Transform parent, string name, Vector3 position,
+            Vector3 size, string targetId, WhisperingWilds.Data.QuestObjectiveType reportType, string promptKey,
+            string promptEn, string promptTa, string revealClueId, string grantItemId, int grantItemCount,
+            string locationId, bool reportArrival)
+        {
+            var existing = GameObject.Find(name);
+            if (existing != null) return existing;
+
+            var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            obj.name = name;
+            obj.transform.SetParent(parent, false);
+            obj.transform.position = position;
+            obj.transform.localScale = size;
+
+            var renderer = obj.GetComponent<MeshRenderer>();
+            if (renderer != null)
+            {
+                var shader = Shader.Find("HDRP/Lit") ?? Shader.Find("Standard");
+                renderer.sharedMaterial = new Material(shader) { color = new Color(0.35f, 0.28f, 0.2f) };
+            }
+
+            var interactable = obj.AddComponent<Gameplay.GameplayEventInteractable>();
+
+            var so = new SerializedObject(interactable);
+            so.FindProperty("targetId").stringValue = targetId;
+            so.FindProperty("reportType").enumValueIndex = (int)reportType;
+            so.FindProperty("promptKey").stringValue = promptKey;
+            so.FindProperty("promptEn").stringValue = promptEn;
+            so.FindProperty("promptTa").stringValue = promptTa;
+            so.FindProperty("interactionType").enumValueIndex =
+                (int)(reportType == QuestObjectiveType.CollectItem
+                    ? InteractionType.Collect
+                    : InteractionType.Investigate);
+            so.FindProperty("revealClueId").stringValue = revealClueId ?? string.Empty;
+            so.FindProperty("grantItemId").stringValue = grantItemId ?? string.Empty;
+            so.FindProperty("grantItemCount").intValue = grantItemCount;
+            // Only pickups grant, and a pickup must not be refillable by repeated interaction.
+            so.FindProperty("grantOnce").boolValue = true;
+            so.FindProperty("locationId").stringValue = locationId ?? string.Empty;
+            so.FindProperty("reportArrival").boolValue = reportArrival;
+            so.ApplyModifiedProperties();
+
+            return obj;
         }
     }
 }

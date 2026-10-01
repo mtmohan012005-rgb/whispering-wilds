@@ -110,6 +110,25 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("interaction.examine",  "Examine",       "ஆராய்கு"),
             new LocalizationEntry("interaction.harvest",  "Harvest",       "அறுவடு"),
             new LocalizationEntry("interaction.water",    "Water",         "நீர்"),
+            new LocalizationEntry("interaction.investigate","Investigate",   "ஆராய்கு"),
+            new LocalizationEntry("interaction.collect",   "Collect",        "சேகரி"),
+            new LocalizationEntry("interaction.read",      "Read",           "படி"),
+            new LocalizationEntry("interaction.pickup",    "Pick up",        "எடு"),
+
+            // ---- Field journal & crafting bench -------------------------------
+            new LocalizationEntry("journal.title",       "Field Journal",    "களப்பேணி"),
+            new LocalizationEntry("journal.quests",      "Quests",           "நோக்கங்கள்"),
+            new LocalizationEntry("journal.clues",       "Recorded Clues",   "பதிவுசெய்த சான்றுகள்"),
+            new LocalizationEntry("journal.deductions",  "Deductions",       "முடிவுகள்"),
+            new LocalizationEntry("journal.contacts",    "People Met",       "சந்தித்தவர்கள்"),
+            new LocalizationEntry("journal.no_quests",    "No active quests.",   "செயலூக்க நோக்கங்கள் இல்லை."),
+            new LocalizationEntry("journal.no_clues",     "Nothing recorded yet.", "இன்னும் எதுவும் பதிவு செய்யப்படவில்லை."),
+            new LocalizationEntry("journal.no_deductions","Link two records to form a deduction.", "முடிவை உருவாக்க இரு பதிவுகளை இணையுங்கள்."),
+            new LocalizationEntry("journal.no_contacts",  "You have not spoken to anyone yet.", "நீங்கள் யாருடனும் பேசவில்லை."),
+            new LocalizationEntry("crafting.title",       "Crafting",          "தயாரிப்பு"),
+            new LocalizationEntry("crafting.craft",       "Craft",             "தயாரி"),
+            new LocalizationEntry("crafting.no_recipes",  "No recipes known.",  "செய்முறைகள் தெரியவில்லை."),
+            new LocalizationEntry("crafting.unavailable", "Crafting is unavailable in this region.", "இந்தப் பகுதியில் தயாரிப்பு இல்லை."),
 
             // ---- Region display names ----------------------------------------
             new LocalizationEntry("region.chennai",      "Chennai George Town",  "சென்னை ஜார்ஜன் டவுன்"),

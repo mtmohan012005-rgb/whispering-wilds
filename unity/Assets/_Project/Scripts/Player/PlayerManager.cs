@@ -4,16 +4,21 @@ using UnityEngine;
 namespace WhisperingWilds.Player
 {
     /// <summary>
-    /// Single authoritative Player Governor orchestrating character state,
-    /// locomotion, cultural regional outfits, and strictly enforcing the
-    /// maximum 5 permanent appearance changes ceiling.
-    /// </summary>
+    /// Player facade used by gameplay systems for movement, the regional outfit, and the
+        /// permanent appearance change allowance.
+        ///
+        /// The allowance itself is owned by <see cref="PlayerAppearanceManager"/>, which applies the
+        /// actual profile change. This counter mirrors it so systems that only need to know the
+        /// remaining budget do not have to reference the appearance stack, and both sides clamp to
+        /// the single shared ceiling.
+        /// </summary>
     [DisallowMultipleComponent]
     public class PlayerManager : MonoBehaviour
     {
         public static PlayerManager Instance { get; private set; }
 
-        public const int MaxPermanentAppearanceChanges = 5;
+        /// <summary>Shared ceiling for permanent appearance changes across the whole project.</summary>
+        public const int MaxPermanentAppearanceChanges = PlayerAppearanceManager.MaxPermanentAppearanceChanges;
 
         [Header("Appearance & Customization Limit")]
         [SerializeField] private int remainingPermanentAppearanceChanges = MaxPermanentAppearanceChanges;
@@ -64,6 +69,15 @@ namespace WhisperingWilds.Player
         {
             remainingPermanentAppearanceChanges = Mathf.Clamp(count, 0, MaxPermanentAppearanceChanges);
             OnAppearanceChangesUpdated?.Invoke(remainingPermanentAppearanceChanges);
+        }
+
+        /// <summary>
+        /// Restores the full allowance for a new campaign, keeping this mirror in step with
+        /// <see cref="PlayerAppearanceManager.ResetToNewGameDefaults"/>.
+        /// </summary>
+        public void ResetAppearanceAllowance()
+        {
+            SetRemainingPermanentChanges(MaxPermanentAppearanceChanges);
         }
 
         public void EquipRegionalOutfit(RegionalOutfitType outfit)

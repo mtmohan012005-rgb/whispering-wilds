@@ -31,8 +31,27 @@ namespace WhisperingWilds.Player
 
         private void Update()
         {
+            // Interaction is only live during gameplay. A menu, dialogue, or the investigation
+            // board must not be able to trigger a world interaction through a held prompt.
+            if (!IsInteractionAllowed())
+            {
+                if (currentTarget != null)
+                {
+                    currentTarget.OnFocusExit();
+                    currentTarget = null;
+                    OnFocusChanged?.Invoke(null);
+                }
+                return;
+            }
+
             ScanForInteractables();
             HandleInteractionInput();
+        }
+
+        private static bool IsInteractionAllowed()
+        {
+            var gm = WhisperingWilds.Core.GameManager.Instance;
+            return gm == null || gm.CurrentState == WhisperingWilds.Core.GameState.Gameplay;
         }
 
         private void ScanForInteractables()

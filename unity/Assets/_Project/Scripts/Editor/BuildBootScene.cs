@@ -16,6 +16,7 @@ using WhisperingWilds.NPC;
 using WhisperingWilds.Wildlife;
 using WhisperingWilds.Localization;
 using WhisperingWilds.Display;
+using WhisperingWilds.Campaign;
 
 namespace WhisperingWilds.Editor
 {
@@ -478,10 +479,10 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             // Settings storage, without the display writes: this component now delegates to
             // DisplaySettingsManager / GraphicsPerformanceManager instead of persisting the
             // same WW_Fullscreen, WW_VSync and WW_QualityTier keys a second time.
-            if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddComponent<SettingsMenuController>();
-
+if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddComponent<SettingsMenuController>();
+            if (managersObj.GetComponent<CampaignFlow>() == null) managersObj.AddComponent<CampaignFlow>();
+            if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
             var pbm = managersObj.GetComponent<PerformanceBenchmarkManager>();
-            if (pbm == null) pbm = managersObj.AddComponent<PerformanceBenchmarkManager>();
             pbm.AutoStartOnLoad = false;
 
             if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();

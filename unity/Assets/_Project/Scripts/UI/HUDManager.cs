@@ -51,7 +51,7 @@ namespace WhisperingWilds.UI
         /// Permanent appearance change cap, surfaced as a localized value instead of the
         /// previously hardcoded "/5" inside a format string.
         /// </summary>
-        public const int MaxPermanentAppearanceChanges = 5;
+        public const int MaxPermanentAppearanceChanges = WhisperingWilds.Player.PlayerManager.MaxPermanentAppearanceChanges;
 
         private void OnEnable()
         {

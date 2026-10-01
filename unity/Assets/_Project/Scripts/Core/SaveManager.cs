@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using WhisperingWilds.Online;
 using WhisperingWilds.Player;
+using WhisperingWilds.Photography;
+using WhisperingWilds.NPC;
+using WhisperingWilds.Inventory;
 
 namespace WhisperingWilds.Core
 {
@@ -80,7 +84,49 @@ namespace WhisperingWilds.Core
 
             if (WhisperingWilds.Inventory.InventoryManager.Instance != null)
             {
-                WhisperingWilds.Inventory.InventoryManager.Instance.AddCurrency(save.currency - WhisperingWilds.Inventory.InventoryManager.Instance.Currency);
+                var inv = WhisperingWilds.Inventory.InventoryManager.Instance;
+                inv.RestoreFromSave(save.inventoryItems, save.currency);
+            }
+
+            if (WhisperingWilds.Quests.QuestManager.Instance != null)
+            {
+                var qm = WhisperingWilds.Quests.QuestManager.Instance;
+                qm.RestoreProgress(save.questProgress, save.activeQuestIds, save.completedQuestIds);
+            }
+
+            if (WhisperingWilds.Investigation.InvestigationManager.Instance != null)
+            {
+                var im = WhisperingWilds.Investigation.InvestigationManager.Instance;
+                im.RestoreState(save.discoveredClueIds, save.unlockedDeductions);
+            }
+
+            // Restore v2 history silently. Replaying Record() would re-fire capture, craft, and
+            // talk events and double-advance objectives the player already satisfied, and it would
+            // accumulate any history left over from the previous session.
+            WhisperingWilds.Photography.PhotoJournal.Restore(save.photographedTargets, save.currentRegionId);
+
+            if (save.craftedRecipeIds != null && save.craftedRecipeCounts != null)
+            {
+                var counts = new List<KeyValuePair<string, int>>(save.craftedRecipeIds.Count);
+                int countPairs = Mathf.Min(save.craftedRecipeIds.Count, save.craftedRecipeCounts.Count);
+                for (int i = 0; i < countPairs; i++)
+                {
+                    if (string.IsNullOrEmpty(save.craftedRecipeIds[i])) continue;
+                    counts.Add(new KeyValuePair<string, int>(save.craftedRecipeIds[i], save.craftedRecipeCounts[i]));
+                }
+                WhisperingWilds.Inventory.CraftingHistory.Restore(counts);
+            }
+            else
+            {
+                WhisperingWilds.Inventory.CraftingHistory.Clear();
+            }
+
+            WhisperingWilds.NPC.NPCInteractionLog.Restore(save.interactedNpcIds);
+
+            if (WhisperingWilds.Localization.LocalizationManager.Instance != null && save.languagePreference >= 0)
+            {
+                var lang = (WhisperingWilds.Localization.Language)Mathf.Clamp(save.languagePreference, 0, 1);
+                WhisperingWilds.Localization.LocalizationManager.Instance.SetLanguage(lang);
             }
 
             if (WhisperingWilds.World.WorldTimeSystem.Instance != null)

@@ -97,5 +97,21 @@ namespace WhisperingWilds.Player
             currentProfile = profile;
             currentOutfit = outfit;
         }
+
+        /// <summary>
+        /// Returns the player to a brand new campaign's appearance: the full permanent change
+        /// allowance, a default profile, and the Chennai everyday outfit. Regional outfits are
+        /// temporary attire, so the everyday outfit is the correct new-game starting state.
+        /// Called by New Game so a restarted campaign does not inherit a previous run's look.
+        /// </summary>
+        public void ResetToNewGameDefaults()
+        {
+            remainingPermanentChanges = MaxPermanentAppearanceChanges;
+            currentProfile = default;
+            currentOutfit = RegionalOutfitType.EverydayChennai;
+
+            OnPermanentAppearanceChanged?.Invoke(currentProfile, remainingPermanentChanges);
+            OnOutfitChanged?.Invoke(currentOutfit);
+        }
     }
 }
