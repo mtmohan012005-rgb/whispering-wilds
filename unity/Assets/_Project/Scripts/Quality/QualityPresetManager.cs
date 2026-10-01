@@ -51,6 +51,24 @@ namespace WhisperingWilds.Quality
         public event Action<QualityTier, QualityPresetSettings> OnQualityPresetChanged;
         public event Action<QualityTier> OnPresetApplied;
 
+        /// <summary>
+        /// Static, scene-independent tier lookup. This class is the single owner of the preset
+        /// table; other systems (notably <see cref="GraphicsPerformanceManager"/>) read tiers
+        /// through here instead of keeping a second copy that can drift out of sync.
+        /// </summary>
+        public static QualityPresetSettings GetPreset(QualityTier tier)
+        {
+            switch (tier)
+            {
+                case QualityTier.VeryLow: return VeryLowPreset;
+                case QualityTier.Low: return LowPreset;
+                case QualityTier.Medium: return MediumPreset;
+                case QualityTier.High: return HighPreset;
+                case QualityTier.Ultra: return UltraPreset;
+                default: return HighPreset;
+            }
+        }
+
         private static readonly QualityPresetSettings VeryLowPreset = new QualityPresetSettings
         {
             name = "Very Low (குறைந்தபட்சம்)",
@@ -168,18 +186,7 @@ namespace WhisperingWilds.Quality
             ApplyPreset((QualityTier)savedTier);
         }
 
-        public QualityPresetSettings GetPresetSettings(QualityTier tier)
-        {
-            switch (tier)
-            {
-                case QualityTier.VeryLow: return VeryLowPreset;
-                case QualityTier.Low: return LowPreset;
-                case QualityTier.Medium: return MediumPreset;
-                case QualityTier.High: return HighPreset;
-                case QualityTier.Ultra: return UltraPreset;
-                default: return HighPreset;
-            }
-        }
+        public QualityPresetSettings GetPresetSettings(QualityTier tier) => GetPreset(tier);
 
         public void ApplyPreset(QualityTier tier)
         {

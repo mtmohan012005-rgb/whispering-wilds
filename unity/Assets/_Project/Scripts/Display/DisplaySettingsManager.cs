@@ -43,8 +43,12 @@ namespace WhisperingWilds.Display
         public const string PlayerPrefsKeyFrameLimit = "WW_FrameLimit";
         public const string PlayerPrefsKeyUiScale = "WW_UiScale";
 
-        /// <summary>Used when nothing is persisted, and when the persisted mode is no longer offered.</summary>
-        public const DisplayMode DefaultMode = new DisplayMode { width = 1920, height = 1080, refreshRate = 60 };
+        /// <summary>
+        /// Used when nothing is persisted, and when the persisted mode is no longer offered.
+        /// <c>readonly</c> rather than <c>const</c>: a struct with value fields can never be a
+        /// compile-time constant.
+        /// </summary>
+        public static readonly DisplayMode DefaultMode = new DisplayMode { width = 1920, height = 1080, refreshRate = 60 };
 
         private static DisplaySettingsManager _instance;
         public static DisplaySettingsManager Instance => _instance;
@@ -285,9 +289,9 @@ namespace WhisperingWilds.Display
                 _ => 1.0f
             };
 
-            foreach (CanvasScaler scaler in FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (UnityEngine.UI.CanvasScaler scaler in FindObjectsByType<UnityEngine.UI.CanvasScaler>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
-                if (scaler.uiScaleMode != CanvasScaler.ScaleMode.ScaleWithScreenSize) continue;
+                if (scaler.uiScaleMode != UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize) continue;
                 scaler.matchWidthOrHeight = factor <= 1f ? 0.65f : 0.35f;
             }
         }

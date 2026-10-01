@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 namespace WhisperingWilds.Quality
 {
@@ -208,22 +209,93 @@ namespace WhisperingWilds.Quality
         }
 
         /// <summary>
-        /// Actually invokes the low-level engine dynamic resolution scaling APIs
-        /// rather than merely modifying an unapplied variable.
+        /// Applies a render scale through the HDRP dynamic resolution pipeline.
         /// </summary>
+        /// <remarks>
+        /// <c>ScalableBufferManager.ResizeBuffers</c> drives the built-in render pipeline's
+        /// software scaler. HDRP does not honour it, so on this project the scaler must be
+        /// configured through <c>DynamicResolutionHandler</c> instead, otherwise the adaptive
+        /// loop silently changes a number that never reaches the GPU.
+        /// The HDRP asset's own min/max dynamic-resolution percentages are widened first,
+        /// because the asset ships pinned at 100-100, which would clamp any scaler to a no-op.
+        /// </remarks>
         public void ApplyEngineRenderResolution(float scale)
         {
             InitCamera();
             CurrentRenderScale = Mathf.Clamp(scale, minRenderScale, maxRenderScale);
 
-            // 1. Native engine buffer scaling for dynamic resolution
-            ScalableBufferManager.ResizeBuffers(CurrentRenderScale, CurrentRenderScale);
+            // 1. Widen the HDRP asset's dynamic-resolution range so the scaler below is not
+            //    clamped away, then push the requested scale into the handler.
+            ApplyHdrpDynamicResolution();
 
-            // 2. Adjust LOD bias proportionally to relieve vertex and draw-call pressure
+            // 2. Adjust LOD bias proportionally to relieve vertex and draw-call pressure.
+            //    renderScale is the tier's native target, so this preserves the ratio the
+            //    adaptive loop is stepping away from.
             QualityPresetSettings currentSettings = GetPresetSettings(currentTier);
             QualitySettings.lodBias = currentSettings.renderScale * CurrentRenderScale;
 
             OnDynamicResolutionChanged?.Invoke(CurrentRenderScale);
+        }
+
+        /// <summary>Registered once with the dynamic resolution handler; see <see cref="ApplyHdrpDynamicResolution"/>.</summary>
+        private static PerformDynamicRes s_RegisteredScaler;
+
+        /// <summary>
+        /// Wires this manager into the HDRP dynamic resolution pipeline and pushes
+        /// <see cref="CurrentRenderScale"/> to it. Safe on non-HDRP pipelines: it falls back to
+        /// <c>ScalableBufferManager</c> so the built-in render pipeline keeps working.
+        /// </summary>
+        /// <remarks>
+        /// The handler stores a <c>PerformDynamicRes</c> delegate returning a lerp factor between
+        /// the asset's min and max screen percentages, so the delegate is registered exactly once
+        /// and simply reads <see cref="CurrentRenderScale"/> thereafter.
+        /// </remarks>
+        private void ApplyHdrpDynamicResolution()
+        {
+            HDRenderPipelineAsset hdrAsset = GraphicsSettings.currentRenderPipeline as HDRenderPipelineAsset;
+            if (hdrAsset == null)
+            {
+                // Built-in render pipeline (or SRP not yet assigned): use the software scaler.
+                ScalableBufferManager.ResizeBuffers(CurrentRenderScale, CurrentRenderScale);
+                return;
+            }
+
+            // Widen the asset's dynamic-resolution range. The shipped asset pins min/max to 100%,
+            // which clamps the handler's lerp to a fixed 100% and makes the whole system a no-op.
+            RenderPipelineSettings settings = hdrAsset.currentPlatformRenderPipelineSettings;
+            GlobalDynamicResolutionSettings drSettings = settings.dynamicResolutionSettings;
+            if (!drSettings.enabled)
+            {
+                drSettings.enabled = true;
+            }
+            drSettings.minPercentage = minRenderScale * 100f;
+            drSettings.maxPercentage = maxRenderScale * 100f;
+            settings.dynamicResolutionSettings = drSettings;
+            hdrAsset.currentPlatformRenderPipelineSettings = settings;
+
+            if (s_RegisteredScaler == null)
+            {
+                s_RegisteredScaler = PerformDynamicResScaler;
+                DynamicResolutionHandler.SetDynamicResScaler(
+                    s_RegisteredScaler,
+                    DynamicResScalePolicyType.ReturnsMinMaxLerpFactor);
+            }
+        }
+
+        /// <summary>
+        /// Converts the current render scale into the lerp factor the dynamic resolution handler
+        /// expects: 0 = asset minimum percentage, 1 = asset maximum percentage.
+        /// </summary>
+        private static float PerformDynamicResScaler()
+        {
+            GraphicsPerformanceManager mgr = Instance;
+            if (mgr == null) return 1f;
+
+            float range = mgr.maxRenderScale - mgr.minRenderScale;
+            if (range <= 0.0001f) return 1f;
+
+            float t = (mgr.CurrentRenderScale - mgr.minRenderScale) / range;
+            return Mathf.Clamp01(t);
         }
 
         public QualityTier AutoDetectHardware()
@@ -305,113 +377,11 @@ namespace WhisperingWilds.Quality
             OnQualityProfileChanged?.Invoke(tier, settings);
         }
 
-        public QualityPresetSettings GetPresetSettings(QualityTier tier)
-        {
-            switch (tier)
-            {
-                case QualityTier.VeryLow:
-                    return new QualityPresetSettings
-                    {
-                        name = "Very Low (குறைந்தபட்சம்)",
-                        renderScale = 0.70f,
-                        shadowDistance = 20f,
-                        shadowCascades = 1,
-                        vegetationDensity = 0.30f,
-                        npcDensityFactor = 0.40f,
-                        wildlifeDensityFactor = 0.30f,
-                        viewDistance = 120f,
-                        textureStreamingBudgetMB = 256,
-                        targetFrameRate = 30,
-                        vSyncCount = 0,
-                        antiAliasing = 0,
-                        anisotropicFiltering = false,
-                        softShadows = false,
-                        volumetricEffects = false,
-                        postProcessingEnabled = false
-                    };
-                case QualityTier.Low:
-                    return new QualityPresetSettings
-                    {
-                        name = "Low (குறைவு)",
-                        renderScale = 0.80f,
-                        shadowDistance = 40f,
-                        shadowCascades = 2,
-                        vegetationDensity = 0.50f,
-                        npcDensityFactor = 0.60f,
-                        wildlifeDensityFactor = 0.50f,
-                        viewDistance = 250f,
-                        textureStreamingBudgetMB = 512,
-                        targetFrameRate = 30,
-                        vSyncCount = 0,
-                        antiAliasing = 0,
-                        anisotropicFiltering = true,
-                        softShadows = false,
-                        volumetricEffects = false,
-                        postProcessingEnabled = true
-                    };
-                case QualityTier.Medium:
-                    return new QualityPresetSettings
-                    {
-                        name = "Medium (நடுத்தரம்)",
-                        renderScale = 0.90f,
-                        shadowDistance = 75f,
-                        shadowCascades = 2,
-                        vegetationDensity = 0.75f,
-                        npcDensityFactor = 0.80f,
-                        wildlifeDensityFactor = 0.75f,
-                        viewDistance = 500f,
-                        textureStreamingBudgetMB = 1024,
-                        targetFrameRate = 60,
-                        vSyncCount = 1,
-                        antiAliasing = 2,
-                        anisotropicFiltering = true,
-                        softShadows = true,
-                        volumetricEffects = false,
-                        postProcessingEnabled = true
-                    };
-                case QualityTier.High:
-                    return new QualityPresetSettings
-                    {
-                        name = "High (உயர்ந்தது)",
-                        renderScale = 1.0f,
-                        shadowDistance = 150f,
-                        shadowCascades = 4,
-                        vegetationDensity = 1.0f,
-                        npcDensityFactor = 1.0f,
-                        wildlifeDensityFactor = 1.0f,
-                        viewDistance = 1000f,
-                        textureStreamingBudgetMB = 2048,
-                        targetFrameRate = 60,
-                        vSyncCount = 1,
-                        antiAliasing = 4,
-                        anisotropicFiltering = true,
-                        softShadows = true,
-                        volumetricEffects = true,
-                        postProcessingEnabled = true
-                    };
-                case QualityTier.Ultra:
-                    return new QualityPresetSettings
-                    {
-                        name = "Ultra (அதிநவீனம்)",
-                        renderScale = 1.0f,
-                        shadowDistance = 250f,
-                        shadowCascades = 4,
-                        vegetationDensity = 1.25f,
-                        npcDensityFactor = 1.20f,
-                        wildlifeDensityFactor = 1.20f,
-                        viewDistance = 1800f,
-                        textureStreamingBudgetMB = 4096,
-                        targetFrameRate = 120,
-                        vSyncCount = 1,
-                        antiAliasing = 8,
-                        anisotropicFiltering = true,
-                        softShadows = true,
-                        volumetricEffects = true,
-                        postProcessingEnabled = true
-                    };
-                default:
-                    return GetPresetSettings(QualityTier.High);
-            }
-        }
+        /// <summary>
+        /// Tier lookup delegated to <see cref="QualityPresetManager"/>, the single owner of the
+        /// preset table. This manager must not keep a second copy, or the two drift apart and
+        /// the settings menu stops reflecting what the adaptive loop actually applied.
+        /// </summary>
+        public QualityPresetSettings GetPresetSettings(QualityTier tier) => QualityPresetManager.GetPreset(tier);
     }
 }

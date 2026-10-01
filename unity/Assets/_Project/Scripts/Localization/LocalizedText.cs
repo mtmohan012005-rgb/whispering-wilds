@@ -75,6 +75,12 @@ namespace WhisperingWilds.Localization
         }
 
         /// <summary>Re-reads the active language and rewrites the label.</summary>
+        public void Refresh(Language _)
+        {
+            Refresh();
+        }
+
+        /// <summary>Re-reads the active language and rewrites the label.</summary>
         public void Refresh()
         {
             if (_label == null) _label = GetComponent<Text>();
