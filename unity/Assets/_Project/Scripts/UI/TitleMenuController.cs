@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using WhisperingWilds.Core;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.UI
 {
@@ -18,6 +19,7 @@ namespace WhisperingWilds.UI
         [Header("Panels")]
         [SerializeField] private GameObject codexPanel;
         [SerializeField] private Button closeCodexButton;
+        [SerializeField] private SettingsMenuUI settingsMenu;
 
         [Header("Info Displays")]
         [SerializeField] private Text ruleNoticeText;
@@ -39,11 +41,75 @@ namespace WhisperingWilds.UI
             if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
 
             if (codexPanel != null) codexPanel.SetActive(false);
+            if (settingsMenu != null) settingsMenu.SetVisible(false);
+
+            ApplyLocalizedLabels();
+        }
+
+        private void OnEnable()
+        {
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+            }
+        }
+
+        private void OnLanguageChanged(Language language)
+        {
+            ApplyLocalizedLabels();
+        }
+
+        /// <summary>
+        /// Rewrites every title-screen label from its localization key. Buttons are labelled
+        /// through their child Text, matching how <c>BuildBootScene</c> constructs them.
+        /// </summary>
+        public void ApplyLocalizedLabels()
+        {
+            SetButtonLabel(newGameButton, "menu.new_game");
+            SetButtonLabel(continueButton, "menu.continue");
+            SetButtonLabel(settingsButton, "menu.settings");
+            SetButtonLabel(codexButton, "menu.codex");
+            SetButtonLabel(quitButton, "menu.quit");
+
+            ApplyLocalizedFontToChild("GameTitle");
+            ApplyLocalizedFontToChild("GameSubtitle");
 
             if (ruleNoticeText != null)
             {
-                ruleNoticeText.text = "விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும்.\n" +
-                                      "(Rule: Strict maximum of 5 permanent character appearance changes across the entire journey.)";
+                LocalizedFontProvider.Apply(ruleNoticeText);
+                LocalizationManager mgr = LocalizationManager.Instance;
+                if (mgr != null) ruleNoticeText.text = mgr.Get("hud.rule_notice");
+            }
+        }
+
+        private void SetButtonLabel(Button button, string key)
+        {
+            if (button == null) return;
+            Text label = button.GetComponentInChildren<Text>(true);
+            if (label == null) return;
+
+            LocalizedFontProvider.Apply(label);
+            LocalizationManager mgr = LocalizationManager.Instance;
+            label.text = mgr != null ? mgr.Get(key) : key;
+        }
+
+        private void ApplyLocalizedFontToChild(string objectName)
+        {
+            Transform[] children = GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < children.Length; i++)
+            {
+                if (children[i].name != objectName) continue;
+                Text label = children[i].GetComponent<Text>();
+                if (label != null) LocalizedFontProvider.Apply(label);
+                return;
             }
         }
 
@@ -77,11 +143,15 @@ namespace WhisperingWilds.UI
 
         public void OnSettingsClicked()
         {
-            if (SettingsMenuController.Instance != null)
+            // Previously this only re-applied the stored settings and logged; there was no
+            // screen to change them from. Now it opens the real settings panel.
+            if (settingsMenu != null)
             {
-                SettingsMenuController.Instance.ApplyAllSettings();
+                settingsMenu.SetVisible(true);
+                return;
             }
-            Debug.Log("<color=#00D2FF><b>[Whispering Wilds]</b></color> Settings menu accessed.");
+
+            Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> SettingsMenuUI is not assigned on the title screen.");
         }
 
         public void OnOpenCodexClicked()

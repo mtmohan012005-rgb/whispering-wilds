@@ -11,6 +11,12 @@ namespace MyProject.Editor
     {
         static SetupDemoScene()
         {
+            // Never auto-run under batchmode. This builds and modifies an unsaved scene, which
+            // makes the Test Runner's pre-run SaveModifiedSceneTask open a modal "save changes?"
+            // dialog; Unity refuses dialogs in batch mode, so the run aborted with RunError
+            // before any test ran. It is a leftover template demo, not part of the game.
+            if (Application.isBatchMode) return;
+
             EditorApplication.delayCall += Execute;
         }
 

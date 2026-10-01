@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 using WhisperingWilds.Audio;
+using WhisperingWilds.Display;
 using WhisperingWilds.Quality;
 
 namespace WhisperingWilds.UI
@@ -115,7 +115,9 @@ namespace WhisperingWilds.UI
 
         public void ApplyAllSettings()
         {
-            // Quality
+            // Quality: GraphicsPerformanceManager is the graphics authority; QualityPresetManager
+            // is its preset-table source. Never write QualitySettings directly here, or this
+            // controller becomes a second conflicting owner of the same settings.
             if (GraphicsPerformanceManager.Instance != null)
             {
                 GraphicsPerformanceManager.Instance.ApplyProfile(activeTier);
@@ -125,9 +127,20 @@ namespace WhisperingWilds.UI
                 QualityPresetManager.Instance.ApplyPreset(activeTier);
             }
 
-            // Display
-            Screen.fullScreen = isFullscreen;
-            QualitySettings.vSyncCount = vSync ? 1 : 0;
+            // Display: DisplaySettingsManager owns resolution, fullscreen mode, VSync, frame cap
+            // and UI scale, under the WW_Fullscreen / WW_VSync keys. Writing them here as well
+            // meant two components persisting the same values independently.
+            if (DisplaySettingsManager.Instance != null)
+            {
+                DisplaySettingsManager.Instance.SetVSync(vSync);
+            }
+
+            // UI scale lives in DisplaySettingsManager; uiScale here is a legacy float field
+            // kept only so old saves do not throw, and is no longer the source of truth.
+            if (DisplaySettingsManager.Instance != null && uiScale > 0f)
+            {
+                DisplaySettingsManager.Instance.SetUiScale(DisplaySettingsManager.LegacyUiScaleToLevel(uiScale));
+            }
 
             // Audio
             if (AudioManager.Instance != null)
@@ -143,7 +156,7 @@ namespace WhisperingWilds.UI
                 Camera.main.fieldOfView = fov;
             }
 
-            Debug.Log($"<color=#00D2FF><b>[SettingsMenuController]</b></color> All PC Settings synchronized and applied (Tier: {activeTier}, Fullscreen: {isFullscreen}, FOV: {fov})");
+            Debug.Log($"<color=#00D2FF><b>[SettingsMenuController]</b></color> Settings applied (Tier: {activeTier}, VSync: {vSync}, FOV: {fov})");
         }
     }
 }

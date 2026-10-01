@@ -73,15 +73,27 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("settings.quality.medium",   "Medium",             "நடுத்தரம்"),
             new LocalizationEntry("settings.quality.high",     "High",               "உயர்ந்தது"),
             new LocalizationEntry("settings.quality.ultra",    "Ultra",              "அதிநவீனம்"),
+            new LocalizationEntry("settings.quality.high_hint",
+                                                        "Higher tiers raise shadows, effects, and lighting quality.",
+                                                        "அதிக தரம் நிலைகள் நிழல்கள், விளைவுகள் மற்றும் ஒளி தரத்தை அதிகரிக்கும்."),
+            new LocalizationEntry("settings.on",              "On",                 "இயக்கு"),
+            new LocalizationEntry("settings.off",             "Off",                "நிறுத்து"),
+            new LocalizationEntry("settings.unlimited",       "Unlimited",          "வரம்பற்றது"),
+            new LocalizationEntry("hud.rule_notice",     "Rule: A strict maximum of 5 permanent character appearance changes is allowed across the entire journey.",
+                                                        "விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும்."),
             new LocalizationEntry("settings.unavailable",      "Not available on this device", "இந்தச் சாதனத்தில் கிடைக்கவில்லை"),
             new LocalizationEntry("settings.disabled",         "Disabled",           "முடக்கப்பட்டது"),
 
             // ---- HUD ---------------------------------------------------------
             new LocalizationEntry("hud.clock",               "Time",                   "நேரம்"),
             new LocalizationEntry("hud.currency",            "Coins",                  "காசுகள்"),
+            new LocalizationEntry("hud.currency_value",      "Coins: {0}",             "காசுகள்: {0}"),
             new LocalizationEntry("hud.region",              "Region",                 "பகுதி"),
             new LocalizationEntry("hud.appearance_changes",  "Appearance Changes",     "தோற்ற மாற்றங்கள்"),
+            new LocalizationEntry("hud.appearance_value",     "Appearance Changes: {0}/{1}", "தோற்ற மாற்றங்கள்: {0}/{1}"),
             new LocalizationEntry("hud.press_to_interact",   "Press {0}",              "{0} அழுத்தவும்"),
+            new LocalizationEntry("hud.am",                  "AM",                     "பி.ப"),
+            new LocalizationEntry("hud.pm",                  "PM",                     "பி.ப"),
 
             // ---- Notifications / save-load -----------------------------------
             new LocalizationEntry("notify.game_saved",    "Game Saved",    "விளையாட்டு சேமிக்கப்பட்டது"),
@@ -130,6 +142,15 @@ namespace WhisperingWilds.Localization
 
         public static IEnumerable<string> AllKeys => Lookup.Keys;
 
+        /// <summary>
+        /// Every entry in declaration order. Exposed so content-validation tooling and tests can
+        /// audit the whole database rather than only the keys it happens to know about.
+        /// </summary>
+        public static IReadOnlyList<LocalizationEntry> AllEntries => Entries;
+
+        /// <summary>Reads a single entry. Used by content-validation tooling and tests.</summary>
+        public static bool TryGetEntryForTests(string key, out LocalizationEntry entry) => TryGetEntry(key, out entry);
+
         public static bool TryGetEntry(string key, out LocalizationEntry entry)
         {
             entry = default;
@@ -166,12 +187,21 @@ namespace WhisperingWilds.Localization
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // Loaded here rather than in Start: UI components can run their own Start and read
+            // CurrentLanguage before this component's Start, which left the persisted language
+            // showing English on first boot and never fired a change event to correct it.
+            CurrentLanguage = LoadPersistedLanguage();
         }
 
         private void Start()
         {
-            CurrentLanguage = LoadPersistedLanguage();
             Debug.Log($"<color=#00D2FF><b>[LocalizationManager]</b></color> Active language: {CurrentLanguage} ({LocalizationDatabase.Count} keys loaded)");
+
+            if (!LocalizedFontProvider.HasTamilCoverage)
+            {
+                Debug.LogWarning("<color=#FFCC00><b>[LocalizationManager]</b></color> Tamil is selected but no Tamil-capable font is installed. Add one under Assets/_Project/Fonts; see its README.");
+            }
         }
 
         /// <summary>Central lookup. Falls back to English when a Tamil string is absent.</summary>

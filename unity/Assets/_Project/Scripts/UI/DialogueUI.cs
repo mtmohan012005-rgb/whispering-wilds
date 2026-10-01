@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using WhisperingWilds.NPC;
 using WhisperingWilds.Quests;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.UI
 {
@@ -78,8 +79,24 @@ namespace WhisperingWilds.UI
                 return;
             }
 
-            if (speechTextEn != null) speechTextEn.text = node.speakerTextEn;
-            if (speechTextTa != null) speechTextTa.text = node.speakerTextTa;
+            // Tamil is shown only in Tamil mode; the English line is always present so the
+            // conversation stays readable in both languages.
+            bool tamil = LocalizationManager.Instance != null
+                         && LocalizationManager.Instance.CurrentLanguage == Language.Tamil;
+
+            if (speechTextEn != null)
+            {
+                LocalizedFontProvider.Apply(speechTextEn);
+                speechTextEn.text = node.speakerTextEn;
+                speechTextEn.gameObject.SetActive(!tamil);
+            }
+            if (speechTextTa != null)
+            {
+                LocalizedFontProvider.Apply(speechTextTa);
+                speechTextTa.text = node.speakerTextTa;
+                speechTextTa.gameObject.SetActive(tamil);
+            }
+            if (speakerNameText != null) LocalizedFontProvider.Apply(speakerNameText);
 
             // Clear old buttons
             if (choicesContainer != null)
@@ -129,7 +146,8 @@ namespace WhisperingWilds.UI
                 txt.text = text;
                 txt.color = Color.white;
                 txt.alignment = TextAnchor.MiddleCenter;
-                txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                // Tamil-capable font; the builtin font renders Tamil as blank boxes.
+                txt.font = LocalizedFontProvider.Font;
                 var txtRect = txtObj.GetComponent<RectTransform>();
                 txtRect.anchorMin = Vector2.zero;
                 txtRect.anchorMax = Vector2.one;

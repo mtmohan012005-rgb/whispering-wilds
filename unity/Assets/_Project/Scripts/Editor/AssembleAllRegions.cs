@@ -21,6 +21,7 @@ using WhisperingWilds.Wildlife;
 using WhisperingWilds.World;
 using WhisperingWilds.Vegetation;
 using WhisperingWilds.Persistence;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.Editor
 {
@@ -200,7 +201,8 @@ namespace WhisperingWilds.Editor
             canvasObj.AddComponent<DialogueUI>();
             canvasObj.AddComponent<StateMapUI>();
 
-            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            // Tamil-capable font; the builtin font cannot render Tamil.
+            var font = LocalizedFontProvider.Font;
 
             // Region Banner
             var bannerObj = CreateUIText("RegionBanner", canvasObj.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(600, 50), font, 24, TextAnchor.MiddleCenter);

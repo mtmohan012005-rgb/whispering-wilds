@@ -19,6 +19,11 @@ test_*.png
 run_tests.*
 desktop/tests/
 
+# Exception: Unity Test Framework tests ARE source and must be versioned.
+# The blanket tests/ rule above targets loose JS/Python scratch suites.
+!unity/Assets/_Project/Tests/
+!unity/Assets/_Project/Tests/**
+
 # Unity build output — compiled binaries (~180 MB), never commit
 Build/
 unity/Build/

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="27" result="Passed" total="27" passed="27" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.8758599">
+  <test-suite type="TestSuite" id="1000" name="The Whispering Wilds" fullname="The Whispering Wilds" runstate="Runnable" testcasecount="27" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.875860" total="27" passed="27" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1031" name="Assembly-CSharp-Editor.dll" fullname="C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Library/ScriptAssemblies/Assembly-CSharp-Editor.dll" runstate="Runnable" testcasecount="27" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.857035" total="27" passed="27" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="13044" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1032" name="WhisperingWilds" fullname="WhisperingWilds" runstate="Runnable" testcasecount="27" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.856099" total="27" passed="27" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1033" name="Tests" fullname="WhisperingWilds.Tests" runstate="Runnable" testcasecount="27" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.855718" total="27" passed="27" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1007" name="SettingsBehaviorTests" fullname="WhisperingWilds.Tests.SettingsBehaviorTests" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" testcasecount="22" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.122644" total="22" passed="22" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1024" name="DefaultModeIsAPlausibleResolution" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.DefaultModeIsAPlausibleResolution" methodname="DefaultModeIsAPlausibleResolution" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1648914527" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.024520" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1025" name="DisplayModeShowsRefreshRateOnlyWhenKnown" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.DisplayModeShowsRefreshRateOnlyWhenKnown" methodname="DisplayModeShowsRefreshRateOnlyWhenKnown" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="201500029" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.006741" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1008" name="EveryDatabaseKeyIsUnique" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.EveryDatabaseKeyIsUnique" methodname="EveryDatabaseKeyIsUnique" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="972778221" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.013982" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1009" name="EveryEntryHasEnglishText" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.EveryEntryHasEnglishText" methodname="EveryEntryHasEnglishText" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1702438631" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.001109" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1010" name="EveryEntryHasTamilText" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.EveryEntryHasTamilText" methodname="EveryEntryHasTamilText" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1376229541" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000646" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1028" name="EveryQualityTierHasAPreset" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.EveryQualityTierHasAPreset" methodname="EveryQualityTierHasAPreset" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1251829475" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.003010" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1026" name="FiveQualityTiersAreSelectable" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.FiveQualityTiersAreSelectable" methodname="FiveQualityTiersAreSelectable" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1978174900" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.009897" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1011" name="FormatPlaceholdersMatchAcrossLanguages" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.FormatPlaceholdersMatchAcrossLanguages" methodname="FormatPlaceholdersMatchAcrossLanguages" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="109725396" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000903" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1014" name="KeysRequestedByMenuAndHudAllExist" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.KeysRequestedByMenuAndHudAllExist" methodname="KeysRequestedByMenuAndHudAllExist" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="254779211" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.001930" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-suite type="ParameterizedMethod" id="1023" name="LegacyUiScaleFloatMapsToLevel" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.008928" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1017" name="LegacyUiScaleFloatMapsToLevel(0.7f,Small)" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel(0.7f,Small)" methodname="LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="597071080" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.001233" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1018" name="LegacyUiScaleFloatMapsToLevel(0.9f,Small)" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel(0.9f,Small)" methodname="LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1981980487" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000785" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1019" name="LegacyUiScaleFloatMapsToLevel(1.0f,Medium)" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel(1.0f,Medium)" methodname="LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1119275917" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000260" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1020" name="LegacyUiScaleFloatMapsToLevel(1.1f,Medium)" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel(1.1f,Medium)" methodname="LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1142250700" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000228" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="LegacyUiScaleFloatMapsToLevel(1.25f,Large)" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel(1.25f,Large)" methodname="LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1279014731" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000378" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1022" name="LegacyUiScaleFloatMapsToLevel(2.0f,Large)" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.LegacyUiScaleFloatMapsToLevel(2.0f,Large)" methodname="LegacyUiScaleFloatMapsToLevel" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="275752969" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000285" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-case id="1012" name="NoEntryHasWhitespaceOnlyTamil" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.NoEntryHasWhitespaceOnlyTamil" methodname="NoEntryHasWhitespaceOnlyTamil" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="780446958" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000693" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1030" name="QualityPresetStaticTableIsTheOnlySourceOfTiers" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.QualityPresetStaticTableIsTheOnlySourceOfTiers" methodname="QualityPresetStaticTableIsTheOnlySourceOfTiers" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1130886875" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000680" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1029" name="QualityTiersRenderScaleIncreasesWithQuality" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.QualityTiersRenderScaleIncreasesWithQuality" methodname="QualityTiersRenderScaleIncreasesWithQuality" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1648970469" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.001639" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1027" name="SelectableTiersAreOrderedCheapestToMostExpensive" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.SelectableTiersAreOrderedCheapestToMostExpensive" methodname="SelectableTiersAreOrderedCheapestToMostExpensive" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="1733459457" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000696" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1015" name="UiScaleFactorScalesAroundOneToOne" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.UiScaleFactorScalesAroundOneToOne" methodname="UiScaleFactorScalesAroundOneToOne" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="930870244" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.002307" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1016" name="UiScaleLevelsAreOrderedSmallestToLargest" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.UiScaleLevelsAreOrderedSmallestToLargest" methodname="UiScaleLevelsAreOrderedSmallestToLargest" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="364093614" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000532" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1013" name="UnknownKeyIsReportedAsMissing" fullname="WhisperingWilds.Tests.SettingsBehaviorTests.UnknownKeyIsReportedAsMissing" methodname="UnknownKeyIsReportedAsMissing" classname="WhisperingWilds.Tests.SettingsBehaviorTests" runstate="Runnable" seed="295875751" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:08Z" duration="0.000870" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+          </test-suite>
+          <test-suite type="TestFixture" id="1001" name="TamilFontCoverageTests" fullname="WhisperingWilds.Tests.TamilFontCoverageTests" classname="WhisperingWilds.Tests.TamilFontCoverageTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.730166" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1004" name="AllRequiredStringsRenderWithoutMissingGlyphs" fullname="WhisperingWilds.Tests.TamilFontCoverageTests.AllRequiredStringsRenderWithoutMissingGlyphs" methodname="AllRequiredStringsRenderWithoutMissingGlyphs" classname="WhisperingWilds.Tests.TamilFontCoverageTests" runstate="Runnable" seed="1188778790" result="Passed" start-time="2026-10-01 15:36:08Z" end-time="2026-10-01 15:36:09Z" duration="0.720209" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[<color=#FFCC00><b>[LocalizedFontProvider]</b></color> Using OS font 'Nirmala UI'. Not redistributed in builds; add an OFL Tamil font under Assets/_Project/Fonts before release.
+]]></output>
+            </test-case>
+            <test-case id="1003" name="EveryAssignedTamilCodepointHasAGlyph" fullname="WhisperingWilds.Tests.TamilFontCoverageTests.EveryAssignedTamilCodepointHasAGlyph" methodname="EveryAssignedTamilCodepointHasAGlyph" classname="WhisperingWilds.Tests.TamilFontCoverageTests" runstate="Runnable" seed="1536246534" result="Passed" start-time="2026-10-01 15:36:09Z" end-time="2026-10-01 15:36:09Z" duration="0.001876" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1006" name="LongTamilSentenceRendersCompletely" fullname="WhisperingWilds.Tests.TamilFontCoverageTests.LongTamilSentenceRendersCompletely" methodname="LongTamilSentenceRendersCompletely" classname="WhisperingWilds.Tests.TamilFontCoverageTests" runstate="Runnable" seed="1707680061" result="Passed" start-time="2026-10-01 15:36:09Z" end-time="2026-10-01 15:36:09Z" duration="0.000810" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="ResolvedFontIsReportedAsTamilCapable" fullname="WhisperingWilds.Tests.TamilFontCoverageTests.ResolvedFontIsReportedAsTamilCapable" methodname="ResolvedFontIsReportedAsTamilCapable" classname="WhisperingWilds.Tests.TamilFontCoverageTests" runstate="Runnable" seed="1313362281" result="Passed" start-time="2026-10-01 15:36:09Z" end-time="2026-10-01 15:36:09Z" duration="0.000835" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1005" name="TamilAndLatinDigitsShareOneFont" fullname="WhisperingWilds.Tests.TamilFontCoverageTests.TamilAndLatinDigitsShareOneFont" methodname="TamilAndLatinDigitsShareOneFont" classname="WhisperingWilds.Tests.TamilFontCoverageTests" runstate="Runnable" seed="269092707" result="Passed" start-time="2026-10-01 15:36:09Z" end-time="2026-10-01 15:36:09Z" duration="0.000730" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/mohan/AppData/LocalLow/Whispering Wilds Studios/The Whispering Wilds\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
