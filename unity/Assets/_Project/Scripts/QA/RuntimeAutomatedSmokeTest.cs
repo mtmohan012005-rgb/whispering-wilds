@@ -125,9 +125,15 @@ namespace WhisperingWilds.QA
             yield return StartCoroutine(TestQualityPresets());
 
             // 9. Step 2 Living NPC Ecology & Wildlife Verification
-            if (RuntimeEcologyAcceptanceTest.Instance != null)
+            var ecoTest = RuntimeEcologyAcceptanceTest.Instance ?? FindAnyObjectByType<RuntimeEcologyAcceptanceTest>();
+            if (ecoTest == null)
             {
-                yield return StartCoroutine(RuntimeEcologyAcceptanceTest.Instance.RunEcologyAcceptanceRoutine(summary));
+                var ecoGo = new GameObject("RuntimeEcologyAcceptanceTest_Auto");
+                ecoTest = ecoGo.AddComponent<RuntimeEcologyAcceptanceTest>();
+            }
+            if (ecoTest != null)
+            {
+                yield return StartCoroutine(ecoTest.RunEcologyAcceptanceRoutine(summary));
             }
 
             // Write report to file and console

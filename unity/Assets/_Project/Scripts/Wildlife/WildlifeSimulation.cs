@@ -14,7 +14,16 @@ namespace WhisperingWilds.Wildlife
         public static WildlifeSimulation Instance { get; private set; }
 
         [Header("Simulation Settings")]
-        [SerializeField] private float logicalTickInterval = 60.0f; // Every minute of game time
+        [Tooltip("Real seconds between ecological ticks. Unrelated to game-clock units.")]
+        [SerializeField] private float realSecondsBetweenTicks = 5.0f;
+
+        /// <summary>
+        /// In-game HOURS of ecological drift applied per tick. The logical layer must advance on
+        /// the game clock, not on real seconds: with a 24h day compressed into a few minutes of real
+        /// time, tying the tick to Time.deltaTime makes ecology drift orders of magnitude slower
+        /// than the world it is meant to model.
+        /// </summary>
+        [SerializeField] private float gameHoursPerTick = 1.0f;
 
         private float tickTimer = 0f;
 
@@ -48,7 +57,7 @@ namespace WhisperingWilds.Wildlife
         private void Update()
         {
             tickTimer += Time.deltaTime;
-            if (tickTimer >= logicalTickInterval)
+            if (tickTimer >= realSecondsBetweenTicks)
             {
                 tickTimer = 0f;
                 PerformPeriodicSimulation();
@@ -65,9 +74,23 @@ namespace WhisperingWilds.Wildlife
 
         private void PerformPeriodicSimulation()
         {
-            if (WildlifeManager.Instance != null)
+            if (WildlifeManager.Instance == null)
             {
-                WildlifeManager.Instance.AdvanceLogicalEcologySimulation(0.25);
+                return;
+            }
+
+            // Scale the per-tick drift by however much game time actually elapsed, so pausing or
+            // fast-forwarding the clock changes ecological speed consistently instead of running
+            // on a fixed real-time cadence.
+            float hours = gameHoursPerTick;
+            if (WorldTimeSystem.Instance != null)
+            {
+                hours = Mathf.Max(0f, (float)WorldTimeSystem.Instance.FastForwardMultiplier) * gameHoursPerTick;
+            }
+
+            if (hours > 0f)
+            {
+                WildlifeManager.Instance.AdvanceLogicalEcologySimulation(hours);
             }
         }
     }

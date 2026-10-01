@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.7, g: 0.65, b: 0.55, a: 1}
   m_AmbientGroundColor: {r: 0.35, g: 0.3, b: 0.25, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
@@ -310,6 +310,86 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 173153824}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &234754597
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 234754598}
+  - component: {fileID: 234754600}
+  - component: {fileID: 234754599}
+  m_Layer: 0
+  m_Name: WildlifeHabitat_chennai
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &234754598
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234754597}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 20}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1504765366}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &234754599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234754597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3687ab49c0093474ebcd2a0aaa6c12f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Wildlife.WildlifeSpawner
+  autoSpawnOnStart: 1
+  respawnCheckInterval: 30
+--- !u!114 &234754600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234754597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41475a566a898f24ab581617a2aff5d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Wildlife.WildlifeHabitatZone
+  zoneId: chennai_urban_coast_01
+  regionId: chennai
+  habitatType: 7
+  allowedSpecies: 070000000c000000i
+  exclusionSpecies: 0300000002000000000000000b0000000400000001000000i
+  roamingBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 50, y: 15, z: 50}
+  exclusionZones: []
+  maxCapacity: 12
+  density: 1
+  minSpawnDistanceFromPlayer: 15
+  despawnDistance: 160
+  allowRespawn: 1
+  respawnInterval: 30
+  waterSources: []
+  feedingAreas: []
+  restingAreas: []
+  perchingSpots: []
+  spawnPoints: []
+  preferredPoints: []
 --- !u!1 &298805058
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,6 +623,52 @@ Transform:
   m_GameObject: {fileID: 298805058}
   serializedVersion: 2
   m_LocalRotation: {x: 0.36964384, y: -0.23911762, z: 0.09904577, w: 0.89239913}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &340922912
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340922914}
+  - component: {fileID: 340922913}
+  m_Layer: 0
+  m_Name: NavMeshSceneLink
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &340922913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340922912}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae3ad30cc316c9d4c9272a449cd7429f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.World.NavMeshSceneLink
+  navMeshData: {fileID: 23800000, guid: 7ab4752943c841a448a5faa18b85cf01, type: 2}
+  warnWhenMissing: 1
+--- !u!4 &340922914
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340922912}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -841,6 +967,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   animator: {fileID: 0}
+  standingHeight: 1.8
+  crouchHeight: 1.2
+  standingCenter: {x: 0, y: 0.9, z: 0}
+  crouchCenter: {x: 0, y: 0.6, z: 0}
 --- !u!114 &448064478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -894,7 +1024,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 956878352}
+  - {fileID: 1684805650}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &448064481
@@ -1055,6 +1185,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8600310457569612227, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
       insertIndex: -1
       addedObject: {fileID: 714758905}
+    - targetCorrespondingSourceObject: {fileID: 8600310457569612227, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 714758908}
+    - targetCorrespondingSourceObject: {fileID: 8600310457569612227, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 714758907}
   m_SourcePrefab: {fileID: 5401800872276357198, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
 --- !u!4 &714758903 stripped
 Transform:
@@ -1081,9 +1217,20 @@ MonoBehaviour:
   npcId: murugan
   displayNameEn: Murugan
   displayNameTa: "\u0BAE\u0BC1\u0BB0\u0BC1\u0B95\u0BA9\u0BCD"
+  occupation: 6
   profession: "Tea Stall Owner (\u0BA4\u0BC7\u0BA8\u0BC0\u0BB0\u0BCD \u0B95\u0B9F\u0BC8 \u0B89\u0BB0\u0BBF\u0BAE\u0BC8\u0BAF\u0BBE\u0BB3\u0BB0\u0BCD)"
+  profileDescription: Local resident
+  currentState: 0
+  scheduledState: 0
+  currentTier: 0
+  targetDestination: {x: 0, y: 0, z: 0}
+  stateActionTimer: 0
+  structuredSchedule: []
+  legacySchedule: []
   dialogueNodes: []
-  schedule: []
+  workAnchor: {fileID: 0}
+  homeAnchor: {fileID: 0}
+  socialAnchor: {fileID: 0}
 --- !u!136 &714758906
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1107,6 +1254,52 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &714758907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714758904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 556343ce26b59e64d96ff82492943e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.NPC.NPCNavigationController
+  walkSpeed: 1.6
+  runSpeed: 3.8
+  stoppingDistance: 0.8
+  maxNavMeshSampleDistance: 5
+  sceneGameplayBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 150, y: 30, z: 150}
+  enforceSceneBounds: 1
+  stuckCheckInterval: 2.5
+  minimumMovementThreshold: 0.15
+  maxStuckAttemptsBeforeRecovery: 2
+  pathRecalculationCooldown: 0.5
+--- !u!195 &714758908
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714758904}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &732132010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1364,6 +1557,7 @@ MonoBehaviour:
   rainFogDensity: 0.02
   mistFogDensity: 0.045
   heavyFogDensity: 0.065
+  sceneWeatherVolume: {fileID: 0}
 --- !u!114 &748200756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1493,9 +1687,7 @@ MonoBehaviour:
   currentRegionId: nilgiris
   maxVisibleWildlifeBudget: 16
   densityMultiplier: 1
-  tahrPrefab: {fileID: 0}
-  deerPrefab: {fileID: 0}
-  poolCapacity: 24
+  poolCapacityPerSpecies: 12
   registeredHabitats: []
   activeVisibleEntities: []
   logicalPopulations: []
@@ -1514,7 +1706,13 @@ MonoBehaviour:
   nearDistance: 20
   mediumDistance: 50
   farDistance: 120
-  evaluationInterval: 0.5
+  hysteresisBuffer: 4
+  nearTickInterval: 0.1
+  mediumTickInterval: 0.4
+  farTickInterval: 2
+  hibernatingTickInterval: 10
+  maxDistanceEvalsPerFrame: 8
+  maxActiveNPCBudget: 32
 --- !u!114 &748200766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1540,9 +1738,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93f2f3871cdd52348b8f5365d5c70759, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Online.CloudSaveManager
-  firebaseBaseUrl: http://localhost:3000/api/v1/persistence
-  bearerToken: dev_session_token
+  persistenceBaseUrl: 
   syncEnabled: 1
+  requestTimeoutSeconds: 5
 --- !u!114 &748200768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1611,6 +1809,8 @@ MonoBehaviour:
     addressables: 0
     totalBudget: 0
   memoryWarningThresholdRatio: 0.85
+  allowSevereMemoryRecovery: 0
+  severeMemoryRecoveryRatio: 0.95
 --- !u!114 &748200771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2049,72 +2249,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -7531577306573208023, guid: 612c01ec338ad6446913fa3253963e6b, type: 3}
   m_PrefabInstance: {fileID: 899721446}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &956878351
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 448064480}
-    m_Modifications:
-    - target: {fileID: -1244132491432463094, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_Name
-      value: VisualModel
-      objectReference: {fileID: 0}
-    - target: {fileID: 5180442202626116886, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: dc0f7a77d548414488ac35c51fade851, type: 2}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: -585236838274818397, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
---- !u!4 &956878352 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
-  m_PrefabInstance: {fileID: 956878351}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1113425928
 GameObject:
@@ -3227,8 +3361,75 @@ Transform:
   - {fileID: 1301616201}
   - {fileID: 1128208218}
   - {fileID: 374966310}
+  - {fileID: 234754598}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1684805649
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 448064480}
+    m_Modifications:
+    - target: {fileID: -1244132491432463094, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_Name
+      value: VisualModel
+      objectReference: {fileID: 0}
+    - target: {fileID: 5180442202626116886, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: dc0f7a77d548414488ac35c51fade851, type: 2}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: -585236838274818397, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+--- !u!4 &1684805650 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9152493053648432234, guid: 82444ac68ff97cd46962ef6e77c89b5e, type: 3}
+  m_PrefabInstance: {fileID: 1684805649}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1728189075
 GameObject:
   m_ObjectHideFlags: 0
@@ -3848,6 +4049,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2153565035261563765, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2039412062}
+    - targetCorrespondingSourceObject: {fileID: 2153565035261563765, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2039412065}
+    - targetCorrespondingSourceObject: {fileID: 2153565035261563765, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2039412064}
   m_SourcePrefab: {fileID: 1931507639935165643, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
 --- !u!4 &2039412060 stripped
 Transform:
@@ -3874,9 +4081,20 @@ MonoBehaviour:
   npcId: velu
   displayNameEn: Velu
   displayNameTa: "\u0BB5\u0BC7\u0BB2\u0BC1"
+  occupation: 6
   profession: "Auto Driver & Regional Guide (\u0B86\u0B9F\u0BCD\u0B9F\u0BCB \u0B93\u0B9F\u0BCD\u0B9F\u0BC1\u0BA8\u0BB0\u0BCD)"
+  profileDescription: Local resident
+  currentState: 0
+  scheduledState: 0
+  currentTier: 0
+  targetDestination: {x: 0, y: 0, z: 0}
+  stateActionTimer: 0
+  structuredSchedule: []
+  legacySchedule: []
   dialogueNodes: []
-  schedule: []
+  workAnchor: {fileID: 0}
+  homeAnchor: {fileID: 0}
+  socialAnchor: {fileID: 0}
 --- !u!136 &2039412063
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3900,6 +4118,52 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &2039412064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2039412061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 556343ce26b59e64d96ff82492943e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.NPC.NPCNavigationController
+  walkSpeed: 1.6
+  runSpeed: 3.8
+  stoppingDistance: 0.8
+  maxNavMeshSampleDistance: 5
+  sceneGameplayBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 150, y: 30, z: 150}
+  enforceSceneBounds: 1
+  stuckCheckInterval: 2.5
+  minimumMovementThreshold: 0.15
+  maxStuckAttemptsBeforeRecovery: 2
+  pathRecalculationCooldown: 0.5
+--- !u!195 &2039412065
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2039412061}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3914,3 +4178,4 @@ SceneRoots:
   - {fileID: 1113425934}
   - {fileID: 1504765366}
   - {fileID: 1842733271}
+  - {fileID: 340922914}

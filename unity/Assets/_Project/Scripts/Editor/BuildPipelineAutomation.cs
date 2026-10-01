@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using WhisperingWilds.Editor;
 
 namespace WhisperingWilds.Editor
 {
@@ -44,6 +45,10 @@ namespace WhisperingWilds.Editor
             BuildBootScene.CreateBootScene();
             AssembleWhisperingWilds.BuildPlayableChennaiScene();
             AssembleAllRegions.BuildAllScenes();
+
+            // Bake static NavMesh AFTER scene assembly so ground geometry exists, and BEFORE the
+            // build so NavMeshAgent pathing works in the shipping player.
+            EcologyNavMeshBaker.BakeAllRegions();
 
             // Register only gameplay scenes in build settings
             EditorBuildSettingsScene[] buildScenes = new EditorBuildSettingsScene[ProductionGameplayScenes.Length];

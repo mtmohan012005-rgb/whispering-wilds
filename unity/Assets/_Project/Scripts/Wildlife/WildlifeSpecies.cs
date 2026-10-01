@@ -22,9 +22,10 @@ namespace WhisperingWilds.Wildlife
         Egret = 7,          // Wetland & paddy field water margins (flight/glide)
         Kingfisher = 8,     // Mangrove channels, river streams (fast diving flight)
 
-        // Domestic Rural (Restricted to pastoral farm boundaries)
+        // Domestic Rural & Outskirts (Restricted to pastoral/village boundaries)
         Cattle = 9,
-        Goat = 10
+        Goat = 10,
+        StrayDog = 12
     }
 
     public enum WildlifeDietType
@@ -305,6 +306,25 @@ namespace WhisperingWilds.Wildlife
                     canClimb = true,
                     typicalGroupSize = 5,
                     preferredRegions = new List<string> { "delta", "chettinad", "mamallapuram" }
+                }
+            },
+            {
+                WildlifeSpecies.StrayDog,
+                new SpeciesProfile
+                {
+                    species = WildlifeSpecies.StrayDog,
+                    commonTamilName = "நாட்டு நாய் (Naattu Naai)",
+                    englishName = "Indian Pariah / Stray Dog",
+                    diet = WildlifeDietType.OmnivoreScavenger,
+                    baseWalkSpeed = 1.8f,
+                    baseRunSpeed = 5.2f,
+                    noticeDistance = 14.0f,
+                    alertDistance = 9.0f,
+                    fleeDistance = 5.0f,
+                    isSocial = true,
+                    isDomestic = true,
+                    typicalGroupSize = 2,
+                    preferredRegions = new List<string> { "chennai", "delta", "chettinad", "mamallapuram" }
                 }
             }
         };

@@ -95,8 +95,8 @@ namespace WhisperingWilds.Wildlife
 
             if (QualityPresetManager.Instance != null)
             {
-                QualityPresetManager.Instance.OnPresetApplied += HandleQualityPresetApplied;
-                HandleQualityPresetApplied(QualityPresetManager.Instance.CurrentPreset);
+                QualityPresetManager.Instance.OnQualityPresetChanged += HandleQualityPresetApplied;
+                HandleQualityPresetApplied(QualityPresetManager.Instance.CurrentTier, QualityPresetManager.Instance.GetPresetSettings(QualityPresetManager.Instance.CurrentTier));
             }
         }
 
@@ -108,7 +108,7 @@ namespace WhisperingWilds.Wildlife
             }
             if (QualityPresetManager.Instance != null)
             {
-                QualityPresetManager.Instance.OnPresetApplied -= HandleQualityPresetApplied;
+                QualityPresetManager.Instance.OnQualityPresetChanged -= HandleQualityPresetApplied;
             }
         }
 
@@ -299,31 +299,34 @@ namespace WhisperingWilds.Wildlife
             }
         }
 
-        private void HandleQualityPresetApplied(QualityTier preset)
+        private void HandleQualityPresetApplied(QualityTier preset, QualityPresetSettings settings)
         {
+            // Visible budget comes from the preset table's own wildlifeDensityFactor rather than a
+            // hardcoded ladder, so editing the QualityPresetManager preset actually changes ecology
+            // density instead of being silently overridden here.
+            int baseBudget = 16;
+
             switch (preset)
             {
                 case QualityTier.VeryLow:
-                    maxVisibleWildlifeBudget = 6;
-                    ApplyDensityFactor(0.5f);
+                    baseBudget = 6;
                     break;
                 case QualityTier.Low:
-                    maxVisibleWildlifeBudget = 10;
-                    ApplyDensityFactor(0.75f);
+                    baseBudget = 10;
                     break;
                 case QualityTier.Medium:
-                    maxVisibleWildlifeBudget = 16;
-                    ApplyDensityFactor(1.0f);
+                    baseBudget = 16;
                     break;
                 case QualityTier.High:
-                    maxVisibleWildlifeBudget = 24;
-                    ApplyDensityFactor(1.25f);
+                    baseBudget = 24;
                     break;
                 case QualityTier.Ultra:
-                    maxVisibleWildlifeBudget = 36;
-                    ApplyDensityFactor(1.5f);
+                    baseBudget = 36;
                     break;
             }
+
+            ApplyDensityFactor(settings.wildlifeDensityFactor);
+            maxVisibleWildlifeBudget = Mathf.Max(1, Mathf.RoundToInt(baseBudget * settings.wildlifeDensityFactor));
         }
     }
 }

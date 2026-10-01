@@ -5,14 +5,17 @@ namespace WhisperingWilds.NPC
         Idle,
         GoToTarget,
         Working,
-        Interacting,
+        Serving,
         Talking,
-        Resting,
+        Interacting,
         Eating,
         Socializing,
+        Resting,
+        Prayer,
         ReturningHome,
         Sleeping,
-        Interrupted
+        Interrupted,
+        RecoveringFromPathFailure
     }
 
     public enum NPCOccupation

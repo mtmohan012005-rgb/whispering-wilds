@@ -472,7 +472,7 @@ namespace WhisperingWilds.Editor
                 serializedNPC.FindProperty("npcId").stringValue = "murugan";
                 serializedNPC.FindProperty("displayNameEn").stringValue = "Murugan";
                 serializedNPC.FindProperty("displayNameTa").stringValue = "முருகன்";
-                serializedNPC.FindProperty("profession").stringValue = "Tea Stall Owner (தேநீர் கடை உரிமையாளர்)";
+                serializedNPC.FindProperty("occupation").intValue = (int)NPCOccupation.Shopkeeper;
                 serializedNPC.ApplyModifiedProperties();
             }
 
@@ -507,7 +507,7 @@ namespace WhisperingWilds.Editor
                 serializedNPC.FindProperty("npcId").stringValue = "velu";
                 serializedNPC.FindProperty("displayNameEn").stringValue = "Velu";
                 serializedNPC.FindProperty("displayNameTa").stringValue = "வேலு";
-                serializedNPC.FindProperty("profession").stringValue = "Auto Driver & Regional Guide (ஆட்டோ ஓட்டுநர்)";
+                serializedNPC.FindProperty("occupation").intValue = (int)NPCOccupation.Resident;
                 serializedNPC.ApplyModifiedProperties();
             }
         }

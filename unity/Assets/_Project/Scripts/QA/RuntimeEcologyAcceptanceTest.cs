@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using WhisperingWilds.Core;
 using WhisperingWilds.NPC;
@@ -71,14 +72,22 @@ namespace WhisperingWilds.QA
             }
         }
 
+        private bool isRunning = false;
+
         public IEnumerator RunEcologyAcceptanceRoutine(RuntimeTestSuiteSummary parentSummary)
         {
+            if (isRunning) yield break;
+            isRunning = true;
+
             Debug.Log("[EcologyAcceptanceTest] ========================================================");
             Debug.Log("[EcologyAcceptanceTest] STARTING STEP 2 LIVING NPC & WILDLIFE VERIFICATION SUITE");
             Debug.Log("[EcologyAcceptanceTest] ========================================================");
 
             // Wait until scene and core systems are ready
             yield return new WaitForSeconds(2.0f);
+
+            // Test 0: Baked NavMesh presence + agent pathfinding on real geometry
+            yield return StartCoroutine(TestBakedNavMeshAndAgentPathing());
 
             // Test 1: Daily Routine Schedule Advancement
             yield return StartCoroutine(TestNPCRoutineSchedulesAdvance());
@@ -141,6 +150,159 @@ namespace WhisperingWilds.QA
                 int exitCode = summary.totalFailed == 0 ? 0 : 1;
                 Application.Quit(exitCode);
             }
+        }
+
+        private IEnumerator TestBakedNavMeshAndAgentPathing()
+        {
+            float startTime = Time.realtimeSinceStartup;
+            var step = new RuntimeTestStepResult { testName = "0. Baked NavMesh Present & NavMeshAgent Pathing" };
+
+            string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+            // 00_Boot deliberately has no world geometry, so verification must happen inside an
+            // actual gameplay scene. Load one additively to avoid destroying the boot state.
+            NavMeshSceneLink link = UnityEngine.Object.FindAnyObjectByType<NavMeshSceneLink>();
+            if (link == null)
+            {
+                Scene probe = SceneManager.GetSceneByName("07_Nilgiris_Sanctuary");
+                if (!probe.isLoaded || !probe.IsValid())
+                {
+                    SceneManager.LoadScene("07_Nilgiris_Sanctuary", LoadSceneMode.Additive);
+                    for (float w = 0f; w < 20f; w += 0.5f)
+                    {
+                        Scene s = SceneManager.GetSceneByName("07_Nilgiris_Sanctuary");
+                        if (s.IsValid() && s.isLoaded) break;
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                }
+
+                link = UnityEngine.Object.FindAnyObjectByType<NavMeshSceneLink>();
+            }
+
+            if (link == null)
+            {
+                step.status = "FAIL";
+                step.details = $"Scene '{sceneName}': no NavMeshSceneLink found even after loading a " +
+                               "gameplay scene; baked NavMesh was never wired in.";
+                summary.totalFailed++;
+                step.durationSeconds = Time.realtimeSinceStartup - startTime;
+                summary.results.Add(step);
+                Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
+                yield return new WaitForSeconds(0.2f);
+                yield break;
+            }
+
+            sceneName = link.gameObject.scene.name;
+
+            // Give the link a frame to register its NavMeshDataInstance.
+            yield return new WaitForSeconds(0.5f);
+
+            if (!link.IsNavMeshRegistered || !link.HasUsableNavMesh)
+            {
+                step.status = "FAIL";
+                step.details = $"Scene '{sceneName}': NavMeshSceneLink present but no usable geometry " +
+                               $"(registered={link.IsNavMeshRegistered}). Agents cannot path.";
+                summary.totalFailed++;
+                step.durationSeconds = Time.realtimeSinceStartup - startTime;
+                summary.results.Add(step);
+                Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
+                yield return new WaitForSeconds(0.2f);
+                yield break;
+            }
+
+            // Find two points on the real NavMesh and prove a NavMeshAgent can compute a
+            // complete path between them. This is the check that distinguishes genuine pathfinding
+            // from the transform-translation fallback the prototype used.
+            Vector3[] samples = new Vector3[8];
+            int sampleCount = 0;
+
+            // NavMesh.CalculateBounds() is not part of the AI module API, so derive extent from
+            // the triangulation vertices instead.
+            Bounds navBounds = new Bounds();
+            NavMeshTriangulation navTri = NavMesh.CalculateTriangulation();
+            if (navTri.vertices != null && navTri.vertices.Length > 0)
+            {
+                navBounds = new Bounds(navTri.vertices[0], Vector3.zero);
+                for (int v = 1; v < navTri.vertices.Length; v++)
+                {
+                    navBounds.Encapsulate(navTri.vertices[v]);
+                }
+            }
+
+            Vector3 center = navBounds.center;
+            float span = Mathf.Max(4f, Mathf.Min(navBounds.extents.x, navBounds.extents.z) * 0.6f);
+
+            float[] offsets = { 0f, 1f, -1f, 2f, -2f, 3f, -3f, 4f };
+            for (int i = 0; i < offsets.Length && sampleCount < samples.Length; i++)
+            {
+                Vector3 candidate = center + new Vector3(offsets[i] * span * 0.5f, 0f, offsets[i] * span * 0.25f);
+                if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, span, NavMesh.AllAreas))
+                {
+                    samples[sampleCount++] = hit.position;
+                }
+            }
+
+            if (sampleCount < 2)
+            {
+                step.status = "FAIL";
+                step.details = $"Scene '{sceneName}': NavMesh registered but only {sampleCount} valid " +
+                               "sample point(s) found; surface is too sparse to path across.";
+                summary.totalFailed++;
+                step.durationSeconds = Time.realtimeSinceStartup - startTime;
+                summary.results.Add(step);
+                Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
+                yield return new WaitForSeconds(0.2f);
+                yield break;
+            }
+
+            var agentGo = new GameObject("Test_NavMeshAgent_Pathing");
+            NavMeshAgent agent = agentGo.AddComponent<NavMeshAgent>();
+            bool agentOnMesh = agent.isOnNavMesh;
+
+            if (!agentOnMesh)
+            {
+                agent.Warp(samples[0]);
+                agentOnMesh = agent.isOnNavMesh;
+            }
+
+            int completePaths = 0;
+            float longestPath = 0f;
+
+            if (agentOnMesh)
+            {
+                for (int i = 1; i < sampleCount; i++)
+                {
+                    NavMeshPath path = new NavMeshPath();
+                    if (agent.CalculatePath(samples[i], path) && path.status == NavMeshPathStatus.PathComplete)
+                    {
+                        completePaths++;
+                        NavMeshPathStatus unused = path.status;
+                        var corners = new Vector3[path.GetCornersNonAlloc(new Vector3[32])];
+                        float length = 0f;
+                        for (int c = 1; c < corners.Length; c++)
+                        {
+                            length += Vector3.Distance(corners[c - 1], corners[c]);
+                        }
+                        if (length > longestPath) longestPath = length;
+                    }
+                }
+            }
+
+            Destroy(agentGo);
+
+            bool passed = agentOnMesh && completePaths >= 1;
+            step.status = passed ? "PASS" : "FAIL";
+            step.details = passed
+                ? $"Scene '{sceneName}': NavMesh registered, {sampleCount} sample points, " +
+                  $"{completePaths} complete NavMeshAgent path(s), longest {longestPath:F1}m."
+                : $"Scene '{sceneName}': agent on mesh={agentOnMesh}, complete paths={completePaths}.";
+
+            if (passed) summary.totalPassed++; else summary.totalFailed++;
+
+            step.durationSeconds = Time.realtimeSinceStartup - startTime;
+            summary.results.Add(step);
+            Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
+            yield return new WaitForSeconds(0.2f);
         }
 
         private IEnumerator TestNPCRoutineSchedulesAdvance()
@@ -283,9 +445,7 @@ namespace WhisperingWilds.QA
                 // Create Chennai habitat zone
                 var chennaiZoneObj = new GameObject("Test_Chennai_Habitat");
                 var chennaiZone = chennaiZoneObj.AddComponent<WildlifeHabitatZone>();
-                var ser = new UnityEditor.SerializedObject(chennaiZone);
-                ser.FindProperty("regionId").stringValue = "chennai";
-                ser.ApplyModifiedProperties();
+                chennaiZone.SetRegionId("chennai");
                 chennaiZone.EnforceRegionalWhitelistDefaults();
 
                 bool chennaiRejectsElephant = !chennaiZone.IsSpeciesAllowed(WildlifeSpecies.AsianElephant);
@@ -296,9 +456,7 @@ namespace WhisperingWilds.QA
                 // Create Nilgiris habitat zone
                 var nilgirisZoneObj = new GameObject("Test_Nilgiris_Habitat");
                 var nilgirisZone = nilgirisZoneObj.AddComponent<WildlifeHabitatZone>();
-                var serNil = new UnityEditor.SerializedObject(nilgirisZone);
-                serNil.FindProperty("regionId").stringValue = "nilgiris";
-                serNil.ApplyModifiedProperties();
+                nilgirisZone.SetRegionId("nilgiris");
                 nilgirisZone.EnforceRegionalWhitelistDefaults();
 
                 bool nilgirisAllowsTahr = nilgirisZone.IsSpeciesAllowed(WildlifeSpecies.NilgiriTahr);

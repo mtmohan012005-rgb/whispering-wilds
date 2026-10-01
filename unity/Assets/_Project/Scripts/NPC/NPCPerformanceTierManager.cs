@@ -330,8 +330,7 @@ namespace WhisperingWilds.NPC
                     break;
             }
 
-            float densityFactor = settings != null ? settings.npcDensityFactor : 1f;
-            maxActiveNPCBudget = Mathf.Max(1, Mathf.RoundToInt(baseBudget * densityFactor));
+            maxActiveNPCBudget = Mathf.Max(1, Mathf.RoundToInt(baseBudget * settings.npcDensityFactor));
 
             RefreshNPCList();
         }

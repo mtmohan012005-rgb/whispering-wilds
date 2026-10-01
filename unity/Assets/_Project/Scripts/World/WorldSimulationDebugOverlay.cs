@@ -132,7 +132,7 @@ namespace WhisperingWilds.World
             WildlifeManager wildlife = WildlifeManager.Instance;
             if (wildlife != null)
             {
-                GUILayout.Label($"<b>Wildlife:</b> Visible: {wildlife.VisibleWildlifeCount} | Pooled: {wildlife.PooledWildlifeCount} | Logical: {wildlife.LogicalPopulationTotal}", labelStyle);
+                GUILayout.Label($"<b>Wildlife:</b> Visible: {wildlife.VisibleWildlifeCount} | Pooled: {wildlife.TotalPooledCount} | Logical: {wildlife.LogicalPopulationTotal}", labelStyle);
             }
 
             // --- Section 4: Botanical Agriculture ---
