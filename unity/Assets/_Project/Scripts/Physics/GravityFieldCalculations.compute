@@ -1,0 +1,61 @@
+// GravityFieldCalculations.compute
+//
+// Field-data solver for inverted-gravity volumes.
+//
+// SCOPE (deliberate): this computes per-body acceleration contributions from
+// spherical field nodes. It does NOT integrate rigidbodies, resolve contacts,
+// or replace PhysX. The native Rigidbody/PhysX path stays authoritative for
+// collision, contacts, integration, joints and sleeping. Feeding a GPU solver
+// over ordinary rigidbodies is how "GPU physics" implementations become a
+// source of silent divergence bugs.
+//
+// Dispatch is always safe when no compute shader is available: the C# driver
+// (GravityFieldSolver) checks SystemInfo.supportsComputeShaders and falls back
+// to an identical CPU implementation.
+
+#pragma kernel CalculateFields
+
+struct FieldNode
+{
+    float3 center;
+    float  radius;
+    float  strength;
+};
+
+StructuredBuffer<float3>      _Positions;
+RWStructuredBuffer<float3>    _Accelerations;
+StructuredBuffer<FieldNode>   _Nodes;
+
+int _BodyCount;
+int _NodeCount;
+
+[numthreads(64, 1, 1)]
+void CalculateFields(uint3 id : SV_DispatchThreadID)
+{
+    uint index = id.x;
+    if (index >= (uint)_BodyCount)
+    {
+        return;
+    }
+
+    float3 position = _Positions[index];
+    float3 acceleration = float3(0.0, 0.0, 0.0);
+
+    [loop]
+    for (int n = 0; n < _NodeCount; n++)
+    {
+        FieldNode node = _Nodes[n];
+
+        float3 toCenter = position - node.center;
+        float  dist = length(toCenter);
+
+        // Guard the singularity at the exact node centre.
+        if (dist < node.radius && dist > 1e-5)
+        {
+            float influence = (1.0 - (dist / node.radius)) * node.strength;
+            acceleration += (toCenter / dist) * influence;
+        }
+    }
+
+    _Accelerations[index] = acceleration;
+}

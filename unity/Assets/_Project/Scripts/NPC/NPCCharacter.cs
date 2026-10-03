@@ -5,6 +5,7 @@ using UnityEngine.AI;
 using WhisperingWilds.Player;
 using WhisperingWilds.World;
 using WhisperingWilds.Vegetation;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.NPC
 {
@@ -138,7 +139,18 @@ namespace WhisperingWilds.NPC
         }
 
         // IInteractable implementation
-        public string InteractionPrompt => $"Talk to {displayNameEn} ({displayNameTa}) [E]";
+        public string InteractionPrompt
+        {
+            get
+            {
+                // Prefer localized talk prompt using character key prefix (e.g. talk.meenakshi)
+                string key = "talk." + npcId;
+                string localized = LocalizationManager.Instance?.Get(key);
+                if (!string.IsNullOrEmpty(localized)) return localized;
+                // Fallback to bilingual display names
+                return $"Talk to {displayNameEn} ({displayNameTa})";
+            }
+        }
         public InteractionType Type => InteractionType.Talk;
 
         public event Action<NPCCharacter, DialogueNode> OnDialogueStarted;

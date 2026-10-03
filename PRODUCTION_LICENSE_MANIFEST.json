@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "1.0.0",
   "audited": "2026-09-24T06:30:00.000Z",
   "licenses": [
@@ -78,6 +78,45 @@
       "redistributionAllowed": false,
       "proofReference": "INTERNAL_COMMISSION_CONTRACT_2026_WW",
       "status": "APPROVED"
+    }
+  ]
+}
+  ,
+  "dependencies": [
+    {
+      "dependency_name": "Unity Physics (PhysX) - Native",
+      "license_type": "Unity Terms of Service / PhysX License",
+      "version_tag": "Unity 6000.6.3f1",
+      "project_directory_target": "unity",
+      "attribution_requirements": "No direct source redistribution of PhysX required by Unity license; usage governed by Unity EULA.",
+      "copyleft_safety_status": "NOT_APPLICABLE - Closed/source-licensed by Unity for engine runtime"
+    },
+    {
+      "dependency_name": "GravityFieldCalculations.compute (custom spatial field solver)",
+      "license_type": "MIT",
+      "version_tag": "local/v1.0.0",
+      "project_directory_target": "unity/Assets/_Project/Scripts/Physics",
+      "attribution_requirements": "Standard MIT attribution required if redistributed outside this project. This project is the originating implementation.",
+      "copyleft_safety_status": "MIT - Permissive (no copyleft). Exact dependency graph must be audited before external release."
+    }
+  ]
+,
+  "dependencies": [
+    {
+      "dependency_name": "Unity Physics (PhysX) - Native",
+      "license_type": "Unity Terms of Service / PhysX License",
+      "version_tag": "Unity 6000.6.3f1",
+      "project_directory_target": "unity",
+      "attribution_requirements": "No direct source redistribution of PhysX required by Unity license; usage governed by Unity EULA.",
+      "copyleft_safety_status": "NOT_APPLICABLE - Closed/source-licensed by Unity for engine runtime"
+    },
+    {
+      "dependency_name": "GravityFieldCalculations.compute (custom spatial field solver)",
+      "license_type": "MIT",
+      "version_tag": "local/v1.0.0",
+      "project_directory_target": "unity/Assets/_Project/Scripts/Physics",
+      "attribution_requirements": "Standard MIT attribution required if redistributed outside this project. This project is the originating implementation.",
+      "copyleft_safety_status": "MIT - Permissive (no copyleft). Exact dependency graph must be audited before external release."
     }
   ]
 }

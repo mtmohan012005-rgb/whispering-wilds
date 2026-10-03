@@ -6,6 +6,7 @@ using WhisperingWilds.Player;
 using WhisperingWilds.Inventory;
 using WhisperingWilds.World;
 using WhisperingWilds.Localization;
+using WhisperingWilds.PhysicsZones;
 
 namespace WhisperingWilds.UI
 {
@@ -33,6 +34,17 @@ namespace WhisperingWilds.UI
         [SerializeField] private GameObject notificationToastRoot;
         [SerializeField] private Text notificationToastText;
 
+        [Header("Antigravity Field")]
+        [SerializeField] private GameObject antigravityRoot;
+        [SerializeField] private Text antigravityTitleText;
+        [SerializeField] private Text antigravityPromptText;
+        [SerializeField] private Text antigravityEnergyText;
+        [SerializeField] private Image antigravityEnergyFill;
+
+        private bool antigravityVisible;
+        private int antigravityLastBodyCount = -1;
+        private float antigravityRefreshTimer;
+
         private Coroutine toastCoroutine;
         private PlayerInteractor boundInteractor;
         private PlayerAppearanceManager boundAppearance;
@@ -59,6 +71,13 @@ namespace WhisperingWilds.UI
             {
                 LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
             }
+
+            // Paired unsubscribe in OnDisable. An event left dangling here would
+            // re-fire forever and re-render the panel after every language switch.
+            AntigravityZoneManager.PlayerFieldStateChanged += HandlePlayerFieldStateChanged;
+
+            // Adopt current state on enable: the player may already be in a field.
+            HandlePlayerFieldStateChanged(AntigravityZoneManager.IsPlayerInField);
         }
 
         private void OnDisable()
@@ -67,6 +86,83 @@ namespace WhisperingWilds.UI
             {
                 LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
             }
+
+            AntigravityZoneManager.PlayerFieldStateChanged -= HandlePlayerFieldStateChanged;
+        }
+
+        private void HandlePlayerFieldStateChanged(bool inField)
+        {
+            antigravityVisible = inField;
+            antigravityLastBodyCount = -1;
+
+            if (antigravityRoot != null) antigravityRoot.SetActive(inField);
+            if (inField) RefreshAntigravityDisplay();
+        }
+
+        /// <summary>
+        /// Renders the antigravity panel. Called on state change and on language switch
+        /// only. The floating-body count is refreshed lazily so the common case does no
+        /// per-frame string formatting.
+        /// </summary>
+        private void RefreshAntigravityDisplay()
+        {
+            if (!antigravityVisible) return;
+
+            if (antigravityTitleText != null)
+            {
+                antigravityTitleText.text = T("hud.gravity.inverted", "Gravity Field Inverted");
+            }
+
+            if (antigravityPromptText != null)
+            {
+                antigravityPromptText.text = T("hud.gravity.descend", "C: Descend / Sink");
+            }
+
+            if (antigravityEnergyText != null)
+            {
+                antigravityEnergyText.text = T("hud.gravity.energy", "Field Energy");
+            }
+
+            RefreshAntigravityBodyCount(force: true);
+        }
+
+        private void RefreshAntigravityBodyCount(bool force = false)
+        {
+            if (!antigravityVisible) return;
+
+            int count = 0;
+            var zones = AntigravityZoneManager.ActiveZones;
+            for (int i = 0; i < zones.Count; i++)
+            {
+                if (zones[i] != null) count += zones[i].ActiveBodyCount;
+            }
+
+            if (!force && count == antigravityLastBodyCount) return;
+            antigravityLastBodyCount = count;
+
+            if (antigravityEnergyText != null)
+            {
+                antigravityEnergyText.text = T("hud.gravity.bodies", "Floating Objects: {0}", count);
+            }
+
+            if (antigravityEnergyFill != null)
+            {
+                // Normalised against the highest tier cap so the bar is meaningful
+                // across quality settings.
+                float cap = Mathf.Max(1f, HighestZoneCapacity());
+                antigravityEnergyFill.fillAmount = Mathf.Clamp01(count / cap);
+            }
+        }
+
+        private static float HighestZoneCapacity()
+        {
+            float cap = 1f;
+            var zones = AntigravityZoneManager.ActiveZones;
+            for (int i = 0; i < zones.Count; i++)
+            {
+                if (zones[i] != null && zones[i].MaxActiveBodies > cap) cap = zones[i].MaxActiveBodies;
+            }
+            return cap;
         }
 
         /// <summary>Re-renders every localized HUD label after a live language switch.</summary>
@@ -76,6 +172,7 @@ namespace WhisperingWilds.UI
             RefreshRegionDisplay();
             RefreshCurrencyDisplay();
             RefreshAppearanceDisplay();
+            RefreshAntigravityDisplay();
         }
 
         /// <summary>Applies the resolved bilingual font to every HUD label.</summary>
@@ -87,6 +184,9 @@ namespace WhisperingWilds.UI
             LocalizedFontProvider.Apply(currencyText);
             LocalizedFontProvider.Apply(appearanceChangesText);
             LocalizedFontProvider.Apply(notificationToastText);
+            LocalizedFontProvider.Apply(antigravityTitleText);
+            LocalizedFontProvider.Apply(antigravityPromptText);
+            LocalizedFontProvider.Apply(antigravityEnergyText);
         }
 
         private static string T(string key, string fallback)
@@ -131,6 +231,19 @@ namespace WhisperingWilds.UI
         private void Update()
         {
             UpdateClockDisplay();
+
+            // Antigravity body count is polled on a slow timer rather than every frame:
+            // the count only changes on admission/release, and formatting a localized
+            // string per frame would allocate needlessly.
+            if (antigravityVisible)
+            {
+                antigravityRefreshTimer -= Time.unscaledDeltaTime;
+                if (antigravityRefreshTimer <= 0f)
+                {
+                    antigravityRefreshTimer = 0.25f;
+                    RefreshAntigravityBodyCount();
+                }
+            }
         }
 
         private void BindPlayerEvents()

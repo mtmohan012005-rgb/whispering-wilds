@@ -10,6 +10,7 @@ using WhisperingWilds.Localization;
 using WhisperingWilds.NPC;
 using WhisperingWilds.Photography;
 using WhisperingWilds.Data;
+using WhisperingWilds.PhysicsZones;
 
 namespace WhisperingWilds.Core
 {
@@ -22,18 +23,116 @@ namespace WhisperingWilds.Core
     }
 
     /// <summary>
+    /// One persisted antigravity-zone body. Identifiers only, never object references.
+    ///
+    /// All numeric fields are stored post-sanitisation: <see cref="SavedGravityPhysics.Sanitize"/>
+    /// rejects NaN/Infinity and clamps to world/velocity bounds before write, and again
+    /// after read, so a corrupted payload can never place geometry or the player outside
+    /// the playable world.
+    /// </summary>
+    [Serializable]
+    public class SavedGravityBody
+    {
+        public string floatingObjectId;
+        public string zoneId;
+
+        public float posX, posY, posZ;
+        public float rotX, rotY, rotZ, rotW;
+
+        public float linearVelocityX, linearVelocityY, linearVelocityZ;
+        public float angularVelocityX, angularVelocityY, angularVelocityZ;
+
+        /// <summary>True when the body was floating at save time.</summary>
+        public bool isFloating;
+    }
+
+    /// <summary>One persisted antigravity zone and its inverted-state flag.</summary>
+    [Serializable]
+    public class SavedGravityZone
+    {
+        public string zoneId;
+        public bool gravityInverted;
+    }
+
+    /// <summary>
+    /// Bounds and sanitisation rules for persisted physics values.
+    ///
+    /// Mathf.Clamp alone is NOT sufficient: comparisons against NaN are false, so
+    /// Mathf.Clamp(float.NaN, min, max) returns NaN. Non-finite values must be rejected
+    /// explicitly before clamping.
+    /// </summary>
+    public static class SavedGravityPhysics
+    {
+        public const float WorldBoundXZ = 10000f;
+        public const float WorldBoundY = 5000f;
+        public const float MaxLinearSpeed = 200f;
+        public const float MaxAngularSpeed = 100f;
+
+        /// <summary>Finite check that also treats denormals as unusable.</summary>
+        public static bool IsUsable(float v)
+        {
+            return !float.IsNaN(v) && !float.IsInfinity(v) && Mathf.Abs(v) <= 3.0e+37f;
+        }
+
+        /// <summary>Sanitises a position component. Returns 0 for non-finite input.</summary>
+        public static float Sanitize(float v, float bound)
+        {
+            if (!IsUsable(v)) return 0f;
+            return Mathf.Clamp(v, -bound, bound);
+        }
+
+        public static Vector3 SanitizePosition(Vector3 p)
+        {
+            return new Vector3(
+                Sanitize(p.x, WorldBoundXZ),
+                Sanitize(p.y, WorldBoundY),
+                Sanitize(p.z, WorldBoundXZ));
+        }
+
+        public static Vector3 SanitizeLinearVelocity(Vector3 v)
+        {
+            if (!IsUsable(v.x) || !IsUsable(v.y) || !IsUsable(v.z)) return Vector3.zero;
+            v.x = Mathf.Clamp(v.x, -MaxLinearSpeed, MaxLinearSpeed);
+            v.y = Mathf.Clamp(v.y, -MaxLinearSpeed, MaxLinearSpeed);
+            v.z = Mathf.Clamp(v.z, -MaxLinearSpeed, MaxLinearSpeed);
+            return v;
+        }
+
+        public static Vector3 SanitizeAngularVelocity(Vector3 v)
+        {
+            if (!IsUsable(v.x) || !IsUsable(v.y) || !IsUsable(v.z)) return Vector3.zero;
+            v.x = Mathf.Clamp(v.x, -MaxAngularSpeed, MaxAngularSpeed);
+            v.y = Mathf.Clamp(v.y, -MaxAngularSpeed, MaxAngularSpeed);
+            v.z = Mathf.Clamp(v.z, -MaxAngularSpeed, MaxAngularSpeed);
+            return v;
+        }
+
+        /// <summary>Normalises a quaternion, falling back to identity when unusable.</summary>
+        public static Quaternion SanitizeRotation(Quaternion q)
+        {
+            if (!IsUsable(q.x) || !IsUsable(q.y) || !IsUsable(q.z) || !IsUsable(q.w)) return Quaternion.identity;
+            float mag = Mathf.Sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+            if (mag < 1e-6f || float.IsNaN(mag) || float.IsInfinity(mag)) return Quaternion.identity;
+            return new Quaternion(q.x / mag, q.y / mag, q.z / mag, q.w / mag);
+        }
+    }
+
+    /// <summary>
     /// Versioned local save payload.
     ///
     /// Schema v2 adds quest progress (stage index and objective counters), deduction keys,
     /// photographed targets, crafted recipes, NPC interaction history, and the language
     /// preference. Everything is stored as stable identifiers so the file stays small and stays
     /// valid across scene changes and content edits.
+    ///
+    /// Schema v3 adds antigravity zone state and floating-body transforms/velocities, with
+    /// explicit NaN/Infinity rejection and world-bounds clamping on both write and read.
     /// </summary>
     [Serializable]
     public class GameSaveData
     {
         /// <summary>Current write version. Bump only with a migration in <see cref="SaveMigrator"/>.</summary>
-        public const int CurrentSchemaVersion = 2;
+        public const int CurrentSchemaVersion = 3;
 
         public int schemaVersion = CurrentSchemaVersion;
         public string saveTimestamp;
@@ -78,6 +177,10 @@ namespace WhisperingWilds.Core
         // World State
         public string currentRegionId = "chennai";
         public float timeOfDayHours = 9.0f; // 09:00 AM
+
+        // --- Schema v3: antigravity physics state ---
+        public List<SavedGravityZone> gravityZones = new List<SavedGravityZone>();
+        public List<SavedGravityBody> floatingBodies = new List<SavedGravityBody>();
     }
 
     /// <summary>
@@ -108,9 +211,68 @@ namespace WhisperingWilds.Core
         private const string BackupFileName = "whispering_wilds_save.backup.json";
         private const string TempFileName = "whispering_wilds_save.tmp.json";
 
-        public static string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveFileName);
-        public static string BackupFilePath => Path.Combine(Application.persistentDataPath, BackupFileName);
-        public static string TempFilePath => Path.Combine(Application.persistentDataPath, TempFileName);
+        /// <summary>
+        /// Command-line flag / environment variable that redirects the save directory.
+        ///
+        /// Automated QA runs exercise the real save and load code paths, so without a redirect every
+        /// smoke test overwrites the player's actual campaign in <c>Application.persistentDataPath</c>.
+        /// Setting <c>-wwSaveDir &lt;path&gt;</c> (or <c>WW_SAVE_DIR</c>) isolates those runs. When it is
+        /// absent the resolved directory is exactly the previous behaviour, so a normal launch is
+        /// completely unaffected.
+        /// </summary>
+        private static string ResolveSaveDirectory()
+        {
+            string overrideDir = ReadOverrideArgument("-wwSaveDir") ?? Environment.GetEnvironmentVariable("WW_SAVE_DIR");
+
+            if (string.IsNullOrWhiteSpace(overrideDir)) return Application.persistentDataPath;
+
+            try
+            {
+                Directory.CreateDirectory(overrideDir);
+                return Path.GetFullPath(overrideDir);
+            }
+            catch (Exception e)
+            {
+                // A bad override must never cost the player their save slot: fall back to the
+                // normal location and say so.
+                Debug.LogWarning($"[SaveSystem] Could not use save override '{overrideDir}' ({e.Message}); " +
+                                 "falling back to the standard save directory.");
+                return Application.persistentDataPath;
+            }
+        }
+
+        private static string ReadOverrideArgument(string flag)
+        {
+            string[] args;
+            try
+            {
+                args = Environment.GetCommandLineArgs();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return args[i + 1];
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Directory the save files live in. Defaults to <c>Application.persistentDataPath</c>; only
+        /// redirected by an explicit QA override.
+        /// </summary>
+        public static string SaveDirectory { get; } = ResolveSaveDirectory();
+
+        public static string SaveFilePath => Path.Combine(SaveDirectory, SaveFileName);
+        public static string BackupFilePath => Path.Combine(SaveDirectory, BackupFileName);
+        public static string TempFilePath => Path.Combine(SaveDirectory, TempFileName);
 
         /// <summary>Result of the most recent load, including any recovery action taken.</summary>
         public static SaveOperationStatus LastLoadStatus { get; private set; } = SaveOperationStatus.NoSaveFound;
@@ -237,6 +399,11 @@ namespace WhisperingWilds.Core
             }
 
             data.interactedNpcIds = new List<string>(NPCInteractionLog.All);
+
+            // Zero-g state is captured from the live zones. Capture() is defensive: with no
+            // zones present it leaves the lists empty rather than null, so the schema
+            // stays self-consistent on every save.
+            AntigravityPhysicsPersistence.Capture(data);
 
             if (World.RegionalSceneManager.Instance != null)
             {
@@ -440,10 +607,33 @@ namespace WhisperingWilds.Core
             if (float.IsNaN(data.timeOfDayHours)) data.timeOfDayHours = 9f;
             data.timeOfDayHours = Mathf.Repeat(data.timeOfDayHours, 24f);
 
-            if (float.IsNaN(data.posX)) data.posX = 0f;
-            if (float.IsNaN(data.posY)) data.posY = 0f;
-            if (float.IsNaN(data.posZ)) data.posZ = 0f;
-            if (float.IsNaN(data.rotY)) data.rotY = 0f;
+            // Player transform must be finite AND inside the world bounds.
+            //
+            // The previous check only rejected NaN. float.Infinity passed straight
+            // through, which would teleport the player infinitely far away and, because
+            // both GameManager and SaveManager apply this position directly, leave the
+            // game unrecoverable. SanitizePosition rejects non-finite values and applies
+            // the same world limits used for floating bodies.
+            Vector3 safePos = SavedGravityPhysics.SanitizePosition(new Vector3(
+                FiniteOr(data.posX, 0f), FiniteOr(data.posY, 0f), FiniteOr(data.posZ, 0f)));
+            data.posX = safePos.x;
+            data.posY = safePos.y;
+            data.posZ = safePos.z;
+
+            // Facing wraps to a single turn, so a corrupt value cannot desync the
+            // camera from the body it drives.
+            data.rotY = float.IsNaN(data.rotY) || float.IsInfinity(data.rotY)
+                ? 0f
+                : Mathf.Repeat(data.rotY, 360f);
+
+            data.gravityZones ??= new List<SavedGravityZone>();
+            data.floatingBodies ??= new List<SavedGravityBody>();
+        }
+
+        /// <summary>Replaces NaN/Infinity with a fallback. Finite values pass through unchanged.</summary>
+        private static float FiniteOr(float value, float fallback)
+        {
+            return float.IsNaN(value) || float.IsInfinity(value) ? fallback : value;
         }
 
         /// <summary>
