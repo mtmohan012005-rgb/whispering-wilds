@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WhisperingWilds.Core;
 
 namespace WhisperingWilds.QA
 {
@@ -45,7 +46,7 @@ namespace WhisperingWilds.QA
 
         private IEnumerator Start()
         {
-            _dir = Path.Combine(Application.persistentDataPath, QAStateMapCapture.OutDir);
+            _dir = Path.Combine(SaveSystem.SaveDirectory, QAStateMapCapture.OutDir);
             Directory.CreateDirectory(_dir);
 
             Scene scene = SceneManager.GetSceneByName(QAStateMapCapture.SceneName);

@@ -95,6 +95,19 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("hud.am",                  "AM",                     "பி.ப"),
             new LocalizationEntry("hud.pm",                  "PM",                     "பி.ப"),
 
+            // ---- Antigravity field (schema v3 physics feature) --------------
+            new LocalizationEntry("hud.gravity.inverted",   "Gravity Field Inverted",        "புவிஈர்ப்பு விசை மாற்றமடைந்துள்ளது"),
+            new LocalizationEntry("hud.gravity.descend",    "C: Descend / Sink",             "C: கீழிறங்கு / மூழ்கு"),
+            new LocalizationEntry("hud.gravity.energy",     "Field Energy",                  "விசை ஆற்றல்"),
+            new LocalizationEntry("hud.gravity.bodies",     "Floating Objects: {0}",          "மிதிர்வு பொருட்கள்: {0}"),
+
+            // ---- Main character interaction prompts -------------------------
+            new LocalizationEntry("talk.meenakshi",  "Talk to Meenakshi",   "மீனாட்சியுடன் பேசவும்"),
+            new LocalizationEntry("talk.murugan",    "Talk to Murugan",     "முருகனுடன் பேசவும்"),
+            new LocalizationEntry("talk.selvam",     "Talk to Selvam",      "செல்வனுடன் பேசவும்"),
+            new LocalizationEntry("talk.velu",       "Talk to Velu",        "வேலுடன் பேசவும்"),
+            new LocalizationEntry("talk.kannan",     "Talk to Kannan",      "கண்ணனுடன் பேசவும்"),
+
             // ---- Notifications / save-load -----------------------------------
             new LocalizationEntry("notify.game_saved",    "Game Saved",    "விளையாட்டு சேமிக்கப்பட்டது"),
             new LocalizationEntry("notify.game_loaded",   "Game Loaded",   "விளையாட்டு ஏற்றப்பட்டது"),

@@ -7,6 +7,7 @@ using WhisperingWilds.Player;
 using WhisperingWilds.Photography;
 using WhisperingWilds.NPC;
 using WhisperingWilds.Inventory;
+using WhisperingWilds.PhysicsZones;
 
 namespace WhisperingWilds.Core
 {
@@ -58,6 +59,10 @@ namespace WhisperingWilds.Core
         public void ApplySaveDataToGame(GameSaveData save)
         {
             if (save == null) return;
+
+            // Zero-g props are restored after the player transform and before anything
+            // else reads physics state, so no frame runs with stale prop positions.
+            int restoredBodies = AntigravityPhysicsPersistence.Restore(save);
 
             var player = GameObject.FindWithTag("Player");
             if (player != null)
@@ -144,7 +149,7 @@ namespace WhisperingWilds.Core
                 WhisperingWilds.Wildlife.WildlifeManager.Instance.AdvanceLogicalEcologySimulation(0);
             }
 
-            Debug.Log($"<color=#00FF99><b>[SaveManager]</b></color> Game state successfully restored into scene (Player: {save.posX:F1}, {save.posY:F1}, {save.posZ:F1}, Time: {save.timeOfDayHours:F1}).");
+            Debug.Log($"<color=#00FF99><b>[SaveManager]</b></color> Game state successfully restored into scene (Player: {save.posX:F1}, {save.posY:F1}, {save.posZ:F1}, Time: {save.timeOfDayHours:F1}, ZeroGBodies: {restoredBodies}).");
         }
 
         public void SaveGame(int slot = 0)

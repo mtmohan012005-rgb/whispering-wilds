@@ -55,8 +55,46 @@ namespace WhisperingWilds.Core
                 data.schemaVersion = 2;
             }
 
+            // v2 -> v3: antigravity zone and floating-body state.
+            if (data.schemaVersion < 3)
+            {
+                // v2 recorded no physics state at all. Empty lists are the honest
+                // default: every zone despawns non-inverted and no body is floating.
+                // Inventing gravity-inverted zones from a v2 save would put the player
+                // somewhere the campaign never put them.
+                if (data.gravityZones == null) data.gravityZones = new List<SavedGravityZone>();
+                if (data.floatingBodies == null) data.floatingBodies = new List<SavedGravityBody>();
+
+                // Drop any entry that could not have come from a v2 writer but is
+                // non-finite, so downstream restore can assume clean input.
+                data.floatingBodies.RemoveAll(b => b == null || !IsBodySane(b));
+
+                data.schemaVersion = 3;
+            }
+
             data.schemaVersion = GameSaveData.CurrentSchemaVersion;
             return true;
+        }
+
+        /// <summary>
+        /// Rejects bodies whose stored transform or velocity is unusable. NaN and
+        /// Infinity are checked explicitly because Mathf.Clamp passes them through.
+        /// </summary>
+        private static bool IsBodySane(SavedGravityBody body)
+        {
+            return SavedGravityPhysics.IsUsable(body.posX)
+                && SavedGravityPhysics.IsUsable(body.posY)
+                && SavedGravityPhysics.IsUsable(body.posZ)
+                && SavedGravityPhysics.IsUsable(body.rotX)
+                && SavedGravityPhysics.IsUsable(body.rotY)
+                && SavedGravityPhysics.IsUsable(body.rotZ)
+                && SavedGravityPhysics.IsUsable(body.rotW)
+                && SavedGravityPhysics.IsUsable(body.linearVelocityX)
+                && SavedGravityPhysics.IsUsable(body.linearVelocityY)
+                && SavedGravityPhysics.IsUsable(body.linearVelocityZ)
+                && SavedGravityPhysics.IsUsable(body.angularVelocityX)
+                && SavedGravityPhysics.IsUsable(body.angularVelocityY)
+                && SavedGravityPhysics.IsUsable(body.angularVelocityZ);
         }
     }
 }

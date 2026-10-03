@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using WhisperingWilds.Core;
 using WhisperingWilds.World;
 using WhisperingWilds.Vegetation;
 using WhisperingWilds.Wildlife;
@@ -19,7 +20,13 @@ namespace WhisperingWilds.Persistence
         public static WorldPersistenceManager Instance { get; private set; }
 
         private const string WorldSaveFileName = "whispering_wilds_world_state.json";
-        public static string WorldSaveFilePath => Path.Combine(Application.persistentDataPath, WorldSaveFileName);
+
+        /// <summary>
+        /// Shares <see cref="SaveSystem.SaveDirectory"/> so a QA run that redirects the save
+        /// directory also redirects world state, instead of leaving a modified world-state file
+        /// behind in the player's real save folder.
+        /// </summary>
+        public static string WorldSaveFilePath => Path.Combine(SaveSystem.SaveDirectory, WorldSaveFileName);
 
         [Header("Persistence Status")]
         [SerializeField] private bool isDirty = false;

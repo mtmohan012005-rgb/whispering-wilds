@@ -39,6 +39,7 @@ namespace WhisperingWilds.Quality
         private float cooldownTimer = 0f;
         private float[] fpsBuffer = new float[60];
         private int bufferIndex = 0;
+        private int samplesCollected = 0;
 
         private void Awake()
         {
@@ -62,6 +63,9 @@ namespace WhisperingWilds.Quality
 
             if (!adaptationEnabled) return;
 
+            // Do not make a quality decision from a partially filled window.
+            if (samplesCollected < fpsBuffer.Length) return;
+
             if (cooldownTimer > 0f)
             {
                 cooldownTimer -= Time.unscaledDeltaTime;
@@ -79,10 +83,17 @@ namespace WhisperingWilds.Quality
                 float instantFPS = 1.0f / dt;
                 fpsBuffer[bufferIndex] = instantFPS;
                 bufferIndex = (bufferIndex + 1) % fpsBuffer.Length;
+                samplesCollected++;
 
+                // Average only over samples we actually have. Unwritten slots are still
+                // 0.0, so dividing by the full buffer length during the first second
+                // reported a near-zero FPS and triggered a spurious scale-down.
+                int count = Mathf.Min(samplesCollected, fpsBuffer.Length);
+                int start = (bufferIndex - count + (fpsBuffer.Length * 2)) % fpsBuffer.Length;
                 float sum = 0f;
-                for (int i = 0; i < fpsBuffer.Length; i++) sum += fpsBuffer[i];
-                CurrentFPS = sum / fpsBuffer.Length;
+                for (int i = 0; i < count; i++) sum += fpsBuffer[(start + i) % fpsBuffer.Length];
+
+                CurrentFPS = sum / count;
                 CurrentFrameTimeMS = dt * 1000f;
             }
         }

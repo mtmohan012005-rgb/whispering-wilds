@@ -8,7 +8,7 @@ This document records the provenance, licensing, author, and usage permissions f
 | **Unity Engine 6** | Unity Technologies | Unity Software License | Unity Technologies | Standalone PC build binary |
 | **Unity Input System** | Unity Package Manager | Unity Companion License | Unity Technologies | Allowed |
 | **Cinemachine** | Unity Package Manager | Unity Companion License | Unity Technologies | Allowed |
-| **AI Navigation** | Unity Package Manager | Unity Companion License | Unity Technologies | Allowed |
+| **AI Navigation** | Unity Package Manager | Unity Companion License | Unity Technologies | **NOT INSTALLED** — `com.unity.ai.navigation` is absent from `Packages/manifest.json`; `NavMeshSurface` is unavailable and no navmesh is baked. Listed for planned use only. |
 | **glTFast** | Unity Package Manager | Apache 2.0 | Unity Technologies / Attila Szabo | Permissive commercial |
 | **Antigravity IDE Support** | GitHub (`usmanbutt-dev/antigravity-unity`) | MIT License | Usman Butt | Open source |
 | **MCP For Unity** | GitHub (`CoplayDev/unity-mcp`) | MIT License | CoplayDev | Open source |

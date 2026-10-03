@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.SceneManagement;
+using WhisperingWilds.Core;
 
 namespace WhisperingWilds.Profiling
 {
@@ -177,7 +178,7 @@ namespace WhisperingWilds.Profiling
         {
             try
             {
-                string path = Path.Combine(Application.persistentDataPath, "benchmark_report.json");
+                string path = Path.Combine(SaveSystem.SaveDirectory, "benchmark_report.json");
                 string json = JsonUtility.ToJson(result, true);
                 File.WriteAllText(path, json);
             }

@@ -202,7 +202,7 @@ namespace WhisperingWilds.QA
                     {
                         try
                         {
-                            string dir = Path.Combine(Application.persistentDataPath, "QADiagnostics");
+                            string dir = Path.Combine(SaveSystem.SaveDirectory, "QADiagnostics");
                             Directory.CreateDirectory(dir);
                             File.WriteAllBytes(Path.Combine(dir, $"inengine_{stages[i].label}_f{i}.png"), shot.EncodeToPNG());
                             Line($"### wrote inengine_{stages[i].label}_f{i}.png");
@@ -586,7 +586,7 @@ namespace WhisperingWilds.QA
             _sb.Clear();
             try
             {
-                string dir = Path.Combine(Application.persistentDataPath, "QADiagnostics");
+                string dir = Path.Combine(SaveSystem.SaveDirectory, "QADiagnostics");
                 Directory.CreateDirectory(dir);
                 File.AppendAllText(Path.Combine(dir, "visual_diag.txt"), text);
             }

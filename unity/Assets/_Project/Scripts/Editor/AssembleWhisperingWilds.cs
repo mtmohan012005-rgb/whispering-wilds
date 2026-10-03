@@ -64,12 +64,32 @@ namespace WhisperingWilds.Editor
                 // 6. Setup Chennai George Town Environment with authored 3D architecture & props
                 SetupChennaiEnvironment();
 
+                // 6b. Build the George Town street corridor itself: HDRP-authored surfaces,
+                //     kerbs, sidewalks, drainage, cambered carriageway, continuous frontage,
+                //     vehicles, vegetation, street lighting, overhead wiring and bilingual
+                //     signage. Replaces the stretched-cube road and removes TestCube.
+                BuildChennaiStreet.Build();
+
+                // 6c. HDRP 17 lighting: sun, physical sky lighting, exposure and fog so the
+                //     corridor reads as a lit exterior instead of relying on RenderSettings.
+                WWLightingSetup.Build();
+
                 // 7. Setup Real NPCs (Murugan & Velu)
                 SetupNPCs();
 
                 // 8. Step 4 gameplay: region bootstrap, evidence interactables, ingredient pickups,
                 //    the photographable tea kadai, and the journal/crafting bench.
                 SetupStep4Gameplay();
+
+                // 8b. Convert every importer-generated glTF material to HDRP/Lit. Must run after
+                //     all renderers above are instantiated. Leaving these on the glTF Shader Graph
+                //     means a URP Lit sub-target under HDRP, which no HDRP light reaches - the scene
+                //     renders effectively unlit and near-black.
+                var upgradeStats = WWMaterialUpgrade.ConvertScene(scene);
+                Debug.Log("<color=#00FF88><b>[WhisperingWilds]</b></color> GLTF->HDRP/Lit conversion: " +
+                          upgradeStats.renderersConverted + " renderers, " +
+                          upgradeStats.materialsCreated + " material assets, " +
+                          upgradeStats.skippedUnlit + " unlit left intact.");
 
                 // Save Scene
                 EditorSceneManager.MarkSceneDirty(scene);
@@ -172,7 +192,11 @@ namespace WhisperingWilds.Editor
             {
                 player = new GameObject("Player");
                 player.tag = "Player";
-                player.transform.position = new Vector3(0f, 0f, 0f);
+
+                // Spawn on the west sidewalk of the generated corridor, not the world origin.
+                // Origin sits on the carriageway at y=0, which left the CharacterController
+                // slightly below the road surface on load.
+                player.transform.position = new Vector3(-6.5f, BuildChennaiStreet.SidewalkY + 0.12f, -6f);
 
                 var cc = player.AddComponent<CharacterController>();
                 cc.height = 1.8f;
@@ -685,8 +709,15 @@ namespace WhisperingWilds.Editor
             var renderer = obj.GetComponent<MeshRenderer>();
             if (renderer != null)
             {
-                var shader = Shader.Find("HDRP/Lit") ?? Shader.Find("Standard");
-                renderer.sharedMaterial = new Material(shader) { color = new Color(0.35f, 0.28f, 0.2f) };
+                // Shared asset material, not an inline `new Material`. The old code assigned
+                // `material.color`, which writes _Color; HDRP/Lit reads _BaseColor, so these
+                // placeholders were rendering with default white albedo as well as leaving a
+                // per-instance material behind.
+                renderer.sharedMaterial = WWMaterialLibrary.Lit(
+                    "Assets/_Project/Art/Materials/Chennai/InteractionProp.mat",
+                    new Color(0.35f, 0.28f, 0.2f),
+                    0.15f,
+                    0f);
             }
 
             var interactable = obj.AddComponent<Gameplay.GameplayEventInteractable>();
