@@ -366,7 +366,10 @@ namespace WhisperingWilds.UI
         {
             if (label == null) return;
             LocalizationManager mgr = LocalizationManager.Instance;
-            label.text = mgr != null ? mgr.Get(key) : key;
+
+            // Never leak the internal "missing." identifier to the player, and never fall back
+            // to the raw key when the manager is absent.
+            label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
         }
 
         private void ApplyFontsToAllLabels()

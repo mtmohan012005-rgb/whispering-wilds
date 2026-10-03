@@ -110,9 +110,15 @@ namespace WhisperingWilds.World
                 sunLight.color = sunColorGradient.Evaluate(t);
             }
 
-            if (sunIntensityCurve != null)
+            if (sunIntensityCurve != null && sunIntensityCurve.length > 0)
             {
-                sunLight.intensity = sunIntensityCurve.Evaluate(t);
+                sunLight.intensity = Mathf.Max(0f, sunIntensityCurve.Evaluate(t));
+            }
+            else
+            {
+                // A missing or empty curve evaluates to 0, which silently renders the entire
+                // world black. Fall back to a guaranteed-visible daylight floor instead.
+                sunLight.intensity = Mathf.Max(0.35f, sunLight.intensity);
             }
         }
 
@@ -132,7 +138,7 @@ namespace WhisperingWilds.World
 
         private void InitDefaultLightingGradients()
         {
-            if (sunColorGradient == null)
+            if (sunColorGradient == null || sunColorGradient.colorKeys.Length == 0)
             {
                 sunColorGradient = new Gradient();
                 var colorKeys = new GradientColorKey[]
@@ -151,16 +157,25 @@ namespace WhisperingWilds.World
                 sunColorGradient.SetKeys(colorKeys, alphaKeys);
             }
 
-            if (sunIntensityCurve == null)
+            if (sunIntensityCurve == null || sunIntensityCurve.length == 0)
             {
-                sunIntensityCurve = new AnimationCurve(
-                    new Keyframe(0.0f, 0.05f),
-                    new Keyframe(0.25f, 0.6f),
-                    new Keyframe(0.5f, 1.3f),
-                    new Keyframe(0.75f, 0.6f),
-                    new Keyframe(1.0f, 0.05f)
-                );
+                sunIntensityCurve = BuildDefaultSunIntensityCurve();
             }
+        }
+
+        /// <summary>
+        /// Daylight intensity envelope across a 24h day, keyed on normalized time.
+        /// Exposed as a factory so the runtime fallback and the editor default can never diverge.
+        /// </summary>
+        private static AnimationCurve BuildDefaultSunIntensityCurve()
+        {
+            return new AnimationCurve(
+                new Keyframe(0.0f, 0.05f),
+                new Keyframe(0.25f, 0.6f),
+                new Keyframe(0.5f, 1.3f),
+                new Keyframe(0.75f, 0.6f),
+                new Keyframe(1.0f, 0.05f)
+            );
         }
     }
 }

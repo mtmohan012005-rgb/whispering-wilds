@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2fe24454c0093d4d98536b18bef2c8f, type: 3}
+  m_Name: RegionCell_vellore
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Geography.RegionCell
+  regionId: vellore
+  displayNameEnglish: Vellore
+  displayNameTamil: "\u0BB5\u0BC7\u0BB2\u0BC2\u0BB0\u0BCD"
+  localizationKey: region.vellore
+  latitude: 12.920386
+  longitude: 79.15004
+  boundsKilometres: {x: 14, y: 14}
+  biome: 3
+  terrainType: 3
+  allowedWildlife: []
+  majorRoads:
+  - NH40
+  pointsOfInterest:
+  - Vellore Fort
+  - Jawad
+  playableSceneName: 
+  streamingRadiusKm: 22.4
+  implemented: 0

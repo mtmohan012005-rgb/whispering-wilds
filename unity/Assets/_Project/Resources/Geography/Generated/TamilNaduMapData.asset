@@ -1,0 +1,199 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1690eee9b97b6445b0e600efdc1ea67, type: 3}
+  m_Name: TamilNaduMapData
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Geography.TamilNaduMapData
+  geoReference: {fileID: 11400000, guid: c8149cb3f6948b5449a7d337f377fb96, type: 2}
+  stateOutline: {fileID: 4300000, guid: 77865b951b453df4dace8155f72a5edc, type: 2}
+  stateOutlineSource: Natural Earth 10m admin-1 (Tamil Nadu) - public domain
+  coastline: {fileID: 4300000, guid: d1dc781915e05eb45b6d199197a0edd9, type: 2}
+  mountainRegions: {fileID: 4300000, guid: 4575259ca79ef62489f6dad1dc31ccee, type: 2}
+  rivers:
+  - label: River
+    sourceDataset: tn_10m_rivers_lake_centerlines.geojson
+    mesh: {fileID: 4300000, guid: 99b0075bc66597448ad41dff417b15ca, type: 2}
+    featureCount: 1
+  - label: Cauvery
+    sourceDataset: tn_10m_rivers_lake_centerlines.geojson
+    mesh: {fileID: 4300000, guid: 4b0dff660a8353a46aa539714efeeef1, type: 2}
+    featureCount: 9
+  - label: Palar
+    sourceDataset: tn_10m_rivers_lake_centerlines.geojson
+    mesh: {fileID: 4300000, guid: eefca0817800ee842ac4cfb5497200ce, type: 2}
+    featureCount: 1
+  - label: Kolidam
+    sourceDataset: tn_10m_rivers_lake_centerlines.geojson
+    mesh: {fileID: 4300000, guid: 60ecd8e5b3d5ebe45b07bfc8eab2cc61, type: 2}
+    featureCount: 1
+  roads:
+  - label: Major Highway
+    sourceDataset: Natural Earth 10m roads (public domain)
+    mesh: {fileID: 4300000, guid: 9c7c1f73ac4ae0f4ba58e882f8170934, type: 2}
+    featureCount: 8
+  - label: Road
+    sourceDataset: Natural Earth 10m roads (public domain)
+    mesh: {fileID: 4300000, guid: 46541a98880edf546a745af2eb7618dc, type: 2}
+    featureCount: 9
+  - label: Unknown
+    sourceDataset: Natural Earth 10m roads (public domain)
+    mesh: {fileID: 4300000, guid: 8828831f992201a49914184217e313e6, type: 2}
+    featureCount: 3
+  places:
+  - nameEnglish: Chennai
+    nameTamil: "\u0B9A\u0BC6\u0BA9\u0BCD\u0BA9\u0BC8"
+    kind: settlement
+    latitude: 13.091934
+    longitude: 80.278053
+    worldPosition: {x: 208.64818, y: 0, z: 256.25012}
+    population: 11491063
+  - nameEnglish: Coimbatore
+    nameTamil: "\u0B95\u0BCB\u0BAF\u0BAE\u0BCD\u0BAA\u0BC1\u0BA4\u0BCD\u0BA4\u0BC2\u0BB0\u0BCD"
+    kind: settlement
+    latitude: 11.001906
+    longitude: 76.948075
+    worldPosition: {x: -155.48943, y: 0, z: 23.589268}
+    population: 2655823
+  - nameEnglish: Madurai
+    nameTamil: "\u0BAE\u0BA4\u0BC1\u0BB0\u0BC8"
+    kind: settlement
+    latitude: 9.921972
+    longitude: 78.118081
+    worldPosition: {x: -27.547684, y: 0, z: -96.62843}
+    population: 2203908
+  - nameEnglish: Tiruchirappalli
+    nameTamil: "\u0BA4\u0BBF\u0BB0\u0BC1\u0B9A\u0BCD\u0B9A\u0BBF\u0BB0\u0BBE\u0BAA\u0BCD\u0BAA\u0BB3\u0BCD\u0BB3\u0BBF"
+    kind: settlement
+    latitude: 10.800541
+    longitude: 78.687512
+    worldPosition: {x: 34.720367, y: 0, z: 1.1734188}
+    population: 1726484
+  - nameEnglish: Salem
+    nameTamil: "\u0B9A\u0BC7\u0BB2\u0BAE\u0BCD"
+    kind: settlement
+    latitude: 11.671943
+    longitude: 78.178129
+    worldPosition: {x: -20.981354, y: 0, z: 98.177444}
+    population: 1651396
+  - nameEnglish: Tiruppur
+    nameTamil: "\u0BA4\u0BBF\u0BB0\u0BC1\u0BAA\u0BCD\u0BAA\u0BC2\u0BB0\u0BCD"
+    kind: settlement
+    latitude: 11.080421
+    longitude: 77.329998
+    worldPosition: {x: -113.72563, y: 0, z: 32.329517}
+    population: 1094543
+  - nameEnglish: Tirunelveli
+    nameTamil: "\u0BA4\u0BBF\u0BB0\u0BC1\u0BA8\u0BC6\u0BB2\u0BCD\u0BB5\u0BC7\u0BB2\u0BBF"
+    kind: settlement
+    latitude: 8.730409
+    longitude: 77.689976
+    worldPosition: {x: -74.36155, y: 0, z: -229.27263}
+    population: 978044
+  - nameEnglish: Tuticorin
+    nameTamil: Tuticorin
+    kind: settlement
+    latitude: 8.7978
+    longitude: 78.131797
+    worldPosition: {x: -26.047821, y: 0, z: -221.77069}
+    population: 872188
+  - nameEnglish: Rajapalaiyam
+    nameTamil: Rajapalaiyam
+    kind: settlement
+    latitude: 9.420393
+    longitude: 77.580009
+    worldPosition: {x: -86.38659, y: 0, z: -152.46396}
+    population: 677950
+  - nameEnglish: Thanjavur
+    nameTamil: "\u0BA4\u0B9E\u0BCD\u0B9A\u0BBE\u0BB5\u0BC2\u0BB0\u0BCD"
+    kind: settlement
+    latitude: 10.770414
+    longitude: 79.150042
+    worldPosition: {x: 85.29865, y: 0, z: -2.1803036}
+    population: 439142
+  - nameEnglish: Nagercoil
+    nameTamil: "\u0BA8\u0BBE\u0B95\u0BB0\u0BCD\u0B95\u0BCB\u0BB5\u0BBF\u0BB2\u0BCD"
+    kind: settlement
+    latitude: 8.180365
+    longitude: 77.429992
+    worldPosition: {x: -102.791145, y: 0, z: -290.50323}
+    population: 438187
+  - nameEnglish: Dindigul
+    nameTamil: "\u0BA4\u0BBF\u0BA3\u0BCD\u0B9F\u0BC1\u0B95\u0BCD\u0B95\u0BB2\u0BCD"
+    kind: settlement
+    latitude: 10.359908
+    longitude: 77.978285
+    worldPosition: {x: -42.834568, y: 0, z: -47.87762}
+    population: 401594
+  - nameEnglish: Vellore
+    nameTamil: "\u0BB5\u0BC7\u0BB2\u0BC2\u0BB0\u0BCD"
+    kind: settlement
+    latitude: 12.920386
+    longitude: 79.150042
+    worldPosition: {x: 85.29865, y: 0, z: 237.15349}
+    population: 354162
+  - nameEnglish: Cuddalore
+    nameTamil: "\u0B95\u0B9F\u0BB2\u0BC2\u0BB0\u0BCD"
+    kind: settlement
+    latitude: 11.720407
+    longitude: 79.770004
+    worldPosition: {x: 153.09233, y: 0, z: 103.57243}
+    population: 317138
+  - nameEnglish: Kanchipuram
+    nameTamil: Kanchipuram
+    kind: settlement
+    latitude: 12.833724
+    longitude: 79.716674
+    worldPosition: {x: 147.26062, y: 0, z: 227.50632}
+    population: 310058
+  - nameEnglish: Kumbakonam
+    nameTamil: "\u0B95\u0BC1\u0BAE\u0BCD\u0BAA\u0B95\u0BCB\u0BA3\u0BAE\u0BCD"
+    kind: settlement
+    latitude: 10.951296
+    longitude: 79.387528
+    worldPosition: {x: 111.26807, y: 0, z: 17.955389}
+    population: 278528
+  - nameEnglish: Tiruvannamalai
+    nameTamil: Tiruvannamalai
+    kind: settlement
+    latitude: 12.260374
+    longitude: 79.099967
+    worldPosition: {x: 79.82288, y: 0, z: 163.68129}
+    population: 276486
+  - nameEnglish: Valparai
+    nameTamil: "\u0BB5\u0BBE\u0BB2\u0BCD\u0BAA\u0BB0\u0BC8"
+    kind: settlement
+    latitude: 10.320415
+    longitude: 76.969968
+    worldPosition: {x: -153.0954, y: 0, z: -52.273964}
+    population: 204661
+  - nameEnglish: Karur
+    nameTamil: Karur
+    kind: settlement
+    latitude: 10.950377
+    longitude: 78.083337
+    worldPosition: {x: -31.346987, y: 0, z: 17.853086}
+    population: 153830
+  regionCells:
+  - {fileID: 11400000, guid: 538f9b1e31e1227438f76605a0155b07, type: 2}
+  - {fileID: 11400000, guid: 4ee6024b0a600914c9bc5b9aa9e67b62, type: 2}
+  - {fileID: 11400000, guid: 5f47fd74c97237e419075a8720f11423, type: 2}
+  - {fileID: 11400000, guid: 7bbeb3eacb4041c4690a49bf79dbfa37, type: 2}
+  - {fileID: 11400000, guid: 451af01ab661e614390d2aa6baaae6a5, type: 2}
+  - {fileID: 11400000, guid: f2a5885f1d384b841bd8cf358d5bb1d3, type: 2}
+  - {fileID: 11400000, guid: 4395bfa2ad2091144aa68ac5cf64f6cd, type: 2}
+  - {fileID: 11400000, guid: db51faf4c17798c46b57ec339f01271b, type: 2}
+  - {fileID: 11400000, guid: 7a44efb343535844fb15281c853f993c, type: 2}
+  - {fileID: 11400000, guid: 0acc7c776066fbf48836b8292d789ed9, type: 2}
+  - {fileID: 11400000, guid: 48d644db0175ba1489bfcce34fda676b, type: 2}
+  - {fileID: 11400000, guid: af44f6fa6c20c21489e992e11789e201, type: 2}
+  licenceSummary: Natural Earth (public domain) + OpenStreetMap (ODbL). See unity/MapData/SOURCES_AND_LICENSES.md
+  generatedByPipeline: TamilNaduMapImporter v1
+  generatedAtUtc: 2026-10-02 19:38:03Z

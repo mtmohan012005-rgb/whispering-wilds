@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2fe24454c0093d4d98536b18bef2c8f, type: 3}
+  m_Name: RegionCell_nilgiris
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Geography.RegionCell
+  regionId: nilgiris
+  displayNameEnglish: Nilgiris
+  displayNameTamil: "\u0BA8\u0BC0\u0BB2\u0B95\u0BBF\u0BB0\u0BBF"
+  localizationKey: region.nilgiris
+  latitude: 11.4127
+  longitude: 76.7031
+  boundsKilometres: {x: 25, y: 25}
+  biome: 6
+  terrainType: 6
+  allowedWildlife:
+  - Nilgiri tahr
+  - gaur
+  - shola birds
+  majorRoads:
+  - NH766 (Mysore Ooty road)
+  pointsOfInterest:
+  - Ooty
+  - Coonoor tea estates
+  - Shola forest
+  - Toda settlements
+  playableSceneName: 07_Nilgiris_Sanctuary
+  streamingRadiusKm: 40
+  implemented: 1

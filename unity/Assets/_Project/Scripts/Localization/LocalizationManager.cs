@@ -137,6 +137,30 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("region.chettinad",    "Chettinad Mansion",    "செட்டிநாடு அரண்மனை"),
             new LocalizationEntry("region.mamallapuram", "Mamallapuram Shore",   "மாமல்லபுரம் கடற்கரை"),
             new LocalizationEntry("region.nilgiris",     "Nilgiris Sanctuary",   "நீலகிரி சரணக் காடு"),
+        new LocalizationEntry("place.chennai",            "Chennai",            "சென்னை"),
+            new LocalizationEntry("place.madurai",            "Madurai",            "மதுரை"),
+            new LocalizationEntry("place.coimbatore",         "Coimbatore",         "கோயம்புத்தூர்"),
+            new LocalizationEntry("place.thanjavur",          "Thanjavur",          "தஞ்சாவூர்"),
+            new LocalizationEntry("place.mamallapuram",       "Mamallapuram",       "மாமல்லபுரம்"),
+            new LocalizationEntry("place.mahabalipuram",      "Mahabalipuram",      "மகாலபுரம்"),
+            new LocalizationEntry("place.pichavaram",         "Pichavaram",         "பிச்சாவரம்"),
+            new LocalizationEntry("place.chettinad",          "Chettinad",          "செட்டிநாடு"),
+            new LocalizationEntry("place.nilgiris",           "Nilgiris",           "நீலகிரி"),
+            new LocalizationEntry("place.cuddalore",          "Cuddalore",          "கடலூர்"),
+            new LocalizationEntry("place.kumbakonam",         "Kumbakonam",         "கும்பகோணம்"),
+            new LocalizationEntry("place.karaikudi",          "Karaikudi",          "காரைக்குடி"),
+            new LocalizationEntry("place.ooty",               "Ooty",               "ஊட்டி"),
+            new LocalizationEntry("place.valparai",           "Valparai",           "வால்பரை"),
+            new LocalizationEntry("place.tiruchirappalli",    "Tiruchirappalli",    "திருச்சிராப்பள்ளி"),
+            new LocalizationEntry("place.salem",              "Salem",              "சேலம்"),
+            new LocalizationEntry("place.tirunelveli",        "Tirunelveli",        "திருநெல்வேலி"),
+            new LocalizationEntry("place.tiruppur",           "Tiruppur",           "திருப்பூர்"),
+            new LocalizationEntry("place.dindigul",           "Dindigul",           "திண்டுக்கல்"),
+            new LocalizationEntry("place.nagercoil",          "Nagercoil",          "நாகர்கோவில்"),
+            new LocalizationEntry("place.thoothukudi",        "Thoothukudi",        "தூத்துக்குடி"),
+            new LocalizationEntry("place.vellore",            "Vellore",            "வேலூர்"),
+            new LocalizationEntry("place.rajapalayam",        "Rajapalayam",        "ராஜபாளையம்"),
+            new LocalizationEntry("place.puducherry",         "Puducherry (Union Territory, not Tamil Nadu)", "புதுச்சேரி (ஒரே சுயாதீனப் பிரதேசம், தமிழ்நாடு அல்ல)"),
         };
 
         private static readonly Dictionary<string, LocalizationEntry> Lookup = BuildLookup();
@@ -257,6 +281,27 @@ namespace WhisperingWilds.Localization
                 // A malformed format string must never take down the UI.
                 return template;
             }
+        }
+
+        /// <summary>
+        /// Display-safe lookup for anything a player can actually read.
+        ///
+        /// <see cref="Get"/> intentionally returns the <c>missing.</c> placeholder so that
+        /// developers notice gaps during testing. That placeholder is an internal identifier,
+        /// so UI must never surface it: a missing key is reported once and then rendered as a
+        /// neutral label instead.
+        /// </summary>
+        public string GetForDisplay(string key, string safeFallback = "")
+        {
+            if (LocalizationDatabase.TryGetEntry(key, out var entry))
+            {
+                if (CurrentLanguage == Language.Tamil && !string.IsNullOrEmpty(entry.tamil)) return entry.tamil;
+                if (!string.IsNullOrEmpty(entry.english)) return entry.english;
+                if (!string.IsNullOrEmpty(entry.tamil)) return entry.tamil;
+            }
+
+            ReportMissingKey(key);
+            return safeFallback ?? string.Empty;
         }
 
         public bool HasKey(string key) => LocalizationDatabase.Has(key);

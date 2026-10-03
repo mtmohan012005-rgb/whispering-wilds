@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2fe24454c0093d4d98536b18bef2c8f, type: 3}
+  m_Name: RegionCell_tirunelveli
+  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Geography.RegionCell
+  regionId: tirunelveli
+  displayNameEnglish: Tirunelveli
+  displayNameTamil: "\u0BA4\u0BBF\u0BB0\u0BC1\u0BA8\u0BC6\u0BB2\u0BCD\u0BB5\u0BC7\u0BB2\u0BBF"
+  localizationKey: region.tirunelveli
+  latitude: 8.730409
+  longitude: 77.68998
+  boundsKilometres: {x: 16, y: 16}
+  biome: 7
+  terrainType: 3
+  allowedWildlife: []
+  majorRoads:
+  - NH7
+  - SH39
+  pointsOfInterest:
+  - Nellaiappar temple
+  - Tamiraparani
+  playableSceneName: 
+  streamingRadiusKm: 25.6
+  implemented: 0

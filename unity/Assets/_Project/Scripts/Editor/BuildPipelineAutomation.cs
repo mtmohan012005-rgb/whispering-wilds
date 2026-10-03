@@ -34,10 +34,18 @@ namespace WhisperingWilds.Editor
             "Assets/_Project/Scenes/WW_Benchmark_Nilgiris.unity"
         };
 
+        // QA override: allows a local test run to emit build artifacts outside the repository.
+        // Returns null when the environment variable is absent, preserving default behaviour.
+        private static string ResolveBuildRoot()
+        {
+            string overrideDir = Environment.GetEnvironmentVariable("WW_QA_BUILD_ROOT");
+            return string.IsNullOrEmpty(overrideDir) ? "Build/Windows" : overrideDir;
+        }
+
         [MenuItem("Tools/Whispering Wilds/Build Production Windows x64 (Retail)")]
         public static bool BuildProductionWindows()
         {
-            string buildDir = "Build/Windows";
+            string buildDir = ResolveBuildRoot();
             string exePath = Path.Combine(buildDir, "TheWhisperingWilds.exe");
             if (!Directory.Exists(buildDir)) Directory.CreateDirectory(buildDir);
 
@@ -143,7 +151,7 @@ namespace WhisperingWilds.Editor
                     $"  \"timestamp\": \"{DateTime.UtcNow:o}\"\n" +
                     "}";
 
-                File.WriteAllText("BUILD_REPORT.json", json);
+                File.WriteAllText(Path.Combine(Path.GetDirectoryName(exePath) ?? ".", "BUILD_REPORT.json"), json);
             }
             catch (Exception ex)
             {

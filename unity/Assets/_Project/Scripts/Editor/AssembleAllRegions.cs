@@ -250,21 +250,42 @@ namespace WhisperingWilds.Editor
             SetupCommonManagers("statemap", "Tamil Nadu State Map", "தமிழ்நாடு வரைபடம்");
 
             // 3D Map Table & Relief Board
+            // This board is the MAP SURFACE the real GIS geometry sits on, not the map itself.
+            // It must be large enough to underlay the projected state outline, which spans
+            // ~450 units east-west by ~607 units north-south at the 1 unit = 1 km scale in
+            // TamilNaduGeoReference. The previous 80x100 cube was smaller than the state it was
+            // meant to present and hid the real coastline/rivers behind its own edge.
             var table = GameObject.CreatePrimitive(PrimitiveType.Cube);
             table.name = "Map_Relief_Board";
-            table.transform.position = new Vector3(0f, -0.5f, 0f);
-            table.transform.localScale = new Vector3(80f, 1f, 100f);
+            table.transform.position = new Vector3(0f, -2f, 0f);
+            table.transform.localScale = new Vector3(1500f, 2f, 1900f);
             var rend = table.GetComponent<MeshRenderer>();
-            Shader shader = Shader.Find("HDRP/Lit") ?? Shader.Find("Standard");
-            rend.sharedMaterial = new Material(shader) { color = new Color(0.25f, 0.45f, 0.28f) }; // Rich Tamil Nadu green relief
+            // Use the same pre-authored material asset the map layers use. A runtime-created
+            // Material here left the board at HDRP/Lit's default base colour (setting .color on
+            // HDRP/Lit does not drive _BaseColor), which rendered as a bright warm surface.
+            var backdrop = UnityEngine.Resources.Load<Material>("Geography/Materials/Layer_Backdrop");
+            if (backdrop != null)
+            {
+                rend.sharedMaterial = backdrop;
+            }
+            else
+            {
+                Shader shader = Shader.Find("HDRP/Lit") ?? Shader.Find("Standard");
+                var mat = new Material(shader) { name = "MapBoardFallback" };
+                if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", new Color(0.13f, 0.15f, 0.18f));
+                if (mat.HasProperty("_Color")) mat.SetColor("_Color", new Color(0.13f, 0.15f, 0.18f));
+                rend.sharedMaterial = mat;
+            }
 
-            // Camera looking down at state map
+            // Camera: TamilNaduStateMapBootstrap reframes this to fit the outline at runtime, so
+            // only the initial authoring values matter here.
             var camObj = new GameObject("Main Camera");
             var cam = camObj.AddComponent<Camera>();
             camObj.AddComponent<AudioListener>();
             camObj.tag = "MainCamera";
-            camObj.transform.position = new Vector3(0f, 65f, -25f);
-            camObj.transform.rotation = Quaternion.Euler(68f, 0f, 0f);
+            cam.transform.position = new Vector3(0f, 900f, -420f);
+            cam.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            cam.farClipPlane = 8000f;
 
             SetupHUD("Tamil Nadu State Map", "தமிழ்நாடு பெருவழி வரைபடம்");
 

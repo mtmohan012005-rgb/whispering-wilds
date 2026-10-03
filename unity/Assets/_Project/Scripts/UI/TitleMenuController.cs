@@ -109,7 +109,9 @@ namespace WhisperingWilds.UI
 
             LocalizedFontProvider.Apply(label);
             LocalizationManager mgr = LocalizationManager.Instance;
-            label.text = mgr != null ? mgr.Get(key) : key;
+
+            // Never leak the internal "missing." identifier or the raw key to the player.
+            label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
         }
 
         private void ApplyLocalizedFontToChild(string objectName)
