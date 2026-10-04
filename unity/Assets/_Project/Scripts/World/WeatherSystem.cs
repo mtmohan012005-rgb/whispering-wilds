@@ -73,11 +73,48 @@ namespace WhisperingWilds.World
         private static readonly int GlobalPuddleScaleId = Shader.PropertyToID("_GlobalPuddleScale");
         private static readonly int GlobalWindSpeedId = Shader.PropertyToID("_GlobalWindSpeed");
 
+        /// <summary>Rate limit for the (allocating) scene-wide rain emitter lookup. See AcquireRainParticleSystem.</summary>
+        private const float RainAcquireRetryIntervalSeconds = 5.0f;
+        private float nextRainAcquireTime;
+
+        /// <summary>
+        /// Scene-owned bindings (Volume, rain emitter) are acquired once in Start, which runs while
+        /// the boot/menu scene is still loaded. Both are therefore stale for the rest of the session
+        /// once a region scene becomes active, so they are rebound on every scene load.
+        /// </summary>
+        private void OnEnable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= HandleSceneLoaded;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += HandleSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= HandleSceneLoaded;
+        }
+
+        private void HandleSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            sceneWeatherVolume = null;
+            hdrpFog = null;
+            rainParticleSystem = null;
+
+            nextRainAcquireTime = 0f;
+            AcquireHdrpVolume();
+            AcquireRainParticleSystem();
+
+            // Re-assert the current weather into the newly loaded scene's volume so a region never
+            // loads with a fog density left over from whatever weather the previous region had.
+            ApplyInstantWeatherVisuals(currentWeather);
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -127,18 +164,30 @@ namespace WhisperingWilds.World
             }
         }
 
+/// <summary>
+        /// Finds the region's rain emitter.
+        ///
+        /// FindObjectsByType allocates an array of every particle system in the scene and the name
+        /// check allocates a lowercase copy per candidate, so this must not run per frame. It is
+        /// retried on a timer from <see cref="UpdateRainEmission"/> (which runs for the whole 10 s
+        /// blend) and on scene load, not every frame. When no rain emitter is authored the lookup
+        /// simply keeps failing on a timer; <c>RuntimeVisualDiagnostics</c> reports the missing
+        /// emitter rather than this loop silently pretending rain exists.
+        /// </summary>
         private void AcquireRainParticleSystem()
         {
-            if (rainParticleSystem == null)
+            if (rainParticleSystem != null) return;
+            if (Time.realtimeSinceStartup < nextRainAcquireTime) return;
+            nextRainAcquireTime = Time.realtimeSinceStartup + RainAcquireRetryIntervalSeconds;
+
+            var psList = FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include);
+            for (int i = 0; i < psList.Length; i++)
             {
-                var psList = FindObjectsByType<ParticleSystem>();
-                foreach (var ps in psList)
+                ParticleSystem ps = psList[i];
+                if (ps != null && ps.name.IndexOf("rain", System.StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    if (ps.gameObject.name.ToLowerInvariant().Contains("rain"))
-                    {
-                        rainParticleSystem = ps;
-                        break;
-                    }
+                    rainParticleSystem = ps;
+                    return;
                 }
             }
         }

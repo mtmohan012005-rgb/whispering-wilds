@@ -53,7 +53,9 @@ namespace WhisperingWilds.UI
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -380,7 +382,7 @@ namespace WhisperingWilds.UI
             notificationToastText.text = message;
             LocalizedFontProvider.Apply(notificationToastText);
             notificationToastRoot.SetActive(true);
-            yield return new WaitForSeconds(duration);
+            yield return new WaitForSecondsRealtime(duration);
             notificationToastRoot.SetActive(false);
         }
     }

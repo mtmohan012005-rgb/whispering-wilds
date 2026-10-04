@@ -27,11 +27,17 @@ namespace WhisperingWilds.World
         private float localFallbackHour = 9.0f;
         private int lastRecordedHour = -1;
 
+        /// <summary>Rate limit for the (allocating) scene-wide sun lookup. See AcquireSunLight.</summary>
+        private const float SunAcquireRetryIntervalSeconds = 2.0f;
+        private float nextSunAcquireTime;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -57,18 +63,30 @@ namespace WhisperingWilds.World
             }
         }
 
+/// <summary>
+        /// Finds the region's sun light.
+        ///
+        /// FindObjectsByType allocates an array of every light in the scene, so it must never be
+        /// called from the per-frame sun update. 00_Boot contains no Light component at all, so an
+        /// unthrottled retry burned a full-scene scan roughly 60 times a second for as long as the
+        /// main menu stayed open. Retries are now rate limited and the scan runs in inactive-inclusive
+        /// mode so a disabled-at-authoring sun is still found rather than leaving the world unlit.
+        /// </summary>
         private void AcquireSunLight()
         {
-            if (sunLight == null)
+            if (sunLight != null) return;
+
+            if (Time.realtimeSinceStartup < nextSunAcquireTime) return;
+            nextSunAcquireTime = Time.realtimeSinceStartup + SunAcquireRetryIntervalSeconds;
+
+            var lights = FindObjectsByType<Light>(FindObjectsInactive.Include);
+            for (int i = 0; i < lights.Length; i++)
             {
-                var lights = FindObjectsByType<Light>();
-                foreach (var l in lights)
+                Light candidate = lights[i];
+                if (candidate != null && candidate.type == LightType.Directional)
                 {
-                    if (l.type == LightType.Directional)
-                    {
-                        sunLight = l;
-                        break;
-                    }
+                    sunLight = candidate;
+                    return;
                 }
             }
         }

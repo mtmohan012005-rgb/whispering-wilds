@@ -102,11 +102,37 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("hud.gravity.bodies",     "Floating Objects: {0}",          "மிதிர்வு பொருட்கள்: {0}"),
 
             // ---- Main character interaction prompts -------------------------
-            new LocalizationEntry("talk.meenakshi",  "Talk to Meenakshi",   "மீனாட்சியுடன் பேசவும்"),
-            new LocalizationEntry("talk.murugan",    "Talk to Murugan",     "முருகனுடன் பேசவும்"),
-            new LocalizationEntry("talk.selvam",     "Talk to Selvam",      "செல்வனுடன் பேசவும்"),
-            new LocalizationEntry("talk.velu",       "Talk to Velu",        "வேலுடன் பேசவும்"),
-            new LocalizationEntry("talk.kannan",     "Talk to Kannan",      "கண்ணனுடன் பேசவும்"),
+new LocalizationEntry("talk.default",      "Talk to {0}",        "{0} பேசுவதற்கு"),
+new LocalizationEntry("talk.meenakshi", "Talk to Meenakshi", "மீனாட்சி பேசுவதற்கு"),
+new LocalizationEntry("talk.murugan", "Talk to Murugan", "முருகன் பேசுவதற்கு"),
+new LocalizationEntry("talk.selvam", "Talk to Selvam", "செல்வம் பேசுவதற்கு"),
+new LocalizationEntry("talk.velu", "Talk to Velu", "வேலு பேசுவதற்கு"),
+new LocalizationEntry("talk.kannan", "Talk to Kannan", "கண்ணனுடன் பேசுவதற்கு"),
+
+// Every NPC placed in 02_Chennai_GeorgeTown, plus every role key MainCharacterRegistry.MakeResident()
+// generates, so an interaction prompt never falls back to English or to a missing-key placeholder.
+new LocalizationEntry("talk.ammu", "Talk to Ammu", "அம்மு பேசுவதற்கு"),
+new LocalizationEntry("talk.balan", "Talk to Balan", "பாலன் பேசுவதற்கு"),
+new LocalizationEntry("talk.devi", "Talk to Devi", "தேவி பேசுவதற்கு"),
+new LocalizationEntry("talk.gopi", "Talk to Gopi", "கோபி பேசுவதற்கு"),
+new LocalizationEntry("talk.hari", "Talk to Hari", "ஙரி பேசுவதற்கு"),
+new LocalizationEntry("talk.kannammal", "Talk to Kannammal", "கண்ணம்மாள் பேசுவதற்கு"),
+new LocalizationEntry("talk.radha", "Talk to Radha", "଎ாதா பேசுவதற்கு"),
+new LocalizationEntry("talk.ravi", "Talk to Ravi", "ரவி பேசுவதற்கு"),
+new LocalizationEntry("talk.selvaraj", "Talk to Selvaraj", "செல்வராஜ் பேசுவதற்கு"),
+new LocalizationEntry("talk.siva", "Talk to Siva", "சிவா பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_01", "Talk to the Farmer", "விவசாயி பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_02", "Talk to the Shopkeeper", "கடைக்காரர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_03", "Talk to the Fisherman", "மீனவர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_04", "Talk to the Artisan", "கைப்பொழிலாளர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_05", "Talk to the Tea Worker", "தேயிலைப்பணியாளர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_06", "Talk to the Resident", "குடிமகர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_07", "Talk to the Elder", "முதிர்ந்தோர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_08", "Talk to the Delivery Worker", "குடிமகர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_09", "Talk to the Market Worker", "கடைக்காரர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_10", "Talk to the Craft Worker", "கைப்பொழிலாளர் பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_11", "Talk to the Farmer", "விவசாயி பேசுவதற்கு"),
+new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவர் பேசுவதற்கு"),
 
             // ---- Notifications / save-load -----------------------------------
             new LocalizationEntry("notify.game_saved",    "Game Saved",    "விளையாட்டு சேமிக்கப்பட்டது"),
@@ -238,7 +264,9 @@ namespace WhisperingWilds.Localization
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;

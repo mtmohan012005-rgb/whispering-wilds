@@ -32,8 +32,25 @@ namespace WhisperingWilds.Player
         [SerializeField] private float groundedOffset = 0.15f;
         [Tooltip("Radius of the ground detection sphere.")]
         [SerializeField] private float groundedRadius = 0.28f;
-        [Tooltip("Explicit layer mask for ground surfaces (Default, Terrain, Environment). Excludes NPCs, triggers, and character.")]
-        [SerializeField] private LayerMask groundLayers = 1; // Default layer by default
+        [Tooltip("Layer mask for standable surfaces. Step 11 always removes Character, Wildlife, " +
+                 "Trigger, Ignore Raycast, UI, Water and Prop from this mask, so a sphere cast can never " +
+                 "register the player as standing on an NPC, an animal, a trigger volume or a decorative prop.")]
+        [SerializeField] private LayerMask groundLayers = ~0; // resolved to WalkableMask() in Awake
+
+        /// <summary>
+        /// Layers that must never be treated as ground. NPCs and wildlife stand on the
+        /// ground surface itself, so a naive mask hits their capsule collider first and the
+        /// player can end up 'grounded' on top of an animal or mid-air beside a collider.
+        /// </summary>
+        private const string NonGroundLayerA = "Character";
+        private const string NonGroundLayerB = "Wildlife";
+        private const string NonGroundLayerC = "Trigger";
+        private const string NonGroundLayerD = "Prop";
+        private static readonly string[] AlwaysIgnoredLayers =
+        {
+            "Ignore Raycast", "UI", "Water",
+            NonGroundLayerA, NonGroundLayerB, NonGroundLayerC, NonGroundLayerD
+        };
 
         // Runtime variables
         private CharacterController controller;
@@ -80,23 +97,55 @@ namespace WhisperingWilds.Player
                 mainCameraTransform = Camera.main.transform;
             }
 
-            // If groundLayers is unset or all layers (~0), default to a clean mask excluding character & triggers
+            // A serialized mask of 0 or ~0 means "author never chose one". Fall back to the
+            // walkable set so a scene that only has Ground-layer geometry still works, but
+            // the non-ground layers are stripped either way.
             if (groundLayers == ~0 || groundLayers == 0)
             {
-                groundLayers = ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
+                groundLayers = DefaultWalkableMask();
             }
 
             RefreshGroundMask();
         }
 
         /// <summary>
-        /// Rebuilds the cached ground-check mask. Excludes the character's own layer plus
-        /// non-physical layers so NPCs, props and trigger volumes cannot fake grounding.
+        /// Layers considered standable when the inspector mask is left unset.
+        /// Deliberately excludes Character / Wildlife / Trigger / Prop and the engine layers.
+        /// </summary>
+        private static LayerMask DefaultWalkableMask()
+        {
+            int mask = LayerMask.GetMask("Ground", "Default", "Structure");
+            if (mask == 0) mask = 1; // no custom layers authored yet - fall back to Default
+            return mask;
+        }
+
+        /// <summary>
+        /// Rebuilds the cached ground-check mask.
+        ///
+        /// The exclusion is applied unconditionally rather than only when the inspector value
+        /// looks unset: a scene could legitimately author a broad mask (or a stale serialized
+        /// value could survive a mask edit), and in either case letting an NPC capsule register
+        /// as ground is a real gameplay bug, not a cosmetic one.
         /// Must be re-invoked if the object's layer changes at runtime.
         /// </summary>
         private void RefreshGroundMask()
         {
-            cachedGroundMask = groundLayers.value & ~(1 << gameObject.layer | LayerMask.GetMask("Ignore Raycast", "UI", "Water"));
+            int forbidden = 1 << gameObject.layer;
+            for (int i = 0; i < AlwaysIgnoredLayers.Length; i++)
+            {
+                int layer = LayerMask.NameToLayer(AlwaysIgnoredLayers[i]);
+                if (layer >= 0) forbidden |= 1 << layer;
+            }
+
+            int resolved = groundLayers.value & ~forbidden;
+            if (resolved == 0)
+            {
+                // Every candidate layer was forbidden; keep the walkable default rather than
+                // silently disabling ground detection entirely (the player would never land).
+                resolved = DefaultWalkableMask().value & ~forbidden;
+            }
+
+            cachedGroundMask = resolved;
         }
 
         private void Start()

@@ -34,7 +34,9 @@ namespace WhisperingWilds.World
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -108,7 +110,7 @@ namespace WhisperingWilds.World
                 SaveManager.Instance.SaveGame(0);
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSecondsRealtime(0.1f);
 
             // 3. Preload target region scene additively
             string targetSceneName = targetGeo.sceneName;
@@ -196,26 +198,17 @@ namespace WhisperingWilds.World
                 return;
             }
 
-            var spawnObj = GameObject.Find("SpawnPoint") ?? GameObject.Find("PlayerSpawn");
-            Vector3 targetSpawn = player.transform.position;
-            bool foundMarker = false;
+            // The transition runs while the previous region is still loaded, so a global GameObject.Find
+            // would happily return the OLD region's marker and drop the player into the new region at
+            // the old region's coordinates. The target scene is therefore searched first and by
+            // scene scope; the global lookup is only a last resort.
+            Transform marker = FindSpawnMarkerInScene(targetScene) ?? FindSpawnMarkerGlobal();
 
-            if (spawnObj != null)
+            Vector3 targetSpawn = player.transform.position;
+            bool foundMarker = marker != null;
+            if (foundMarker)
             {
-                targetSpawn = spawnObj.transform.position;
-                foundMarker = true;
-            }
-            else if (targetScene.IsValid() && targetScene.isLoaded)
-            {
-                foreach (var root in targetScene.GetRootGameObjects())
-                {
-                    if (root.name == "SpawnPoint" || root.name == "PlayerSpawn")
-                    {
-                        targetSpawn = root.transform.position;
-                        foundMarker = true;
-                        break;
-                    }
-                }
+                targetSpawn = marker.position;
             }
 
             var cc = player.GetComponent<CharacterController>();
@@ -228,10 +221,43 @@ namespace WhisperingWilds.World
             }
             else
             {
-                Debug.LogWarning($"[RegionalSceneManager] Scene '{targetScene.name}' defines no 'SpawnPoint' marker; keeping player position at {player.transform.position}.");
+                Debug.LogError(
+                    $"[RegionalSceneManager] Region scene '{targetScene.name}' defines no 'SpawnPoint' or 'PlayerSpawn' marker. " +
+                    "The player keeps its previous world position, which belongs to the region being unloaded. " +
+                    "This is a scene authoring error, not a load failure - add a SpawnPoint to the region scene.");
             }
 
             if (cc != null) cc.enabled = true;
+        }
+
+        /// <summary>Scene-scoped marker search: exact name match at any depth inside the target scene only.</summary>
+        private static Transform FindSpawnMarkerInScene(Scene scene)
+        {
+            if (!scene.IsValid() || !scene.isLoaded) return null;
+
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                Transform hit = FindMarkerRecursive(root.transform);
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        private static Transform FindMarkerRecursive(Transform node)
+        {
+            if (node.name == "SpawnPoint" || node.name == "PlayerSpawn") return node;
+            for (int i = 0; i < node.childCount; i++)
+            {
+                Transform hit = FindMarkerRecursive(node.GetChild(i));
+                if (hit != null) return hit;
+            }
+            return null;
+        }
+
+        private static Transform FindSpawnMarkerGlobal()
+        {
+            GameObject global = GameObject.Find("SpawnPoint") ?? GameObject.Find("PlayerSpawn");
+            return global != null ? global.transform : null;
         }
     }
 }

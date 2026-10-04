@@ -56,7 +56,9 @@ namespace WhisperingWilds.Quality
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -113,10 +115,21 @@ namespace WhisperingWilds.Quality
                 trackedCamera = Camera.main;
             }
 
-            if (trackedCamera != null)
+            if (trackedCamera == null) return;
+
+            trackedCamera.allowDynamicResolution = true;
+
+            // HDRP does NOT read Camera.allowDynamicResolution. HDRenderPipeline gates every
+            // per-camera dynamic-resolution update on HDAdditionalCameraData.allowDynamicResolution
+            // (HDRenderPipeline.RenderFrame, `hdCam.allowDynamicResolution`), so setting only the
+            // built-in Camera flag leaves HDRP skipping the camera entirely and every render-scale
+            // change below becomes a silent no-op. Both flags are required.
+            HDAdditionalCameraData hdCamera = trackedCamera.GetComponent<HDAdditionalCameraData>();
+            if (hdCamera == null)
             {
-                trackedCamera.allowDynamicResolution = true;
+                hdCamera = trackedCamera.gameObject.AddComponent<HDAdditionalCameraData>();
             }
+            hdCamera.allowDynamicResolution = true;
         }
 
         private void Update()
@@ -241,6 +254,15 @@ namespace WhisperingWilds.Quality
         private static PerformDynamicRes s_RegisteredScaler;
 
         /// <summary>
+        /// Runtime-only copy of the active HDRP asset. Dynamic resolution range has to be mutated in
+        /// lockstep with the tier's min/max render scale, and doing that on the project's HDRP asset
+        /// dirties the committed <c>.asset</c> file inside the Editor. Mutating an instantiated clone
+        /// keeps the on-disk asset untouched while HDRP still reads live values from it.
+        /// </summary>
+        private static HDRenderPipelineAsset s_runtimeHdrAsset;
+        private static HDRenderPipelineAsset s_runtimeHdrAssetSource;
+
+        /// <summary>
         /// Wires this manager into the HDRP dynamic resolution pipeline and pushes
         /// <see cref="CurrentRenderScale"/> to it. Safe on non-HDRP pipelines: it falls back to
         /// <c>ScalableBufferManager</c> so the built-in render pipeline keeps working.
@@ -248,11 +270,13 @@ namespace WhisperingWilds.Quality
         /// <remarks>
         /// The handler stores a <c>PerformDynamicRes</c> delegate returning a lerp factor between
         /// the asset's min and max screen percentages, so the delegate is registered exactly once
-        /// and simply reads <see cref="CurrentRenderScale"/> thereafter.
+        /// and simply reads <see cref="CurrentRenderScale"/> thereafter. Because the handler lerps
+        /// between the asset's min/max percentages, those percentages must equal this tier's
+        /// min/max render scale (times 100) or the rendered scale silently clamps.
         /// </remarks>
         private void ApplyHdrpDynamicResolution()
         {
-            HDRenderPipelineAsset hdrAsset = GraphicsSettings.currentRenderPipeline as HDRenderPipelineAsset;
+            HDRenderPipelineAsset hdrAsset = GetRuntimeHdrpAsset();
             if (hdrAsset == null)
             {
                 // Built-in render pipeline (or SRP not yet assigned): use the software scaler.
@@ -260,8 +284,6 @@ namespace WhisperingWilds.Quality
                 return;
             }
 
-            // Widen the asset's dynamic-resolution range. The shipped asset pins min/max to 100%,
-            // which clamps the handler's lerp to a fixed 100% and makes the whole system a no-op.
             RenderPipelineSettings settings = hdrAsset.currentPlatformRenderPipelineSettings;
             GlobalDynamicResolutionSettings drSettings = settings.dynamicResolutionSettings;
             if (!drSettings.enabled)
@@ -280,6 +302,42 @@ namespace WhisperingWilds.Quality
                     s_RegisteredScaler,
                     DynamicResScalePolicyType.ReturnsMinMaxLerpFactor);
             }
+        }
+
+        /// <summary>
+        /// Returns the HDRP asset that should be mutated: an instantiated clone of whichever HDRP
+        /// asset is active, re-instantiated if the quality tier swapped assets underneath us.
+        /// The clone is pushed back into every quality level so a tier change cannot swap the
+        /// un-mutable original back in and silently disable the tuned range.
+        /// </summary>
+        private static HDRenderPipelineAsset GetRuntimeHdrpAsset()
+        {
+            HDRenderPipelineAsset source = QualitySettings.renderPipeline as HDRenderPipelineAsset
+                                          ?? GraphicsSettings.currentRenderPipeline as HDRenderPipelineAsset;
+            if (source == null) return null;
+
+            // An asset that is already our clone must not be cloned again.
+            if (ReferenceEquals(source, s_runtimeHdrAsset)) return s_runtimeHdrAsset;
+
+            if (s_runtimeHdrAsset == null || !ReferenceEquals(source, s_runtimeHdrAssetSource))
+            {
+                s_runtimeHdrAssetSource = source;
+                s_runtimeHdrAsset = Instantiate(source);
+                s_runtimeHdrAsset.name = source.name + " (Runtime Tuned)";
+
+                // QualitySettings.renderPipeline is a per-quality-level property with no public
+                // setter-by-index, so every level is visited once and the clone is installed on each.
+                GraphicsSettings.defaultRenderPipeline = s_runtimeHdrAsset;
+                int activeLevel = QualitySettings.GetQualityLevel();
+                for (int level = 0; level < QualitySettings.names.Length; level++)
+                {
+                    QualitySettings.SetQualityLevel(level, false);
+                    QualitySettings.renderPipeline = s_runtimeHdrAsset;
+                }
+                QualitySettings.SetQualityLevel(activeLevel, true);
+            }
+
+            return s_runtimeHdrAsset;
         }
 
         /// <summary>

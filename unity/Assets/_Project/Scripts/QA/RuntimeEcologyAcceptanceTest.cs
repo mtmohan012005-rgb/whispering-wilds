@@ -38,7 +38,9 @@ namespace WhisperingWilds.QA
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -84,7 +86,7 @@ namespace WhisperingWilds.QA
             Debug.Log("[EcologyAcceptanceTest] ========================================================");
 
             // Wait until scene and core systems are ready
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSecondsRealtime(2.0f);
 
             // Test 0: Baked NavMesh presence + agent pathfinding on real geometry
             yield return StartCoroutine(TestBakedNavMeshAndAgentPathing());
@@ -172,7 +174,7 @@ namespace WhisperingWilds.QA
                     {
                         Scene s = SceneManager.GetSceneByName("07_Nilgiris_Sanctuary");
                         if (s.IsValid() && s.isLoaded) break;
-                        yield return new WaitForSeconds(0.5f);
+                        yield return new WaitForSecondsRealtime(0.5f);
                     }
                 }
 
@@ -188,14 +190,14 @@ namespace WhisperingWilds.QA
                 step.durationSeconds = Time.realtimeSinceStartup - startTime;
                 summary.results.Add(step);
                 Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
                 yield break;
             }
 
             sceneName = link.gameObject.scene.name;
 
             // Give the link a frame to register its NavMeshDataInstance.
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSecondsRealtime(0.5f);
 
             if (!link.IsNavMeshRegistered || !link.HasUsableNavMesh)
             {
@@ -206,7 +208,7 @@ namespace WhisperingWilds.QA
                 step.durationSeconds = Time.realtimeSinceStartup - startTime;
                 summary.results.Add(step);
                 Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
                 yield break;
             }
 
@@ -251,7 +253,7 @@ namespace WhisperingWilds.QA
                 step.durationSeconds = Time.realtimeSinceStartup - startTime;
                 summary.results.Add(step);
                 Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
                 yield break;
             }
 
@@ -302,7 +304,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestNPCRoutineSchedulesAdvance()
@@ -376,7 +378,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestNPCNavigationAndAnchorInteraction()
@@ -432,7 +434,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestSpatialWhitelistEnforcement()
@@ -488,7 +490,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestWildlifeBehaviorCycle()
@@ -539,7 +541,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestDistanceLODTierScaling()
@@ -573,7 +575,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestPerformanceTierThrottling()
@@ -606,7 +608,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
 
         private IEnumerator TestLivingWorldAtmosphereSync()
@@ -642,7 +644,7 @@ namespace WhisperingWilds.QA
             step.durationSeconds = Time.realtimeSinceStartup - startTime;
             summary.results.Add(step);
             Debug.Log($"[EcologyAcceptanceTest] {step.testName}: {step.status} - {step.details}");
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
         }
     }
 }

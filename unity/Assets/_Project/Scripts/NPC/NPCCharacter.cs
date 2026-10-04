@@ -143,12 +143,24 @@ namespace WhisperingWilds.NPC
         {
             get
             {
-                // Prefer localized talk prompt using character key prefix (e.g. talk.meenakshi)
-                string key = "talk." + npcId;
-                string localized = LocalizationManager.Instance?.Get(key);
-                if (!string.IsNullOrEmpty(localized)) return localized;
-                // Fallback to bilingual display names
-                return $"Talk to {displayNameEn} ({displayNameTa})";
+                LocalizationManager loc = LocalizationManager.Instance;
+                if (loc == null) return string.Empty;
+
+                // Prefer the NPC's own prompt key (e.g. talk.meenakshi).
+                if (loc.HasKey("talk." + npcId))
+                {
+                    return loc.GetForDisplay("talk." + npcId);
+                }
+
+                // Get()/GetForDisplay() return the missing-key placeholder or an empty string for an
+                // unknown key, so an unknown NPC used to surface "missing.talk.<id>" to the player.
+                // It now falls back to the bilingual talk.default template with the NPC's already
+                // localized display name, which stays readable in both languages and still reports
+                // the gap to the log.
+                string displayName = loc.CurrentLanguage == Language.Tamil && !string.IsNullOrEmpty(displayNameTa)
+                    ? displayNameTa
+                    : displayNameEn;
+                return loc.GetForDisplay("talk.default", displayName).Replace("{0}", displayName);
             }
         }
         public InteractionType Type => InteractionType.Talk;

@@ -52,7 +52,9 @@ namespace WhisperingWilds.QA
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Destroy only the duplicate component. Destroy(gameObject) here would take
+                // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                Destroy(this);
                 return;
             }
             Instance = this;
@@ -98,7 +100,7 @@ namespace WhisperingWilds.QA
             summary.unityVersion = Application.unityVersion;
             summary.platform = Application.platform.ToString();
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSecondsRealtime(0.5f);
 
             // 1. Boot Scene Verification
             yield return StartCoroutine(TestBootScene());
@@ -217,7 +219,7 @@ namespace WhisperingWilds.QA
 
             step.durationSeconds = Time.realtimeSinceStartup - start;
             summary.results.Add(step);
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSecondsRealtime(0.5f);
         }
 
         private IEnumerator TestPlayerSpawnAndCamera()
@@ -279,33 +281,33 @@ namespace WhisperingWilds.QA
 
                 // 1. Move forward
                 pi.SetSimulatedMovement(Vector2.up, sprint: false, crouch: false);
-                yield return new WaitForSeconds(0.6f);
+                yield return new WaitForSecondsRealtime(0.6f);
                 Vector3 movedPos = player.transform.position;
                 float moveDist = Vector3.Distance(new Vector3(initialPos.x, 0, initialPos.z), new Vector3(movedPos.x, 0, movedPos.z));
 
                 // 2. Sprint forward
                 pi.SetSimulatedMovement(Vector2.up, sprint: true, crouch: false);
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSecondsRealtime(0.4f);
                 float sprintSpeed = pm.CurrentSpeed;
 
                 // 3. Crouch forward
                 pi.SetSimulatedMovement(Vector2.up, sprint: false, crouch: true);
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSecondsRealtime(0.4f);
                 float crouchHeight = cc.height;
 
                 // Stop movement
                 pi.SetSimulatedMovement(Vector2.zero, sprint: false, crouch: false);
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
 
                 // 4. Jump
                 float preJumpY = player.transform.position.y;
                 pi.TriggerSimulatedJump();
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSecondsRealtime(0.25f);
                 float inAirY = player.transform.position.y;
                 bool jumped = inAirY > preJumpY + 0.1f || !pm.IsGrounded;
 
                 // Wait to land
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSecondsRealtime(0.5f);
                 pi.ClearSimulation();
 
                 if (moveDist > 0.3f && sprintSpeed > 4.5f && crouchHeight < 1.7f && jumped)
@@ -343,7 +345,7 @@ namespace WhisperingWilds.QA
             if (player != null)
             {
                 GameManager.Instance.QuickSave();
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
 
                 bool fileExists = SaveSystem.SaveExists();
                 GameSaveData loaded = SaveSystem.LoadGame();
@@ -389,11 +391,11 @@ namespace WhisperingWilds.QA
                 if (cc != null) cc.enabled = true;
                 Vector3 displacedPos = player.transform.position;
 
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
 
                 // Quick load
                 GameManager.Instance.QuickLoad();
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSecondsRealtime(0.2f);
 
                 float distToDisplaced = Vector3.Distance(player.transform.position, displacedPos);
                 if (distToDisplaced > 5f)
@@ -439,7 +441,7 @@ namespace WhisperingWilds.QA
                     yield return null;
                 }
 
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSecondsRealtime(0.5f);
 
                 string activeRegion = RegionalSceneManager.Instance.ActiveRegionId;
                 var player = GameObject.FindWithTag("Player");

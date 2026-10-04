@@ -52,6 +52,13 @@ namespace WhisperingWilds.Editor
             // Re-generate authoritative 00_Boot.unity and regional scenes with living ecology
             BuildBootScene.CreateBootScene();
             AssembleWhisperingWilds.BuildPlayableChennaiScene();
+
+            // The scene assembler only places the two prototype NPCs (Murugan and Velu). The district
+            // population -- four main characters plus ten scheduled residents -- has to be rebuilt
+            // every time the scene is regenerated, otherwise a build silently ships an empty street
+            // with only the prototypes in it.
+            BuildChennaiPopulation.Build();
+
             AssembleAllRegions.BuildAllScenes();
 
             // Bake static NavMesh AFTER scene assembly so ground geometry exists, and BEFORE the

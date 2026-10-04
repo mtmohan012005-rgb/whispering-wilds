@@ -60,4 +60,11 @@ edge_temp*
 .env.local
 .env.*.local
 
+# Unity Test Framework / Performance Testing run artifacts.
+# The Performance Testing package writes its machine-specific run info into
+# Assets/Resources/ and it records the local editor changeset plus an empty
+# Results array, so it is generated output, not project source.
+unity/Assets/Resources/PerformanceTestRunInfo.json
+unity/Assets/Resources/PerformanceTestRunSettings.json
+
 .github/workflows/
