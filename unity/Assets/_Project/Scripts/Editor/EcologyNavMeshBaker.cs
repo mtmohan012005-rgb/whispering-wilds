@@ -23,9 +23,11 @@ namespace WhisperingWilds.Editor
         private const string NavMeshAssetFolder = "Assets/_Project/NavMeshData";
 
         /// <summary>
-        /// Ensures every simulated entity carries a real NavMeshAgent plus its navigation
-        /// controller. RequireComponent only satisfies dependencies when a component is added at
-        /// runtime, so entities restored from serialized scene data can be missing them.
+        /// Ensures every simulated entity carries its navigation controller and NO serialized
+        /// NavMeshAgent. Agents serialized into a scene are constructed during scene activation,
+        /// before NavMeshSceneLink.Awake registers the baked NavMeshData, so they fail
+        /// permanently ("no valid NavMesh"). Keeping scenes agent-free moves agent creation to
+        /// the controllers' Start, which always runs after the navmesh registration has happened.
         /// </summary>
         public static void EnsureNavigationComponents(Scene scene)
         {
@@ -56,9 +58,12 @@ namespace WhisperingWilds.Editor
 
         private static void EnsureAgent(GameObject go, bool isWildlife)
         {
-            if (go.GetComponent<NavMeshAgent>() == null)
+            // Strip any NavMeshAgent that a previous bake or authoring pass serialized, so the
+            // shipped scene stays agent-free and the controllers (re)create agents in Start.
+            NavMeshAgent staleAgent = go.GetComponent<NavMeshAgent>();
+            if (staleAgent != null)
             {
-                go.AddComponent<NavMeshAgent>();
+                Object.DestroyImmediate(staleAgent);
             }
 
             if (isWildlife)
@@ -291,6 +296,20 @@ namespace WhisperingWilds.Editor
                 || lower.Contains("foli")
                 || lower.Contains("tree")
                 || lower.Contains("prop_foliage"))
+            {
+                return false;
+            }
+
+            // Water surfaces are flat horizontal meshes, which is exactly the shape NavMesh treats as
+            // walkable ground, so baking one puts the whole bay in the NavMesh and lets wildlife and
+            // residents path out across it. Nothing in the project has walkable water — there is no
+            // swimming, boating, or ferry traversal anywhere — so water is excluded everywhere.
+            if (lower.Contains("sea")
+                || lower.Contains("water")
+                || lower.Contains("river")
+                || lower.Contains("ocean")
+                || lower.Contains("lake")
+                || lower.Contains("pond"))
             {
                 return false;
             }

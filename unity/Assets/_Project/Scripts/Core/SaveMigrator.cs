@@ -72,6 +72,27 @@ namespace WhisperingWilds.Core
                 data.schemaVersion = 3;
             }
 
+            // v3 -> v4: destination unlocks, solved puzzles, and discovery log entries.
+            if (data.schemaVersion < 4)
+            {
+                // A pre-v4 save records no regional progression at all, and gating did not exist yet,
+                // so every destination that player could already reach was reachable. Reconstructing
+                // the opening destinations instead would lock a destination they had already
+                // visited. Deferred destinations stay closed because they were closed before too.
+                if (data.unlockedRegionIds == null || data.unlockedRegionIds.Count == 0)
+                {
+                    data.unlockedRegionIds = World.RegionUnlocks.SeedPreGateCampaign();
+                }
+
+                // A puzzle that was solved before v4 cannot be identified, because nothing recorded
+                // the outcome. An empty list re-presents the puzzle unsolved rather than silently
+                // skipping a gate the player may not have reached at all.
+                if (data.solvedPuzzleIds == null) data.solvedPuzzleIds = new List<string>();
+                if (data.recordedDiscoveryIds == null) data.recordedDiscoveryIds = new List<string>();
+
+                data.schemaVersion = 4;
+            }
+
             data.schemaVersion = GameSaveData.CurrentSchemaVersion;
             return true;
         }

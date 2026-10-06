@@ -145,6 +145,17 @@ namespace WhisperingWilds.Player
                 resolved = DefaultWalkableMask().value & ~forbidden;
             }
 
+            if (resolved == 0)
+            {
+                // Last resort: the project authors its world on the player's own layer
+                // (everything sits on Default). Stripping the self layer would remove every
+                // standable surface and leave cachedGroundMask permanently 0, so ground
+                // detection falls back to the authored set as-is. CharacterController
+                // grounded-state remains the dominant signal; the only accepted cost is that a
+                // neighbouring default-layer collider is treated as standable.
+                resolved = groundLayers.value;
+            }
+
             cachedGroundMask = resolved;
         }
 

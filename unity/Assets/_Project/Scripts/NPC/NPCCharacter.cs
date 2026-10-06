@@ -35,6 +35,21 @@ namespace WhisperingWilds.NPC
         public int nodeIndex;
         [TextArea(2, 4)] public string speakerTextEn;
         [TextArea(2, 4)] public string speakerTextTa;
+
+        /// <summary>
+        /// Optional clue id this node depends on. When set, the node is only ever used as a
+        /// conversation entry point if the player has already recorded that clue.
+        ///
+        /// A region conversation can therefore be authored as one list whose later beats announce
+        /// themselves once the evidence behind them exists, instead of the region having to rebuild
+        /// or swap the whole list the moment a clue is found. Leave it empty for a node that is
+        /// always available.
+        ///
+        /// Ordering carries meaning: the entry point is the first node in the list whose requirement
+        /// is satisfied, so put the most advanced beat first.
+        /// </summary>
+        public string requiredClueId;
+
         public List<DialogueChoice> choices = new List<DialogueChoice>();
     }
 
@@ -616,9 +631,38 @@ namespace WhisperingWilds.NPC
 
             if (dialogueNodes != null && dialogueNodes.Count > 0)
             {
+                var entry = ResolveEntryNode();
+                if (entry == null) return;
+
                 Debug.Log($"<color=#00D2FF><b>[Dialogue]</b></color> Speaking with {displayNameEn} ({displayNameTa})");
-                OnDialogueStarted?.Invoke(this, dialogueNodes[0]);
+                OnDialogueStarted?.Invoke(this, entry);
             }
+        }
+
+        /// <summary>
+        /// Picks where this conversation starts.
+        ///
+        /// The first node whose <see cref="DialogueNode.requiredClueId"/> is already satisfied wins,
+        /// and a node with no requirement is always satisfied. That is what lets a region author its
+        /// later beats after the early ones in a single list: the graph is walked here, at the moment
+        /// the player actually starts talking, rather than when the scene loaded and before any clue
+        /// in this region has been found.
+        ///
+        /// Falls back to the first node when no requirement matches, so an authored graph whose every
+        /// node is gated can never leave the player unable to speak.
+        /// </summary>
+        private DialogueNode ResolveEntryNode()
+        {
+            for (int i = 0; i < dialogueNodes.Count; i++)
+            {
+                var node = dialogueNodes[i];
+                if (node == null) continue;
+
+                if (string.IsNullOrEmpty(node.requiredClueId)) return node;
+                if (Investigation.InvestigationManager.HasClueStatic(node.requiredClueId)) return node;
+            }
+
+            return dialogueNodes[0];
         }
 
         public void OnFocusEnter() { }

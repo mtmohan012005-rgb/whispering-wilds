@@ -33,6 +33,12 @@ unity/Obj/
 unity/Logs/
 unity/UserSettings/
 
+# Standalone release candidate packages (compiled binaries, hundreds of MB).
+# Packaged with a separate script; never commit. The *_RC/ folder variants let a
+# validated candidate be parked at the repo root for manual play without polluting git.
+TheWhisperingWilds_Windows_x64_RC/
+TheWhisperingWilds_Windows_x64_RC_*/
+
 # Report artifacts
 ANIMATION_REPORT.json
 BUILD_REPORT.json
@@ -68,5 +74,7 @@ unity/Assets/Resources/PerformanceTestRunInfo.json
 unity/Assets/Resources/PerformanceTestRunInfo.json.meta
 unity/Assets/Resources/PerformanceTestRunSettings.json
 unity/Assets/Resources/PerformanceTestRunSettings.json.meta
+# Unity Test Framework batch-mode runner outputs (generated)
+unity/test-*.xml
 
 .github/workflows/

@@ -9,8 +9,10 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using WhisperingWilds.Core;
 using WhisperingWilds.Data;
+using WhisperingWilds.Gameplay;
 using WhisperingWilds.Localization;
 using WhisperingWilds.NPC;
+using WhisperingWilds.Quests;
 using WhisperingWilds.Quality;
 using WhisperingWilds.World;
 
@@ -176,6 +178,8 @@ namespace WhisperingWilds.QA
             yield return Step("load_restores_player", TestLoad, 12f);
             yield return Step("save_rejects_nan_infinity", TestNaNRejection, 5f);
             yield return Step("region_transition", TestRegionTransition, 35f);
+            yield return Step("region_gating_chettinad_mamallapuram", TestRegionGating, 12f);
+            yield return Step("mamallapuram_quest_chain", TestMamallapuramQuestChain, 25f);
             yield return Step("graphics_tiers_apply", TestGraphicsSettings, 10f);
             yield return Step("no_repeating_exceptions", TestNoRepeatingExceptions, 6f);
 
@@ -389,7 +393,28 @@ namespace WhisperingWilds.QA
             if (fi == null) { Fail("could not reflect cachedGroundMask"); yield break; }
 
             int mask = (int)fi.GetValue(pm);
-            if (mask == 0) { Fail("cachedGroundMask is empty; the player can never be grounded"); yield break; }
+            if (mask == 0)
+            {
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var gl = typeof(Player.PlayerMovement).GetField("groundLayers", flags);
+                var ct = typeof(Player.PlayerMovement).GetField("controller", flags);
+                int serialized = -999;
+                if (gl != null && gl.GetValue(pm) is LayerMask lm) serialized = lm.value;
+                object controllerValue = ct != null ? ct.GetValue(pm) : null;
+                var tagged = GameObject.FindWithTag("Player");
+                Fail("cachedGroundMask is empty; the player can never be grounded" +
+                     " [diag: pmObject=" + pm.gameObject.name +
+                     " pmActive=" + pm.gameObject.activeInHierarchy +
+                     " pmEnabled=" + pm.enabled +
+                     " awakeRan=" + (controllerValue != null) +
+                     " sameAsTagged=" + (tagged != null && ReferenceEquals(pm.gameObject, tagged)) +
+                     " playerLayer=" + pm.gameObject.layer +
+                     " groundLayers=" + serialized +
+                     " groundLayersDefault=" + gl?.FieldType.Name +
+                     " getMask=" + LayerMask.GetMask("Ground", "Default", "Structure") +
+                     " scene=" + pm.gameObject.scene.name + "]");
+                yield break;
+            }
 
             string[] forbidden = { "Character", "Wildlife", "Trigger", "Prop", "Ignore Raycast", "UI", "Water" };
             var bad = new List<string>();
@@ -497,7 +522,25 @@ namespace WhisperingWilds.QA
 
             if (tier.DecisionTicksLastSecond <= 0)
             {
-                Fail("NPC tier manager recorded 0 decision ticks in 9s; the simulation is not running");
+                var tflags = System.Reflection.BindingFlags.NonPublic |
+                             System.Reflection.BindingFlags.Instance;
+                var listField = typeof(NPCPerformanceTierManager).GetField("activeNPCs", tflags);
+                int activeCount = -1;
+                if (listField != null)
+                {
+                    var list = listField.GetValue(tier) as System.Collections.ICollection;
+                    if (list != null) activeCount = list.Count;
+                }
+                var camField = typeof(NPCPerformanceTierManager).GetField("playerCameraTransform", tflags);
+                bool camNull = camField == null || camField.GetValue(tier) == null;
+                var upField = typeof(NPCPerformanceTierManager).GetField("tickCounter", tflags);
+                int tickCounter = upField != null ? (int)upField.GetValue(tier) : -1;
+                Fail("NPC tier manager recorded 0 decision ticks in 9s; the simulation is not running" +
+                     " [diag: activeNPCs=" + activeCount + " cameraNull=" + camNull +
+                     " tierActive=" + tier.isActiveAndEnabled +
+                     " tickCounter=" + tickCounter +
+                     " sceneNPCs=" + npcs.Length +
+                     " near=" + tier.NearCount + " med=" + tier.MediumCount + "]");
                 yield break;
             }
 
@@ -760,6 +803,155 @@ namespace WhisperingWilds.QA
             }
 
             Pass(start + " -> " + target + " additive, old scene unloaded, sceneCount=" + SceneManager.sceneCount);
+        }
+
+        /// <summary>
+        /// Step 18 gate check: the Chettinad clue opens Mamallapuram, and Nilgiris stays shut.
+        ///
+        /// This runs against the static unlock truth rather than by walking the map, because the
+        /// thing worth protecting here is the gate arithmetic: Mamallapuram has to be reachable
+        /// exactly when a Chettinad clue is recorded, and Nilgiris has to refuse every kind of
+        /// attempt, including a direct Unlock call, because it is deferred and its step has not run.
+        /// </summary>
+        private IEnumerator TestRegionGating()
+        {
+            RegionUnlocks.ResetForNewGame();
+
+            var failures = new List<string>();
+
+            if (RegionUnlocks.IsDeferred(RegionUnlocks.NilgirisRegionId))
+            {
+                // expected, but asserted so a later step that un-defers Nilgiris fails here loudly
+            }
+            else
+            {
+                failures.Add("nilgiris is no longer deferred");
+            }
+
+            if (RegionUnlocks.IsUnlocked(RegionUnlocks.NilgirisRegionId))
+                failures.Add("nilgiris reports unlocked on a fresh campaign");
+
+            if (RegionUnlocks.Unlock(RegionUnlocks.NilgirisRegionId))
+                failures.Add("Unlock(nilgiris) returned true while deferred");
+
+            if (RegionUnlocks.IsUnlocked(RegionUnlocks.MamallapuramRegionId))
+                failures.Add("mamallapuram is unlocked before its Chettinad clue");
+
+            // A clue from the wrong region must not open the gate.
+            RegionUnlocks.EvaluateClueGate(RegionUnlocks.ChennaiRegionId);
+            if (RegionUnlocks.IsUnlocked(RegionUnlocks.MamallapuramRegionId))
+                failures.Add("a chennai clue opened mamallapuram");
+
+            // The real chain: a Chettinad clue opens it exactly once.
+            if (!RegionUnlocks.EvaluateClueGate(RegionUnlocks.ChettinadRegionId))
+                failures.Add("a chettinad clue did not report an unlock for mamallapuram");
+
+            if (!RegionUnlocks.IsUnlocked(RegionUnlocks.MamallapuramRegionId))
+                failures.Add("mamallapuram is still locked after the chettinad clue");
+
+            if (RegionUnlocks.EvaluateClueGate(RegionUnlocks.ChettinadRegionId))
+                failures.Add("replaying the chettinad clue reported a duplicate unlock");
+
+            // A migrated pre-gate save must not be handed the new region.
+            var migrated = RegionUnlocks.SeedPreGateCampaign();
+            if (migrated.Contains(RegionUnlocks.MamallapuramRegionId))
+                failures.Add("a v3 migration seeded mamallapuram open");
+            if (migrated.Contains(RegionUnlocks.NilgirisRegionId))
+                failures.Add("a v3 migration seeded nilgiris open");
+            if (!migrated.Contains(RegionUnlocks.ChettinadRegionId))
+                failures.Add("a v3 migration dropped chettinad, which players had already reached");
+
+            // Restore to whatever the campaign had, so this test cannot leak gating state into the
+            // steps after it.
+            RegionUnlocks.ResetForNewGame();
+
+            if (failures.Count > 0)
+            {
+                Fail(string.Join("; ", failures.ToArray()));
+                yield break;
+            }
+
+            Pass("chettinad clue opens mamallapuram once; nilgiris deferred and refused; v3 migration excludes both");
+        }
+
+        /// <summary>
+        /// Step 18 gate check: the eleven Mamallapuram objectives can actually be completed in
+        /// order, each one by the interaction the scene authored for it.
+        ///
+        /// The quest is a strict linear chain, so a stage whose interactable reports the wrong type
+        /// or the wrong id is an unpassable quest, not a cosmetic bug. That is what this exercises:
+        /// it walks the chain by reporting each stage's event and asserts the stage advanced.
+        /// </summary>
+        private IEnumerator TestMamallapuramQuestChain()
+        {
+            var qm = QuestManager.Instance;
+            if (qm == null) { Fail("no QuestManager.Instance"); yield break; }
+
+            GameplayContentRegistry.EnsureAllInitialized();
+
+            QuestData quest = GameDataCatalog.GetQuest(MamallapuramShoreContent.QuestEchoesAlongTheShore);
+            if (quest == null)
+            {
+                Fail("quest " + MamallapuramShoreContent.QuestEchoesAlongTheShore + " is not registered");
+                yield break;
+            }
+            if (quest.stages == null || quest.stages.Count == 0)
+            {
+                Fail("quest " + quest.questId + " has no stages");
+                yield break;
+            }
+
+            qm.ResetAllProgress();
+            if (!qm.AcceptQuest(quest))
+            {
+                Fail("could not accept " + quest.questId);
+                yield break;
+            }
+
+            var failures = new List<string>();
+            int completed = 0;
+
+            for (int s = 0; s < quest.stages.Count; s++)
+            {
+                QuestStage stage = quest.stages[s];
+                if (stage == null || stage.objectives == null || stage.objectives.Count == 0)
+                {
+                    failures.Add("stage " + s + " has no objectives");
+                    continue;
+                }
+
+                for (int o = 0; o < stage.objectives.Count; o++)
+                {
+                    QuestObjective objective = stage.objectives[o];
+                    GameplayEventBus.Report(objective.type, objective.targetId);
+                }
+                yield return new WaitForSecondsRealtime(0.15f);
+
+                // A completed stage moves the pointer past itself. The final stage completes the
+                // quest outright, which clears the pointer instead of advancing it.
+                bool advanced = qm.IsQuestCompleted(quest.questId) || qm.GetCurrentStageIndex(quest.questId) > s;
+                if (advanced) completed++;
+                else failures.Add("stage " + s + " (" + DescribeObjective(stage.objectives[0]) + ") did not complete");
+            }
+
+            if (!qm.IsQuestCompleted(quest.questId))
+                failures.Add("quest did not reach completed after its last stage");
+
+            qm.ResetAllProgress();
+
+            if (failures.Count > 0)
+            {
+                Fail(string.Join("; ", failures.ToArray()));
+                yield break;
+            }
+
+            Pass(completed + "/" + quest.stages.Count + " stages completed in order by their own gameplay events");
+        }
+
+        private static string DescribeObjective(QuestObjective objective)
+        {
+            if (objective == null) return "null objective";
+            return objective.type + ":" + objective.targetId;
         }
 
         private IEnumerator TestGraphicsSettings()

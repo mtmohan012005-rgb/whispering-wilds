@@ -98,6 +98,22 @@ namespace WhisperingWilds.Editor
             return success;
         }
 
+        /// <summary>
+        /// Batch-mode entry point for CI and shell chains:
+        ///   Unity.exe -batchmode -quit -nographics -projectPath unity ^
+        ///            -executeMethod WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindowsFromCommandLine
+        ///
+        /// BuildProductionWindows is a bool-returning method intended for the menu, which is exactly
+        /// the problem: -executeMethod ignores the return value, so a failed build would look
+        /// successful to the caller and the step would pass on a player that was never produced.
+        /// Exiting non-zero here is what makes the failure visible to the shell.
+        /// </summary>
+        public static void BuildProductionWindowsFromCommandLine()
+        {
+            bool success = BuildProductionWindows();
+            if (Application.isBatchMode) EditorApplication.Exit(success ? 0 : 1);
+        }
+
         [MenuItem("Tools/Whispering Wilds/Build QA Benchmark Windows x64")]
         public static bool BuildQABenchmarkWindows()
         {

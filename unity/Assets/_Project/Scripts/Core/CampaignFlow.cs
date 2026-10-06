@@ -42,12 +42,24 @@ namespace WhisperingWilds.Campaign
         /// </summary>
         public static void ResetCampaignForNewGame()
         {
-            ChennaiOpeningContent.EnsureInitialized();
+ChennaiOpeningContent.EnsureInitialized();
+            // Re-registers the save v4 content after the clears below. Without this a new run
+            // would hold recorded ids whose definitions no longer exist in the journal.
+            GameplayContentRegistry.EnsureAllInitialized();
 
             InvestigationRuntimeState.Clear();
             NPC.NPCInteractionLog.Clear();
             CraftingHistory.Clear();
             PhotoJournal.Clear();
+
+            // Static mirrors that back the save v4 lists. These have no scene-bound instance to
+            // call ResetToNewGameDefaults on, so if they are not cleared here a player who starts
+            // over inherits the previous run's unlocked regions, solved puzzles, and discoveries
+            // even though the save file itself was deleted.
+            World.RegionUnlocks.ResetForNewGame();
+            Investigation.PuzzleStateStore.Clear();
+            Investigation.DiscoveryLog.Clear();
+
 
             // Scene-bound managers may still exist if New Game is triggered from a loaded region.
             if (InventoryManager.Instance != null) InventoryManager.Instance.ResetToNewGameDefaults();

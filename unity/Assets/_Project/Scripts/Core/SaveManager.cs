@@ -130,6 +130,14 @@ namespace WhisperingWilds.Core
 
             WhisperingWilds.NPC.NPCInteractionLog.Restore(save.interactedNpcIds);
 
+            // Schema v4 static stores. Region unlocks and the discovery log restore silently, firing no
+            // notifications at all. Puzzle restore does re-notify scene mechanisms so an already-open
+            // wall stays open after a Continue, but that notification carries no gameplay event, so
+            // no quest objective is re-satisfied and nothing the player already earned is replayed.
+            WhisperingWilds.World.RegionUnlocks.Restore(save.unlockedRegionIds);
+            WhisperingWilds.Investigation.PuzzleStateStore.RestoreSolvedPuzzleIds(save.solvedPuzzleIds);
+            WhisperingWilds.Investigation.DiscoveryLog.RestoreRecordedIds(save.recordedDiscoveryIds);
+
             if (WhisperingWilds.Localization.LocalizationManager.Instance != null && save.languagePreference >= 0)
             {
                 var lang = (WhisperingWilds.Localization.Language)Mathf.Clamp(save.languagePreference, 0, 1);

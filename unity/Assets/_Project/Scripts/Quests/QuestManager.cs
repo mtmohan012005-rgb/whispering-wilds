@@ -129,9 +129,13 @@ namespace WhisperingWilds.Quests
 
         private void HandleGameplayEvent(QuestObjectiveType type, string targetId)
         {
-            // A single reported event may satisfy several objectives across several quests, so
-            // sweep the whole active set rather than stopping at the first match.
-            for (int i = 0; i < activeQuests.Count; i++)
+// A single reported event may satisfy several objectives across several quests, so
+            // sweep the whole active set rather than stopping at the first match. Iterate
+            // backwards: AdvanceMatchingObjectives completes a quest the moment its stage
+            // finishes, which removes that entry from the list and shifts every later one
+            // down a slot. A forward loop would then skip the quest now sitting at the
+            // current index and that run of the event would never reach it.
+            for (int i = activeQuests.Count - 1; i >= 0; i--)
             {
                 AdvanceMatchingObjectives(activeQuests[i], type, targetId);
             }
@@ -405,7 +409,12 @@ namespace WhisperingWilds.Quests
                 }
             }
 
-            if (savedProgress != null)
+// v2+ saves carry full progress. A non-null but EMPTY list is the deterministic
+            // shape the v1->v2 migrator produces (it stores ids only, with no stage detail),
+            // so a bare empty list must not pre-empt the v1 id fallback. An empty progress
+            // list only means "no quests" when the id list is empty too, which the loop
+            // below handles by doing nothing.
+            if (savedProgress != null && savedProgress.Count > 0)
             {
                 for (int i = 0; i < savedProgress.Count; i++)
                 {

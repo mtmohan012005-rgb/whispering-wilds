@@ -54,7 +54,7 @@ namespace WhisperingWilds.UI
 
         private void Start()
         {
-            ChennaiOpeningContent.EnsureInitialized();
+            GameplayContentRegistry.EnsureAllInitialized();
             input = FindObjectOfType<PlayerInputHandler>();
         }
 
@@ -205,6 +205,9 @@ namespace WhisperingWilds.UI
             AddHeading(Localized("journal.deductions", "Deductions"));
             AddDeductionRows();
 
+            AddHeading(Localized("journal.discoveries", "Important Discoveries"));
+            AddDiscoveryRows();
+
             AddHeading(Localized("journal.contacts", "People Met"));
             AddContactRows();
         }
@@ -294,6 +297,31 @@ namespace WhisperingWilds.UI
         }
 
         private static readonly char[] ResearchSplitChars = { '|', '+', ':' };
+
+        /// <summary>
+        /// Lists resolved discoveries from the discovery log. This is a separate record from recorded
+        /// clues: a clue is raw evidence the quest matches objectives against, while a discovery is
+        /// something the player has actually pieced together, such as the room behind the wall.
+        /// </summary>
+        private void AddDiscoveryRows()
+        {
+            var recorded = DiscoveryLog.SnapshotRecordedIds();
+            if (recorded == null || recorded.Count == 0)
+            {
+                AddRow(Localized("journal.no_discoveries", "Nothing resolved yet."), new Color(0.8f, 0.8f, 0.8f));
+                return;
+            }
+
+            for (int i = 0; i < recorded.Count && i < MaxListedRows; i++)
+            {
+                string id = recorded[i];
+                if (string.IsNullOrEmpty(id)) continue;
+                if (!DiscoveryLog.TryGet(id, out var definition) || definition == null) continue;
+
+                AddRow($"• {DiscoveryLog.ResolveTitle(definition)}", new Color(1f, 0.88f, 0.6f));
+                AddRow($"   {DiscoveryLog.ResolveBody(definition)}", new Color(0.78f, 0.8f, 0.84f));
+            }
+        }
 
         private void AddContactRows()
         {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
@@ -23,25 +24,29 @@ namespace WhisperingWilds.Gameplay
 
         private void Start()
         {
-            ChennaiOpeningContent.EnsureInitialized();
+            GameplayContentRegistry.EnsureRegionInitialized(regionId);
 
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.SetRegion(regionId);
             }
 
-            // The Chennai scene owns QuestManager, so the opening quests are seeded once it exists.
+            // The region scene owns QuestManager, so the opening quests are seeded once it exists.
             CampaignFlow.ConsumeNewGameRequest();
 
-            ApplyOpeningDialogue();
+            ApplyRegionDialogue();
             EnsurePersistentManagers();
         }
 
         /// <summary>
         /// Gives each resident in this region the opening conversation for its stable npc id.
         /// Residents with no authored graph keep whatever the scene serialized.
+        ///
+        /// The lookup is region-scoped: a destination's content owns its own dialogue, so an NPC
+        /// reused across regions gets the conversation that belongs to where the player actually met
+        /// them rather than whichever content module happened to be asked first.
         /// </summary>
-        private void ApplyOpeningDialogue()
+        private void ApplyRegionDialogue()
         {
             var residents = FindObjectsByType<NPCCharacter>();
             for (int i = 0; i < residents.Length; i++)
@@ -49,11 +54,32 @@ namespace WhisperingWilds.Gameplay
                 var resident = residents[i];
                 if (resident == null || string.IsNullOrEmpty(resident.NpcId)) continue;
 
-                var nodes = ChennaiOpeningContent.BuildDialogueFor(resident.NpcId);
+                var nodes = BuildDialogueForRegion(resident.NpcId);
                 if (nodes.Count == 0) continue;
 
                 resident.SetDialogueNodes(nodes);
             }
+        }
+
+        /// <summary>
+        /// Resolves the authored dialogue for a resident in this region, falling back to the Chennai
+        /// opening content so a region that has not authored its own conversations yet still gives
+        /// its residents the shared opening graph.
+        /// </summary>
+        private List<DialogueNode> BuildDialogueForRegion(string npcId)
+        {
+            if (regionId == ChettinadMansionContent.RegionId)
+            {
+                var chettinad = ChettinadMansionContent.BuildDialogueFor(npcId);
+                if (chettinad.Count > 0) return chettinad;
+            }
+            else if (regionId == MamallapuramShoreContent.RegionId)
+            {
+                var shore = MamallapuramShoreContent.BuildDialogueFor(npcId);
+                if (shore.Count > 0) return shore;
+            }
+
+            return ChennaiOpeningContent.BuildDialogueFor(npcId);
         }
 
         /// <summary>

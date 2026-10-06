@@ -518,7 +518,9 @@ namespace WhisperingWilds.QA
         {
             try
             {
-                string reportDir = Path.Combine(Application.dataPath, "..", "TestReports");
+                // Runtime automation must never create files inside the repository.
+                // Write to the player's persistent data directory instead.
+                string reportDir = Application.persistentDataPath;
                 if (!Directory.Exists(reportDir)) Directory.CreateDirectory(reportDir);
 
                 string jsonPath = Path.Combine(reportDir, "automated_runtime_smoke_test.json");

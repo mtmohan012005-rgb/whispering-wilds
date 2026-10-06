@@ -10,7 +10,6 @@ namespace WhisperingWilds.NPC
     /// scene boundary containment, and safe failure when NavMesh is missing without console spam.
     /// Never uses direct transform teleportation for ordinary movement.
     /// </summary>
-    [RequireComponent(typeof(NavMeshAgent))]
     [DisallowMultipleComponent]
     public class NPCNavigationController : MonoBehaviour
     {
@@ -65,21 +64,36 @@ namespace WhisperingWilds.NPC
             agent = GetComponent<NavMeshAgent>();
             animator = GetComponentInChildren<Animator>();
 
-            if (agent != null)
-            {
-                agent.speed = walkSpeed;
-                agent.stoppingDistance = stoppingDistance;
-                agent.acceleration = 6.0f;
-                agent.autoBraking = true;
-                agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
-            }
-
             lastRecordedPosition = transform.position;
         }
 
         private void Start()
         {
+            // A NavMeshAgent attached to a serialized scene object is constructed during scene
+            // activation, BEFORE the scene's NavMeshSceneLink registers the baked NavMeshData
+            // (link registration also happens in Awake). Agents created that early fail
+            // permanently: "Failed to create agent because there is no valid NavMesh". Region
+            // scenes therefore no longer serialize agents at all; the controller creates one
+            // here, in Start, which always runs after every Awake has completed, so the baked
+            // NavMeshData is already registered by the time the agent is built.
+            if (agent == null)
+            {
+                agent = gameObject.AddComponent<NavMeshAgent>();
+            }
+            ConfigureAgent();
+
             ValidateNavMeshStatusOnStart();
+        }
+
+        private void ConfigureAgent()
+        {
+            if (agent == null) return;
+
+            agent.speed = walkSpeed;
+            agent.stoppingDistance = stoppingDistance;
+            agent.acceleration = 6.0f;
+            agent.autoBraking = true;
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
         }
 
         private void ValidateNavMeshStatusOnStart()

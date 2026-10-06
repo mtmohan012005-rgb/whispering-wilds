@@ -92,8 +92,8 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("hud.appearance_changes",  "Appearance Changes",     "தோற்ற மாற்றங்கள்"),
             new LocalizationEntry("hud.appearance_value",     "Appearance Changes: {0}/{1}", "தோற்ற மாற்றங்கள்: {0}/{1}"),
             new LocalizationEntry("hud.press_to_interact",   "Press {0}",              "{0} அழுத்தவும்"),
-            new LocalizationEntry("hud.am",                  "AM",                     "பி.ப"),
-            new LocalizationEntry("hud.pm",                  "PM",                     "பி.ப"),
+            new LocalizationEntry("hud.am",                  "AM",                     "காலை"),
+            new LocalizationEntry("hud.pm",                  "PM",                     "மாலை"),
 
             // ---- Antigravity field (schema v3 physics feature) --------------
             new LocalizationEntry("hud.gravity.inverted",   "Gravity Field Inverted",        "புவிஈர்ப்பு விசை மாற்றமடைந்துள்ளது"),
@@ -117,7 +117,7 @@ new LocalizationEntry("talk.devi", "Talk to Devi", "தேவி பேசுவ
 new LocalizationEntry("talk.gopi", "Talk to Gopi", "கோபி பேசுவதற்கு"),
 new LocalizationEntry("talk.hari", "Talk to Hari", "ஙரி பேசுவதற்கு"),
 new LocalizationEntry("talk.kannammal", "Talk to Kannammal", "கண்ணம்மாள் பேசுவதற்கு"),
-new LocalizationEntry("talk.radha", "Talk to Radha", "଎ாதா பேசுவதற்கு"),
+new LocalizationEntry("talk.radha", "Talk to Radha", "ராதா பேசுவதற்கு"),
 new LocalizationEntry("talk.ravi", "Talk to Ravi", "ரவி பேசுவதற்கு"),
 new LocalizationEntry("talk.selvaraj", "Talk to Selvaraj", "செல்வராஜ் பேசுவதற்கு"),
 new LocalizationEntry("talk.siva", "Talk to Siva", "சிவா பேசுவதற்கு"),
@@ -200,6 +200,86 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("place.vellore",            "Vellore",            "வேலூர்"),
             new LocalizationEntry("place.rajapalayam",        "Rajapalayam",        "ராஜபாளையம்"),
             new LocalizationEntry("place.puducherry",         "Puducherry (Union Territory, not Tamil Nadu)", "புதுச்சேரி (ஒரே சுயாதீனப் பிரதேசம், தமிழ்நாடு அல்ல)"),
+
+            // ---- Destination unlock gate -------------------------------------
+            new LocalizationEntry("region.unlocked",         "{0} Unlocked",                   "{0} திறக்கப்பட்டது"),
+            new LocalizationEntry("region.locked",           "{0} is not available yet",       "{0} இன்னும் கிடைக்கவில்லை"),
+            new LocalizationEntry("region.locked_hint",      "Keep exploring to open new destinations.", "புதிய இடங்களைத் திறக்க ஆராய்வைத் தொடரவும்."),
+            new LocalizationEntry("region.deferred",       "{0} is not part of this story yet.", "{0} இன்னும் இக்கதையின் பகுதியல்ல."),
+
+            // ---- Investigation feedback --------------------------------------
+            // The exact wording the Chettinad investigation brief requires. Keyed rather than
+            // hardcoded so the toast follows the active language with no per-object duplication.
+            new LocalizationEntry("investigate.important",   "Something about this seems important.",
+                                                                          "இதில் ஏதோ முக்கியமான விஷயம் இருக்கிறது."),
+            new LocalizationEntry("investigate.already_recorded", "Already recorded.",
+                                                                          "ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது."),
+            new LocalizationEntry("investigate.clue_recorded",  "Recorded: {0}",
+                                                                          "பதிவு செய்யப்பட்டது: {0}"),
+            new LocalizationEntry("investigate.item_taken",     "Taken: {0}",
+                                                                          "எடுத்துக்கொண்டது: {0}"),
+
+            // ---- Chettinad mansion interactables ------------------------------
+            new LocalizationEntry("chettinad.inspect.hall",      "Investigate the main hall",        "முதன்மை மண்டபத்தை ஆராய்க"),
+            new LocalizationEntry("chettinad.inspect.shelf",     "Examine the hall shelf",          "மண்டப அலமரத்தைப் பார்க்க"),
+            new LocalizationEntry("chettinad.inspect.side_room", "Search the side room",            "பக்க அறையைத் தேடுக"),
+            new LocalizationEntry("chettinad.inspect.chest",     "Open the chest in the side room", "பக்க அறையிலுள்ள பெட்டியைத் திறக்க"),
+            new LocalizationEntry("chettinad.inspect.mark_sun",     "Examine the medallion above the north colonnade", "வடக்கு மேடையின் மேலுள்ள மொடியைப் பார்க்க"),
+            new LocalizationEntry("chettinad.inspect.mark_serpent", "Examine the carving on the east gutter",           "கிழக்கு வடிகாலின் வெட்டைப் பார்க்க"),
+            new LocalizationEntry("chettinad.inspect.mark_wheel",   "Examine the carving over the dry well",            "வறண்ட கிணற்றின் மேலுள்ள வெட்டைப் பார்க்க"),
+            new LocalizationEntry("chettinad.inspect.photo",     "Take down the framed photograph",  "சாட்டையிலுள்ள படத்தை எடுக்க"),
+            new LocalizationEntry("chettinad.inspect.letter",    "Read the sealed letter",           "மூடிய கடிதத்தைப் படிக்க"),
+            new LocalizationEntry("chettinad.inspect.desk",      "Record what you found",            "நீங்கள் கண்டதைப் பதிவு செய்க"),
+            new LocalizationEntry("chettinad.door.family_room",  "Locked family room door",          "மூடப்பட்ட குடும்ப அறைக் கதவு"),
+
+            // ---- Mamallapuram shore interactables -----------------------------
+            // BuildMamallapuramShore writes these keys onto the five investigation
+            // boxes. Without the entries ResolvePromptLabel would render the
+            // "missing.<key>" placeholder in both languages, since Get() returns that
+            // placeholder rather than an empty string.
+            new LocalizationEntry("mamallapuram.inspect.fisher_lantern", "Take the fisher's lantern",        "மீனவரின் விளக்கை எடுங்கள்"),
+            new LocalizationEntry("mamallapuram.inspect.tally_stone",    "Read the carved tally",            "வெட்டப்பட்ட எண்ணடைப் படியுங்கள்"),
+            new LocalizationEntry("mamallapuram.inspect.stone_blocks",   "Examine the half-worked blocks",   "நிறைவில்லாத கட்டைகளை ஆராயுங்கள்"),
+            new LocalizationEntry("mamallapuram.inspect.carving_yard",   "Examine the sheltered stone face", "பாதுகாப்பான கல் மேற்பரப்பை ஆராயுங்கள்"),
+            new LocalizationEntry("mamallapuram.inspect.signal_post",    "Read the signal post",             "அச்சுக் கம்பத்தைப் படியுங்கள்"),
+
+            // ---- Chettinad medallion lock -------------------------------------
+            new LocalizationEntry("chettinad.puzzle.dial",             "Turn the dial ({0})",           "சக்கரத்தைச் சுழற்றுக ({0})"),
+            // The combination readout replaces a submit button: three dials cannot each hold a
+            // toast, and the player needs the whole reading to reason about the order.
+            new LocalizationEntry("chettinad.puzzle.dials",            "Dials: {0} / {1} / {2}",       "சக்கரங்கள்: {0} / {1} / {2}"),
+            new LocalizationEntry("chettinad.puzzle.needs_clues",
+                "Three dials, and the lock does not move. It wants an order, and this courtyard holds it.",
+                "மூன்று சக்கரங்கள், பூட்டு நகரவில்லை. ஒரு வரிசை வேண்டும், அது இந்த முற்றாவீட்டில் உள்ளது."),
+            new LocalizationEntry("chettinad.puzzle.wrong",
+                // The dials keep the values the player set: the lock judges and refuses, it does not
+                // silently rewind them, so this text must not claim it does.
+                "The lock does not move. Nothing opens.",
+                "பூட்டு நகரவில்லை. எதுவும் திறக்கவில்லை."),
+            new LocalizationEntry("chettinad.puzzle.hint_1",
+                "Each number is somewhere in this courtyard. Count what the medallions show.",
+                "ஒவ்வொரு எண்ணும் இந்த முற்றாவீட்டிலே உள்ளது. மொடிகள் என்ன காட்டுகின்றன என்பதை எண்ணுங்கள்."),
+            new LocalizationEntry("chettinad.puzzle.hint_2",
+                "The house was walked from the first light to the last. Smallest to largest.",
+                "இந்த வீட்டை முதல் வெளிச்சத்திலிருந்து கடைசி வெளிச்சம் வரை நடந்தார்கள். சிறியதிலிருந்து பெரியது வரை."),
+            new LocalizationEntry("chettinad.puzzle.solved",
+                "The wall moves. There is a room behind it.",
+                "சுவர் நகருகிறது. அதற்குப் பின்புறம் ஒரு அறை உள்ளது."),
+
+            // ---- Chettinad locked door ---------------------------------------
+            new LocalizationEntry("chettinad.door.needs_key",
+                "Painted shut and wired. Something small must open it.",
+                "சாமத்தால் அடைக்கப்பட்டு இலச்சிக்கப்பட்டுள்ளது. சிறிய ஒரு உருப்பு ஏதோ திறக்க வேண்டும்."),
+            new LocalizationEntry("chettinad.door.unlocked_key",
+                "The old key fits.",
+                "பழைய சாவி பொருந்துகிறது."),
+            new LocalizationEntry("chettinad.door.open",
+                "The family room is open.",
+                "குடும்ப அறை திறந்துவிட்டது."),
+
+            // ---- Discovery log -------------------------------------------------
+            new LocalizationEntry("journal.discoveries",     "Important Discoveries",   "முக்கியக் கண்டுபிடிப்புகள்"),
+            new LocalizationEntry("journal.no_discoveries",  "Nothing resolved yet.",   "இன்னும் எதுவும் தீர்மானிக்கப்படவில்லை."),
         };
 
         private static readonly Dictionary<string, LocalizationEntry> Lookup = BuildLookup();

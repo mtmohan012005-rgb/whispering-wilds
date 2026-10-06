@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WhisperingWilds.Quality;
 
 namespace WhisperingWilds.NPC
@@ -74,6 +75,7 @@ namespace WhisperingWilds.NPC
         {
             AcquireCamera();
             RefreshNPCList();
+            SceneManager.sceneLoaded += HandleSceneLoaded;
 
             if (QualityPresetManager.Instance != null)
             {
@@ -88,6 +90,17 @@ namespace WhisperingWilds.NPC
             {
                 QualityPresetManager.Instance.OnQualityPresetChanged -= HandleQualityPresetApplied;
             }
+            SceneManager.sceneLoaded -= HandleSceneLoaded;
+        }
+
+        /// <summary>
+        /// The manager may be created in a scene that contains no NPCs yet (e.g. the persistent
+        /// game root), so RefreshNPCList at Start can observe an empty world. Re-scan every time a
+        /// scene finishes loading so the NPC list tracks the region that just became active.
+        /// </summary>
+        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            RefreshNPCList();
         }
 
         private void AcquireCamera()

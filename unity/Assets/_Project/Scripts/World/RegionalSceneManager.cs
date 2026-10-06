@@ -83,6 +83,30 @@ namespace WhisperingWilds.World
                 return;
             }
 
+            // Region validity is not permission. Every travel entry point funnels through this one
+            // method, so asking RegionUnlocks here is what makes a gated destination unenterable:
+            // a caller that only knows the geography catalogue still cannot bypass the gate.
+            if (!RegionUnlocks.IsUnlocked(targetRegionId))
+            {
+                string lockedMsg = RegionUnlocks.IsDeferred(targetRegionId)
+                    ? $"{targetGeo.englishName} is not part of this campaign yet."
+                    : $"{targetGeo.englishName} has not been opened yet.";
+                lockedMsg += $" Current region '{activeRegionId}' retained.";
+
+                Debug.Log($"[RegionalSceneManager] Travel to '{targetRegionId}' refused: {lockedMsg}");
+                OnRegionLoadFailed?.Invoke(targetRegionId, lockedMsg);
+
+                if (HUDManager.Instance != null)
+                {
+                    HUDManager.Instance.ShowNotificationKey(
+                        RegionUnlocks.IsDeferred(targetRegionId) ? "region.deferred" : "region.locked",
+                        4.0f,
+                        targetGeo.englishName,
+                        targetGeo.tamilName);
+                }
+                return;
+            }
+
             StartCoroutine(SafeRegionTransitionRoutine(targetGeo));
         }
 

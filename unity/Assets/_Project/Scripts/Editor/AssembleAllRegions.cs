@@ -31,7 +31,7 @@ namespace WhisperingWilds.Editor
     /// </summary>
     public static class AssembleAllRegions
     {
-        private const string SceneFolderPath = "Assets/_Project/Scenes";
+        internal const string SceneFolderPath = "Assets/_Project/Scenes";
 
         [MenuItem("Tools/Whispering Wilds/Build All Regional & Benchmark Scenes")]
         public static void BuildAllScenes()
@@ -99,7 +99,7 @@ namespace WhisperingWilds.Editor
             Debug.Log($"<color=#00D2FF><b>[AssembleAllRegions]</b></color> Registered {scenePaths.Length} scenes into EditorBuildSettings.");
         }
 
-        private static GameObject SetupCommonManagers(string regionId, string engName, string tamName)
+        internal static GameObject SetupCommonManagers(string regionId, string engName, string tamName)
         {
             var managersObj = new GameObject("--- MANAGERS ---");
             if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
@@ -134,10 +134,23 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<WorldPersistenceManager>() == null) managersObj.AddComponent<WorldPersistenceManager>();
             if (managersObj.GetComponent<WorldSimulationDebugOverlay>() == null) managersObj.AddComponent<WorldSimulationDebugOverlay>();
 
+            if (!string.IsNullOrEmpty(regionId))
+            {
+                var bootstrap = managersObj.GetComponent<Gameplay.GameplayRegionBootstrap>();
+                if (bootstrap == null) bootstrap = managersObj.AddComponent<Gameplay.GameplayRegionBootstrap>();
+                var so = new SerializedObject(bootstrap);
+                var prop = so.FindProperty("regionId");
+                if (prop != null)
+                {
+                    prop.stringValue = regionId;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+
             return managersObj;
         }
 
-        private static GameObject SetupPlayerAndCamera(Vector3 spawnPos)
+        internal static GameObject SetupPlayerAndCamera(Vector3 spawnPos)
         {
             var player = new GameObject("Player");
             player.tag = "Player";
@@ -184,10 +197,27 @@ namespace WhisperingWilds.Editor
             var camCtrl = camObj.AddComponent<CameraController>();
             camCtrl.SetTarget(player.transform);
 
+            // Spawn marker consumed by RegionalSceneManager on region transitions. Without it the
+            // player keeps the previous region's world coordinates after loading a new region.
+            if (GameObject.Find("SpawnPoint") == null && GameObject.Find("PlayerSpawn") == null)
+            {
+                var marker = new GameObject("SpawnPoint");
+                marker.transform.position = spawnPos;
+            }
+
             return player;
         }
 
-        private static void SetupHUD(string regionEng, string regionTam)
+        /// <summary>
+        /// Builds the shared regional HUD and returns its canvas so a dedicated regional builder can
+        /// parent region-specific widgets onto it.
+        ///
+        /// Every HUDManager field is wired here. Leaving one null does not fail loudly: the manager
+        /// silently skips the null branch at runtime and the corresponding widget simply never
+        /// appears, which is why a region could previously build a scene that compiled, saved, and
+        /// baked without a single prompt or coin counter ever being drawn.
+        /// </summary>
+        internal static GameObject SetupHUD(string regionEng, string regionTam)
         {
             var canvasObj = new GameObject("HUD_Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasObj.GetComponent<Canvas>();
@@ -209,18 +239,94 @@ namespace WhisperingWilds.Editor
             bannerObj.GetComponent<Text>().text = $"{regionEng} • {regionTam}";
 
             // Clock
-            CreateUIText("ClockDisplay", canvasObj.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-120f, -40f), new Vector2(200, 40), font, 20, TextAnchor.MiddleRight);
+            var clockText = CreateUIText("ClockDisplay", canvasObj.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-120f, -40f), new Vector2(200, 40), font, 20, TextAnchor.MiddleRight)
+                .GetComponent<Text>();
 
             // Coins
-            CreateUIText("CoinDisplay", canvasObj.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-120f, -80f), new Vector2(200, 40), font, 18, TextAnchor.MiddleRight);
+            var currencyText = CreateUIText("CoinDisplay", canvasObj.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-120f, -80f), new Vector2(200, 40), font, 18, TextAnchor.MiddleRight)
+                .GetComponent<Text>();
 
             // Changes Remaining
-            var changesObj = CreateUIText("ChangesRemainingText", canvasObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(160f, -40f), new Vector2(300, 40), font, 18, TextAnchor.MiddleLeft);
-            changesObj.GetComponent<Text>().text = "Permanent Changes: 5/5";
+            var changesText = CreateUIText("ChangesRemainingText", canvasObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(160f, -40f), new Vector2(300, 40), font, 18, TextAnchor.MiddleLeft)
+                .GetComponent<Text>();
+            changesText.text = "Permanent Changes: 5/5";
 
-            // Prompt
-            var promptObj = CreateUIText("InteractionPrompt", canvasObj.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -120f), new Vector2(400, 50), font, 20, TextAnchor.MiddleCenter);
-            promptObj.SetActive(false);
+            // Prompt. HUDManager composes "Press [E] " + IInteractable.InteractionPrompt into
+            // interactionPromptText and toggles this container, so the root must be wired too or
+            // the prompt text is written into an object that never becomes visible.
+            var promptRoot = new GameObject("InteractionPromptRoot", typeof(RectTransform));
+            promptRoot.transform.SetParent(canvasObj.transform, false);
+            var promptRootRect = promptRoot.GetComponent<RectTransform>();
+            promptRootRect.anchorMin = new Vector2(0.5f, 0.5f);
+            promptRootRect.anchorMax = new Vector2(0.5f, 0.5f);
+            promptRootRect.anchoredPosition = new Vector2(0f, -120f);
+            promptRootRect.sizeDelta = new Vector2(700, 60);
+
+            var promptText = CreateUIText("InteractionPromptText", promptRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(700, 60), font, 22, TextAnchor.MiddleCenter)
+                .GetComponent<Text>();
+            promptRoot.SetActive(false);
+
+            // Toast. Shown by ShowNotificationKey and left inactive so it never covers the view at
+            // scene start.
+            var toastRoot = new GameObject("ToastRoot", typeof(RectTransform));
+            toastRoot.transform.SetParent(canvasObj.transform, false);
+            var toastRootRect = toastRoot.GetComponent<RectTransform>();
+            toastRootRect.anchorMin = new Vector2(0.5f, 0f);
+            toastRootRect.anchorMax = new Vector2(0.5f, 0f);
+            toastRootRect.anchoredPosition = new Vector2(0f, 160f);
+            toastRootRect.sizeDelta = new Vector2(900, 90);
+
+            var toastText = CreateUIText("ToastText", toastRoot.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(900, 90), font, 22, TextAnchor.MiddleCenter)
+                .GetComponent<Text>();
+            toastRoot.SetActive(false);
+
+            // Antigravity readout. Inactive by default; the zone manager turns it on only when the
+            // player is actually inside a field.
+            var antigravityRoot = new GameObject("AntigravityRoot", typeof(RectTransform));
+            antigravityRoot.transform.SetParent(canvasObj.transform, false);
+            var antigravityRect = antigravityRoot.GetComponent<RectTransform>();
+            antigravityRect.anchorMin = new Vector2(0f, 1f);
+            antigravityRect.anchorMax = new Vector2(0f, 1f);
+            antigravityRect.anchoredPosition = new Vector2(300f, -140f);
+            antigravityRect.sizeDelta = new Vector2(420, 110);
+
+            var antigravityTitle = CreateUIText("AntigravityTitle", antigravityRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(420, 34), font, 20, TextAnchor.MiddleLeft)
+                .GetComponent<Text>();
+            var antigravityPrompt = CreateUIText("AntigravityPrompt", antigravityRoot.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(0f, -34f), new Vector2(420, 30), font, 16, TextAnchor.MiddleLeft)
+                .GetComponent<Text>();
+            var antigravityEnergy = CreateUIText("AntigravityEnergy", antigravityRoot.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 6f), new Vector2(400, 24), font, 16, TextAnchor.MiddleLeft)
+                .GetComponent<Text>();
+
+            // The energy bar is an Image, so it needs its own component rather than a Text.
+            var energyFillObj = new GameObject("AntigravityEnergyFill", typeof(RectTransform), typeof(Image));
+            energyFillObj.transform.SetParent(antigravityRoot.transform, false);
+            var energyFillRect = energyFillObj.GetComponent<RectTransform>();
+            energyFillRect.anchorMin = new Vector2(0f, 0f);
+            energyFillRect.anchorMax = new Vector2(0f, 0f);
+            energyFillRect.anchoredPosition = new Vector2(200f, 18f);
+            energyFillRect.sizeDelta = new Vector2(400, 16);
+            var energyFillImage = energyFillObj.GetComponent<Image>();
+            energyFillImage.color = new Color(0.45f, 0.85f, 1f, 1f);
+
+            antigravityRoot.SetActive(false);
+
+            var so = new SerializedObject(hudManager);
+            so.FindProperty("regionText").objectReferenceValue = bannerObj.GetComponent<Text>();
+            so.FindProperty("clockText").objectReferenceValue = clockText;
+            so.FindProperty("currencyText").objectReferenceValue = currencyText;
+            so.FindProperty("appearanceChangesText").objectReferenceValue = changesText;
+            so.FindProperty("interactionPromptText").objectReferenceValue = promptText;
+            so.FindProperty("interactionPromptRoot").objectReferenceValue = promptRoot;
+            so.FindProperty("notificationToastRoot").objectReferenceValue = toastRoot;
+            so.FindProperty("notificationToastText").objectReferenceValue = toastText;
+            so.FindProperty("antigravityRoot").objectReferenceValue = antigravityRoot;
+            so.FindProperty("antigravityTitleText").objectReferenceValue = antigravityTitle;
+            so.FindProperty("antigravityPromptText").objectReferenceValue = antigravityPrompt;
+            so.FindProperty("antigravityEnergyText").objectReferenceValue = antigravityEnergy;
+            so.FindProperty("antigravityEnergyFill").objectReferenceValue = energyFillImage;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            return canvasObj;
         }
 
         private static GameObject CreateUIText(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 size, Font font, int fontSize, TextAnchor alignment)
@@ -408,54 +514,37 @@ namespace WhisperingWilds.Editor
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
         }
 
+        /// <summary>
+        /// Chettinad is built by <see cref="BuildChettinadMansion"/> rather than inline here.
+        ///
+        /// The shared regional builders produce one open floor plus a decorative facade, which
+        /// cannot express a strict eleven-beat investigation order: the mansion needs an interior
+        /// the player can only reach after solving a lock, and the return trip has to stay
+        /// available afterwards.
+        /// </summary>
         private static void BuildChettinadScene()
         {
-            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            string path = $"{SceneFolderPath}/05_Chettinad_Mansion.unity";
-
-            SetupSun(new Color(1f, 0.95f, 0.85f), 1.15f, Quaternion.Euler(50f, -20f, 0f));
-            SetupCommonManagers("chettinad", "Chettinad Heritage Mansions", "செட்டிநாடு பாரம்பரிய மாளிகை");
-            SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Chettinad Kanadukathan", "செட்டிநாடு கானாடுகாத்தான்");
-
-            var envRoot = new GameObject("--- CHETTINAD_ENVIRONMENT ---");
-
-            // Athangudi Tile Courtyard Floor
-            var floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            floor.name = "Athangudi_Courtyard_Floor";
-            floor.transform.SetParent(envRoot.transform, false);
-            floor.transform.position = new Vector3(0f, -0.1f, 0f);
-            floor.transform.localScale = new Vector3(40f, 0.2f, 40f);
-            Shader shader = Shader.Find("HDRP/Lit") ?? Shader.Find("Standard");
-            floor.GetComponent<MeshRenderer>().sharedMaterial = new Material(shader) { color = new Color(0.65f, 0.25f, 0.22f) }; // Terracotta-red Athangudi
-
-            // Courtyard Mansion Architecture
-            InstantiateModel("Assets/_Project/Art/Models/Architecture/chettinad/courtyard_mansion.glb", envRoot.transform, new Vector3(0f, 0f, 12f), Quaternion.identity, Vector3.one);
-            InstantiateModel("Assets/_Project/Art/Models/Architecture/chettinad/wooden_column.glb", envRoot.transform, new Vector3(-4f, 0f, 4f), Quaternion.identity, Vector3.one);
-            InstantiateModel("Assets/_Project/Art/Models/Architecture/chettinad/wooden_column.glb", envRoot.transform, new Vector3(4f, 0f, 4f), Quaternion.identity, Vector3.one);
-
-            // Cultural Objects
-            InstantiateModel("Assets/_Project/Art/Models/Props/cultural/ammi_kallu.glb", envRoot.transform, new Vector3(-3f, 0f, 2f), Quaternion.identity, Vector3.one * 1.5f);
-            InstantiateModel("Assets/_Project/Art/Models/Props/cultural/ural_ulakkai.glb", envRoot.transform, new Vector3(-4f, 0f, 2.5f), Quaternion.identity, Vector3.one * 1.3f);
-            InstantiateModel("Assets/_Project/Art/Models/Props/cultural/kuthu_vilakku.glb", envRoot.transform, new Vector3(3f, 0f, 2f), Quaternion.identity, Vector3.one * 1.4f);
-            InstantiateModel("Assets/_Project/Art/Models/Props/cultural/coffee_dabarah.glb", envRoot.transform, new Vector3(0f, 0.8f, 3f), Quaternion.identity, Vector3.one * 1.2f);
-            InstantiateModel("Assets/_Project/Art/Models/Props/cultural/korai_mat.glb", envRoot.transform, new Vector3(2f, 0.05f, 1f), Quaternion.identity, Vector3.one);
-
-            // Elder NPC Kamalam
-            var npcKamalam = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/meenakshi.glb", envRoot.transform, new Vector3(0f, 0f, 4f), Quaternion.Euler(0f, 180f, 0f), Vector3.one);
-            if (npcKamalam != null)
-            {
-                var npcChar = npcKamalam.AddComponent<NPCCharacter>();
-                npcChar.SetCharacterProfile("Kamalam (Heritage Elder)", "கமலம் அம்மாள்", "Chettinad", "செட்டிநாடு மாளிகையின் பாரம்பரிய மூத்த காப்பாளர் கமலம் அம்மாள்.");
-            }
-
-            SetupWildlifeHabitat(envRoot.transform, "chettinad", HabitatType.PastoralFarmBoundary);
-
-            EditorSceneManager.SaveScene(scene, path);
-            Debug.Log($"[AssembleAllRegions] Saved: {path}");
+            BuildChettinadMansion.BuildChettinadMansionScene();
         }
 
+        /// <summary>
+        /// Mamallapuram is built by <see cref="BuildMamallapuramShore"/> rather than inline here, for
+        /// the same reason as Chettinad: the region has to express a route whose order is a property
+        /// of its geometry, and the shared inline builders place a floor, a facade, and some props,
+        /// which is the right amount of geometry for a walking-around region but cannot make the
+        /// return trip to the seaward end of the causeway a real return trip.
+        /// </summary>
         private static void BuildMamallapuramScene()
+        {
+            BuildMamallapuramShore.BuildMamallapuramShoreScene();
+        }
+
+        /// <summary>
+        /// The pre-authored Mamallapuram arrangement this replaced, kept for reference. It placed a
+        /// single open plane with a facade and one prop on it and had no spawn marker, so travel into
+        /// the region left the player at stale coordinates from the previous scene.
+        /// </summary>
+        private static void BuildMamallapuramSceneLegacy()
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             string path = $"{SceneFolderPath}/06_Mamallapuram_Shore.unity";
@@ -604,7 +693,7 @@ namespace WhisperingWilds.Editor
             Debug.Log($"[AssembleAllRegions] Saved benchmark scene: {path}");
         }
 
-        private static void SetupWildlifeHabitat(Transform parent, string regionId, HabitatType type)
+        internal static void SetupWildlifeHabitat(Transform parent, string regionId, HabitatType type)
         {
             var habitatObj = new GameObject($"WildlifeHabitat_{regionId}");
             habitatObj.transform.SetParent(parent, false);
@@ -621,7 +710,7 @@ namespace WhisperingWilds.Editor
             habitatObj.AddComponent<WildlifeSpawner>();
         }
 
-        private static GameObject InstantiateModel(string assetPath, Transform parent, Vector3 localPos, Quaternion localRot, Vector3 localScale)
+        internal static GameObject InstantiateModel(string assetPath, Transform parent, Vector3 localPos, Quaternion localRot, Vector3 localScale)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
             if (prefab == null)
@@ -637,7 +726,7 @@ namespace WhisperingWilds.Editor
             return inst;
         }
 
-        private static Light SetupSun(Color color, float intensity, Quaternion rotation)
+        internal static Light SetupSun(Color color, float intensity, Quaternion rotation)
         {
             var sunObj = new GameObject("Directional Light");
             var sun = sunObj.AddComponent<Light>();

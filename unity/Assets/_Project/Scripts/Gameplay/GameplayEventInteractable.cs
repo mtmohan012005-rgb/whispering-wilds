@@ -52,8 +52,16 @@ namespace WhisperingWilds.Gameplay
 
         [SerializeField] private bool reportArrival;
 
+        [Header("Investigation Feedback")]
+        [Tooltip("Shows the 'Something about this seems important.' notification when inspected. Used by evidence that should acknowledge the player without spoiling what it is.")]
+        [SerializeField] private bool acknowledgeAsImportant;
+
+        [Tooltip("Discovery recorded on interaction, by stable discovery id. Empty means nothing is recorded.")]
+        [SerializeField] private string recordDiscoveryId;
+
         public string TargetId => targetId;
         public WhisperingWilds.Data.QuestObjectiveType ReportType => reportType;
+        public string RecordDiscoveryId => recordDiscoveryId;
 
         public WhisperingWilds.Player.InteractionType Type => interactionType;
 
@@ -72,7 +80,9 @@ namespace WhisperingWilds.Gameplay
                         : promptEn;
                 }
 
-                return $"{label} [E]";
+                // No "[E]" suffix here. HUDManager composes the prompt as "Press [E] " + this, so a
+                // suffix would print the key twice for every interactable in the game.
+                return label;
             }
         }
 
@@ -82,6 +92,12 @@ namespace WhisperingWilds.Gameplay
 
             var mgr = WhisperingWilds.Localization.LocalizationManager.Instance;
             if (mgr == null) return null;
+
+            // A key the tables do not define must fall through to promptEn/promptTa.
+            // Get() answers "missing.<key>" for an unknown key, which is non-empty, so
+            // testing the return value alone would ship that placeholder to the HUD
+            // instead of reaching the bilingual fallback below.
+            if (!mgr.HasKey(promptKey)) return null;
 
             string value = mgr.Get(promptKey);
             return string.IsNullOrEmpty(value) ? null : value;
@@ -93,7 +109,7 @@ namespace WhisperingWilds.Gameplay
 
         public void Interact(WhisperingWilds.Player.PlayerInteractor interactor)
         {
-            ChennaiOpeningContent.EnsureInitialized();
+            GameplayContentRegistry.EnsureAllInitialized();
 
             // Report first, so objective progression happens even if an optional grant is refused
             // because the inventory is full.
@@ -101,6 +117,8 @@ namespace WhisperingWilds.Gameplay
 
             GrantItemIfConfigured();
             RevealClueIfConfigured();
+            RecordDiscoveryIfConfigured();
+            AcknowledgeIfConfigured();
         }
 
         /// <summary>
@@ -159,6 +177,32 @@ namespace WhisperingWilds.Gameplay
             }
 
             inv.DiscoverClueById(revealClueId);
+        }
+
+        private void RecordDiscoveryIfConfigured()
+        {
+            if (string.IsNullOrEmpty(recordDiscoveryId)) return;
+
+            if (!WhisperingWilds.Investigation.DiscoveryLog.IsRegistered(recordDiscoveryId))
+            {
+                Debug.LogWarning($"[Interactable '{name}'] references unregistered discovery '{recordDiscoveryId}'; nothing was recorded.");
+                return;
+            }
+
+            WhisperingWilds.Investigation.DiscoveryLog.Record(recordDiscoveryId);
+        }
+
+        /// <summary>
+        /// Gives the player the acknowledgement the investigation flow requires when they examine
+        /// something that matters, without revealing what it is. The clue itself carries the content
+        /// and is shown by the journal, so this stays a short prompt-level confirmation.
+        /// </summary>
+        private void AcknowledgeIfConfigured()
+        {
+            if (!acknowledgeAsImportant) return;
+            if (WhisperingWilds.UI.HUDManager.Instance == null) return;
+
+            WhisperingWilds.UI.HUDManager.Instance.ShowNotificationKey("investigate.important", 4.0f);
         }
     }
 }

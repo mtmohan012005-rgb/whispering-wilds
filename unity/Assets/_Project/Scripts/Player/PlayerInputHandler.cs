@@ -60,6 +60,9 @@ namespace WhisperingWilds.Player
             simMove = move;
             simSprint = sprint;
             simCrouch = crouch;
+            MoveInput = move;
+            IsSprinting = sprint;
+            IsCrouching = crouch;
         }
 
         public void TriggerSimulatedJump()
@@ -86,6 +89,9 @@ namespace WhisperingWilds.Player
             simCrafting = false;
             simQuickSave = false;
             simQuickLoad = false;
+            MoveInput = Vector2.zero;
+            IsSprinting = false;
+            IsCrouching = false;
         }
 
         public void TriggerSimulatedCancel()

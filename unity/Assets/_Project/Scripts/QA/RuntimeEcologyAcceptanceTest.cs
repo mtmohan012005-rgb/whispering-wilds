@@ -130,7 +130,9 @@ namespace WhisperingWilds.QA
             }
 
             string json = JsonUtility.ToJson(summary, true);
-            string reportsDir = Path.Combine(Application.dataPath, "..", "TestReports");
+            // Runtime automation must never create files inside the repository.
+            // Write to the player's persistent data directory instead.
+            string reportsDir = Application.persistentDataPath;
             if (!Directory.Exists(reportsDir))
             {
                 Directory.CreateDirectory(reportsDir);

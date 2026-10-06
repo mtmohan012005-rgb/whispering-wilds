@@ -64,11 +64,34 @@ namespace WhisperingWilds.Wildlife
 
             if (navAgent != null)
             {
-                navAgent.speed = walkSpeed;
-                navAgent.stoppingDistance = 0.6f;
-                navAgent.acceleration = 6.0f;
-                navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+                ApplyGroundAgentSettings();
             }
+        }
+
+        private void Start()
+        {
+            // Same reason as NPCNavigationController.Start: a serialized NavMeshAgent is
+            // constructed during scene activation before NavMeshSceneLink registers the baked
+            // NavMeshData and would fail permanently. Ground-walking wildlife gets its agent
+            // created here, in Start, after the navmesh registration has happened.
+            if (navAgent == null && navMode == NavigationMode.GroundNavMesh)
+            {
+                navAgent = gameObject.AddComponent<NavMeshAgent>();
+                ApplyGroundAgentSettings();
+            }
+            else if (navAgent != null && navMode == NavigationMode.AvianFlight && navAgent.enabled)
+            {
+                navAgent.enabled = false;
+            }
+        }
+
+        private void ApplyGroundAgentSettings()
+        {
+            if (navAgent == null) return;
+            navAgent.speed = walkSpeed;
+            navAgent.stoppingDistance = 0.6f;
+            navAgent.acceleration = 6.0f;
+            navAgent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
         }
 
         public void Initialize(SpeciesProfile profile, WildlifeHabitatZone habitat)

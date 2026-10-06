@@ -127,14 +127,25 @@ namespace WhisperingWilds.Core
     ///
     /// Schema v3 adds antigravity zone state and floating-body transforms/velocities, with
     /// explicit NaN/Infinity rejection and world-bounds clamping on both write and read.
+    ///
+    /// Schema v4 adds regional unlock progression, solved-puzzle ids, and discovery log ids. All
+    /// three are additive string lists, so a v3 save migrates by seeding the starting region rather
+    /// than by inventing progress the player never made.
     /// </summary>
     [Serializable]
     public class GameSaveData
     {
         /// <summary>Current write version. Bump only with a migration in <see cref="SaveMigrator"/>.</summary>
-        public const int CurrentSchemaVersion = 3;
+        public const int CurrentSchemaVersion = 4;
 
-        public int schemaVersion = CurrentSchemaVersion;
+        /// <summary>
+        /// Defaults to 0, not CurrentSchemaVersion. JsonUtility runs field initialisers
+        /// before overwriting deserialised fields, so a payload that omits schemaVersion
+        /// would otherwise be accepted as a perfect current-version save and copy over
+        /// the good backup. 0 keeps the TryReadValid guard live for hand-edited or
+        /// truncated payloads.
+        /// </summary>
+        public int schemaVersion = 0;
         public string saveTimestamp;
 
         // Player Position
@@ -181,6 +192,27 @@ namespace WhisperingWilds.Core
         // --- Schema v3: antigravity physics state ---
         public List<SavedGravityZone> gravityZones = new List<SavedGravityZone>();
         public List<SavedGravityBody> floatingBodies = new List<SavedGravityBody>();
+
+        // --- Schema v4: regional progression, puzzles, and the discovery log ---
+
+        /// <summary>
+        /// Region ids the player has unlocked by playing. The starting region is deliberately absent:
+        /// <see cref="World.RegionUnlocks"/> seeds it, so a save that records it is still correct but
+        /// a v3 save that omits it migrates to the right starting state instead of an empty world.
+        /// </summary>
+        public List<string> unlockedRegionIds = new List<string>();
+
+        /// <summary>
+        /// Puzzle ids recorded as solved. Only the resolved outcome is stored; transient puzzle input
+        /// such as dial positions is session-local and starts over on load.
+        /// </summary>
+        public List<string> solvedPuzzleIds = new List<string>();
+
+        /// <summary>
+        /// Discovery log entry ids recorded this campaign, for the journal's discoveries list.
+        /// Distinct from <see cref="discoveredClueIds"/>, which is what quest objectives match against.
+        /// </summary>
+        public List<string> recordedDiscoveryIds = new List<string>();
     }
 
     /// <summary>
@@ -284,11 +316,17 @@ namespace WhisperingWilds.Core
 
         public static bool BackupExists() => File.Exists(BackupFilePath);
 
-        /// <summary>True when a save exists and parses into a valid payload with a known schema.</summary>
+        /// <summary>
+        /// True when a save exists and parses into a valid payload with a known schema.
+        /// The backup counts: LoadGame falls back to the backup when the primary is
+        /// corrupt, so disabling Continue purely because the primary failed to parse
+        /// would strand the player on a corrupt-primary + valid-backup state where their
+        /// only working button (New Game) deletes both files.
+        /// </summary>
         public static bool HasValidSave()
         {
-            if (!SaveExists()) return false;
-            return TryReadValid(SaveFilePath, out _, out _);
+            if (TryReadValid(SaveFilePath, out _, out _)) return true;
+            return TryReadValid(BackupFilePath, out _, out _);
         }
 
         public static void DeleteSave()
@@ -399,6 +437,12 @@ namespace WhisperingWilds.Core
             }
 
             data.interactedNpcIds = new List<string>(NPCInteractionLog.All);
+
+            // Schema v4 state. All three are static stores keyed by stable ids, so capture works
+            // with or without the scene managers loaded and never depends on object references.
+            data.unlockedRegionIds = World.RegionUnlocks.Snapshot();
+            data.solvedPuzzleIds = Investigation.PuzzleStateStore.SnapshotSolvedPuzzleIds();
+            data.recordedDiscoveryIds = Investigation.DiscoveryLog.SnapshotRecordedIds();
 
             // Zero-g state is captured from the live zones. Capture() is defensive: with no
             // zones present it leaves the lists empty rather than null, so the schema
@@ -600,6 +644,9 @@ namespace WhisperingWilds.Core
             data.craftedRecipeCounts ??= new List<int>();
             data.interactedNpcIds ??= new List<string>();
             data.inventoryItems ??= new List<SavedInventoryItem>();
+            data.unlockedRegionIds ??= new List<string>();
+            data.solvedPuzzleIds ??= new List<string>();
+            data.recordedDiscoveryIds ??= new List<string>();
 
             if (string.IsNullOrWhiteSpace(data.currentRegionId)) data.currentRegionId = "chennai";
 

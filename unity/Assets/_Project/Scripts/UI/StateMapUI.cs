@@ -66,13 +66,27 @@ namespace WhisperingWilds.UI
             }
         }
 
+/// <summary>
+        /// Whether the map should offer this destination as travelable. Map buttons query this to
+        /// render locked and deferred markers instead of presenting every region as equally open.
+        /// </summary>
+        public static bool IsRegionSelectable(string regionId) => RegionUnlocks.IsUnlocked(regionId);
+
+        /// <summary>
+        /// Handles a click on a map destination.
+        ///
+        /// The map only closes on an accepted click. A refused destination keeps the map open and
+        /// still routes through <see cref="RegionalSceneManager.TravelToRegion"/> so the refusal is
+        /// explained rather than the click silently doing nothing; that method re-checks the gate
+        /// itself, which is what keeps the gate authoritative instead of a UI-level courtesy.
+        /// </summary>
         public void SelectRegionForTravel(string regionId)
         {
-            if (RegionalSceneManager.Instance != null)
-            {
-                ToggleMap();
-                RegionalSceneManager.Instance.TravelToRegion(regionId);
-            }
+            if (RegionalSceneManager.Instance == null) return;
+
+            if (RegionUnlocks.IsUnlocked(regionId)) ToggleMap();
+
+            RegionalSceneManager.Instance.TravelToRegion(regionId);
         }
     }
 }

@@ -54,6 +54,7 @@ namespace WhisperingWilds.Editor
 
                 // 3. Setup Player with player.glb and Locomotion BlendTree
                 GameObject player = SetupPlayer();
+                EnsureChennaiSpawnMarker(player);
 
                 // 4. Setup Camera
                 SetupCamera(player);
@@ -250,6 +251,21 @@ namespace WhisperingWilds.Editor
             }
 
             return player;
+        }
+
+        /// <summary>
+        /// Chennai is the starter region: the campaign drops the player on the corridor sidewalk
+        /// (not the world origin). The same spot must read as the region's spawn marker so
+        /// returning to Chennai from another region via RegionalSceneManager does not strand the
+        /// player at the previous region's coordinates.
+        /// </summary>
+        private static void EnsureChennaiSpawnMarker(GameObject player)
+        {
+            if (GameObject.Find("SpawnPoint") == null && GameObject.Find("PlayerSpawn") == null)
+            {
+                var marker = new GameObject("SpawnPoint");
+                marker.transform.position = player.transform.position;
+            }
         }
 
         private static void SetupCamera(GameObject player)
