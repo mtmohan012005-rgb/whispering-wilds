@@ -134,19 +134,6 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<WorldPersistenceManager>() == null) managersObj.AddComponent<WorldPersistenceManager>();
             if (managersObj.GetComponent<WorldSimulationDebugOverlay>() == null) managersObj.AddComponent<WorldSimulationDebugOverlay>();
 
-            if (!string.IsNullOrEmpty(regionId))
-            {
-                var bootstrap = managersObj.GetComponent<Gameplay.GameplayRegionBootstrap>();
-                if (bootstrap == null) bootstrap = managersObj.AddComponent<Gameplay.GameplayRegionBootstrap>();
-                var so = new SerializedObject(bootstrap);
-                var prop = so.FindProperty("regionId");
-                if (prop != null)
-                {
-                    prop.stringValue = regionId;
-                    so.ApplyModifiedPropertiesWithoutUndo();
-                }
-            }
-
             return managersObj;
         }
 
@@ -236,7 +223,7 @@ namespace WhisperingWilds.Editor
 
             // Region Banner
             var bannerObj = CreateUIText("RegionBanner", canvasObj.transform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(600, 50), font, 24, TextAnchor.MiddleCenter);
-            bannerObj.GetComponent<Text>().text = $"{regionEng} • {regionTam}";
+            bannerObj.GetComponent<Text>().text = regionEng;
 
             // Clock
             var clockText = CreateUIText("ClockDisplay", canvasObj.transform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-120f, -40f), new Vector2(200, 40), font, 20, TextAnchor.MiddleRight)
@@ -249,7 +236,10 @@ namespace WhisperingWilds.Editor
             // Changes Remaining
             var changesText = CreateUIText("ChangesRemainingText", canvasObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(160f, -40f), new Vector2(300, 40), font, 18, TextAnchor.MiddleLeft)
                 .GetComponent<Text>();
-            changesText.text = "Permanent Changes: 5/5";
+            // HUDManager refreshes this label from the localized key on Start; the baked value is
+            // left empty so a region that never binds the appearance manager cannot show a stale
+            // hard-coded "Permanent Changes: 5/5".
+            changesText.text = string.Empty;
 
             // Prompt. HUDManager composes "Press [E] " + IInteractable.InteractionPrompt into
             // interactionPromptText and toggles this container, so the root must be wired too or

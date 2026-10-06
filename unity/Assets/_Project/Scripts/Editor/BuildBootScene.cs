@@ -73,7 +73,7 @@ namespace WhisperingWilds.Editor
                 // Game Title & Tamil Subtitle
                 var titleObj = CreateText("GameTitle", canvasObj.transform, new Vector2(0.5f, 0.8f), new Vector2(0.5f, 0.8f), Vector2.zero, new Vector2(1200, 90), font, 48, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
                 var titleText = titleObj.GetComponent<Text>();
-                titleText.text = "THE WHISPERING WILDS\nகாட்டு வழி • தடம்";
+                titleText.text = "THE WHISPERING WILDS";
                 titleText.lineSpacing = 1.2f;
                 titleText.supportRichText = false;
 

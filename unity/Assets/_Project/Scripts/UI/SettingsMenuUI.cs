@@ -2,29 +2,18 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using WhisperingWilds.Audio;
 using WhisperingWilds.Display;
 using WhisperingWilds.Localization;
+using WhisperingWilds.Player;
 using WhisperingWilds.Quality;
 
 namespace WhisperingWilds.UI
 {
     /// <summary>
-    /// The in-game Settings screen: language, UI scale, display, and graphics quality.
+    /// Comprehensive PC Settings UI covering Language, Display, Quality, Audio (6 channels),
+    /// Controls (rebinding & sensitivity), and Accessibility (subtitles, shake, colorblind).
     /// </summary>
-    /// <remarks>
-    /// Pure UI layer. Every control reads and writes through the owning managers rather than
-    /// touching <c>PlayerPrefs</c>, <c>Screen</c>, or <c>QualitySettings</c> itself, so there is
-    /// exactly one owner per setting:
-    /// <list type="bullet">
-    /// <item>language - <see cref="LocalizationManager"/></item>
-    /// <item>UI scale, fullscreen, VSync, frame cap - <see cref="DisplaySettingsManager"/></item>
-    /// <item>graphics quality - <see cref="GraphicsPerformanceManager"/></item>
-    /// </list>
-    ///
-    /// Controls can be built in code by <see cref="BuildIfNeeded"/> or wired in the inspector;
-    /// either path works. Everything is rebuilt from localization keys on a language change, so
-    /// switching to Tamil while the menu is open updates it in place.
-    /// </remarks>
     [DisallowMultipleComponent]
     public class SettingsMenuUI : MonoBehaviour
     {
@@ -35,6 +24,9 @@ namespace WhisperingWilds.UI
         [SerializeField] private Button languageTabButton;
         [SerializeField] private Button displayTabButton;
         [SerializeField] private Button qualityTabButton;
+        [SerializeField] private Button audioTabButton;
+        [SerializeField] private Button controlsTabButton;
+        [SerializeField] private Button accessibilityTabButton;
         [SerializeField] private Button closeButton;
 
         [Header("Language Page")]
@@ -76,7 +68,37 @@ namespace WhisperingWilds.UI
         [SerializeField] private Button qualityRightButton;
         [SerializeField] private Text qualityHintText;
 
-        private enum Page { Language, Display, Quality }
+        [Header("Audio Page")]
+        [SerializeField] private GameObject audioPage;
+        [SerializeField] private Text audioTitleText;
+        [SerializeField] private Text masterVolValueText;
+        [SerializeField] private Text musicVolValueText;
+        [SerializeField] private Text sfxVolValueText;
+        [SerializeField] private Text ambienceVolValueText;
+        [SerializeField] private Text dialogueVolValueText;
+        [SerializeField] private Text uiVolValueText;
+
+        [Header("Controls Page")]
+        [SerializeField] private GameObject controlsPage;
+        [SerializeField] private Text controlsTitleText;
+        [SerializeField] private Text mouseSensValueText;
+        [SerializeField] private Text invertYValueText;
+        [SerializeField] private Text invertXValueText;
+        [SerializeField] private Text cameraSmoothingValueText;
+        [SerializeField] private Text sprintModeValueText;
+        [SerializeField] private Text crouchModeValueText;
+
+        [Header("Accessibility Page")]
+        [SerializeField] private GameObject accessibilityPage;
+        [SerializeField] private Text accessibilityTitleText;
+        [SerializeField] private Text subtitlesValueText;
+        [SerializeField] private Text subtitleBgValueText;
+        [SerializeField] private Text subtitleSizeValueText;
+        [SerializeField] private Text screenShakeValueText;
+        [SerializeField] private Text motionBlurValueText;
+        [SerializeField] private Text colorblindValueText;
+
+        public enum Page { Language, Display, Quality, Audio, Controls, Accessibility }
 
         private Page _page = Page.Language;
         private Color _englishColor = new Color(0.16f, 0.55f, 0.42f, 1f);
@@ -84,10 +106,9 @@ namespace WhisperingWilds.UI
         private Color _inactiveColor = new Color(0.14f, 0.16f, 0.20f, 1f);
 
         private bool _visible;
-
         public bool IsVisible => _visible;
+        public Page CurrentPage => _page;
 
-        /// <summary>Opens or closes the settings screen.</summary>
         public void SetVisible(bool visible)
         {
             _visible = visible;
@@ -107,7 +128,6 @@ namespace WhisperingWilds.UI
             }
         }
 
-        /// <summary>Flips between settings and the previous screen.</summary>
         public void Toggle() => SetVisible(!_visible);
 
         private void OnEnable()
@@ -149,6 +169,9 @@ namespace WhisperingWilds.UI
             if (languageTabButton != null) languageTabButton.onClick.AddListener(() => ShowPage(Page.Language));
             if (displayTabButton != null) displayTabButton.onClick.AddListener(() => ShowPage(Page.Display));
             if (qualityTabButton != null) qualityTabButton.onClick.AddListener(() => ShowPage(Page.Quality));
+            if (audioTabButton != null) audioTabButton.onClick.AddListener(() => ShowPage(Page.Audio));
+            if (controlsTabButton != null) controlsTabButton.onClick.AddListener(() => ShowPage(Page.Controls));
+            if (accessibilityTabButton != null) accessibilityTabButton.onClick.AddListener(() => ShowPage(Page.Accessibility));
             if (closeButton != null) closeButton.onClick.AddListener(() => SetVisible(false));
 
             if (uiScaleLeftButton != null) uiScaleLeftButton.onClick.AddListener(() => CycleUiScale(-1));
@@ -163,19 +186,21 @@ namespace WhisperingWilds.UI
             if (qualityRightButton != null) qualityRightButton.onClick.AddListener(() => CycleQuality(1));
         }
 
-        private void ShowPage(Page page)
+        public void ShowPage(Page page)
         {
             _page = page;
             if (languagePage != null) languagePage.SetActive(page == Page.Language);
             if (displayPage != null) displayPage.SetActive(page == Page.Display);
             if (qualityPage != null) qualityPage.SetActive(page == Page.Quality);
+            if (audioPage != null) audioPage.SetActive(page == Page.Audio);
+            if (controlsPage != null) controlsPage.SetActive(page == Page.Controls);
+            if (accessibilityPage != null) accessibilityPage.SetActive(page == Page.Accessibility);
+            RefreshAll();
         }
 
         private void FocusFirstControl()
         {
             if (EventSystem.current == null) return;
-
-            // A fresh EventSystem in the editor or a scene without one should not break the menu.
             Button first = languageTabButton != null ? languageTabButton
                         : displayTabButton != null ? displayTabButton
                         : qualityTabButton != null ? qualityTabButton
@@ -185,7 +210,6 @@ namespace WhisperingWilds.UI
 
         private void RestoreCursor()
         {
-            // Leave the cursor state alone if gameplay already expects it to be locked.
             if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.StartsWith("00_")) return;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -194,18 +218,14 @@ namespace WhisperingWilds.UI
         // ---------- Language ----------
 
         public void SelectEnglish() => SetLanguage(Language.English);
-
         public void SelectTamil() => SetLanguage(Language.Tamil);
 
         private void SetLanguage(Language language)
         {
-            if (LocalizationManager.Instance == null)
+            if (LocalizationManager.Instance != null)
             {
-                Debug.LogWarning("<color=#FFCC00><b>[SettingsMenuUI]</b></color> No LocalizationManager in the scene; language unchanged.");
-                return;
+                LocalizationManager.Instance.SetLanguage(language);
             }
-
-            LocalizationManager.Instance.SetLanguage(language);
             RefreshAll();
         }
 
@@ -215,9 +235,9 @@ namespace WhisperingWilds.UI
         {
             DisplaySettingsManager mgr = DisplaySettingsManager.Instance;
             if (mgr == null) return;
-
             int next = Mathf.Clamp((int)mgr.UiScale + direction, 0, 2);
             mgr.SetUiScale((UiScaleLevel)next);
+            RefreshAll();
         }
 
         private void ToggleFullscreen()
@@ -225,6 +245,7 @@ namespace WhisperingWilds.UI
             DisplaySettingsManager mgr = DisplaySettingsManager.Instance;
             if (mgr == null) return;
             mgr.SetFullscreen(!mgr.IsFullscreen);
+            RefreshAll();
         }
 
         private void ToggleVSync()
@@ -232,19 +253,19 @@ namespace WhisperingWilds.UI
             DisplaySettingsManager mgr = DisplaySettingsManager.Instance;
             if (mgr == null) return;
             mgr.SetVSync(!mgr.VSyncEnabled);
+            RefreshAll();
         }
 
         private void CycleResolution(int direction)
         {
             DisplaySettingsManager mgr = DisplaySettingsManager.Instance;
             if (mgr == null) return;
-
             int index = mgr.SupportedModes.FindIndex(m =>
                 m.width == mgr.CurrentMode.width && m.height == mgr.CurrentMode.height);
             if (index < 0) index = 0;
             else index = Mathf.Clamp(index + direction, 0, mgr.SupportedModes.Count - 1);
-
             mgr.ApplyMode(mgr.SupportedModes[index]);
+            RefreshAll();
         }
 
         private static readonly int[] FrameLimitSteps = { 30, 60, 120, 144, 240, -1 };
@@ -253,20 +274,15 @@ namespace WhisperingWilds.UI
         {
             DisplaySettingsManager mgr = DisplaySettingsManager.Instance;
             if (mgr == null) return;
-
             int index = Array.IndexOf(FrameLimitSteps, mgr.FrameLimit);
             if (index < 0) index = 1;
             else index = (index + direction + FrameLimitSteps.Length) % FrameLimitSteps.Length;
-
             mgr.SetFrameLimit(FrameLimitSteps[index]);
+            RefreshAll();
         }
 
         // ---------- Quality ----------
 
-        /// <summary>
-        /// The tiers the menu cycles through, cheapest first. <c>QualityTier.Custom</c> is not
-        /// user-selectable, so it is excluded.
-        /// </summary>
         private static readonly QualityTier[] SelectableTiers =
         {
             QualityTier.VeryLow,
@@ -280,18 +296,201 @@ namespace WhisperingWilds.UI
         {
             GraphicsPerformanceManager mgr = GraphicsPerformanceManager.Instance;
             if (mgr == null) return;
-
-            int current = System.Array.IndexOf(SelectableTiers, mgr.CurrentTier);
+            int current = Array.IndexOf(SelectableTiers, mgr.CurrentTier);
             if (current < 0) current = 3; // High
-
             int next = (current + direction + SelectableTiers.Length) % SelectableTiers.Length;
             mgr.ApplyProfile(SelectableTiers[next]);
             RefreshAll();
         }
 
+        // ---------- Audio Operations ----------
+
+        public void AdjustMasterVolume(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.masterVolume = Mathf.Clamp01(s.masterVolume + delta);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void AdjustMusicVolume(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.musicVolume = Mathf.Clamp01(s.musicVolume + delta);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void AdjustSfxVolume(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.sfxVolume = Mathf.Clamp01(s.sfxVolume + delta);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void AdjustAmbienceVolume(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.ambienceVolume = Mathf.Clamp01(s.ambienceVolume + delta);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void AdjustDialogueVolume(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.dialogueVolume = Mathf.Clamp01(s.dialogueVolume + delta);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void AdjustUiVolume(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.uiVolume = Mathf.Clamp01(s.uiVolume + delta);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        // ---------- Controls Operations ----------
+
+        public void AdjustMouseSensitivity(float delta)
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.mouseSensitivity = Mathf.Clamp(s.mouseSensitivity + delta, 0.2f, 5.0f);
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleInvertY()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.invertY = !s.invertY;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleInvertX()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.invertX = !s.invertX;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleSprintMode()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.sprintToggle = !s.sprintToggle;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleCrouchMode()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.crouchToggle = !s.crouchToggle;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ResetControlsToDefault()
+        {
+            if (InputBindingManager.Instance != null)
+            {
+                InputBindingManager.Instance.ResetToDefaults();
+            }
+            var s = SettingsMenuController.Instance;
+            if (s != null)
+            {
+                s.mouseSensitivity = 1.0f;
+                s.mouseSensitivityY = 1.0f;
+                s.invertY = false;
+                s.invertX = false;
+                s.sprintToggle = false;
+                s.crouchToggle = false;
+                s.SaveSettings();
+            }
+            RefreshAll();
+        }
+
+        // ---------- Accessibility Operations ----------
+
+        public void ToggleSubtitles()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.subtitlesEnabled = !s.subtitlesEnabled;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleSubtitleBg()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.subtitleBackground = !s.subtitleBackground;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void CycleSubtitleSize()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.subtitleSize = s.subtitleSize switch
+            {
+                18 => 24,
+                24 => 32,
+                _ => 18
+            };
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleScreenShake()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.screenShakeEnabled = !s.screenShakeEnabled;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleMotionBlur()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.motionBlurEnabled = !s.motionBlurEnabled;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void CycleColorblindMode()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            int next = ((int)s.colorblindMode + 1) % 4;
+            s.colorblindMode = (ColorblindMode)next;
+            s.SaveSettings();
+            RefreshAll();
+        }
+
         // ---------- Refresh ----------
 
-        private void RefreshAll()
+        public void RefreshAll()
         {
             SetText(languageTitleText, "settings.language");
             SetText(englishOptionText, "settings.language.english");
@@ -305,10 +504,16 @@ namespace WhisperingWilds.UI
             SetText(unavailableText, "settings.unavailable");
             SetText(qualityTitleText, "settings.quality");
             SetText(qualityHintText, "settings.quality.high_hint");
+            SetText(audioTitleText, "settings.audio");
+            SetText(controlsTitleText, "settings.controls");
+            SetText(accessibilityTitleText, "settings.accessibility");
 
             RefreshLanguageSelection();
             RefreshDisplayValues();
             RefreshQualityValue();
+            RefreshAudioValues();
+            RefreshControlsValues();
+            RefreshAccessibilityValues();
         }
 
         private void RefreshLanguageSelection()
@@ -346,6 +551,51 @@ namespace WhisperingWilds.UI
             SetText(qualityValueText, QualityKey(tier));
         }
 
+        private void RefreshAudioValues()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+
+            if (masterVolValueText != null) masterVolValueText.text = $"{Mathf.RoundToInt(s.masterVolume * 100)}%";
+            if (musicVolValueText != null) musicVolValueText.text = $"{Mathf.RoundToInt(s.musicVolume * 100)}%";
+            if (sfxVolValueText != null) sfxVolValueText.text = $"{Mathf.RoundToInt(s.sfxVolume * 100)}%";
+            if (ambienceVolValueText != null) ambienceVolValueText.text = $"{Mathf.RoundToInt(s.ambienceVolume * 100)}%";
+            if (dialogueVolValueText != null) dialogueVolValueText.text = $"{Mathf.RoundToInt(s.dialogueVolume * 100)}%";
+            if (uiVolValueText != null) uiVolValueText.text = $"{Mathf.RoundToInt(s.uiVolume * 100)}%";
+        }
+
+        private void RefreshControlsValues()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+
+            if (mouseSensValueText != null) mouseSensValueText.text = $"{s.mouseSensitivity:0.0}x";
+            SetText(invertYValueText, s.invertY ? "settings.on" : "settings.off");
+            SetText(invertXValueText, s.invertX ? "settings.on" : "settings.off");
+            if (cameraSmoothingValueText != null) cameraSmoothingValueText.text = $"{s.cameraSmoothing:0}";
+            SetText(sprintModeValueText, s.sprintToggle ? "settings.controls.toggle" : "settings.controls.hold");
+            SetText(crouchModeValueText, s.crouchToggle ? "settings.controls.toggle" : "settings.controls.hold");
+        }
+
+        private void RefreshAccessibilityValues()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+
+            SetText(subtitlesValueText, s.subtitlesEnabled ? "settings.on" : "settings.off");
+            SetText(subtitleBgValueText, s.subtitleBackground ? "settings.on" : "settings.off");
+            if (subtitleSizeValueText != null) subtitleSizeValueText.text = s.subtitleSize.ToString();
+            SetText(screenShakeValueText, s.screenShakeEnabled ? "settings.on" : "settings.off");
+            SetText(motionBlurValueText, s.motionBlurEnabled ? "settings.on" : "settings.off");
+            SetText(colorblindValueText, s.colorblindMode switch
+            {
+                ColorblindMode.Protanopia => "settings.accessibility.colorblind.protanopia",
+                ColorblindMode.Deuteranopia => "settings.accessibility.colorblind.deuteranopia",
+                ColorblindMode.Tritanopia => "settings.accessibility.colorblind.tritanopia",
+                _ => "settings.accessibility.colorblind.none"
+            });
+        }
+
         private static string UiScaleKey(UiScaleLevel level) => level switch
         {
             UiScaleLevel.Small => "settings.ui_scale.small",
@@ -366,9 +616,6 @@ namespace WhisperingWilds.UI
         {
             if (label == null) return;
             LocalizationManager mgr = LocalizationManager.Instance;
-
-            // Never leak the internal "missing." identifier to the player, and never fall back
-            // to the raw key when the manager is absent.
             label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
         }
 

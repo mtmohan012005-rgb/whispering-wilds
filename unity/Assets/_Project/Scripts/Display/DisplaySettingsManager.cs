@@ -51,7 +51,7 @@ namespace WhisperingWilds.Display
         public static readonly DisplayMode DefaultMode = new DisplayMode { width = 1920, height = 1080, refreshRate = 60 };
 
         private static DisplaySettingsManager _instance;
-        public static DisplaySettingsManager Instance => _instance;
+        public static DisplaySettingsManager Instance => _instance != null ? _instance : (_instance = UnityEngine.Object.FindAnyObjectByType<DisplaySettingsManager>());
 
         private readonly List<DisplayMode> _modes = new List<DisplayMode>();
 
@@ -81,11 +81,17 @@ namespace WhisperingWilds.Display
         {
             if (_instance != null && _instance != this)
             {
-                Destroy(this);
+                if (Application.isPlaying) Destroy(this);
+                else DestroyImmediate(this);
                 return;
             }
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (Application.isPlaying) DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this) _instance = null;
         }
 
         private void Start()
@@ -257,9 +263,27 @@ namespace WhisperingWilds.Display
         /// <summary>
         /// VSync and a frame cap fight each other, so enabling a cap forces VSync off. This is the
         /// standard desktop behaviour and avoids a locked frame rate on slower hardware.
+        /// <c>-1</c> means "Unlimited": no target frame rate is applied and the rendering engine
+        /// stays uncapped, which is what the settings menu's Unlimited row selects.
         /// </summary>
         public void SetFrameLimit(int frameLimit)
         {
+            if (frameLimit <= 0)
+            {
+                // Unlimited: persist exactly -1 so the UI can show "Unlimited" instead of a
+                // clamped number, and never clamp it back onto the 30-240 range.
+                _frameLimit = -1;
+                _vsync = false;
+                Application.targetFrameRate = -1;
+                QualitySettings.vSyncCount = 0;
+
+                PlayerPrefs.SetInt(PlayerPrefsKeyFrameLimit, -1);
+                PlayerPrefs.SetInt(PlayerPrefsKeyVSync, 0);
+                PlayerPrefs.Save();
+                NotifyChanged();
+                return;
+            }
+
             _frameLimit = Mathf.Clamp(frameLimit, 30, 240);
             if (_frameLimit < 240) _vsync = false;
 

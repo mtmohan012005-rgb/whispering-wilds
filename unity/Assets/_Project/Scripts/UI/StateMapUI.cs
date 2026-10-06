@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 using WhisperingWilds.World;
+using WhisperingWilds.Player;
 
 namespace WhisperingWilds.UI
 {
@@ -35,15 +36,12 @@ namespace WhisperingWilds.UI
             Instance = this;
         }
 
-        private void Update()
+private void Update()
         {
-#if ENABLE_INPUT_SYSTEM
-            var kb = Keyboard.current;
-            if (kb != null && kb.mKey.wasPressedThisFrame)
+            if (InputBindingManager.Instance != null && InputBindingManager.Instance.WasActionTriggered(GameAction.Map))
             {
                 ToggleMap();
             }
-#endif
         }
 
         public void ToggleMap()

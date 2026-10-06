@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using WhisperingWilds.Player;
 using WhisperingWilds.UI;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.Core
 {
@@ -66,7 +67,16 @@ namespace WhisperingWilds.Core
 
             if (HUDManager.Instance != null)
             {
-                HUDManager.Instance.SetRegionName("George Town, Chennai", "சென்னை ஜார்ஜ் டவுன்");
+                // Sourced from the localization database, never hard-coded, so the HUD region
+                // label stays in the language the player selected (no bilingual mixing).
+                string regionEn = "George Town, Chennai";
+                string regionTa = "சென்னை ஜார்ஜ் டவுன்";
+                if (LocalizationDatabase.TryGetEntry("hud.region_chennai_georgetown", out var regionEntry))
+                {
+                    regionEn = regionEntry.english;
+                    regionTa = regionEntry.tamil;
+                }
+                HUDManager.Instance.SetRegionName(regionEn, regionTa);
             }
         }
 
@@ -201,7 +211,7 @@ namespace WhisperingWilds.Core
             var player = GameObject.FindWithTag("Player");
             if (SaveSystem.SaveGame(player) != null && HUDManager.Instance != null)
             {
-                HUDManager.Instance.ShowNotification("Game Saved (விளையாட்டு சேமிக்கப்பட்டது)");
+                HUDManager.Instance.ShowNotificationKey("notify.game_saved");
             }
         }
 
@@ -218,7 +228,7 @@ namespace WhisperingWilds.Core
             {
                 if (HUDManager.Instance != null)
                 {
-                    HUDManager.Instance.ShowNotification("No save to load (ஏற்ற விளையாட்டு இல்லை)");
+                    HUDManager.Instance.ShowNotificationKey("notify.save_none_to_load");
                 }
                 return;
             }

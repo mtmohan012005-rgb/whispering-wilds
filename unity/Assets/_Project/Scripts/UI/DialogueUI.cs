@@ -33,8 +33,11 @@ namespace WhisperingWilds.UI
         [SerializeField] private Transform choicesContainer;
         [SerializeField] private GameObject choiceButtonPrefab;
 
-        private NPCCharacter activeNPC;
+private NPCCharacter activeNPC;
         private DialogueNode activeNode;
+
+        private bool panelBuilt;
+        private Image subtitleBackgroundImage;
 
         /// <summary>NPCs currently subscribed, so re-entering the scene cannot double-subscribe.</summary>
         private readonly HashSet<NPCCharacter> subscribedNPCs = new HashSet<NPCCharacter>();
@@ -76,8 +79,9 @@ namespace WhisperingWilds.UI
             UnsubscribeFromAllNPCs();
         }
 
-        private void Start()
+private void Start()
         {
+            EnsurePanelBuilt();
             if (dialoguePanelRoot != null) dialoguePanelRoot.SetActive(false);
             SubscribeToSceneNPCs();
         }
@@ -126,12 +130,14 @@ namespace WhisperingWilds.UI
             subscribedNPCs.Clear();
         }
 
-        public void OpenDialogue(NPCCharacter npc, DialogueNode startNode)
+public void OpenDialogue(NPCCharacter npc, DialogueNode startNode)
         {
             if (npc == null || startNode == null) return;
 
             activeNPC = npc;
             activeNode = startNode;
+
+            EnsurePanelBuilt();
 
             if (GameManager.Instance != null)
             {
@@ -181,8 +187,15 @@ namespace WhisperingWilds.UI
             // durable NPC memory are both established from a real conversation.
             RecordConversationIfNeeded();
 
-            bool tamil = LocalizationManager.Instance != null
+bool tamil = LocalizationManager.Instance != null
                          && LocalizationManager.Instance.CurrentLanguage == Language.Tamil;
+
+            // Accessibility: subtitlesEnabled hides the subtitle text, subtitleSize scales it.
+            // Both read live from the settings controller so a change applies on the next node.
+            var settings = SettingsMenuController.Instance;
+            bool captions = settings == null || settings.subtitlesEnabled;
+            int subtitleSize = settings != null ? settings.subtitleSize : 24;
+            bool subtitleBackground = settings == null || settings.subtitleBackground;
 
             if (speakerNameText != null)
             {
@@ -194,14 +207,18 @@ namespace WhisperingWilds.UI
             {
                 LocalizedFontProvider.Apply(speechTextEn);
                 speechTextEn.text = node.speakerTextEn;
-                speechTextEn.gameObject.SetActive(!tamil);
+                speechTextEn.fontSize = subtitleSize;
+                speechTextEn.gameObject.SetActive(!tamil && captions);
             }
             if (speechTextTa != null)
             {
                 LocalizedFontProvider.Apply(speechTextTa);
                 speechTextTa.text = node.speakerTextTa;
-                speechTextTa.gameObject.SetActive(tamil);
+                speechTextTa.fontSize = subtitleSize;
+                speechTextTa.gameObject.SetActive(tamil && captions);
             }
+
+            if (subtitleBackgroundImage != null) subtitleBackgroundImage.enabled = subtitleBackground;
 
             if (choicesContainer != null)
             {
@@ -269,7 +286,7 @@ namespace WhisperingWilds.UI
             return !string.IsNullOrEmpty(choice.choiceTextEn) ? choice.choiceTextEn : choice.choiceTextTa;
         }
 
-        private void RecordConversationIfNeeded()
+private void RecordConversationIfNeeded()
         {
             if (wasConversationRecorded || activeNPC == null) return;
             if (string.IsNullOrEmpty(activeNPC.NpcId)) return;
@@ -280,6 +297,81 @@ namespace WhisperingWilds.UI
             // event and fires it once per interaction; emitting it here as well would advance a
             // TalkToNPC objective twice for a single conversation.
             NPCInteractionLog.Record(activeNPC.NpcId);
+        }
+
+        /// <summary>
+        /// Builds the dialogue panel at runtime when the serialized references were never wired
+        /// by the scene builder. Both scene builders add DialogueUI to the HUD canvas but leave
+        /// the fields null, so this guarantee means dialogue always renders in every region.
+        /// Subtitle size and background are applied from this panel each time a node renders.
+        /// </summary>
+        private void EnsurePanelBuilt()
+        {
+            if (panelBuilt) return;
+            panelBuilt = true;
+
+            RectTransform canvasRT = transform as RectTransform;
+            if (canvasRT == null)
+            {
+                // Standalone fallback: parent a fresh overlay canvas to this object.
+                var canvasObj = new GameObject("DialogueDialogCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+                canvasObj.transform.SetParent(transform, false);
+                canvasRT = canvasObj.GetComponent<RectTransform>();
+            }
+
+            var font = LocalizedFontProvider.Font;
+
+            var panel = new GameObject("DialoguePanel", typeof(RectTransform), typeof(Image));
+            panel.transform.SetParent(canvasRT, false);
+            subtitleBackgroundImage = panel.GetComponent<Image>();
+            subtitleBackgroundImage.color = new Color(0.02f, 0.03f, 0.06f, 0.64f);
+            var panelRect = panel.GetComponent<RectTransform>();
+            panelRect.anchorMin = new Vector2(0.5f, 0.06f);
+            panelRect.anchorMax = new Vector2(0.5f, 0.06f);
+            panelRect.pivot = new Vector2(0.5f, 0f);
+            panelRect.anchoredPosition = Vector2.zero;
+            panelRect.sizeDelta = new Vector2(1000f, 250f);
+
+            dialoguePanelRoot = panel;
+
+            speakerNameText = CreateChildText(panel.transform, "SpeakerName", font, 26, TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(940f, 34f));
+
+            speechTextEn = CreateChildText(panel.transform, "SpeechEnglish", font, 24, TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 8f), new Vector2(940f, 96f));
+
+            speechTextTa = CreateChildText(panel.transform, "SpeechTamil", font, 24, TextAnchor.MiddleCenter,
+                new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 8f), new Vector2(940f, 96f));
+
+            var container = new GameObject("ChoiceContainer", typeof(RectTransform));
+            container.transform.SetParent(panel.transform, false);
+            var containerRect = container.GetComponent<RectTransform>();
+            containerRect.anchorMin = new Vector2(0.5f, 0f);
+            containerRect.anchorMax = new Vector2(0.5f, 0f);
+            containerRect.pivot = new Vector2(0.5f, 0.5f);
+            containerRect.anchoredPosition = new Vector2(0f, 28f);
+            containerRect.sizeDelta = new Vector2(940f, 50f);
+            choicesContainer = container.transform;
+        }
+
+        private static Text CreateChildText(Transform parent, string name, UnityEngine.Font font, int size, TextAnchor alignment,
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 sizeDelta)
+        {
+            var obj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            obj.transform.SetParent(parent, false);
+            var text = obj.GetComponent<Text>();
+            text.font = font;
+            text.fontSize = size;
+            text.alignment = alignment;
+            text.color = Color.white;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Overflow;
+            var rect = obj.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = sizeDelta;
+            return text;
         }
 
         private void CreateChoiceButton(string text, Action onClick)

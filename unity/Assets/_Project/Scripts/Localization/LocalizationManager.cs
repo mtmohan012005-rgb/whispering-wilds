@@ -51,23 +51,23 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("menu.quit",            "Quit",                 "வெளியேறு"),
             new LocalizationEntry("menu.back",            "Back",                 "பின்செல்"),
             new LocalizationEntry("menu.apply",           "Apply",                "பயன்படுத்து"),
-            new LocalizationEntry("menu.title",           "THE WHISPERING WILDS", "காட்டு வழி"),
-            new LocalizationEntry("menu.subtitle",        "Tamil Nadu Nature Trail", "தமிழ்நாடு இயற்கை வழி"),
+            new LocalizationEntry("menu.title",           "THE WHISPERING WILDS", "காட்டு வழி • தடம்"),
+            new LocalizationEntry("menu.subtitle",        "A Living Exploration & Cultural Investigation of Tamil Nadu", "தமிழ்நாட்டின் வாழ்வியல் ஆய்வும் கலாச்சார கண்டறியும் பயணம்"),
 
             // ---- Settings ----------------------------------------------------
-            new LocalizationEntry("settings.language",        "Language / மொழி", "மொழி / Language"),
+            new LocalizationEntry("settings.language",        "Language",           "மொழி"),
             new LocalizationEntry("settings.language.english", "English",           "ஆங்கிலம்"),
-            new LocalizationEntry("settings.language.tamil",   "தமிழ்",             "தமிழ்"),
+            new LocalizationEntry("settings.language.tamil",   "Tamil",             "தமிழ்"),
             new LocalizationEntry("settings.ui_scale",         "UI Scale",           "இடைமுக அளவு"),
             new LocalizationEntry("settings.ui_scale.small",   "Small",              "சிறியது"),
             new LocalizationEntry("settings.ui_scale.medium",  "Medium",             "நடுத்தரம்"),
             new LocalizationEntry("settings.ui_scale.large",   "Large",              "பெரியது"),
             new LocalizationEntry("settings.display",          "Display",            "காட்சி"),
-            new LocalizationEntry("settings.resolution",       "Resolution",         "திரும்பம்"),
+            new LocalizationEntry("settings.resolution",       "Resolution",         "திரைத் தெளிவு"),
             new LocalizationEntry("settings.fullscreen",       "Fullscreen",         "முழுத் திரை"),
-            new LocalizationEntry("settings.vsync",            "VSync",              "VSync"),
+            new LocalizationEntry("settings.vsync",            "VSync",              "செங்குத்து ஒத்திசைவு"),
             new LocalizationEntry("settings.frame_limit",      "Frame Rate Limit",   "படவீதம் வரம்பு"),
-            new LocalizationEntry("settings.quality",          "Graphics Quality",   "வரைகுறு தரம்"),
+            new LocalizationEntry("settings.quality",          "Graphics Quality",   "வரைகலை தரம்"),
             new LocalizationEntry("settings.quality.very_low", "Very Low",           "மிகக் குறைந்தது"),
             new LocalizationEntry("settings.quality.low",      "Low",                "குறைவு"),
             new LocalizationEntry("settings.quality.medium",   "Medium",             "நடுத்தரம்"),
@@ -76,19 +76,75 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("settings.quality.high_hint",
                                                         "Higher tiers raise shadows, effects, and lighting quality.",
                                                         "அதிக தரம் நிலைகள் நிழல்கள், விளைவுகள் மற்றும் ஒளி தரத்தை அதிகரிக்கும்."),
-            new LocalizationEntry("settings.on",              "On",                 "இயக்கு"),
-            new LocalizationEntry("settings.off",             "Off",                "நிறுத்து"),
-            new LocalizationEntry("settings.unlimited",       "Unlimited",          "வரம்பற்றது"),
+            new LocalizationEntry("settings.fov",              "Field of View",      "காட்சிப் புலம்"),
+            new LocalizationEntry("settings.on",               "On",                 "இயக்கு"),
+            new LocalizationEntry("settings.off",              "Off",                "நிறுத்து"),
+            new LocalizationEntry("settings.unlimited",        "Unlimited",          "வரம்பற்றது"),
             new LocalizationEntry("hud.rule_notice",     "Rule: A strict maximum of 5 permanent character appearance changes is allowed across the entire journey.",
                                                         "விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும்."),
             new LocalizationEntry("settings.unavailable",      "Not available on this device", "இந்தச் சாதனத்தில் கிடைக்கவில்லை"),
             new LocalizationEntry("settings.disabled",         "Disabled",           "முடக்கப்பட்டது"),
+
+            // ---- Audio Settings (6 Channels) -----------------
+            new LocalizationEntry("settings.audio",            "Audio",              "ஒலி"),
+            new LocalizationEntry("settings.audio.master",     "Master Volume",      "முதன்மை ஒலி"),
+            new LocalizationEntry("settings.audio.music",      "Music",              "இசை"),
+            new LocalizationEntry("settings.audio.ambience",   "Ambience",           "சுற்றுப்புற ஒலி"),
+            new LocalizationEntry("settings.audio.sfx",        "Sound Effects",      "விளைவு ஒலிகள்"),
+            new LocalizationEntry("settings.audio.voice",      "Dialogue",           "உரையாடல் ஒலி"),
+            new LocalizationEntry("settings.audio.ui",         "UI Sounds",          "இடைமுக ஒலி"),
+
+            // ---- Controls & Camera ---------------------------
+            new LocalizationEntry("settings.controls",         "Controls",           "கட்டுப்பாடுகள்"),
+            new LocalizationEntry("settings.controls.sensitivity", "Mouse Sensitivity", "சுட்டி உணர்திறன்"),
+            new LocalizationEntry("settings.controls.sensitivity_y", "Vertical Sensitivity", "செங்குத்து உணர்திறன்"),
+            new LocalizationEntry("settings.controls.invert_y", "Invert Y-Axis",     "செங்குத்து அச்சு தலைகீழ்"),
+            new LocalizationEntry("settings.controls.invert_x", "Invert X-Axis",     "கிடைமட்ட அச்சு தலைகீழ்"),
+            new LocalizationEntry("settings.controls.camera_smoothing", "Camera Smoothing", "கேமரா மென்மைப்படுத்தல்"),
+            new LocalizationEntry("settings.controls.sprint_mode", "Sprint Mode",    "விரைவோட்ட முறை"),
+            new LocalizationEntry("settings.controls.crouch_mode", "Crouch Mode",    "குனிதல் முறை"),
+            new LocalizationEntry("settings.controls.hold",    "Hold",               "பிடி"),
+            new LocalizationEntry("settings.controls.toggle",  "Toggle",             "மாற்று"),
+            new LocalizationEntry("settings.controls.reset_defaults", "Reset to Default", "இயல்புநிலைக்கு மீட்டமை"),
+
+            // ---- Accessibility -------------------------------
+            new LocalizationEntry("settings.accessibility",    "Accessibility",      "அணுகல்தன்மை"),
+            new LocalizationEntry("settings.accessibility.subtitles", "Subtitles",   "வசனங்கள்"),
+            new LocalizationEntry("settings.accessibility.subtitle_bg", "Subtitle Background", "வசன பின்னணி"),
+            new LocalizationEntry("settings.accessibility.subtitle_size", "Subtitle Size", "வசன அளவு"),
+            new LocalizationEntry("settings.accessibility.screen_shake", "Screen Shake", "திரை அதிர்வு"),
+            new LocalizationEntry("settings.accessibility.motion_blur", "Motion Blur", "இயக்க மங்கலாக்கம்"),
+            new LocalizationEntry("settings.accessibility.colorblind", "Colorblind Filter", "வண்ணக்குருடு வடிகட்டி"),
+            new LocalizationEntry("settings.accessibility.colorblind.none", "Off",   "நிறுத்து"),
+            new LocalizationEntry("settings.accessibility.colorblind.protanopia", "Protanopia", "புரோட்டனோபியா"),
+            new LocalizationEntry("settings.accessibility.colorblind.deuteranopia", "Deuteranopia", "டியூட்டரனோபியா"),
+            new LocalizationEntry("settings.accessibility.colorblind.tritanopia", "Tritanopia", "ட்ரிட்டானோபியா"),
+
+            // ---- Action Bindings -----------------------------
+            new LocalizationEntry("action.move_forward",       "Move Forward",       "முன்னேறு"),
+            new LocalizationEntry("action.move_backward",      "Move Backward",      "பின்னேறு"),
+            new LocalizationEntry("action.move_left",          "Move Left",          "இடப்பக்கம்"),
+            new LocalizationEntry("action.move_right",         "Move Right",         "வலப்பக்கம்"),
+            new LocalizationEntry("action.sprint",             "Sprint",             "விரைவோட்டம்"),
+            new LocalizationEntry("action.jump",               "Jump",               "குதி"),
+            new LocalizationEntry("action.crouch",             "Crouch",             "குனி"),
+            new LocalizationEntry("action.interact",           "Interact",           "தொடர்புகொள்"),
+            new LocalizationEntry("action.primary",            "Primary Action",     "முதன்மை செயல்"),
+            new LocalizationEntry("action.secondary",          "Secondary Action",   "இரண்டாம் செயல்"),
+            new LocalizationEntry("action.reload",             "Reload",             "மீண்டும் ஏற்று"),
+            new LocalizationEntry("action.swap_tool",          "Swap Tool",          "கருவி மாற்று"),
+            new LocalizationEntry("action.quick_item",         "Quick Item",         "விரைவுப் பொருள்"),
+            new LocalizationEntry("action.pause",              "Pause Menu",         "இடைநிறுத்து"),
+            new LocalizationEntry("action.inventory",          "Inventory",          "பொருளடக்கம்"),
+            new LocalizationEntry("action.map",                "Map",                "வரைபடம்"),
+            new LocalizationEntry("action.journal",            "Journal",            "குறிப்பேடு"),
 
             // ---- HUD ---------------------------------------------------------
             new LocalizationEntry("hud.clock",               "Time",                   "நேரம்"),
             new LocalizationEntry("hud.currency",            "Coins",                  "காசுகள்"),
             new LocalizationEntry("hud.currency_value",      "Coins: {0}",             "காசுகள்: {0}"),
             new LocalizationEntry("hud.region",              "Region",                 "பகுதி"),
+            new LocalizationEntry("hud.region_chennai_georgetown", "George Town, Chennai", "சென்னை ஜார்ஜ் டவுன்"),
             new LocalizationEntry("hud.appearance_changes",  "Appearance Changes",     "தோற்ற மாற்றங்கள்"),
             new LocalizationEntry("hud.appearance_value",     "Appearance Changes: {0}/{1}", "தோற்ற மாற்றங்கள்: {0}/{1}"),
             new LocalizationEntry("hud.press_to_interact",   "Press {0}",              "{0} அழுத்தவும்"),
@@ -139,15 +195,34 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("notify.game_loaded",   "Game Loaded",   "விளையாட்டு ஏற்றப்பட்டது"),
             new LocalizationEntry("notify.region_entered","Entered {0}",   "{0} பகுதியில் நுழைந்தீர்கள்"),
             new LocalizationEntry("notify.item_added",    "Acquired {0}",  "{0} பெறப்பட்டது"),
+            new LocalizationEntry("notify.save_recovered_backup", "Save recovered from backup", "சேமிப்பு காப்புப் பிரதியிலிருந்து மீட்டெடுக்கப்பட்டது"),
+            new LocalizationEntry("notify.save_corrupt",  "Save file is unreadable", "சேமிப்புக் கோப்பு வாசிக்க முடியவில்லை"),
+            new LocalizationEntry("notify.save_none_continue", "No save to continue", "தொடர வேண்டிய சேமிப்பு இல்லை"),
+            new LocalizationEntry("notify.save_none_to_load",   "No save to load",     "ஏற்ற விளையாட்டு இல்லை"),
 
             // ---- Gameplay ----------------------------------------------------
             new LocalizationEntry("dialogue.continue",    "Continue",      "தொடர"),
             new LocalizationEntry("dialogue.talk",        "Talk",          "பேசு"),
+            new LocalizationEntry("vegetation.stage",     "{0} ({1})",     "{0} ({1})"),
             new LocalizationEntry("investigation.clue",   "Clue",          "குறிப்பு"),
             new LocalizationEntry("quest.title",          "Quest",         "நோக்கம்"),
             new LocalizationEntry("inventory.items",      "Items",         "பொருட்கள்"),
             new LocalizationEntry("interaction.examine",  "Examine",       "ஆராய்கு"),
             new LocalizationEntry("interaction.harvest",  "Harvest",       "அறுவடு"),
+            new LocalizationEntry("interaction.pluck",     "Pluck",         "பறி"),
+            new LocalizationEntry("veg.stage.seed",        "Seed",          "விதை"),
+            new LocalizationEntry("veg.stage.sprout",      "Sprout",        "தளிர்"),
+            new LocalizationEntry("veg.stage.growing",     "Growing",       "வளரும்"),
+            new LocalizationEntry("veg.stage.young",       "Young",         "இளம் பயிர்"),
+            new LocalizationEntry("veg.stage.mature",      "Mature",        "முதிர்ந்தது"),
+            new LocalizationEntry("veg.stage.flowering",   "Flowering",     "பூக்கும்"),
+            new LocalizationEntry("veg.stage.fruiting",    "Fruiting",      "காய்க்கும்"),
+            new LocalizationEntry("veg.stage.harvestable", "Harvestable",   "அறுவடைக்குத் தயார்"),
+            new LocalizationEntry("veg.stage.regrowing",   "Regrowing",     "மீண்டும் வளரும்"),
+            new LocalizationEntry("veg.stage.dormant",     "Dormant",       "செயலற்றது"),
+            new LocalizationEntry("veg.stage.developing_fruit", "Developing Fruit", "காய்கள் வளர்கின்றன"),
+            new LocalizationEntry("veg.stage.ripe",        "Ripe",          "பழுத்தது"),
+            new LocalizationEntry("veg.stage.harvested",   "Harvested",     "அறுவடை செய்யப்பட்டது"),
             new LocalizationEntry("interaction.water",    "Water",         "நீர்"),
             new LocalizationEntry("interaction.investigate","Investigate",   "ஆராய்கு"),
             new LocalizationEntry("interaction.collect",   "Collect",        "சேகரி"),
@@ -309,6 +384,21 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
         /// audit the whole database rather than only the keys it happens to know about.
         /// </summary>
         public static IReadOnlyList<LocalizationEntry> AllEntries => Entries;
+
+        public static LocalizationDatabase Instance { get; } = new LocalizationDatabase();
+
+        public string Get(string key, string language) => GetEntryString(key, language);
+
+        public static string GetEntryString(string key, string language)
+        {
+            if (TryGetEntry(key, out var entry))
+            {
+                if (string.Equals(language, "Tamil", System.StringComparison.OrdinalIgnoreCase))
+                    return entry.tamil;
+                return entry.english;
+            }
+            return string.Empty;
+        }
 
         /// <summary>Reads a single entry. Used by content-validation tooling and tests.</summary>
         public static bool TryGetEntryForTests(string key, out LocalizationEntry entry) => TryGetEntry(key, out entry);

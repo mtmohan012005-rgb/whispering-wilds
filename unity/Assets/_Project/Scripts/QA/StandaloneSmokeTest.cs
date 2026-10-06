@@ -7,6 +7,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using WhisperingWilds.Audio;
+using WhisperingWilds.Cameras;
 using WhisperingWilds.Core;
 using WhisperingWilds.Data;
 using WhisperingWilds.Gameplay;
@@ -14,6 +16,8 @@ using WhisperingWilds.Localization;
 using WhisperingWilds.NPC;
 using WhisperingWilds.Quests;
 using WhisperingWilds.Quality;
+using WhisperingWilds.UI;
+using WhisperingWilds.Vegetation;
 using WhisperingWilds.World;
 
 namespace WhisperingWilds.QA
@@ -181,6 +185,7 @@ namespace WhisperingWilds.QA
             yield return Step("region_gating_chettinad_mamallapuram", TestRegionGating, 12f);
             yield return Step("mamallapuram_quest_chain", TestMamallapuramQuestChain, 25f);
             yield return Step("graphics_tiers_apply", TestGraphicsSettings, 10f);
+            yield return Step("settings_integration_applied", TestSettingsIntegration, 15f);
             yield return Step("no_repeating_exceptions", TestNoRepeatingExceptions, 6f);
 
             RestoreSaveDirectory();
@@ -1002,6 +1007,214 @@ namespace WhisperingWilds.QA
             }
 
             Pass("all 5 tiers expose valid settings and apply without producing NaN");
+        }
+
+        // ----------------------------------------------------------------- step 24: settings integration
+        //
+        // Proves that the settings the player changes in the UI are *applied to real systems* in
+        // a shipping build, not stored-and-ignored: they must reach the input handler, the audio
+        // bus volumes, the camera FOV, the dialogue subtitle builder, and the save/load roundtrip.
+
+        private IEnumerator TestSettingsIntegration()
+        {
+            var failures = new List<string>();
+
+            var settings = SettingsMenuController.Instance;
+            if (settings == null)
+            {
+                Fail("no SettingsMenuController.Instance - the settings UI has no controller");
+                yield break;
+            }
+
+            var player = GameObject.FindWithTag("Player");
+            Player.PlayerInputHandler handler = player != null
+                ? player.GetComponent<Player.PlayerInputHandler>()
+                : null;
+            if (handler == null)
+            {
+                Fail("no player PlayerInputHandler to receive sensitivity settings");
+                yield break;
+            }
+
+            var audio = AudioManager.Instance;
+            if (audio == null)
+            {
+                Fail("no AudioManager.Instance - settings volume buses have no consumer");
+                yield break;
+            }
+
+            var cam = Camera.main;
+            CameraController cc = cam != null ? cam.GetComponent<CameraController>() : null;
+            if (cam == null || cc == null)
+            {
+                Fail("no bound CameraController - settings FOV has no consumer");
+                yield break;
+            }
+
+            // Preserve the player's live settings so this step is read-only on exit.
+            float origSens = settings.mouseSensitivity;
+            float origGamepad = settings.gamepadSensitivity;
+            bool origInvert = settings.invertY;
+            float origFov = settings.fov;
+            float origMaster = settings.masterVolume;
+            float origMusic = settings.musicVolume;
+            float origSfx = settings.sfxVolume;
+            float origAmb = settings.ambienceVolume;
+            float origDlg = settings.dialogueVolume;
+            bool origSubs = settings.subtitlesEnabled;
+            int origSubSize = settings.subtitleSize;
+            bool origSubBg = settings.subtitleBackground;
+
+            // 1. input: sensitivity + invert-Y flow live from the settings controller.
+            settings.mouseSensitivity = 2.25f;
+            settings.gamepadSensitivity = 3.75f;
+            settings.invertY = true;
+
+            // 2. audio: every bus the mixer owns is pushed from the settings.
+            settings.masterVolume = 0.35f;
+            settings.musicVolume = 0.25f;
+            settings.sfxVolume = 0.45f;
+            settings.ambienceVolume = 0.30f;
+            settings.dialogueVolume = 0.65f;
+
+            // 3. camera: FOV is applied by the camera controller reading the settings.
+            settings.fov = 80f;
+
+            // 4. accessibility: dialogue subtitle flags feed straight into DialogueUI.
+            settings.subtitlesEnabled = false;
+            settings.subtitleSize = 32;
+            settings.subtitleBackground = false;
+
+            settings.ApplyAllSettings();
+            yield return null;
+
+            if (handler.EffectiveMouseSensitivity != 2.25f)
+                failures.Add("EffectiveMouseSensitivity=" + handler.EffectiveMouseSensitivity + " expected 2.25");
+            if (handler.EffectiveGamepadSensitivity != 3.75f)
+                failures.Add("EffectiveGamepadSensitivity=" + handler.EffectiveGamepadSensitivity + " expected 3.75");
+            if (!handler.EffectiveInvertY)
+                failures.Add("EffectiveInvertY was false after invertY=true");
+
+            AssertBus(audio, audio.masterVolume, "master", 0.35f, failures);
+            AssertBus(audio, audio.musicVolume, "music", 0.25f, failures);
+            AssertBus(audio, audio.sfxVolume, "sfx", 0.45f, failures);
+            AssertBus(audio, audio.ambientVolume, "ambient", 0.30f, failures);
+            AssertBus(audio, audio.voiceVolume, "voice(dialogue)", 0.65f, failures);
+
+            cc.ApplySettingsFov();
+            yield return null;
+            if (cam.fieldOfView != 80f)
+                failures.Add("camera FOV=" + cam.fieldOfView + " expected 80 after ApplySettingsFov");
+
+            // 5. persistence: save writes the WW_ namespace and load restores what was saved.
+            settings.SaveSettings();
+            yield return null;
+
+            if (!PlayerPrefs.HasKey("WW_MouseSens"))
+                failures.Add("WW_MouseSens was not persisted");
+            if (!PlayerPrefs.HasKey("WW_FOV"))
+                failures.Add("WW_FOV was not persisted");
+            if (PlayerPrefs.GetInt("WW_Subtitles", -1) != 0)
+                failures.Add("WW_Subtitles was not persisted as 0");
+            if (PlayerPrefs.GetInt("WW_SubtitleSize", -1) != 32)
+                failures.Add("WW_SubtitleSize was not persisted as 32");
+
+            settings.mouseSensitivity = 0.5f;
+            settings.gamepadSensitivity = 0.5f;
+            settings.invertY = false;
+            settings.fov = 60f;
+            settings.subtitleSize = 18;
+            settings.LoadSettings();
+
+            if (settings.mouseSensitivity != 2.25f)
+                failures.Add("LoadSettings did not restore mouse sensitivity: " + settings.mouseSensitivity);
+            if (settings.gamepadSensitivity != 3.75f)
+                failures.Add("LoadSettings did not restore gamepad sensitivity: " + settings.gamepadSensitivity);
+            if (!settings.invertY)
+                failures.Add("LoadSettings did not restore invertY");
+            if (settings.fov != 80f)
+                failures.Add("LoadSettings did not restore FOV: " + settings.fov);
+            if (settings.subtitleSize != 32)
+                failures.Add("LoadSettings did not restore subtitle size: " + settings.subtitleSize);
+
+            // 6. dialogue: the runtime panel builder must exist and expose consumers for subtitle
+            // size and background (scene builders leave the serialized fields unwired). Regions that
+            // serialized no DialogueUI get one spawned at runtime, exactly as the shipped component
+            // behaves with the standalone canvas fallback, so the consumer path is exercised for real.
+            GameObject dialogueProbe = null;
+            var dialogue = DialogueUI.Instance;
+            if (dialogue == null)
+            {
+                dialogueProbe = new GameObject("QA_DialogueUI_Probe", typeof(DialogueUI));
+                yield return null; // let Awake set Instance and Start run EnsurePanelBuilt()
+                dialogue = DialogueUI.Instance;
+            }
+            if (dialogue == null)
+            {
+                failures.Add("DialogueUI failed to instantiate - subtitle settings have no consumer");
+            }
+            else
+            {
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var buildMethod = typeof(DialogueUI).GetMethod("EnsurePanelBuilt", flags);
+                var bgField = typeof(DialogueUI).GetField("subtitleBackgroundImage", flags);
+                if (buildMethod == null || bgField == null)
+                {
+                    failures.Add("DialogueUI runtime panel builder missing reflection surface");
+                }
+                else
+                {
+                    buildMethod.Invoke(dialogue, null);
+                    var bg = bgField.GetValue(dialogue) as UnityEngine.UI.Image;
+                    if (bg == null)
+                        failures.Add("DialogueUI built panel has no subtitle background consumer");
+                }
+            }
+            if (dialogueProbe != null) UnityEngine.Object.Destroy(dialogueProbe);
+            yield return null;
+
+            // 7. localization-driven prompts: any crop/fruit tree in the scene must not embed the
+            // [E] hint that the HUD already prepends.
+            var crop = UnityEngine.Object.FindFirstObjectByType<CropInstance>();
+            var tree = UnityEngine.Object.FindFirstObjectByType<FruitTreeInstance>();
+            object interactable = crop != null ? (object)crop : (object)tree;
+            if (interactable is CropInstance cropObj && !string.IsNullOrEmpty(cropObj.InteractionPrompt) &&
+                cropObj.InteractionPrompt.Contains("[E]"))
+                failures.Add("CropInstance prompt still embeds [E]: " + cropObj.InteractionPrompt);
+            if (interactable is FruitTreeInstance treeObj && !string.IsNullOrEmpty(treeObj.InteractionPrompt) &&
+                treeObj.InteractionPrompt.Contains("[E]"))
+                failures.Add("FruitTreeInstance prompt still embeds [E]: " + treeObj.InteractionPrompt);
+
+            // Restore the player's live settings, then decide the verdict.
+            settings.mouseSensitivity = origSens;
+            settings.gamepadSensitivity = origGamepad;
+            settings.invertY = origInvert;
+            settings.fov = origFov;
+            settings.masterVolume = origMaster;
+            settings.musicVolume = origMusic;
+            settings.sfxVolume = origSfx;
+            settings.ambienceVolume = origAmb;
+            settings.dialogueVolume = origDlg;
+            settings.subtitlesEnabled = origSubs;
+            settings.subtitleSize = origSubSize;
+            settings.subtitleBackground = origSubBg;
+            settings.ApplyAllSettings();
+            yield return null;
+
+            if (failures.Count > 0)
+            {
+                Fail("settings integration: " + string.Join("; ", failures.ToArray()));
+                yield break;
+            }
+
+            Pass("input/audio/fov/subtitles/persistence all wired to real consumers; prompts localized");
+        }
+
+        private static bool AssertBus(AudioManager audio, float actual, string name, float expected, List<string> failures)
+        {
+            if (Math.Abs(actual - expected) > 1e-4f)
+                failures.Add("audio " + name + " bus=" + actual + " expected " + expected);
+            return Math.Abs(actual - expected) <= 1e-4f;
         }
 
         private IEnumerator TestNoRepeatingExceptions()

@@ -90,15 +90,50 @@ namespace WhisperingWilds.UI
             SetButtonLabel(codexButton, "menu.codex");
             SetButtonLabel(quitButton, "menu.quit");
 
-            ApplyLocalizedFontToChild("GameTitle");
-            ApplyLocalizedFontToChild("GameSubtitle");
+            LocalizationManager mgr = LocalizationManager.Instance;
+
+            // The title and subtitle are authored as localization rows so English mode shows
+            // only English and Tamil mode only Tamil, instead of the baked bilingual line.
+            SetLabel(LocalizedFontProvider.Font, "GameTitle", () => mgr != null ? mgr.GetForDisplay("menu.title") : "THE WHISPERING WILDS");
+            SetLabel(LocalizedFontProvider.Font, "GameSubtitle", () => mgr != null ? mgr.GetForDisplay("menu.subtitle") : string.Empty);
 
             if (ruleNoticeText != null)
             {
                 LocalizedFontProvider.Apply(ruleNoticeText);
-                LocalizationManager mgr = LocalizationManager.Instance;
                 if (mgr != null) ruleNoticeText.text = mgr.Get("hud.rule_notice");
             }
+        }
+
+        private static void SetLabel(UnityEngine.Font font, string objectName, Func<string> resolve)
+        {
+            Text label = null;
+            var root = Camera.main != null ? Camera.main.transform.root : null;
+            if (root != null)
+            {
+                var t = FindDeepChild(root, objectName);
+                if (t != null) label = t.GetComponent<Text>();
+            }
+            if (label == null)
+            {
+                var go = GameObject.Find(objectName);
+                if (go != null) label = go.GetComponent<Text>();
+            }
+            if (label == null) return;
+            LocalizedFontProvider.Apply(label);
+            label.text = resolve();
+            label.resizeTextForBestFit = false;
+        }
+
+        private static Transform FindDeepChild(Transform root, string name)
+        {
+            for (int i = 0; i < root.childCount; i++)
+            {
+                Transform child = root.GetChild(i);
+                if (child.name == name) return child;
+                Transform nested = FindDeepChild(child, name);
+                if (nested != null) return nested;
+            }
+            return null;
         }
 
         private void SetButtonLabel(Button button, string key)
@@ -112,18 +147,6 @@ namespace WhisperingWilds.UI
 
             // Never leak the internal "missing." identifier or the raw key to the player.
             label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
-        }
-
-        private void ApplyLocalizedFontToChild(string objectName)
-        {
-            Transform[] children = GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < children.Length; i++)
-            {
-                if (children[i].name != objectName) continue;
-                Text label = children[i].GetComponent<Text>();
-                if (label != null) LocalizedFontProvider.Apply(label);
-                return;
-            }
         }
 
         public void OnNewGameClicked()

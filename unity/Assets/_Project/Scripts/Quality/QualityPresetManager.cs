@@ -71,7 +71,7 @@ namespace WhisperingWilds.Quality
 
         private static readonly QualityPresetSettings VeryLowPreset = new QualityPresetSettings
         {
-            name = "Very Low (குறைந்தபட்சம்)",
+            name = "Very Low",
             renderScale = 0.70f,
             shadowDistance = 20f,
             shadowCascades = 1,
@@ -91,7 +91,7 @@ namespace WhisperingWilds.Quality
 
         private static readonly QualityPresetSettings LowPreset = new QualityPresetSettings
         {
-            name = "Low (குறைவு)",
+            name = "Low",
             renderScale = 0.80f,
             shadowDistance = 40f,
             shadowCascades = 2,
@@ -111,7 +111,7 @@ namespace WhisperingWilds.Quality
 
         private static readonly QualityPresetSettings MediumPreset = new QualityPresetSettings
         {
-            name = "Medium (நடுத்தரம்)",
+            name = "Medium",
             renderScale = 0.90f,
             shadowDistance = 75f,
             shadowCascades = 2,
@@ -131,7 +131,7 @@ namespace WhisperingWilds.Quality
 
         private static readonly QualityPresetSettings HighPreset = new QualityPresetSettings
         {
-            name = "High (உயர்ந்தது)",
+            name = "High",
             renderScale = 1.0f,
             shadowDistance = 150f,
             shadowCascades = 4,
@@ -151,7 +151,7 @@ namespace WhisperingWilds.Quality
 
         private static readonly QualityPresetSettings UltraPreset = new QualityPresetSettings
         {
-            name = "Ultra (அதிநவீனம்)",
+            name = "Ultra",
             renderScale = 1.0f,
             shadowDistance = 250f,
             shadowCascades = 4,

@@ -167,17 +167,17 @@ ChennaiOpeningContent.EnsureInitialized();
         {
             if (HUDManager.Instance == null) return;
 
-            switch (SaveSystem.LastLoadStatus)
+switch (SaveSystem.LastLoadStatus)
             {
                 case SaveOperationStatus.CorruptPrimaryRecoveredFromBackup:
-                    HUDManager.Instance.ShowNotification("Save recovered from backup (சேமிப்பு காப்புப் பிரதியிலிருந்து மீட்டெடுக்கப்பட்டது)");
+                    HUDManager.Instance.ShowNotificationKey("notify.save_recovered_backup");
                     break;
                 case SaveOperationStatus.CorruptSave:
-                    HUDManager.Instance.ShowNotification("Save file is unreadable (சேமிப்புக் கோப்பு வாசிக்க முடியவில்லை)");
+                    HUDManager.Instance.ShowNotificationKey("notify.save_corrupt");
                     break;
                 case SaveOperationStatus.NoSaveFound:
                 default:
-                    HUDManager.Instance.ShowNotification("No save to continue (தொடர வேண்டிய சேமிப்பு இல்லை)");
+                    HUDManager.Instance.ShowNotificationKey("notify.save_none_continue");
                     break;
             }
         }

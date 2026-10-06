@@ -4,6 +4,7 @@ using WhisperingWilds.Player;
 using WhisperingWilds.Inventory;
 using WhisperingWilds.Data;
 using WhisperingWilds.World;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.Vegetation
 {
@@ -137,11 +138,43 @@ namespace WhisperingWilds.Vegetation
         {
             get
             {
+                if (definition == null) return string.Empty;
+
                 if (currentStage == GrowthStage.Harvestable)
                 {
-                    return $"Harvest {definition.tamilName} [E]";
+                    return $"{Localized("interaction.harvest", "Harvest")} {LocalizedPlantName()}";
                 }
-                return $"{definition.tamilName} ({currentStage})";
+                return $"{LocalizedPlantName()} ({LocalizedStage(currentStage)})";
+            }
+        }
+
+        /// <summary>Plant name follows the active language; English mode shows the English name
+        /// only, Tamil mode the Tamil name only.</summary>
+        private string LocalizedPlantName()
+        {
+            var mgr = LocalizationManager.Instance;
+            bool tamil = mgr != null && mgr.CurrentLanguage == Language.Tamil;
+            return tamil ? definition.tamilName : definition.englishName;
+        }
+
+        private static string Localized(string key, string fallback)
+        {
+            var mgr = LocalizationManager.Instance;
+            return mgr != null ? mgr.Get(key) : fallback;
+        }
+
+        private static string LocalizedStage(GrowthStage stage)
+        {
+            switch (stage)
+            {
+                case GrowthStage.Seed: return Localized("veg.stage.seed", "Seed");
+                case GrowthStage.Sprout: return Localized("veg.stage.sprout", "Sprout");
+                case GrowthStage.Young: return Localized("veg.stage.young", "Young");
+                case GrowthStage.Mature: return Localized("veg.stage.mature", "Mature");
+                case GrowthStage.Flowering: return Localized("veg.stage.flowering", "Flowering");
+                case GrowthStage.Fruiting: return Localized("veg.stage.fruiting", "Fruiting");
+                case GrowthStage.Harvestable: return Localized("veg.stage.harvestable", "Harvestable");
+                default: return stage.ToString();
             }
         }
 

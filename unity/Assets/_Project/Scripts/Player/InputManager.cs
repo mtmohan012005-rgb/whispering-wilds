@@ -8,8 +8,8 @@ namespace WhisperingWilds.Player
 {
     /// <summary>
     /// Single authoritative Input Governor for keyboard, mouse, and gamepads.
-    /// Operates exclusively through Unity's New Input System, eliminating legacy
-    /// polling exceptions and providing unified state for player locomotion and UI.
+    /// Operates exclusively through Unity's New Input System and InputBindingManager,
+    /// providing unified state for player locomotion and UI.
     /// </summary>
     [DisallowMultipleComponent]
     public class InputManager : MonoBehaviour
@@ -20,6 +20,7 @@ namespace WhisperingWilds.Player
         [Range(0.1f, 5f)] public float mouseSensitivity = 1.0f;
         [Range(0.5f, 5f)] public float gamepadSensitivity = 2.0f;
         public bool invertY = false;
+        public bool invertX = false;
 
         // Authoritative Input Properties
         public Vector2 MoveInput { get; private set; }
@@ -32,18 +33,16 @@ namespace WhisperingWilds.Player
         public bool JournalTriggered { get; private set; }
         public bool PhotoModeTriggered { get; private set; }
 
-        private bool jumpConsumed = false;
-        private bool interactConsumed = false;
-        private bool mapConsumed = false;
-        private bool journalConsumed = false;
-        private bool photoConsumed = false;
+        private bool jumpConsumed = true;
+        private bool interactConsumed = true;
+        private bool mapConsumed = true;
+        private bool journalConsumed = true;
+        private bool photoConsumed = true;
 
         private void Awake()
         {
             if (Instance != null && Instance != this)
             {
-                // Destroy only the duplicate component. Destroy(gameObject) here would take
-                // every sibling manager on the shared '--- MANAGERS ---' object with it.
                 Destroy(this);
                 return;
             }
@@ -63,24 +62,46 @@ namespace WhisperingWilds.Player
             float lookX = 0f;
             float lookY = 0f;
 
+            var bindings = InputBindingManager.Instance;
+
 #if ENABLE_INPUT_SYSTEM
-            var kb = Keyboard.current;
-            if (kb != null)
+            if (bindings != null)
             {
-                if (kb.wKey.isPressed || kb.upArrowKey.isPressed) moveZ += 1f;
-                if (kb.sKey.isPressed || kb.downArrowKey.isPressed) moveZ -= 1f;
-                if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) moveX -= 1f;
-                if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) moveX += 1f;
+                if (bindings.IsActionPressed(GameAction.MoveForward)) moveZ += 1f;
+                if (bindings.IsActionPressed(GameAction.MoveBackward)) moveZ -= 1f;
+                if (bindings.IsActionPressed(GameAction.MoveLeft)) moveX -= 1f;
+                if (bindings.IsActionPressed(GameAction.MoveRight)) moveX += 1f;
 
-                IsSprinting = kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed;
-                IsCrouching = kb.cKey.isPressed;
+                IsSprinting = bindings.IsActionPressed(GameAction.Sprint);
+                IsCrouching = bindings.IsActionPressed(GameAction.Crouch);
 
-                if (kb.spaceKey.wasPressedThisFrame) jumpConsumed = false;
-                if (kb.eKey.wasPressedThisFrame) interactConsumed = false;
-                if (kb.mKey.wasPressedThisFrame) mapConsumed = false;
-                if (kb.jKey.wasPressedThisFrame || kb.tabKey.wasPressedThisFrame) journalConsumed = false;
-                if (kb.pKey.wasPressedThisFrame) photoConsumed = false;
+                if (bindings.WasActionTriggered(GameAction.Jump)) jumpConsumed = false;
+                if (bindings.WasActionTriggered(GameAction.Interact)) interactConsumed = false;
+                if (bindings.WasActionTriggered(GameAction.Map)) mapConsumed = false;
+                if (bindings.WasActionTriggered(GameAction.Journal)) journalConsumed = false;
             }
+            else
+            {
+                var kb = Keyboard.current;
+                if (kb != null)
+                {
+                    if (kb.wKey.isPressed || kb.upArrowKey.isPressed) moveZ += 1f;
+                    if (kb.sKey.isPressed || kb.downArrowKey.isPressed) moveZ -= 1f;
+                    if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) moveX -= 1f;
+                    if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) moveX += 1f;
+
+                    IsSprinting = kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed;
+                    IsCrouching = kb.cKey.isPressed;
+
+                    if (kb.spaceKey.wasPressedThisFrame) jumpConsumed = false;
+                    if (kb.eKey.wasPressedThisFrame) interactConsumed = false;
+                    if (kb.mKey.wasPressedThisFrame) mapConsumed = false;
+                    if (kb.jKey.wasPressedThisFrame || kb.tabKey.wasPressedThisFrame) journalConsumed = false;
+                }
+            }
+
+            var keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.pKey.wasPressedThisFrame) photoConsumed = false;
 
             var gamepad = Gamepad.current;
             if (gamepad != null)
@@ -105,7 +126,7 @@ namespace WhisperingWilds.Player
             if (mouse != null && Cursor.lockState == CursorLockMode.Locked)
             {
                 Vector2 delta = mouse.delta.ReadValue();
-                lookX = delta.x * mouseSensitivity * 0.1f;
+                lookX = delta.x * mouseSensitivity * 0.1f * (invertX ? -1f : 1f);
                 lookY = delta.y * mouseSensitivity * 0.1f * (invertY ? 1f : -1f);
             }
 
@@ -114,7 +135,7 @@ namespace WhisperingWilds.Player
                 Vector2 rStick = gamepad.rightStick.ReadValue();
                 if (rStick.sqrMagnitude > 0.05f)
                 {
-                    lookX += rStick.x * gamepadSensitivity * Time.deltaTime * 60f;
+                    lookX += rStick.x * gamepadSensitivity * Time.deltaTime * 60f * (invertX ? -1f : 1f);
                     lookY += rStick.y * gamepadSensitivity * Time.deltaTime * 60f * (invertY ? 1f : -1f);
                 }
             }

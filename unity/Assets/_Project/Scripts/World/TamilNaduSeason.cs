@@ -30,12 +30,31 @@ namespace WhisperingWilds.World
         {
             switch (season)
             {
-                case TamilNaduSeason.Summer: return "கோடைக்காலம் (Summer / Agni Natchathiram)";
-                case TamilNaduSeason.SouthwestMonsoon: return "தென்மேற்குப் பருவமழை (SW Monsoon)";
-                case TamilNaduSeason.NortheastMonsoon: return "வடகிழக்குப் பருவமழை (NE Monsoon)";
-                case TamilNaduSeason.Winter: return "குளிர்காலம் (Winter / Thai Season)";
+                case TamilNaduSeason.Summer: return "கோடைக்காலம்";
+                case TamilNaduSeason.SouthwestMonsoon: return "தென்மேற்குப் பருவமழை";
+                case TamilNaduSeason.NortheastMonsoon: return "வடகிழக்குப் பருவமழை";
+                case TamilNaduSeason.Winter: return "குளிர்காலம்";
                 default: return season.ToString();
             }
+        }
+
+        public static string GetEnglishName(this TamilNaduSeason season)
+        {
+            switch (season)
+            {
+                case TamilNaduSeason.Summer: return "Summer";
+                case TamilNaduSeason.SouthwestMonsoon: return "Southwest Monsoon";
+                case TamilNaduSeason.NortheastMonsoon: return "Northeast Monsoon";
+                case TamilNaduSeason.Winter: return "Winter";
+                default: return season.ToString();
+            }
+        }
+
+        public static string GetLocalizedName(this TamilNaduSeason season)
+        {
+            bool isTamil = WhisperingWilds.Localization.LocalizationManager.Instance != null &&
+                           WhisperingWilds.Localization.LocalizationManager.Instance.CurrentLanguage == WhisperingWilds.Localization.Language.Tamil;
+            return isTamil ? season.GetTamilName() : season.GetEnglishName();
         }
 
         public static string GetShortTamilName(this TamilNaduSeason season)

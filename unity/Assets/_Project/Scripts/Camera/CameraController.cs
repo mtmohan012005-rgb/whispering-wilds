@@ -3,12 +3,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 using WhisperingWilds.Player;
+using WhisperingWilds.UI;
 
 namespace WhisperingWilds.Cameras
 {
     /// <summary>
     /// Smooth third-person orbit camera with terrain/wall collision avoidance,
-    /// shoulder framing, and gamepad/mouse sensitivity controls.
+    /// shoulder framing, FOV syncing, camera smoothing, and screen shake support.
     /// </summary>
     [DisallowMultipleComponent]
     public class CameraController : MonoBehaviour
@@ -30,11 +31,27 @@ namespace WhisperingWilds.Cameras
         [SerializeField] private float rotationDamping = 15f;
         [SerializeField] private float zoomDamping = 10f;
 
+        [Header("Shake & Effects")]
+        [SerializeField] private bool screenShakeEnabled = true;
+
         private float currentYaw;
         private float currentPitch = 15f;
         private float currentDistance;
         private float targetDistance;
         private PlayerInputHandler input;
+
+        private float shakeTimer = 0f;
+        private float shakeIntensity = 0f;
+        private Vector3 currentShakeOffset = Vector3.zero;
+
+        public bool ScreenShakeEnabled =>
+            SettingsMenuController.Instance != null ? SettingsMenuController.Instance.screenShakeEnabled : screenShakeEnabled;
+
+        public float RotationDamping
+        {
+            get => SettingsMenuController.Instance != null ? SettingsMenuController.Instance.cameraSmoothing : rotationDamping;
+            set => rotationDamping = value;
+        }
 
         public static CameraController EnsureActiveCameraBound(Transform playerTransform = null)
         {
@@ -58,6 +75,30 @@ namespace WhisperingWilds.Cameras
                 input = target.GetComponent<PlayerInputHandler>();
                 currentYaw = target.eulerAngles.y;
             }
+
+            ApplySettingsFov();
+        }
+
+        public void ApplySettingsFov()
+        {
+            var settings = SettingsMenuController.Instance;
+            if (settings == null) return;
+
+            var cam = GetComponent<Camera>();
+            if (cam != null) cam.fieldOfView = settings.fov;
+        }
+
+        public void TriggerShake(float intensity, float duration)
+        {
+            if (!ScreenShakeEnabled)
+            {
+                shakeTimer = 0f;
+                currentShakeOffset = Vector3.zero;
+                return;
+            }
+
+            shakeIntensity = intensity;
+            shakeTimer = duration;
         }
 
         private void Start()
@@ -74,6 +115,7 @@ namespace WhisperingWilds.Cameras
             {
                 input = target.GetComponent<PlayerInputHandler>();
                 currentYaw = target.eulerAngles.y;
+                ApplySettingsFov();
             }
 
             Cursor.lockState = CursorLockMode.Locked;
@@ -165,8 +207,19 @@ namespace WhisperingWilds.Cameras
 
             Vector3 finalPosition = focusPoint - (targetRotation * Vector3.forward * currentDistance);
 
-            transform.position = finalPosition;
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationDamping);
+            // Screen Shake calculation
+            if (shakeTimer > 0f && ScreenShakeEnabled)
+            {
+                shakeTimer -= Time.deltaTime;
+                currentShakeOffset = Random.insideUnitSphere * shakeIntensity;
+            }
+            else
+            {
+                currentShakeOffset = Vector3.zero;
+            }
+
+            transform.position = finalPosition + currentShakeOffset;
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * RotationDamping);
         }
     }
 }

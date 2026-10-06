@@ -217,13 +217,18 @@ namespace WhisperingWilds.UI
             if (interactionPromptRoot != null) interactionPromptRoot.SetActive(false);
             if (notificationToastRoot != null) notificationToastRoot.SetActive(false);
 
-            ApplyFonts();
+ApplyFonts();
             BindPlayerEvents();
+
+            // Always render the localized counters, even when no player appearance/inventory
+            // manager triggered an update; this replaces the hard-coded baked label with the
+            // active-language text and the correct remaining count.
+            RefreshCurrencyDisplay();
+            RefreshAppearanceDisplay();
 
             if (InventoryManager.Instance != null)
             {
                 InventoryManager.Instance.OnCurrencyChanged += UpdateCurrencyDisplay;
-                RefreshCurrencyDisplay();
             }
 
             // Pick up a region name set before this HUD finished starting.
@@ -281,7 +286,10 @@ namespace WhisperingWilds.UI
             if (interactable != null)
             {
                 interactionPromptRoot.SetActive(true);
-                interactionPromptText.text = T("hud.press_to_interact", "Press {0}", "[E] ")
+                string bind = InputBindingManager.Instance != null
+                    ? $"[{InputBindingManager.Instance.GetBindingDisplayName(GameAction.Interact)}] "
+                    : "[E] ";
+                interactionPromptText.text = T("hud.press_to_interact", "Press {0}", bind)
                                          + interactable.InteractionPrompt;
             }
             else
@@ -320,8 +328,8 @@ namespace WhisperingWilds.UI
                          && LocalizationManager.Instance.CurrentLanguage == Language.Tamil;
 
             regionText.text = tamil
-                ? $"{lastRegionTa} • {lastRegionEn}"
-                : $"{lastRegionEn} • {lastRegionTa}";
+                ? (!string.IsNullOrEmpty(lastRegionTa) ? lastRegionTa : lastRegionEn)
+                : lastRegionEn;
         }
 
         private void UpdateCurrencyDisplay(int amount)
