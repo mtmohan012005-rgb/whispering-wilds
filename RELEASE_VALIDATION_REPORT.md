@@ -10,7 +10,7 @@
 | Build time | 260.6 s |
 | Build UTC | 2026-10-06T09:35:52Z |
 | exe SHA256 | `96B492CB271111251FE42B8646E65370A1B7B566773A1E35B34C3F2D1AE70873` |
-| Packaged RC | `TheWhisperingWilds_Windows_x64_RC/` (byte-identical exe, verified) |
+| Packaged RC | `TheWhisperingWilds_Windows_x64_RC/` (byte-identical exe, verified; 181.4 MB after removing the 0.7 MB `..._BackUpThisFolder_ButDontShipItWithYourGame` backup folder — no `.pdb` files exist in this build) |
 
 ## Smoke test result (standalone player, Windows)
 `RESULT: passed=19 failed=0 skip=0 errors=2`
