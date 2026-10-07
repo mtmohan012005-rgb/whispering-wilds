@@ -76,5 +76,34 @@ unity/Assets/Resources/PerformanceTestRunSettings.json
 unity/Assets/Resources/PerformanceTestRunSettings.json.meta
 # Unity Test Framework batch-mode runner outputs (generated)
 unity/test-*.xml
+unity/TestResults/
+
+# ---------------------------------------------------------------------------
+# Unity standalone player export parked at the repo root (export path pointed at
+# the workspace root instead of a *_RC/ folder). Compiled binaries -- the same
+# "never commit" rationale as the *_RC/ folder variants above.
+# ---------------------------------------------------------------------------
+/The Whispering Wilds.exe
+/The Whispering Wilds_Data/
+/The Whispering Wilds_BackUpThisFolder_ButDontShipItWithYourGame/
+/MonoBleedingEdge/
+/UnityCrashHandler64.exe
+/UnityPlayer.dll
+/D3D12/
+/DirectML.dll
+/dstorage.dll
+/dstoragecore.dll
+
+# Unity was once opened with the repo root as the project folder (the real
+# Unity project lives in unity/). These are regenerable metadata, not source.
+/Library/
+/Packages/
+/ProjectSettings/
+/Temp/
+/UserSettings/
+
+# Unity-generated .meta imports for the web asset tree at the repo root. The
+# web assets themselves (.glb/.json) are tracked without Unity metadata.
+assets/**/*.meta
 
 .github/workflows/
