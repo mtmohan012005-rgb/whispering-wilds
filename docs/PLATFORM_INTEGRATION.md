@@ -1,7 +1,8 @@
 # The Whispering Wilds - Storefront & Platform Integration Architecture
 
 ## Overview
-*The Whispering Wilds* (`Kaattu Vazhi / Thadam`) uses an adapter-based architecture for PC storefront integration. The game is never hardcoded or locked to a single storefront ecosystem (such as Steam, Epic Games Store, or GOG).
+
+_The Whispering Wilds_ (`Kaattu Vazhi / Thadam`) uses an adapter-based architecture for PC storefront integration. The game is never hardcoded or locked to a single storefront ecosystem (such as Steam, Epic Games Store, or GOG).
 
 ---
 
@@ -36,6 +37,7 @@ graph TD
 ```
 
 ### Core Architecture Principles
+
 1. **Single Authoritative Manager**: `PlatformIntegrationSystem` is the single point of entry connecting game systems to external platform services.
 2. **Providers as Adapters**:
    - `GenericPlatformProvider`: Standalone direct release, DRM-free, zero network/store requirement.

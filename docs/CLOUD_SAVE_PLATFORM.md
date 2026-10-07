@@ -1,6 +1,7 @@
 # The Whispering Wilds - Cloud Save Platform & Conflict Resolution
 
 ## Architecture & Priority Hierarchy
+
 The Whispering Wilds employs a **Local-First Authoritative Architecture**:
 
 ```
@@ -16,6 +17,7 @@ The Whispering Wilds employs a **Local-First Authoritative Architecture**:
 ```
 
 ### Key Principles
+
 1. **Local Save Never Sacrificed**: Network interruptions or storefront cloud outages never prevent or delay local gameplay saves.
 2. **Platform-Neutral Save Structure**:
    - Zero OS-specific file paths (`C:\...`, `/Users/...`) in save payloads.

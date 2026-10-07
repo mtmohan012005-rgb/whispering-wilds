@@ -1,4 +1,5 @@
 # Player Data Safety, Save Protection & Privacy Rules
+
 ## Project: The Whispering Wilds (`Kaattu Vazhi`)
 
 ---

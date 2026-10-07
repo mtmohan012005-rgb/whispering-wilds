@@ -1,6 +1,7 @@
 # The Whispering Wilds - Linux Support & Packaging
 
 ## Target Architecture & Distribution
+
 - **Target Distributions**: Ubuntu 22.04 LTS+, Debian 12+, Fedora 38+, Arch Linux, SteamOS 3.0+.
 - **Architectures**: `x86_64` (x64) and `aarch64` (arm64).
 - **Distribution Packages**:
@@ -10,6 +11,7 @@
 - **Save Location**: `$XDG_CONFIG_HOME/TheWhisperingWilds/saves` or `~/.config/TheWhisperingWilds/saves`.
 
 ## Key Linux Features
+
 1. **Display Server Support (X11 & Wayland)**:
    - Compatible with native X11 and Wayland sessions (via Ozone platform abstraction).
    - Tested under GNOME, KDE Plasma, and Cinnamon desktop environments.

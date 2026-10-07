@@ -18,17 +18,39 @@
     "npc_velu": 75,
     "npc_selvam": 80
   },
-  "questReferences": [
-    "quest_cutting_chai_route"
-  ],
+  "questReferences": ["quest_cutting_chai_route"],
   "schedule": [
     { "time": "05:00", "activity": "wake_and_bath", "location": "home" },
-    { "time": "05:30", "activity": "light_oil_lamp_and_stove", "location": "workplace" },
-    { "time": "06:00", "activity": "brew_morning_ginger_tea", "location": "workplace" },
-    { "time": "12:30", "activity": "lunch_curd_rice_rest", "location": "workplace" },
-    { "time": "14:30", "activity": "evening_tea_rush", "location": "workplace" },
-    { "time": "20:30", "activity": "clean_brass_samovar_close_stall", "location": "workplace" },
-    { "time": "21:30", "activity": "family_dinner_and_sleep", "location": "home" }
+    {
+      "time": "05:30",
+      "activity": "light_oil_lamp_and_stove",
+      "location": "workplace"
+    },
+    {
+      "time": "06:00",
+      "activity": "brew_morning_ginger_tea",
+      "location": "workplace"
+    },
+    {
+      "time": "12:30",
+      "activity": "lunch_curd_rice_rest",
+      "location": "workplace"
+    },
+    {
+      "time": "14:30",
+      "activity": "evening_tea_rush",
+      "location": "workplace"
+    },
+    {
+      "time": "20:30",
+      "activity": "clean_brass_samovar_close_stall",
+      "location": "workplace"
+    },
+    {
+      "time": "21:30",
+      "activity": "family_dinner_and_sleep",
+      "location": "home"
+    }
   ],
   "animationSet": {
     "idle": "anim_murugan_tea_filter_idle",

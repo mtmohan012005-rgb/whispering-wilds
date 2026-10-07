@@ -1,7 +1,9 @@
 # The Whispering Wilds - PC Storefront Release & Distribution Guide
 
 ## Storefront Packaging & Release Channels
+
 The Whispering Wilds supports dual-channel distribution:
+
 1. **Direct Distribution**: Standalone NSIS Windows Installer, macOS DMG, and Linux AppImage with zero store dependencies via `GenericPlatformProvider`.
 2. **Storefront Distribution**: Steam, Epic Games Store, and GOG release packages via `StorePlatformProvider`.
 

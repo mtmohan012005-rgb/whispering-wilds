@@ -1,6 +1,7 @@
 # The Whispering Wilds - macOS Support & Packaging
 
 ## Target Architecture & Distribution
+
 - **Target OS**: macOS 12 Monterey, macOS 13 Ventura, macOS 14 Sonoma, macOS 15 Sequoia.
 - **Architectures**:
   - Apple Silicon (`arm64` - M1, M2, M3, M4 series).
@@ -11,6 +12,7 @@
 - **Save Location**: `~/Library/Application Support/TheWhisperingWilds/saves`.
 
 ## Key macOS Features
+
 1. **Apple Silicon Native Performance**:
    - Zero translation overhead via dedicated arm64 binary.
    - Metal graphics translation via Chromium ANGLE.

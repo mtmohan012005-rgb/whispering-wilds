@@ -1,4 +1,5 @@
 # Version Compatibility & SemVer Matrix
+
 ## Project: The Whispering Wilds (`Kaattu Vazhi`)
 
 ---
@@ -7,11 +8,11 @@
 
 The Whispering Wilds adheres to Semantic Versioning (`MAJOR.MINOR.PATCH`):
 
-| Type | Impact on Game Files | Impact on Save Data | Rollback Allowed? |
-| :--- | :--- | :--- | :--- |
-| **PATCH** (`1.2.0` -> `1.2.1`) | Minor code/asset fixes | 100% backward & forward compatible (Save Schema unaltered) | Yes, seamless |
-| **MINOR** (`1.1.0` -> `1.2.0`) | New biomes, features, systems | Additive save migration with backup; older saves safely loadable | Yes |
-| **MAJOR** (`1.x` -> `2.0.0`) | Fundamental architectural changes | Requires explicit schema migration (`SaveManager.migrate()`) | Requires user approval |
+| Type                           | Impact on Game Files              | Impact on Save Data                                              | Rollback Allowed?      |
+| :----------------------------- | :-------------------------------- | :--------------------------------------------------------------- | :--------------------- |
+| **PATCH** (`1.2.0` -> `1.2.1`) | Minor code/asset fixes            | 100% backward & forward compatible (Save Schema unaltered)       | Yes, seamless          |
+| **MINOR** (`1.1.0` -> `1.2.0`) | New biomes, features, systems     | Additive save migration with backup; older saves safely loadable | Yes                    |
+| **MAJOR** (`1.x` -> `2.0.0`)   | Fundamental architectural changes | Requires explicit schema migration (`SaveManager.migrate()`)     | Requires user approval |
 
 ---
 

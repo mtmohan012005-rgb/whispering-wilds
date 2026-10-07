@@ -6,15 +6,16 @@ Status: **IN PROGRESS** — sections below record what is actually written vs. s
 
 ## Delivered so far
 
-| Item | Path | State |
-| --- | --- | --- |
+| Item                                      | Path                                                                | State                 |
+| ----------------------------------------- | ------------------------------------------------------------------- | --------------------- |
 | Localization manager + bilingual database | `unity/Assets/_Project/Scripts/Localization/LocalizationManager.cs` | Written, not compiled |
-| Auto-refreshing uGUI label | `unity/Assets/_Project/Scripts/Localization/LocalizedText.cs` | Written, not compiled |
-| Display/resolution/UI-scale manager | `unity/Assets/_Project/Scripts/Display/DisplaySettingsManager.cs` | Written, not compiled |
+| Auto-refreshing uGUI label                | `unity/Assets/_Project/Scripts/Localization/LocalizedText.cs`       | Written, not compiled |
+| Display/resolution/UI-scale manager       | `unity/Assets/_Project/Scripts/Display/DisplaySettingsManager.cs`   | Written, not compiled |
 
 ## Section 14 — Localization and fonts
 
 Implemented:
+
 - `WhisperingWilds.Localization.Language` enum: `English`, `Tamil`.
 - `LocalizationDatabase` holds all bilingual strings in one place (menu, settings, HUD,
   notifications, gameplay, region names). Real Tamil Unicode, not transliteration.
@@ -27,6 +28,7 @@ Implemented:
 - Persistence via `PlayerPrefs` key `WW_Language`, applied in `Start()`.
 
 Open / not done:
+
 - **No Tamil font asset is committed yet.** Labels currently rely on the legacy UI font and will
   fall back to system shaping; Tamil glyph coverage is unverified.
 - Existing UI strings across the project are **not yet migrated** to keys, so the menu still shows
@@ -36,6 +38,7 @@ Open / not done:
 ## Section 15 — Screen space, DPI, aspect, 16:9 to ultrawide
 
 Implemented in `DisplaySettingsManager`:
+
 - Real mode enumeration from `Screen.resolutions`, deduplicated, sorted by pixel count.
 - Safe fallback synthetic mode when Unity reports none (headless / remote desktop) so the game
   stays playable.
@@ -51,6 +54,7 @@ Deliberate scope boundary: this manager owns **display only**. Graphics quality 
 keys, so the systems cannot overwrite each other.
 
 Open / not done:
+
 - No automated DPI / ultrawide / 4K test matrix.
 - `RefreshAvailableModes` is not re-run on display hot-plug or resolution change events.
 - No `[SerializeField]`-driven defaults menu wiring yet; the existing `SettingsMenuController` has
@@ -77,6 +81,7 @@ Open / not done:
   render pipeline path still works.
 
 Open / not done:
+
 - **Not verified at runtime.** No player build yet, so actual screen percentages, GPU frame timing,
   and visible scaling are unproven.
 - The scaler target width/height and upsample filter are left at HDRP asset defaults rather than

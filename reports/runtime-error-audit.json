@@ -6,11 +6,7 @@
     "engine": "Edge (Chromium) via puppeteer-core",
     "headless": true,
     "viewport": "1600x900",
-    "flags": [
-      "--enable-unsafe-swiftshader",
-      "--use-gl=angle",
-      "--mute-audio"
-    ],
+    "flags": ["--enable-unsafe-swiftshader", "--use-gl=angle", "--mute-audio"],
     "note": "headless run with software WebGL (SwiftShader fallback allowed)"
   },
   "verdict": {
@@ -937,9 +933,7 @@
     "byAssetGroup": {
       "non-asset": {
         "count": 1,
-        "examples": [
-          "/api/auth/me"
-        ],
+        "examples": ["/api/auth/me"],
         "statuses": {
           "401": 1
         }
@@ -1004,9 +998,7 @@
       },
       "vehicles/bicycle": {
         "count": 1,
-        "examples": [
-          "assets/vehicles/bicycle/old_bicycle.glb"
-        ],
+        "examples": ["assets/vehicles/bicycle/old_bicycle.glb"],
         "statuses": {
           "404": 1
         }
@@ -1023,18 +1015,14 @@
       },
       "vehicles/motorcycle": {
         "count": 1,
-        "examples": [
-          "assets/vehicles/motorcycle/old_motorcycle.glb"
-        ],
+        "examples": ["assets/vehicles/motorcycle/old_motorcycle.glb"],
         "statuses": {
           "404": 1
         }
       },
       "vehicles/bus": {
         "count": 1,
-        "examples": [
-          "assets/vehicles/bus/city_bus.glb"
-        ],
+        "examples": ["assets/vehicles/bus/city_bus.glb"],
         "statuses": {
           "404": 1
         }

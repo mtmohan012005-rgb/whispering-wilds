@@ -1,5 +1,6 @@
 # 3D ASSET QUALITY CONTROL PIPELINE & BLENDER INTEGRATION
-**Project**: THE WHISPERING WILDS (*Kaattu Vazhi* / காட்டு வழி)  
+
+**Project**: THE WHISPERING WILDS (_Kaattu Vazhi_ / காட்டு வழி)
 
 ---
 
@@ -40,6 +41,7 @@ Every 3D asset progresses through this strict gate before inclusion in productio
 ## 2. Blender Export Standards
 
 When exporting glTF 2.0 (`.glb`) models from Blender 3.6+ / 4.x:
+
 1. **Apply All Transforms**: Rotation, Scale, and Location must be baked into object delta transforms (`Ctrl + A -> All Transforms`).
 2. **Coordinate Orientation**: Player and entity forward vector must face **+Z** (standard Three.js camera alignment convention).
 3. **Hierarchy Cleanup**: Remove extraneous helper nulls, cameras, and lights from export selection.
@@ -56,12 +58,14 @@ When exporting glTF 2.0 (`.glb`) models from Blender 3.6+ / 4.x:
 ---
 
 ## 3. Cultural Asset Review Standards
+
 - **Traditional Garments**: Veshti pleats, angavastram draping, and thundu placement must be reviewed for authentic Tamil styling.
 - **Temple Architecture**: Dravidian gopuram tiers, stone pillar carvings, and mandapam proportions must be grounded in real Tamil architectural history. Fictionalized inscriptions must have `fictionalized = true` in data registries.
 
 ---
 
 ## 4. Production Commands
+
 ```bash
 # Validate all GLB meshes, chunks, and transforms
 npm run assets:validate

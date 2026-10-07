@@ -1,11 +1,13 @@
 # The Whispering Wilds - Controller & Gamepad Architecture
 
 ## Controller Philosophy
-*The Whispering Wilds* provides seamless plug-and-play controller support across Windows, macOS, and Linux via standard W3C Gamepad API and desktop input bridging.
+
+_The Whispering Wilds_ provides seamless plug-and-play controller support across Windows, macOS, and Linux via standard W3C Gamepad API and desktop input bridging.
 
 ---
 
 ## Supported Controller Hardware
+
 - **Xbox Controllers**: Xbox Wireless Controller, Xbox Elite Series 2, Xbox 360/One Controllers.
 - **PlayStation Controllers**: Sony DualSense (PS5), DualShock 4 (PS4).
 - **Generic Gamepads**: Standard XInput and DirectInput PC gamepads.
@@ -14,6 +16,7 @@
 ---
 
 ## Hotplug & Dynamic Glyph Adaptation
+
 1. **Hotplug Support**: Players can connect or disconnect gamepads at any moment during gameplay without stutter or crash.
 2. **Context-Sensitive Glyphs**:
    - When an Xbox controller is active, on-screen prompts display `[A]`, `[B]`, `[X]`, `[Y]`, `[LT]`, `[RT]`.

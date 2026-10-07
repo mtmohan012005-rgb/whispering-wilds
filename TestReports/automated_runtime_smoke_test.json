@@ -1,58 +1,58 @@
 {
-    "suiteName": "Step 1 Runtime and Build Acceptance",
-    "timestamp": "2026-09-30T17:51:07.4712702Z",
-    "unityVersion": "6000.6.3f1",
-    "platform": "WindowsPlayer",
-    "totalPassed": 8,
-    "totalFailed": 0,
-    "results": [
-        {
-            "testName": "Boot Scene & Core Singletons",
-            "status": "PASS",
-            "details": "Camera, EventSystem, AudioListener, GameManager, SaveManager, Quality, TimeSystem present with 0 errors.",
-            "durationSeconds": 0.00455474853515625
-        },
-        {
-            "testName": "Main Menu -> New Game Transition",
-            "status": "PASS",
-            "details": "Transitioned smoothly to 02_Chennai_GeorgeTown without exceptions.",
-            "durationSeconds": 0.20245790481567383
-        },
-        {
-            "testName": "Player Spawn & Camera Controller",
-            "status": "PASS",
-            "details": "Player spawned at (0.00, 0.00, 0.00), CharacterController enabled, Camera bound to player.",
-            "durationSeconds": 0.0065059661865234375
-        },
-        {
-            "testName": "Player Movement, Sprint, Crouch, Jump",
-            "status": "PASS",
-            "details": "MoveDist=2.10m, SprintSpeed=8.5m/s, CrouchHeight=1.20m, Jumped=True",
-            "durationSeconds": 2.3741559982299805
-        },
-        {
-            "testName": "Save Game Persistence",
-            "status": "PASS",
-            "details": "Save file verified at C:/Users/mohan/AppData/LocalLow/Whispering Wilds Studios/The Whispering Wilds\\whispering_wilds_save.json, pos=(0.0, 0.1, 7.3), appearanceChanges=5",
-            "durationSeconds": 0.21916866302490234
-        },
-        {
-            "testName": "Load Game & State Restoration",
-            "status": "PASS",
-            "details": "Player successfully restored from save. New pos: (0.00, 0.08, 7.26)",
-            "durationSeconds": 0.46176910400390625
-        },
-        {
-            "testName": "Safe Regional Scene Transition (Chennai -> Pichavaram)",
-            "status": "PASS",
-            "details": "Successfully arrived in Pichavaram (pichavaram), player intact at (0.00, 0.48, 7.26).",
-            "durationSeconds": 1.3467998504638672
-        },
-        {
-            "testName": "Quality System Presets",
-            "status": "PASS",
-            "details": "Quality preset applied: VeryLow shadows=20m, High shadows=150m.",
-            "durationSeconds": 0.03647422790527344
-        }
-    ]
+  "suiteName": "Step 1 Runtime and Build Acceptance",
+  "timestamp": "2026-09-30T17:51:07.4712702Z",
+  "unityVersion": "6000.6.3f1",
+  "platform": "WindowsPlayer",
+  "totalPassed": 8,
+  "totalFailed": 0,
+  "results": [
+    {
+      "testName": "Boot Scene & Core Singletons",
+      "status": "PASS",
+      "details": "Camera, EventSystem, AudioListener, GameManager, SaveManager, Quality, TimeSystem present with 0 errors.",
+      "durationSeconds": 0.00455474853515625
+    },
+    {
+      "testName": "Main Menu -> New Game Transition",
+      "status": "PASS",
+      "details": "Transitioned smoothly to 02_Chennai_GeorgeTown without exceptions.",
+      "durationSeconds": 0.20245790481567383
+    },
+    {
+      "testName": "Player Spawn & Camera Controller",
+      "status": "PASS",
+      "details": "Player spawned at (0.00, 0.00, 0.00), CharacterController enabled, Camera bound to player.",
+      "durationSeconds": 0.0065059661865234375
+    },
+    {
+      "testName": "Player Movement, Sprint, Crouch, Jump",
+      "status": "PASS",
+      "details": "MoveDist=2.10m, SprintSpeed=8.5m/s, CrouchHeight=1.20m, Jumped=True",
+      "durationSeconds": 2.3741559982299805
+    },
+    {
+      "testName": "Save Game Persistence",
+      "status": "PASS",
+      "details": "Save file verified at C:/Users/mohan/AppData/LocalLow/Whispering Wilds Studios/The Whispering Wilds\\whispering_wilds_save.json, pos=(0.0, 0.1, 7.3), appearanceChanges=5",
+      "durationSeconds": 0.21916866302490234
+    },
+    {
+      "testName": "Load Game & State Restoration",
+      "status": "PASS",
+      "details": "Player successfully restored from save. New pos: (0.00, 0.08, 7.26)",
+      "durationSeconds": 0.46176910400390625
+    },
+    {
+      "testName": "Safe Regional Scene Transition (Chennai -> Pichavaram)",
+      "status": "PASS",
+      "details": "Successfully arrived in Pichavaram (pichavaram), player intact at (0.00, 0.48, 7.26).",
+      "durationSeconds": 1.3467998504638672
+    },
+    {
+      "testName": "Quality System Presets",
+      "status": "PASS",
+      "details": "Quality preset applied: VeryLow shadows=20m, High shadows=150m.",
+      "durationSeconds": 0.03647422790527344
+    }
+  ]
 }

@@ -1,4 +1,5 @@
 # PC Installation, Directory Hierarchy & Disk Safety
+
 ## Project: The Whispering Wilds (`Kaattu Vazhi`)
 
 ---
@@ -30,6 +31,7 @@ C:\Users\<User>\AppData\Local\TheWhisperingWilds\
 ## 2. Disk Space & Permission Checks
 
 Before any installation or update begins, the launcher verifies:
+
 1. **Target Directory Write Permissions**: Warns the user if the selected folder is read-only or requires elevated administrator permissions.
 2. **Total Space Calculation**:
    - Required game installation footprint

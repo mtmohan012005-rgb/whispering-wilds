@@ -1,17 +1,22 @@
 # PRODUCTION DEPLOYMENT GUIDE
-**Project**: THE WHISPERING WILDS (*Kaattu Vazhi* / காட்டு வழி)  
+
+**Project**: THE WHISPERING WILDS (_Kaattu Vazhi_ / காட்டு வழி)
 
 ---
 
 ## 1. Architectural Split
+
 The production infrastructure is cleanly partitioned into a static frontend edge host and an autoscaled stateful Node.js WebSocket backend:
+
 - **Frontend**: Netlify (Static Web Architecture, Edge CDN, Global HTTP/3 Caching)
 - **Multiplayer Backend**: Render (Node.js Web Service, WebSocket / Socket.IO 20Hz state synchronization)
 
 ---
 
 ## 2. Deployment Sequence
+
 Always follow this strict sequential order:
+
 1. **Validate Code & Assets**:
    ```bash
    npm run validate
@@ -32,6 +37,7 @@ Always follow this strict sequential order:
 ---
 
 ## 3. Netlify Configuration (`netlify.toml`)
+
 - **Publish Directory**: `.`
 - **Security Headers**: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`.
 - **Cache Strategy**:
@@ -41,6 +47,7 @@ Always follow this strict sequential order:
 ---
 
 ## 4. Render Backend Configuration (`render.yaml`)
+
 - **Service Type**: `web`
 - **Runtime**: `node`
 - **Health Check Path**: `/health`

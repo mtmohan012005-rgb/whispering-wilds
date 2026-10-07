@@ -1,6 +1,7 @@
 # Storefront System Requirements
 
 ## Windows
+
 - **Minimum**:
   - OS: Windows 10 (64-bit, Version 1909 or higher)
   - Processor: Intel Core i3-7100 / AMD Ryzen 3 1200
@@ -17,6 +18,7 @@
   - Storage: 4 GB available SSD space
 
 ## macOS
+
 - **Minimum**:
   - OS: macOS 12 Monterey
   - Processor: Apple M1 / Intel Core i5 (9th Gen)
@@ -31,6 +33,7 @@
   - Storage: 4 GB available space
 
 ## Linux
+
 - **Minimum**:
   - OS: Ubuntu 22.04 LTS / Debian 12 / SteamOS 3.0+
   - Processor: Intel Core i3-7100 / AMD Ryzen 3 1200

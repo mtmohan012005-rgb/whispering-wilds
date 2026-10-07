@@ -1,17 +1,20 @@
 # THE WHISPERING WILDS (காட்டு வழி • தடம்)
+
 ## Bug Fix & Remediation Log (Master QA & Hardening)
+
 **Date**: 2026-09-30  
 **Target Engine**: Unity 6000.6.3f1 (45d8eee7de74)  
 **Render Pipeline**: HDRP 17.7.0  
-**Target Platform**: StandaloneWindows64  
+**Target Platform**: StandaloneWindows64
 
 ---
 
 ### [FIX-01] Player Ground Check Mathematics & Probe Offset
+
 - **Subsystem**: Locomotion / Player Controller (`PlayerMovement.cs`)
 - **Severity**: P0 (Locomotion Stability / Glitching)
 - **Defect**:
-  `groundedOffset` was configured as `-0.14f`, and the probe position was calculated as `transform.position.y - groundedOffset`. Because `y - (-0.14f) = y + 0.14f`, the ground detection sphere was centered 14cm *above* the CharacterController feet pivot instead of at ground level. Furthermore, `groundLayers` was set to `~0` (all layers), causing false positive grounding against NPCs, trigger volumes, and interactive props.
+  `groundedOffset` was configured as `-0.14f`, and the probe position was calculated as `transform.position.y - groundedOffset`. Because `y - (-0.14f) = y + 0.14f`, the ground detection sphere was centered 14cm _above_ the CharacterController feet pivot instead of at ground level. Furthermore, `groundLayers` was set to `~0` (all layers), causing false positive grounding against NPCs, trigger volumes, and interactive props.
 - **Remediation**:
   1. Corrected sphere probe center to `transform.position.y + groundedOffset` with `groundedOffset = 0.15f` and `groundedRadius = 0.28f`, ensuring the sphere spans through and below the character feet.
   2. Implemented explicit layer masking: automatically strips `1 << gameObject.layer`, `Ignore Raycast`, `UI`, and `Water`.
@@ -21,6 +24,7 @@
 ---
 
 ### [FIX-02] HDRP Dynamic Resolution Scaling Enablement
+
 - **Subsystem**: Graphics / Quality Governor (`HDRP Balanced.asset`, `HDRP Performant.asset`, `HDRP High Fidelity.asset`)
 - **Severity**: P0 (Performance / Rendering Pipeline)
 - **Defect**:
@@ -31,6 +35,7 @@
 ---
 
 ### [FIX-03] HDRP Volume Atmospheric Fog & Weather Overrides
+
 - **Subsystem**: World / Atmospheric Simulation (`WeatherSystem.cs`)
 - **Severity**: P1 (Rendering Conflict / Visual Integrity)
 - **Defect**:
@@ -41,6 +46,7 @@
 ---
 
 ### [FIX-04] Safe Additive Regional Scene Streaming & Transition Flow
+
 - **Subsystem**: World Streaming (`RegionalSceneManager.cs`, `TamilNaduGeography.cs`)
 - **Severity**: P1 (Scene Loading / State Integrity)
 - **Defect**:
@@ -53,6 +59,7 @@
 ---
 
 ### [FIX-05] Boot Scene Input System & Manager Initialization
+
 - **Subsystem**: Core / UI Architecture (`BuildBootScene.cs`, `00_Boot.unity`)
 - **Severity**: P1 (Input Compatibility / Startup Reliability)
 - **Defect**:
@@ -64,6 +71,7 @@
 ---
 
 ### [FIX-06] NPC 11-State FSM, Occupations & Throttled AI Tiers
+
 - **Subsystem**: AI / Crowd Simulation (`NPCCharacter.cs`, `NPCScheduleManager.cs`, `NPCPerformanceTierManager.cs`, `NPCState.cs`)
 - **Severity**: P1 (Living World Authenticity / CPU Performance)
 - **Defect**:
@@ -76,6 +84,7 @@
 ---
 
 ### [FIX-07] Discrete Production Retail vs. QA Benchmark Build Pipelines
+
 - **Subsystem**: Build Pipeline Automation (`BuildPipelineAutomation.cs`)
 - **Severity**: P1 (Release Engineering)
 - **Defect**:
@@ -89,6 +98,7 @@
 ---
 
 ### [FIX-08] Standalone Native Windows Launcher
+
 - **Subsystem**: Platform Tooling (`Launch-Game-Unity.ps1`, `Launch-Game-PC.ps1`, `Launch-Legacy-Web-Game.ps1`)
 - **Severity**: P1 (Deployment Separation)
 - **Defect**:

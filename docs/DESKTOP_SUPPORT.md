@@ -1,7 +1,8 @@
 # The Whispering Wilds - Desktop Platform Architecture
 
 ## Executive Summary
-*The Whispering Wilds* (`Kaattu Vazhi / Thadam`) is delivered as a native, cross-platform PC application supporting **Windows**, **macOS**, and **Linux** across both **x64** and **ARM64** architectures.
+
+_The Whispering Wilds_ (`Kaattu Vazhi / Thadam`) is delivered as a native, cross-platform PC application supporting **Windows**, **macOS**, and **Linux** across both **x64** and **ARM64** architectures.
 
 The desktop runtime utilizes an **Electron shell** providing native OS window management, hardware capability introspection, secure IPC, native file system persistence, and crash resiliency while preserving the core **HTML5 / CSS / Three.js WebGL** single-codebase frontend.
 
@@ -49,6 +50,7 @@ graph TD
 ```
 
 ### Core Invariants
+
 1. **One Game Codebase**: The exact same `index.html`, `css/`, `js/`, and `assets/` power browser development and desktop distribution on Windows, macOS, and Linux. No platform-specific frontend forks (`windows/index.html`, etc.).
 2. **Process Boundary & State Authority**:
    - **Main Process** owns: Window lifecycle, paths, power state, single instance lock, update staging, crash handling, and IPC routing. Main process **never** owns player position, quests, inventory, NPC simulation, weather, or GameState.
@@ -66,6 +68,7 @@ graph TD
 ---
 
 ## Windowing, Display & Resolutions
+
 - **Window Modes**: `WINDOWED`, `BORDERLESS`, and `FULLSCREEN`.
 - **Supported Standard Resolutions**:
   - 1280x720 (720p 16:9)

@@ -1,9 +1,11 @@
 # Cultural QA Checklist & Heritage Validation
+
 ## Project: The Whispering Wilds (`Kaattu Vazhi`)
 
 ---
 
 ## 1. Cultural Context & Regional Accuracy
+
 - [x] **Regional Placement**: Authentic geographic sequence (George Town, Cauvery Delta, Pichavaram Mangroves, Chettinad Mansions, Thanjavur Big Temple, Mamallapuram Shore Temple, Nilgiri Shola Forests, Final Sanctuary).
 - [x] **Architecture Context**: Dravidian stone gopurams in Thanjavur; Athangudi-tiled courtyards and teak woodwork in Chettinad; Toda buffalo-arched huts in the Nilgiris; Indo-Saracenic Madras High Court.
 - [x] **Clothing & Attire**: Traditional veshti (with movement limiters preventing sprint glitches), handloom sarees, thundu shoulder-cloths, and explorer bush jackets with brass buckles.

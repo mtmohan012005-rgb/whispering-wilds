@@ -38,13 +38,13 @@ have passed at baseline.
 
 WIP compile failures fixed:
 
-| Error | Fix |
-|---|---|
-| `NPCScheduleManager` / `NPCPerformanceTierManager` / `WildlifeManager` / `WildlifeSimulation` not found in `BuildBootScene` | added `using WhisperingWilds.NPC; using WhisperingWilds.Wildlife;` |
-| `AssembleWhisperingWilds` has no `AssembleGeorgeTownScene` | corrected to real method `BuildPlayableChennaiScene()` |
-| `QualityPresetManager.OnPresetApplied` / `.CurrentPreset` do not exist (2 files) | switched to real API `OnQualityPresetChanged` + `CurrentTier` + `GetPresetSettings()` |
-| `PooledWildlifeCount` renamed | updated call site to `TotalPooledCount` |
-| `FindProperty("profession")` on removed field (2 sites) | replaced with `FindProperty("occupation").intValue = (int)NPCOccupation...` |
+| Error                                                                                                                       | Fix                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `NPCScheduleManager` / `NPCPerformanceTierManager` / `WildlifeManager` / `WildlifeSimulation` not found in `BuildBootScene` | added `using WhisperingWilds.NPC; using WhisperingWilds.Wildlife;`                    |
+| `AssembleWhisperingWilds` has no `AssembleGeorgeTownScene`                                                                  | corrected to real method `BuildPlayableChennaiScene()`                                |
+| `QualityPresetManager.OnPresetApplied` / `.CurrentPreset` do not exist (2 files)                                            | switched to real API `OnQualityPresetChanged` + `CurrentTier` + `GetPresetSettings()` |
+| `PooledWildlifeCount` renamed                                                                                               | updated call site to `TotalPooledCount`                                               |
+| `FindProperty("profession")` on removed field (2 sites)                                                                     | replaced with `FindProperty("occupation").intValue = (int)NPCOccupation...`           |
 
 **Batchmode compile: 0 errors.** Only pre-existing benign `CS0414` unused-field warnings.
 
@@ -60,7 +60,7 @@ and never read by any NPC or wildlife system. Both subsystems now subscribe to
 ## 3. NavMesh (NEW — verified by bake)
 
 `com.unity.ai.navigation` was **not added**. Its authoring component (`NavMeshSurface`) is absent
-from the built-in AI module, but everything required for baking *is* present in
+from the built-in AI module, but everything required for baking _is_ present in
 `com.unity.modules.ai`, which the project already depends on. Verified by metadata scan of
 `UnityEngine.AIModule.dll`: `NavMeshBuilder`, `NavMeshBuildSource`, `NavMeshBuildSettings`,
 `NavMeshBuildMarkup`, `NavMeshData`, `NavMeshAgent`, `NavMeshQueryFilter`, `NavMeshHit`,
@@ -69,6 +69,7 @@ from the built-in AI module, but everything required for baking *is* present in
 This avoids adding an unpinned package dependency and any registry/network resolution risk.
 
 Added:
+
 - `Assets/_Project/Scripts/Editor/EcologyNavMeshBaker.cs` — collects walkable sources, bakes via
   `NavMeshBuilder.BuildNavMeshData`, writes an asset per scene, verifies the bake by registering
   the data and measuring `NavMesh.CalculateTriangulation()`, and fails loudly on zero geometry.
@@ -84,14 +85,14 @@ Added:
 
 ### Verified bake results (real triangles, not file presence)
 
-| Scene | Sources | NavMesh triangles |
-|---|---|---|
-| 02_Chennai_GeorgeTown | 52 | 12 |
-| 03_Pichavaram_Wetlands | 32 | 137 |
-| 04_Thanjavur_Delta | 41 | 288 |
-| 05_Chettinad_Mansion | 28 | 84 |
-| 06_Mamallapuram_Shore | 21 | 106 |
-| 07_Nilgiris_Sanctuary | 27 | 115 |
+| Scene                  | Sources | NavMesh triangles |
+| ---------------------- | ------- | ----------------- |
+| 02_Chennai_GeorgeTown  | 52      | 12                |
+| 03_Pichavaram_Wetlands | 32      | 137               |
+| 04_Thanjavur_Delta     | 41      | 288               |
+| 05_Chettinad_Mansion   | 28      | 84                |
+| 06_Mamallapuram_Shore  | 21      | 106               |
+| 07_Nilgiris_Sanctuary  | 27      | 115               |
 
 `NavMeshAgent` components now serialized into scenes: Chennai 2, Pichavaram 1, Delta 1,
 Chettinad 1, Mamallapuram 1, Nilgiris 2. Baked `NavMeshData` assets are committed per scene under
@@ -135,16 +136,16 @@ route. This is the check that distinguishes genuine pathfinding from the old tra
 
 ### Last completed run: 6 / 8 PASS
 
-| # | Test | Result |
-|---|---|---|
-| 0 | Baked NavMesh present & agent pathing | **FAIL** — `00_Boot` has no `NavMeshSceneLink` |
-| 1 | NPC daily routine schedule advancement | PASS (all three phases Idle — see gaps) |
-| 2 | NPC navigation & activity anchor interaction | PASS |
-| 3 | Spatial whitelist & habitat containment | **FAIL** — Chennai allowed Nilgiris species |
-| 4 | Wildlife dynamic behaviors (Idle/Feed/Drink/Alert/Flee) | PASS |
-| 5 | Distance LOD tiers & background macro-simulation | PASS — logical total 357 → 364 |
-| 6 | NPC performance tiering & CPU budget | PASS (telemetry active) |
-| 7 | Living world time, season & atmosphere sync | PASS |
+| #   | Test                                                    | Result                                         |
+| --- | ------------------------------------------------------- | ---------------------------------------------- |
+| 0   | Baked NavMesh present & agent pathing                   | **FAIL** — `00_Boot` has no `NavMeshSceneLink` |
+| 1   | NPC daily routine schedule advancement                  | PASS (all three phases Idle — see gaps)        |
+| 2   | NPC navigation & activity anchor interaction            | PASS                                           |
+| 3   | Spatial whitelist & habitat containment                 | **FAIL** — Chennai allowed Nilgiris species    |
+| 4   | Wildlife dynamic behaviors (Idle/Feed/Drink/Alert/Flee) | PASS                                           |
+| 5   | Distance LOD tiers & background macro-simulation        | PASS — logical total 357 → 364                 |
+| 6   | NPC performance tiering & CPU budget                    | PASS (telemetry active)                        |
+| 7   | Living world time, season & atmosphere sync             | PASS                                           |
 
 Both failures were diagnosed and fixed in source (Sections 3 and 5). **The rebuilt player has not
 yet produced a passing run** — the verification build completed, but the subsequent play session
@@ -188,26 +189,26 @@ These are unresolved and must not be reported as passing:
 
 ## 8. Requirement status
 
-| Requirement | Status |
-|---|---|
-| NPC architecture classes | PASS |
-| Minimum NPC states | PASS (enum present) |
-| Minimum wildlife states | PASS (enum present) |
-| Real NavMesh pathing | **UNVERIFIED** — baked and wired; rebuilt run pending |
-| No direct transform teleportation | PASS (`SetDestination` validates + calculates path) |
-| Distance-based performance tiers with hysteresis | PASS |
-| Central AI tick / rate limiting | PASS |
-| Quality preset drives NPC + wildlife density | PASS (was dead, now wired) |
-| Species-specific behavior | PARTIAL — data present, 10/11 models missing |
-| Habitat restrictions per region | PASS in logic, **unverified** after fix |
-| Wildlife pooling + population caps | PASS in code, no prefabs to pool |
-| Group movement / herding / flocking | PARTIAL — leader-offset exists, cannot demonstrate |
-| Despawn / respawn rules | PASS in code, untested |
-| Save-safe deterministic state | PARTIAL |
-| Dev diagnostics hidden in retail | **FAIL** — no AI overlay exists; smoke/eco QA components ship in `00_Boot` |
-| Region scene validation | PARTIAL — only boot-scene path exercised end-to-end |
-| Real profiling (avg FPS, 1% low, AI CPU, nav CPU, GC) | **NOT DONE** |
-| No new regions / quests / multiplayer / cloud / seasons | PASS |
+| Requirement                                             | Status                                                                     |
+| ------------------------------------------------------- | -------------------------------------------------------------------------- |
+| NPC architecture classes                                | PASS                                                                       |
+| Minimum NPC states                                      | PASS (enum present)                                                        |
+| Minimum wildlife states                                 | PASS (enum present)                                                        |
+| Real NavMesh pathing                                    | **UNVERIFIED** — baked and wired; rebuilt run pending                      |
+| No direct transform teleportation                       | PASS (`SetDestination` validates + calculates path)                        |
+| Distance-based performance tiers with hysteresis        | PASS                                                                       |
+| Central AI tick / rate limiting                         | PASS                                                                       |
+| Quality preset drives NPC + wildlife density            | PASS (was dead, now wired)                                                 |
+| Species-specific behavior                               | PARTIAL — data present, 10/11 models missing                               |
+| Habitat restrictions per region                         | PASS in logic, **unverified** after fix                                    |
+| Wildlife pooling + population caps                      | PASS in code, no prefabs to pool                                           |
+| Group movement / herding / flocking                     | PARTIAL — leader-offset exists, cannot demonstrate                         |
+| Despawn / respawn rules                                 | PASS in code, untested                                                     |
+| Save-safe deterministic state                           | PARTIAL                                                                    |
+| Dev diagnostics hidden in retail                        | **FAIL** — no AI overlay exists; smoke/eco QA components ship in `00_Boot` |
+| Region scene validation                                 | PARTIAL — only boot-scene path exercised end-to-end                        |
+| Real profiling (avg FPS, 1% low, AI CPU, nav CPU, GC)   | **NOT DONE**                                                               |
+| No new regions / quests / multiplayer / cloud / seasons | PASS                                                                       |
 
 ---
 

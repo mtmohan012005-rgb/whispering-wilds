@@ -1,4 +1,5 @@
 # The Whispering Wilds (காட்டு வழி • தடம்)
+
 ## Unity 6 PC Standalone Game — QA & Verification Guide
 
 This document provides complete, line-by-line verification procedures for every subsystem of **The Whispering Wilds** running as a native Windows x64 Unity 6 PC game.
@@ -29,24 +30,25 @@ This document provides complete, line-by-line verification procedures for every 
 
 ### 2. Locomotion & Controls
 
-| Action | Keyboard & Mouse | Gamepad (Xbox / DualSense) | Expected Behavior |
-| :--- | :--- | :--- | :--- |
-| **Move** | `W`, `A`, `S`, `D` | Left Stick | Camera-relative character movement with smooth acceleration (`speedChangeRate: 10 m/s²`). Analog stick angle drives character facing smoothly via `Mathf.SmoothDampAngle`. |
-| **Walk / Jog** | Gentle stick tilt / partial keying | Partial tilt (< 0.6) | 3.5 m/s walk speed driving `Player_Walk` animation. |
-| **Run** | Full keypress / full tilt | Full tilt (≥ 0.6) | 6.0 m/s run speed driving `Player_Run` animation. |
-| **Sprint** | Hold `Left Shift` | Click `Left Stick` (L3) | 8.5 m/s sprint speed driving `Player_Sprint` animation. |
-| **Crouch** | `C` | `B` / `Circle` | 2.0 m/s crouch locomotion driving `Player_Crouch_Idle` & `Player_Crouch_Walk`. |
-| **Jump** | `Space` | `A` / `Cross` | Vertical jump (`1.4m` peak height, `gravity: -18 m/s²`) with coyote time (`0.12s`) and jump buffering (`0.15s`). Triggers `Jump` animation state. |
-| **Camera Orbit** | Mouse Delta | Right Stick | 3rd-person orbital framing with `SphereCast` occlusion pushout (min distance `0.8m`, normal distance `3.5m`). |
-| **Interact** | `E` | `X` / `Square` | Contextual interaction (`Talk`, `Inspect`, `Pickup`, `Photograph`). |
-| **State Map** | `M` | Select / Back | Toggles interactive Tamil Nadu highway and regional travel map. |
-| **Inventory / Codex**| `Tab` / `I` | `View` / `Touchpad` | Opens bilingual cultural codex and inventory bag. |
+| Action                | Keyboard & Mouse                   | Gamepad (Xbox / DualSense) | Expected Behavior                                                                                                                                                          |
+| :-------------------- | :--------------------------------- | :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Move**              | `W`, `A`, `S`, `D`                 | Left Stick                 | Camera-relative character movement with smooth acceleration (`speedChangeRate: 10 m/s²`). Analog stick angle drives character facing smoothly via `Mathf.SmoothDampAngle`. |
+| **Walk / Jog**        | Gentle stick tilt / partial keying | Partial tilt (< 0.6)       | 3.5 m/s walk speed driving `Player_Walk` animation.                                                                                                                        |
+| **Run**               | Full keypress / full tilt          | Full tilt (≥ 0.6)          | 6.0 m/s run speed driving `Player_Run` animation.                                                                                                                          |
+| **Sprint**            | Hold `Left Shift`                  | Click `Left Stick` (L3)    | 8.5 m/s sprint speed driving `Player_Sprint` animation.                                                                                                                    |
+| **Crouch**            | `C`                                | `B` / `Circle`             | 2.0 m/s crouch locomotion driving `Player_Crouch_Idle` & `Player_Crouch_Walk`.                                                                                             |
+| **Jump**              | `Space`                            | `A` / `Cross`              | Vertical jump (`1.4m` peak height, `gravity: -18 m/s²`) with coyote time (`0.12s`) and jump buffering (`0.15s`). Triggers `Jump` animation state.                          |
+| **Camera Orbit**      | Mouse Delta                        | Right Stick                | 3rd-person orbital framing with `SphereCast` occlusion pushout (min distance `0.8m`, normal distance `3.5m`).                                                              |
+| **Interact**          | `E`                                | `X` / `Square`             | Contextual interaction (`Talk`, `Inspect`, `Pickup`, `Photograph`).                                                                                                        |
+| **State Map**         | `M`                                | Select / Back              | Toggles interactive Tamil Nadu highway and regional travel map.                                                                                                            |
+| **Inventory / Codex** | `Tab` / `I`                        | `View` / `Touchpad`        | Opens bilingual cultural codex and inventory bag.                                                                                                                          |
 
 ---
 
 ### 3. Absolute Constraint: Strict 5-Permanent Appearance Changes
 
 #### Rule Specification:
+
 - **Maximum Changes**: Exactly **5 permanent appearance changes** are permitted across the player's entire playthrough.
 - **Enforcement Layers**:
   1. **Runtime Logic (`PlayerAppearanceManager.cs`)**:
@@ -55,7 +57,7 @@ This document provides complete, line-by-line verification procedures for every 
   2. **User Interface (`HUDManager.cs` & `TitleMenuController.cs`)**:
      - Displays `Appearance Changes Remaining: X / 5` in the HUD at all times.
      - Displays cultural rules notice on the Title Screen:
-       *"விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும் (Rule: Strict maximum of 5 permanent appearance changes across the entire journey)."*
+       _"விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும் (Rule: Strict maximum of 5 permanent appearance changes across the entire journey)."_
   3. **Save System Integrity (`SaveSystem.cs`)**:
      - `SaveGame()` writes `remainingPermanentAppearanceChanges` to the JSON payload.
      - `RestoreState()` executes `Mathf.Clamp(remainingChanges, 0, MaxPermanentAppearanceChanges)` upon load to ensure save file tampering cannot exceed the limit of 5.
@@ -63,6 +65,7 @@ This document provides complete, line-by-line verification procedures for every 
      - Regional cultural attire swaps (Everyday Chennai veshti, Cauvery village cottons, Thanjavur festival silks, Pichavaram boatman wear, Nilgiri mountain wools) are **unrestricted** and do **not** consume permanent appearance tokens.
 
 #### Verification Steps:
+
 1. Start a New Game. Verify HUD displays `Appearance Changes: 5/5`.
 2. Apply 5 modifications. Observe the counter decrementing: `4/5`, `3/5`, `2/5`, `1/5`, `0/5`.
 3. Attempt a 6th modification. Verify that the UI and console reject the change with:
@@ -94,6 +97,7 @@ This document provides complete, line-by-line verification procedures for every 
 ### 5. Automated Benchmark Suite Verification
 
 Run any of the 4 benchmark scenes:
+
 - `WW_Benchmark_Chennai`
 - `WW_Benchmark_Pichavaram`
 - `WW_Benchmark_Delta`

@@ -9,15 +9,14 @@ asset every Tamil string renders as blank/tofu.
 
 ### Verified font survey
 
-Coverage was measured by parsing each font's `cmap` table directly (formats 4 and
-12) and cross-checking absent codepoints against .NET's Unicode database.
+Coverage was measured by parsing each font's `cmap` table directly (formats 4 and 12) and cross-checking absent codepoints against .NET's Unicode database.
 
-| Font | Tamil assigned codepoints | Verdict |
-| --- | --- | --- |
-| **Nirmala UI** (`Nirmala.ttc`) | **72 / 72** | Full coverage |
-| Arial | 0 | No Tamil |
-| Tahoma | 0 | No Tamil |
-| Segoe UI | 0 | No Tamil |
+| Font                           | Tamil assigned codepoints | Verdict       |
+| ------------------------------ | ------------------------- | ------------- |
+| **Nirmala UI** (`Nirmala.ttc`) | **72 / 72**               | Full coverage |
+| Arial                          | 0                         | No Tamil      |
+| Tahoma                         | 0                         | No Tamil      |
+| Segoe UI                       | 0                         | No Tamil      |
 
 Nirmala's 56 absent codepoints in the block were all confirmed
 `UnicodeCategory.OtherNotAssigned`, i.e. genuinely unassigned in Unicode rather

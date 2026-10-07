@@ -1,5 +1,6 @@
 # Real Asset Integration Report
-**Project:** The Whispering Wilds (*Kaattu Vazhi / Thadam*)  
+
+**Project:** The Whispering Wilds (_Kaattu Vazhi / Thadam_)  
 **Platform:** PC-Only 3D Open-World Exploration Game  
 **Repository:** `mtmohan012005-rgb/whisperingwilds`  
 **Report Date:** September 26, 2026  
@@ -17,21 +18,22 @@ All assets adhere to strict local production standards: no third-party CDN model
 
 ## 1. Startup Flow & Interface Verification
 
-| Step | State / Screen | Behavior & Visuals | Verification Result |
-| :--- | :--- | :--- | :--- |
-| **01** | **Boot / Splash** | Clean window initialization (`The Whispering Wilds — Tamil Nadu Exploration`), application icon loaded. Title prologue modal hidden by default. | **PASS** |
-| **02** | **Main Menu** | Full-screen presentation with animated regional landscape carousel (Chennai, Cauvery Delta, Pichavaram, Chettinad, Mamallapuram, Nilgiris), official logo, Ken Burns slow zoom, button SFX, and subtle offline status indicator that never blocks single-player. | **PASS** |
-| **03** | **Continue Game** | Dynamically disabled when no save exists. When a save is present, displays region and timestamp, bypassing the prologue directly into the saved world. | **PASS** |
-| **04** | **New Game Setup** | Interactive Player Setup modal (`ww-setup-modal`) with real-time 3D character preview, mouse drag rotation, zoom, starting attire selection, and explicit notice of the 5-change permanent limit. | **PASS** |
-| **05** | **Story Introduction** | Narrative prologue (*The Inciting Incident at Madras High Court*) with options to "Begin Journey" or "Skip Intro" directly to the loading pipeline. | **PASS** |
-| **06** | **Loading Screen** | Staged loading pipeline with authentic regional artwork and real initialization stages (World, Player, NPCs, Audio, Environment). | **PASS** |
-| **07** | **3D World Entry** | Smooth fade into George Town, Chennai at authored safe spawn `(-250, 2.18, 0)`. Camera settles and WASD/Mouse input is instantly active with zero modal clutter. Safe checkpoint `georgetown_intro_start` created. | **PASS** |
+| Step   | State / Screen         | Behavior & Visuals                                                                                                                                                                                                                                               | Verification Result |
+| :----- | :--------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------ |
+| **01** | **Boot / Splash**      | Clean window initialization (`The Whispering Wilds — Tamil Nadu Exploration`), application icon loaded. Title prologue modal hidden by default.                                                                                                                  | **PASS**            |
+| **02** | **Main Menu**          | Full-screen presentation with animated regional landscape carousel (Chennai, Cauvery Delta, Pichavaram, Chettinad, Mamallapuram, Nilgiris), official logo, Ken Burns slow zoom, button SFX, and subtle offline status indicator that never blocks single-player. | **PASS**            |
+| **03** | **Continue Game**      | Dynamically disabled when no save exists. When a save is present, displays region and timestamp, bypassing the prologue directly into the saved world.                                                                                                           | **PASS**            |
+| **04** | **New Game Setup**     | Interactive Player Setup modal (`ww-setup-modal`) with real-time 3D character preview, mouse drag rotation, zoom, starting attire selection, and explicit notice of the 5-change permanent limit.                                                                | **PASS**            |
+| **05** | **Story Introduction** | Narrative prologue (_The Inciting Incident at Madras High Court_) with options to "Begin Journey" or "Skip Intro" directly to the loading pipeline.                                                                                                              | **PASS**            |
+| **06** | **Loading Screen**     | Staged loading pipeline with authentic regional artwork and real initialization stages (World, Player, NPCs, Audio, Environment).                                                                                                                                | **PASS**            |
+| **07** | **3D World Entry**     | Smooth fade into George Town, Chennai at authored safe spawn `(-250, 2.18, 0)`. Camera settles and WASD/Mouse input is instantly active with zero modal clutter. Safe checkpoint `georgetown_intro_start` created.                                               | **PASS**            |
 
 ---
 
 ## 2. Category-by-Category Asset Audit
 
 ### 2.1 Player Character
+
 - **Asset Path:** `assets/characters/player/player.glb`
 - **Specification:** Full-body humanoid mesh with Tamil skin tone, authentic kasavu veshti, indigo kurta shirt, leather sandals, and 17-bone animation rig.
 - **Animation System:** Locomotion blending for idle, walk, run, sprint, jump, fall, land, crouch, and interaction.
@@ -39,23 +41,27 @@ All assets adhere to strict local production standards: no third-party CDN model
 - **Status:** **PASS**
 
 ### 2.2 Non-Player Characters (NPCs)
+
 - **Asset Path:** `assets/characters/npcs/velu.glb` (Elder Velu), `assets/characters/npcs/reference/`
 - **Archetypes Covered:** 12 authored cultural roles including Village Elder, Female Farmer, Fisherman, Tea Estate Worker, Heritage Worker, Artisan, and Auto Driver.
 - **Turnaround References:** Production turnaround sheets generated and stored locally in `assets/ui/characters/`.
 - **Status:** **PASS**
 
 ### 2.3 Wildlife
+
 - **Asset Path:** `assets/wildlife/nilgiri_tahr.glb`
 - **Specification:** Nilgiri Tahr mountain ungulate with coarse coat, curved horns, and localized grazing behaviors.
 - **Ecosystem Logic:** Ambient bird flocks, coastal gulls, and river fauna mapped to regional biomes via `wildlife-manager.js`.
 - **Status:** **PASS**
 
 ### 2.4 Vehicles & Transport
+
 - **Chennai Auto-Rickshaw:** `assets/vehicles/auto_rickshaw/chennai_auto.glb` (Yellow roof, black chassis, custom wheel alignment).
 - **Pichavaram Rowboat:** `assets/vehicles/boats/mangrove_rowboat.glb` (Weathered teak hull, bamboo oars, waterline buoyancy physics).
 - **Status:** **PASS**
 
 ### 2.5 Regional Architecture & Landmarks
+
 - **Chennai:** `assets/landmarks/chennai/madras_high_court.glb` (Indo-Saracenic red-brick arches, minarets, marble domes), `assets/architecture/chennai/tea_kadai_stall.glb` (Teak stall with samovar).
 - **Cauvery Delta:** `assets/architecture/delta/irrigation_sluice.glb` (Granite masonry sluice and iron gates).
 - **Pichavaram:** `assets/landmarks/pichavaram/mangrove_dock.glb` (Stilt timber dock and mooring posts).
@@ -65,43 +71,51 @@ All assets adhere to strict local production standards: no third-party CDN model
 - **Status:** **PASS**
 
 ### 2.6 Cultural Props
+
 - **Items:** Traditional brass tea samovar, davarah tumblers, coir ropes, granite grinding stones, agal lamps, kuthu vilakku.
 - **Materials:** Realistic PBR textures (base color, roughness, metallic, ambient occlusion).
 - **Status:** **PASS**
 
 ### 2.7 Regional Vegetation
+
 - **Palmyra Palm:** `assets/vegetation/trees/palmyra_palm.glb` (Tamil Nadu state tree, textured fan fronds).
 - **Mangrove Forest:** `assets/vegetation/trees/rhizophora_mangrove.glb` (Interlocking stilt root system).
 - **Tea Plantations:** `assets/vegetation/bushes/tea_hedge.glb` (Contoured mountain plantation rows).
 - **Status:** **PASS**
 
 ### 2.8 Terrain & Water Systems
+
 - **Terrain:** Multi-layer splat mapping supporting red clay, coastal beach sand, agricultural mud, and granite bedrock with dynamic height sampling (`resolveHeight`).
 - **Water Shaders:** Dynamic shore foam on the Bay of Bengal coastline, dark brackish mangrove channels at Pichavaram, and slow-moving irrigation canals in Tanjore.
 - **Status:** **PASS**
 
 ### 2.9 Level of Detail (LOD) & World Streaming
+
 - **LOD Hierarchy:** LOD0 (Hero/Near < 25m), LOD1 (Mid 25m–80m), LOD2 (Far > 80m).
 - **Streaming:** Sector-based loading via `WorldStreaming` and `LoadingManager` preventing memory leaks and frame drops.
 - **Status:** **PASS**
 
 ### 2.10 Physics & Collision
+
 - **Collision Models:** Simplified bounding capsules and compound convex boxes for all interactive structures and characters, preventing mesh-level CPU bottlenecks.
 - **Safe Spawning:** Strict collision validation ensures player never spawns inside buildings, below terrain, or within vehicle hulls.
 - **Status:** **PASS**
 
 ### 2.11 Navigation Mesh
+
 - **Ground Snapping:** Raycast-based ground reconciliation guarantees characters remain grounded on irregular terrain and steps.
 - **Navmesh Pathing:** Sector boundary validation across roads, bridges, and village alleys.
 - **Status:** **PASS**
 
 ### 2.12 Audio & Spatial Ambience
+
 - **Manifest:** `assets/audio/audio-manifest.json` and `AUDIO_LICENSE_MANIFEST.json`.
 - **Soundscapes:** George Town morning traffic and tea stall chatter, Pichavaram kingfishers and water laps, temple bells, Nilgiris mountain breeze.
 - **Acoustic Audio:** AudioContext initialized on user interaction without blocking gameplay start.
 - **Status:** **PASS**
 
 ### 2.13 Licensing & Asset Origin
+
 - **Audit:** All assets are 100% original project creations, CC-BY-4.0, or MIT licensed. Zero unlicensed or ripped assets.
 - **Remote Asset Scan:** Verified 0 dependencies on external model CDNs (no `cdn.jsdelivr`, `threejs.org/examples`, or unknown remote endpoints).
 - **Status:** **PASS**

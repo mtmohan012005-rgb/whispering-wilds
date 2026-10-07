@@ -1,45 +1,49 @@
 # The Whispering Wilds (காட்டு வழி • தடம்)
+
 ## Automated Unity 6 Project Audit — Current Baseline
+
 **Timestamp**: 2026-09-29  
 **Engine**: Unity 6000.6.3f1 (Release x64)  
 **Target Platform**: Windows Standalone x64 (`TheWhisperingWilds.exe`)  
-**Active Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0) with dynamic resolution scaling  
+**Active Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0) with dynamic resolution scaling
 
 ---
 
 ### 1. Executive System Classification Summary
 
-| System / Concern | Status | Assessment & Remediation Priority |
-| :--- | :--- | :--- |
-| **Player Locomotion & Rig** | `WORKING` | `player.glb` rigged with 23 bones, 24 animations, `CharacterController`, jump buffer & coyote time. |
-| **Appearance Limit (Max 5)**| `WORKING` | Strictly clamped and persisted across runtime, save, UI, and cloud layers. |
-| **Authored 3D Assets** | `WORKING` | 109 authored `.glb` models. Zero placeholder primitive cubes/spheres in production scenes. |
-| **Scenes (12 Total)** | `WORKING` | 8 playable regions + 4 automated benchmark suites registered in `EditorBuildSettings`. |
-| **Camera Controller** | `WORKING` | 3rd person orbital follow with `SphereCast` occlusion pushout. Cinemachine 3.1.2 integrated. |
-| **Input System** | `WORKING` | Unity New Input System (`UnityEngine.InputSystem`) for KBM & Gamepad. Legacy Input removed. |
-| **Bilingual Dialogue & Quests**| `WORKING` | Tamil & English dialogue nodes, clue deduction engine, 24-slot inventory & crafting. |
-| **Lighting & Day/Night** | `WORKING` | 24-hour sun rotation, trilight ambient response, dynamic lighting presets. |
-| **Weather Simulation** | `WORKING` | Dynamic monsoon rain, road puddles, wetness factor, fog attenuation. |
-| **Save & Persistence** | `WORKING` | Versioned JSON local storage (`SaveSystem`) + asynchronous non-blocking Supabase cloud sync. |
-| **Quality & Dynamic Scaling** | `PARTIAL` | PresetManager and AutoDetector exist, but AdaptiveQualityManager previously updated variable without resizing engine render buffers (`ScalableBufferManager.ResizeBuffers`). Multi-manager conflicts present. |
-| **Memory Management** | `BROKEN` | `MemoryBudgetManager` called periodic `GC.Collect()` and `Resources.UnloadUnusedAssets()` on a 60s timer, creating gameplay frame stalls. Must be moved strictly to loading boundaries. |
-| **World Streaming & Cells** | `PARTIAL` | Regional scene loader exists, but lacks deterministic chunk state machine (`UNLOADED`, `LOADING`, `LOADED`, `ACTIVE`, `INACTIVE`, `UNLOADING`) and predictive prefetch. |
-| **Asset Lifetime Authority** | `MISSING` | No centralized `AssetManager` tracking Addressable and Resource load/retain/release lifecycles. |
-| **Crowd & NPC Tiers** | `PARTIAL` | Schedules and distance culling exist; needs single-authority integration with quality-tier budgets. |
-| **Wildlife Simulation** | `PARTIAL` | `WildlifeEntity` wander/flee exists with Nilgiri Tahr; needs quality scaling and broader species. |
-| **Traffic / Transit** | `PARTIAL` | Waypoint traffic exists for auto-rickshaw; needs unified lifecycle management. |
-| **Multiplayer / Realtime** | `MISSING` | Dedicated `RealtimeManager` authority for network state synchronization is missing. |
+| System / Concern                | Status    | Assessment & Remediation Priority                                                                                                                                                                             |
+| :------------------------------ | :-------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Player Locomotion & Rig**     | `WORKING` | `player.glb` rigged with 23 bones, 24 animations, `CharacterController`, jump buffer & coyote time.                                                                                                           |
+| **Appearance Limit (Max 5)**    | `WORKING` | Strictly clamped and persisted across runtime, save, UI, and cloud layers.                                                                                                                                    |
+| **Authored 3D Assets**          | `WORKING` | 109 authored `.glb` models. Zero placeholder primitive cubes/spheres in production scenes.                                                                                                                    |
+| **Scenes (12 Total)**           | `WORKING` | 8 playable regions + 4 automated benchmark suites registered in `EditorBuildSettings`.                                                                                                                        |
+| **Camera Controller**           | `WORKING` | 3rd person orbital follow with `SphereCast` occlusion pushout. Cinemachine 3.1.2 integrated.                                                                                                                  |
+| **Input System**                | `WORKING` | Unity New Input System (`UnityEngine.InputSystem`) for KBM & Gamepad. Legacy Input removed.                                                                                                                   |
+| **Bilingual Dialogue & Quests** | `WORKING` | Tamil & English dialogue nodes, clue deduction engine, 24-slot inventory & crafting.                                                                                                                          |
+| **Lighting & Day/Night**        | `WORKING` | 24-hour sun rotation, trilight ambient response, dynamic lighting presets.                                                                                                                                    |
+| **Weather Simulation**          | `WORKING` | Dynamic monsoon rain, road puddles, wetness factor, fog attenuation.                                                                                                                                          |
+| **Save & Persistence**          | `WORKING` | Versioned JSON local storage (`SaveSystem`) + asynchronous non-blocking Supabase cloud sync.                                                                                                                  |
+| **Quality & Dynamic Scaling**   | `PARTIAL` | PresetManager and AutoDetector exist, but AdaptiveQualityManager previously updated variable without resizing engine render buffers (`ScalableBufferManager.ResizeBuffers`). Multi-manager conflicts present. |
+| **Memory Management**           | `BROKEN`  | `MemoryBudgetManager` called periodic `GC.Collect()` and `Resources.UnloadUnusedAssets()` on a 60s timer, creating gameplay frame stalls. Must be moved strictly to loading boundaries.                       |
+| **World Streaming & Cells**     | `PARTIAL` | Regional scene loader exists, but lacks deterministic chunk state machine (`UNLOADED`, `LOADING`, `LOADED`, `ACTIVE`, `INACTIVE`, `UNLOADING`) and predictive prefetch.                                       |
+| **Asset Lifetime Authority**    | `MISSING` | No centralized `AssetManager` tracking Addressable and Resource load/retain/release lifecycles.                                                                                                               |
+| **Crowd & NPC Tiers**           | `PARTIAL` | Schedules and distance culling exist; needs single-authority integration with quality-tier budgets.                                                                                                           |
+| **Wildlife Simulation**         | `PARTIAL` | `WildlifeEntity` wander/flee exists with Nilgiri Tahr; needs quality scaling and broader species.                                                                                                             |
+| **Traffic / Transit**           | `PARTIAL` | Waypoint traffic exists for auto-rickshaw; needs unified lifecycle management.                                                                                                                                |
+| **Multiplayer / Realtime**      | `MISSING` | Dedicated `RealtimeManager` authority for network state synchronization is missing.                                                                                                                           |
 
 ---
 
 ### 2. Detailed Subsystem Audit
 
 #### 2.1 Characters & NPCs
+
 - **Player Character**: Rigged model at `Assets/_Project/Art/Models/Characters/Player/player.glb`. `CharacterController` locomotion driven by `PlayerMovement.cs` and `PlayerLocomotionController.controller`.
 - **NPC Characters**: 8 authored human character models at `Assets/_Project/Art/Models/Characters/NPCs/` (`murugan.glb`, `velu.glb`, `selvam.glb`, `meenakshi.glb`, `forest-guide.glb`).
 - **Appearance Constraint**: `PlayerAppearanceManager.cs` strictly enforces a ceiling of 5 permanent appearance changes.
 
 #### 2.2 3D Model Catalog (109 Models)
+
 - **Architecture (22)**:
   - Chennai: `tea_kadai_stall.glb`, `old_tamil_house.glb`, `street_row.glb`, `market_building.glb`, `electrical_pole.glb`
   - Chettinad: `courtyard_mansion.glb`, `athangudi_floor.glb`, `carved_door.glb`, `wooden_column.glb`
@@ -59,6 +63,7 @@
   - `nilgiri_tahr.glb`
 
 #### 2.3 Quality & Performance Architecture Defects Identified
+
 1. **Adaptive Quality Render Scale Disconnect**:
    - `AdaptiveQualityManager.cs` maintained an internal `CurrentRenderScale` variable but did not call `ScalableBufferManager.ResizeBuffers(scale, scale)` or adjust the active camera dynamic resolution settings.
 2. **Periodic Garbage Collection Stalls**:
@@ -71,6 +76,7 @@
 ---
 
 ### 3. Single Authority Architectural Requirements (Phase 2)
+
 To eliminate duplicate settings mutation and establish rigorous architectural boundaries, the following single authorities are established:
 
 1. `GameManager`: Master game lifecycle, runtime state transitions, pause/unpause.

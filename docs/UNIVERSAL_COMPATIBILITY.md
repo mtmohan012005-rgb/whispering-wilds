@@ -1,7 +1,8 @@
 # Universal Compatibility Layer & Device Adaptation
 
 ## 1. Architectural Authority
-`RuntimeCompatibilitySystem` serves as the **single authoritative manager** for platform capabilities, hardware normalization, dynamic runtime adaptation, and failure recovery in *The Whispering Wilds*.
+
+`RuntimeCompatibilitySystem` serves as the **single authoritative manager** for platform capabilities, hardware normalization, dynamic runtime adaptation, and failure recovery in _The Whispering Wilds_.
 
 ```
 Operating System (Windows / macOS / Linux)
@@ -20,7 +21,9 @@ Gameplay Correctness (Inviolable Quest, Inventory, Save & 5-Customization Limit)
 ```
 
 ## 2. Priority Hierarchy
+
 When system resources become constrained, adaptation adheres strictly to the following priority chain:
+
 1. **STABILITY**: Eliminate unhandled exceptions, GPU crashes, memory leaks, and render loop duplication.
 2. **COMPATIBILITY**: Graceful fallback to supported APIs (WebGL2 → WebGL Fallback; silent audio; safe textures).
 3. **FRAME PACING**: Consistent frame times (33.3ms for 30 FPS, 16.6ms for 60 FPS) over fluctuating peaks.
@@ -28,7 +31,9 @@ When system resources become constrained, adaptation adheres strictly to the fol
 5. **VISUAL QUALITY**: Scalable PBR materials, shadows, reflections, and dynamic foliage density.
 
 ## 3. Normalized Hardware Profile
+
 Introspection produces an anonymous, privacy-safe descriptor containing strictly zero personal identity info (PII):
+
 ```json
 {
   "os": "WINDOWS" | "MACOS" | "LINUX" | "UNKNOWN",
@@ -46,12 +51,15 @@ Introspection produces an anonymous, privacy-safe descriptor containing strictly
 ```
 
 ## 4. Hardware Classification & Default Behavior
+
 - **Known Hardware**: Classified directly into `VERY_LOW`, `LOW`, `MEDIUM`, `HIGH`, or `ULTRA`.
 - **Unknown Hardware**: Defaults safely to `MEDIUM` with dynamic performance adaptation active. The game **never** blindly selects `ULTRA` on unrecognized hardware.
 - **First Launch Sequence**: `Detect` → `Validate` → `Safe Graphics` → `Short Micro-Benchmark (<= 150ms)` → `Recommend Profile` → `Launch`.
 
 ## 5. Inviolable Gameplay Invariants
+
 No compatibility adaptation or emergency recovery is permitted to compromise:
+
 1. **Customization Ceiling**: `0 <= player.customizationChangesUsed <= 5`.
 2. **Player Locomotion & World Collision**: Never disabled or clipped.
 3. **Story & Quest Progression**: Mission prerequisites, clues, and dialogue trees remain untouched.

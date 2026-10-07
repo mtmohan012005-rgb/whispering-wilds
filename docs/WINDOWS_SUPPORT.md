@@ -1,12 +1,14 @@
 # The Whispering Wilds - Windows Support & Packaging
 
 ## Target Architecture & Distribution
+
 - **Target OS**: Windows 10 (Build 19041+) and Windows 11 (64-bit).
 - **Target CPU Architecture**: x64 (AMD64 / Intel 64-bit).
 - **Installer Type**: NSIS Native Installer (`The-Whispering-Wilds-Setup-1.0.0-x64.exe`) and Portable Zip.
 - **Save Location**: `%APPDATA%\TheWhisperingWilds\saves` (e.g. `C:\Users\<User>\AppData\Roaming\TheWhisperingWilds\saves`).
 
 ## Key Windows Features
+
 1. **Unicode & Non-English Path Support**:
    - Fully tested with non-ASCII user profiles, spaces in directory paths, and Tamil filenames (`விளையாட்டு`).
    - Uses platform-safe path normalization and UTF-8 encoding across all filesystem interactions.

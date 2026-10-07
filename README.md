@@ -1,8 +1,8 @@
 # 🌿 The Whispering Wilds (காட்டு வழி • தடம்)
 
-[![Unity 6](https://img.shields.io/badge/Engine-Unity%206%20(6000.6.3f1)-black?style=for-the-badge&logo=unity)](https://unity.com/)
+[![Unity 6](<https://img.shields.io/badge/Engine-Unity%206%20(6000.6.3f1)-black?style=for-the-badge&logo=unity>)](https://unity.com/)
 [![Render Pipeline](https://img.shields.io/badge/Render%20Pipeline-HDRP%2017.7.0-blue?style=for-the-badge)](https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@17.0/manual/index.html)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20x64%20(DirectX%2011%2F12)-brightgreen?style=for-the-badge&logo=windows)](https://github.com/mtmohan012005-rgb/whispering-wilds)
+[![Platform](<https://img.shields.io/badge/Platform-Windows%20x64%20(DirectX%2011%2F12)-brightgreen?style=for-the-badge&logo=windows>)](https://github.com/mtmohan012005-rgb/whispering-wilds)
 [![License](https://img.shields.io/badge/License-MIT-orange?style=for-the-badge)](LICENSE)
 
 An atmospheric open-world exploration, cultural mystery investigation, and survival adventure set across authentic Tamil Nadu landscapes—now built as a native **Unity 6 PC Game** with zero dependency on browsers, Node.js, Electron, or localhost runtimes.
@@ -23,12 +23,14 @@ The game is delivered as a standalone Windows x64 executable:
 - **Asset License Ledger**: [`unity/ASSET_LICENSE_MANIFEST.md`](./unity/ASSET_LICENSE_MANIFEST.md)
 
 ### Running the Standalone PC Game
+
 ```powershell
 # Double-click or launch directly from PowerShell / Command Prompt:
 & ".\Build\Windows\TheWhisperingWilds.exe"
 ```
 
 ### Opening in Unity 6 Editor
+
 1. Open **Unity Hub**.
 2. Click **Add** $\rightarrow$ **Add project from disk**.
 3. Select the `unity/` folder (or `C:\Users\mohan\My project`).
@@ -43,7 +45,7 @@ The game strictly enforces an absolute ceiling of **5 permanent appearance chang
 
 - **Runtime Logic (`PlayerAppearanceManager.cs`)**: Tracks remaining change tokens (`5/5`). Once `0/5` is reached, further physical customization is permanently rejected.
 - **HUD & Title UI (`HUDManager.cs` & `TitleMenuController.cs`)**: Continuously displays `Appearance Changes: X / 5` on screen and displays the bilingual rule notice on the main menu:
-  > *"விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும் (Rule: Strict maximum of 5 permanent appearance changes across the entire journey)."*
+  > _"விதிமுறை: முழு பயணத்திலும் அதிகபட்சம் 5 நிரந்தர தோற்ற மாற்றங்கள் மட்டுமே அனுமதிக்கப்படும் (Rule: Strict maximum of 5 permanent appearance changes across the entire journey)."_
 - **Save Integrity (`SaveSystem.cs`)**: Save files store `remainingPermanentAppearanceChanges` and enforce `Mathf.Clamp(count, 0, 5)` upon deserialization.
 - **Regional Attire Swaps**: Cultural outfit swaps (Chennai everyday veshti, Cauvery village cottons, Thanjavur silks, Pichavaram boatman wear, Nilgiri mountain wools) are unrestricted and do not consume permanent appearance tokens.
 
@@ -51,9 +53,9 @@ The game strictly enforces an absolute ceiling of **5 permanent appearance chang
 
 ## 🏛️ 3. Main Story & Investigation
 
-* **Prologue:** Outside the Indo-Saracenic red-brick arches of the **Madras High Court** in George Town, Chennai.
-* **Inciting Incident:** While reviewing an inherited century-old architectural blueprint during a sudden Chennai downpour, a mysterious rider on a vintage Royal Enfield steals critical records and speeds away into George Town's alleyways.
-* **Objective:** Follow tyre treads across authentic Tamil Nadu geography, interrogate local figures (Murugan the tea stall owner, Velu the auto driver), gather forensic clues, decode ancient Chola hydraulic engineering, and uncover **Pasumai Thadam** (a subterranean sanctuary in the Western Ghats).
+- **Prologue:** Outside the Indo-Saracenic red-brick arches of the **Madras High Court** in George Town, Chennai.
+- **Inciting Incident:** While reviewing an inherited century-old architectural blueprint during a sudden Chennai downpour, a mysterious rider on a vintage Royal Enfield steals critical records and speeds away into George Town's alleyways.
+- **Objective:** Follow tyre treads across authentic Tamil Nadu geography, interrogate local figures (Murugan the tea stall owner, Velu the auto driver), gather forensic clues, decode ancient Chola hydraulic engineering, and uncover **Pasumai Thadam** (a subterranean sanctuary in the Western Ghats).
 
 ---
 
@@ -70,27 +72,27 @@ The game strictly enforces an absolute ceiling of **5 permanent appearance chang
 5. **Mamallapuram Shore**:
    - Granite stone carving, rock-cut cave temples, and coastal shores.
 6. **Nilgiris & Western Ghats**:
-   - Stepped tea plantations, Shola cloud forests, Toda tribal *mund* barrel-vault huts, wild Nilgiri Tahr, and the lost eco-sanctuary portal.
+   - Stepped tea plantations, Shola cloud forests, Toda tribal _mund_ barrel-vault huts, wild Nilgiri Tahr, and the lost eco-sanctuary portal.
 
 ---
 
 ## 🎮 5. PC Controls
 
-| Action | Keyboard & Mouse | Gamepad (Xbox / PlayStation) |
-| :--- | :--- | :--- |
-| **Move / Locomotion** | `W`, `A`, `S`, `D` | Left Analog Stick |
+| Action                   | Keyboard & Mouse                  | Gamepad (Xbox / PlayStation)   |
+| :----------------------- | :-------------------------------- | :----------------------------- |
+| **Move / Locomotion**    | `W`, `A`, `S`, `D`                | Left Analog Stick              |
 | **Walk** (analog gentle) | Minor analog tilt / partial press | Left Stick gentle tilt (< 0.6) |
-| **Run** (standard) | Normal WASD / full tilt | Left Stick full tilt (≥ 0.6) |
-| **Sprint** | Hold `Left Shift` | Click Left Stick (L3) |
-| **Crouch** | `C` | `B` / `Circle` |
-| **Jump** | `Spacebar` | `A` / `Cross` |
-| **Orbit Camera** | Mouse Movement | Right Analog Stick |
-| **Interact** | `E` | `X` / `Square` |
-| **Inventory & Codex** | `Tab` / `I` | `View` / `Touchpad` |
-| **Crafting Workbench** | `G` | D-Pad Down |
-| **Belt Lantern** | `L` | D-Pad Left |
-| **Deploy Campfire** | `B` | D-Pad Right |
-| **Pitch Tent (Rest)** | `T` | D-Pad Up |
+| **Run** (standard)       | Normal WASD / full tilt           | Left Stick full tilt (≥ 0.6)   |
+| **Sprint**               | Hold `Left Shift`                 | Click Left Stick (L3)          |
+| **Crouch**               | `C`                               | `B` / `Circle`                 |
+| **Jump**                 | `Spacebar`                        | `A` / `Cross`                  |
+| **Orbit Camera**         | Mouse Movement                    | Right Analog Stick             |
+| **Interact**             | `E`                               | `X` / `Square`                 |
+| **Inventory & Codex**    | `Tab` / `I`                       | `View` / `Touchpad`            |
+| **Crafting Workbench**   | `G`                               | D-Pad Down                     |
+| **Belt Lantern**         | `L`                               | D-Pad Left                     |
+| **Deploy Campfire**      | `B`                               | D-Pad Right                    |
+| **Pitch Tent (Rest)**    | `T`                               | D-Pad Up                       |
 
 ---
 
@@ -98,25 +100,25 @@ The game strictly enforces an absolute ceiling of **5 permanent appearance chang
 
 All models in the game are authored 3D models imported natively:
 
-| Asset | Model File | Cultural & Technical Details |
-| :--- | :--- | :--- |
-| **Player Character** | `Assets/_Project/Art/Models/Characters/Player/player.glb` | Rigged 3D model with 23 bones, `Player_LOD0` SkinnedMeshRenderer, 24 animations, and cotton veshti attire. |
-| **NPC Murugan** | `Assets/_Project/Art/Models/Characters/NPCs/murugan.glb` | George Town tea stall vendor with red-bordered cotton lungi, shoulder towel (*thundu*), moustache, and tea glass. |
-| **NPC Velu** | `Assets/_Project/Art/Models/Characters/NPCs/velu.glb` | Chennai auto-rickshaw driver and guide in khaki uniform. |
-| **Tea Kadai Stall** | `Assets/_Project/Art/Models/Architecture/chennai/tea_kadai_stall.glb` | Green wooden tea stall with tin canopy, bench, and brass boiling samovar. |
-| **Chennai Auto** | `Assets/_Project/Art/Models/Vehicles/auto_rickshaw/chennai_auto.glb` | Yellow-and-black 3-wheeled auto-rickshaw with canvas roof. |
-| **Street Row** | `Assets/_Project/Art/Models/Architecture/chennai/street_row.glb` | Indo-Saracenic colonial shopfronts with arched verandas. |
-| **Old Tamil House** | `Assets/_Project/Art/Models/Architecture/chennai/old_tamil_house.glb` | Heritage residential facade with traditional raised front *thinnai* veranda. |
-| **Brihadisvara Gopuram**| `Assets/_Project/Art/Models/Architecture/thanjavur_gopuram.glb` | Chola granite vimana and gopuram temple architecture. |
-| **Courtyard Mansion** | `Assets/_Project/Art/Models/Architecture/chettinad/courtyard_mansion.glb` | Chettinad heritage courtyard palace with Athangudi flooring and carved doors. |
-| **Shore Temple Shrine** | `Assets/_Project/Art/Models/Architecture/mamallapuram/heritage_structure.glb`| Pallava 7th-century coastal rock-cut granite shrine. |
-| **Toda Mund Hut** | `Assets/_Project/Art/Models/Architecture/nilgiris/toda_mund_hut.glb` | Indigenous Nilgiri Toda barrel-vaulted thatch-and-stone dwelling. |
-| **Nilgiri Tahr** | `Assets/_Project/Art/Models/Wildlife/nilgiri_tahr.glb` | Western Ghats endangered mountain ungulate with autonomous wandering. |
-| **Degree Kaapi Tumbler**| `Assets/_Project/Art/Models/Props/food/filter_coffee_tumbler.glb` | Traditional brass davarah and tumbler with frothy filter coffee. |
-| **Agal Vilakku** | `Assets/_Project/Art/Models/Props/cultural/agal_lamp.glb` | Terracotta earthen oil lamp. |
-| **Ammi Kallu** | `Assets/_Project/Art/Models/Props/cultural/ammi_kallu.glb` | Authentic heritage granite grinding stone and roller. |
-| **Kuthu Vilakku** | `Assets/_Project/Art/Models/Props/cultural/kuthu_vilakku.glb` | Five-spout ceremonial brass oil lamp. |
-| **Flower Cart** | `Assets/_Project/Art/Models/Props/market/flower_cart.glb` | Wooden pushcart with jasmine (*malli*) and marigold garlands. |
+| Asset                    | Model File                                                                    | Cultural & Technical Details                                                                                      |
+| :----------------------- | :---------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| **Player Character**     | `Assets/_Project/Art/Models/Characters/Player/player.glb`                     | Rigged 3D model with 23 bones, `Player_LOD0` SkinnedMeshRenderer, 24 animations, and cotton veshti attire.        |
+| **NPC Murugan**          | `Assets/_Project/Art/Models/Characters/NPCs/murugan.glb`                      | George Town tea stall vendor with red-bordered cotton lungi, shoulder towel (_thundu_), moustache, and tea glass. |
+| **NPC Velu**             | `Assets/_Project/Art/Models/Characters/NPCs/velu.glb`                         | Chennai auto-rickshaw driver and guide in khaki uniform.                                                          |
+| **Tea Kadai Stall**      | `Assets/_Project/Art/Models/Architecture/chennai/tea_kadai_stall.glb`         | Green wooden tea stall with tin canopy, bench, and brass boiling samovar.                                         |
+| **Chennai Auto**         | `Assets/_Project/Art/Models/Vehicles/auto_rickshaw/chennai_auto.glb`          | Yellow-and-black 3-wheeled auto-rickshaw with canvas roof.                                                        |
+| **Street Row**           | `Assets/_Project/Art/Models/Architecture/chennai/street_row.glb`              | Indo-Saracenic colonial shopfronts with arched verandas.                                                          |
+| **Old Tamil House**      | `Assets/_Project/Art/Models/Architecture/chennai/old_tamil_house.glb`         | Heritage residential facade with traditional raised front _thinnai_ veranda.                                      |
+| **Brihadisvara Gopuram** | `Assets/_Project/Art/Models/Architecture/thanjavur_gopuram.glb`               | Chola granite vimana and gopuram temple architecture.                                                             |
+| **Courtyard Mansion**    | `Assets/_Project/Art/Models/Architecture/chettinad/courtyard_mansion.glb`     | Chettinad heritage courtyard palace with Athangudi flooring and carved doors.                                     |
+| **Shore Temple Shrine**  | `Assets/_Project/Art/Models/Architecture/mamallapuram/heritage_structure.glb` | Pallava 7th-century coastal rock-cut granite shrine.                                                              |
+| **Toda Mund Hut**        | `Assets/_Project/Art/Models/Architecture/nilgiris/toda_mund_hut.glb`          | Indigenous Nilgiri Toda barrel-vaulted thatch-and-stone dwelling.                                                 |
+| **Nilgiri Tahr**         | `Assets/_Project/Art/Models/Wildlife/nilgiri_tahr.glb`                        | Western Ghats endangered mountain ungulate with autonomous wandering.                                             |
+| **Degree Kaapi Tumbler** | `Assets/_Project/Art/Models/Props/food/filter_coffee_tumbler.glb`             | Traditional brass davarah and tumbler with frothy filter coffee.                                                  |
+| **Agal Vilakku**         | `Assets/_Project/Art/Models/Props/cultural/agal_lamp.glb`                     | Terracotta earthen oil lamp.                                                                                      |
+| **Ammi Kallu**           | `Assets/_Project/Art/Models/Props/cultural/ammi_kallu.glb`                    | Authentic heritage granite grinding stone and roller.                                                             |
+| **Kuthu Vilakku**        | `Assets/_Project/Art/Models/Props/cultural/kuthu_vilakku.glb`                 | Five-spout ceremonial brass oil lamp.                                                                             |
+| **Flower Cart**          | `Assets/_Project/Art/Models/Props/market/flower_cart.glb`                     | Wooden pushcart with jasmine (_malli_) and marigold garlands.                                                     |
 
 ---
 
@@ -139,6 +141,7 @@ The game includes full low-end laptop to high-end 4K gaming PC support:
 ## 📊 8. Automated Performance Benchmarks
 
 The project includes 4 automated benchmark suites:
+
 - `WW_Benchmark_Chennai` — Dense urban market stress testing.
 - `WW_Benchmark_Pichavaram` — Mangrove wetland and water overdraw stress testing.
 - `WW_Benchmark_Delta` — Alluvial landscape and shadow cascade stress testing.
@@ -150,4 +153,5 @@ Benchmarks execute automated 15-second passes, compute average/1% low FPS, and w
 ---
 
 ## 📜 9. License
+
 MIT License • Created for **The Whispering Wilds (காட்டு வழி • தடம்)**.

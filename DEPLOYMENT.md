@@ -1,7 +1,9 @@
 # PRODUCTION DEPLOYMENT GUIDE (ROOT REFERENCE)
+
 See full technical specification in `docs/DEPLOYMENT.md`.
 
 ## Summary
+
 - **Frontend Hosting**: Netlify (`netlify.toml`)
 - **Backend Multiplayer**: Render (`render.yaml`)
 - **Multiplayer URL**: Specified by `window.MULTIPLAYER_SERVER_URL` or `RUNTIME_CONFIG.multiplayerServerUrl`.

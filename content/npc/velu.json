@@ -18,17 +18,38 @@
     "npc_murugan": 75,
     "npc_selvam": 40
   },
-  "questReferences": [
-    "quest_lost_chola_seal",
-    "quest_cutting_chai_route"
-  ],
+  "questReferences": ["quest_lost_chola_seal", "quest_cutting_chai_route"],
   "schedule": [
-    { "time": "06:00", "activity": "wash_auto_and_garland_hood", "location": "workplace" },
-    { "time": "07:00", "activity": "morning_commuter_ferry", "location": "streets" },
-    { "time": "12:00", "activity": "murugan_tea_stall_chai_break", "location": "loc_george_town_tea_stall" },
-    { "time": "13:00", "activity": "afternoon_shade_nap_in_rear_seat", "location": "workplace" },
-    { "time": "16:00", "activity": "evening_rush_trips", "location": "streets" },
-    { "time": "21:00", "activity": "return_to_stand_count_earnings", "location": "workplace" },
+    {
+      "time": "06:00",
+      "activity": "wash_auto_and_garland_hood",
+      "location": "workplace"
+    },
+    {
+      "time": "07:00",
+      "activity": "morning_commuter_ferry",
+      "location": "streets"
+    },
+    {
+      "time": "12:00",
+      "activity": "murugan_tea_stall_chai_break",
+      "location": "loc_george_town_tea_stall"
+    },
+    {
+      "time": "13:00",
+      "activity": "afternoon_shade_nap_in_rear_seat",
+      "location": "workplace"
+    },
+    {
+      "time": "16:00",
+      "activity": "evening_rush_trips",
+      "location": "streets"
+    },
+    {
+      "time": "21:00",
+      "activity": "return_to_stand_count_earnings",
+      "location": "workplace"
+    },
     { "time": "22:00", "activity": "dinner_and_sleep", "location": "home" }
   ],
   "animationSet": {

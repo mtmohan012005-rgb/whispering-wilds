@@ -24,11 +24,11 @@ The Unity Editor **terminated on its own** during this audit session. Cause, fro
 
 Verified license state:
 
-| Location | State |
-|---|---|
+| Location                             | State       |
+| ------------------------------------ | ----------- |
 | `C:\ProgramData\Unity\Unity_lic.ulf` | **missing** |
-| `C:\ProgramData\Unity\` | **missing** |
-| `%APPDATA%\UnityHub\license` | **missing** |
+| `C:\ProgramData\Unity\`              | **missing** |
+| `%APPDATA%\UnityHub\license`         | **missing** |
 
 **Impact:** every Unity-dependent acceptance criterion is currently unverifiable —
 compilation, scene loading, Windows build, executable launch, and all runtime
@@ -40,29 +40,29 @@ attempted and none will be.
 
 ### What this blocks
 
-| Task section | Status |
-|---|---|
-| 5 — Windows build + actual launch | **BLOCKED** |
-| 7 — full compile pass | Partially done (see C) |
-| 8–12, 83 — runtime gameplay verification | **BLOCKED** |
-| 52, 56, 58, 73 — measured performance | **BLOCKED** |
-| 62, 63, 64, 66 — automated runtime tests | **BLOCKED** |
+| Task section                             | Status                 |
+| ---------------------------------------- | ---------------------- |
+| 5 — Windows build + actual launch        | **BLOCKED**            |
+| 7 — full compile pass                    | Partially done (see C) |
+| 8–12, 83 — runtime gameplay verification | **BLOCKED**            |
+| 52, 56, 58, 73 — measured performance    | **BLOCKED**            |
+| 62, 63, 64, 66 — automated runtime tests | **BLOCKED**            |
 
 ---
 
 ## B. Environment detected
 
-| Item | Actual value | Source |
-|---|---|---|
-| Unity version | `6000.6.3f1` (rev `45d8eee7de74`) | `ProjectSettings/ProjectVersion.txt` |
-| Primary renderer | HDRP `17.7.0` | `Packages/manifest.json` |
-| Input System | `1.20.0` | manifest |
-| Cinemachine | `3.1.2` | manifest |
-| uGUI | `2.6.0` | manifest |
-| HDRP assets present | `HDRP Performant/Balanced/High Fidelity.asset`, `HDRenderPipelineAsset.asset` | `Assets/Settings` |
-| Installed editor | `C:\Program Files\Unity\Hub\Editor\6000.6.3f1` | filesystem |
-| Build target (declared) | Windows x64 | `EditorBuildSettings.asset` |
-| Machine | Windows, PowerShell 5.1 | shell |
+| Item                    | Actual value                                                                  | Source                               |
+| ----------------------- | ----------------------------------------------------------------------------- | ------------------------------------ |
+| Unity version           | `6000.6.3f1` (rev `45d8eee7de74`)                                             | `ProjectSettings/ProjectVersion.txt` |
+| Primary renderer        | HDRP `17.7.0`                                                                 | `Packages/manifest.json`             |
+| Input System            | `1.20.0`                                                                      | manifest                             |
+| Cinemachine             | `3.1.2`                                                                       | manifest                             |
+| uGUI                    | `2.6.0`                                                                       | manifest                             |
+| HDRP assets present     | `HDRP Performant/Balanced/High Fidelity.asset`, `HDRenderPipelineAsset.asset` | `Assets/Settings`                    |
+| Installed editor        | `C:\Program Files\Unity\Hub\Editor\6000.6.3f1`                                | filesystem                           |
+| Build target (declared) | Windows x64                                                                   | `EditorBuildSettings.asset`          |
+| Machine                 | Windows, PowerShell 5.1                                                       | shell                                |
 
 ### Missing packages (verified absent from `manifest.json`)
 
@@ -153,25 +153,25 @@ authority.
 
 ### E.3 Four Tamil Nadu seasons — 12/12 months correct
 
-| Month | Expected | Actual | Correct | Temp | Rain prob |
-|---|---|---|---|---|---|
-| 1,2 | Winter | Winter | YES | 31.0C | 0.03 |
-| 3,4,5 | Summer | Summer | YES | 41.0C | 0.03 |
-| 6,7,8,9 | SouthwestMonsoon | SouthwestMonsoon | YES | 33.0C | 0.30 |
-| 10,11,12 | NortheastMonsoon | NortheastMonsoon | YES | 33.0C | 0.80 |
+| Month    | Expected         | Actual           | Correct | Temp  | Rain prob |
+| -------- | ---------------- | ---------------- | ------- | ----- | --------- |
+| 1,2      | Winter           | Winter           | YES     | 31.0C | 0.03      |
+| 3,4,5    | Summer           | Summer           | YES     | 41.0C | 0.03      |
+| 6,7,8,9  | SouthwestMonsoon | SouthwestMonsoon | YES     | 33.0C | 0.30      |
+| 10,11,12 | NortheastMonsoon | NortheastMonsoon | YES     | 33.0C | 0.80      |
 
 Seasons are derived from the calendar; there is no UI/manual season switch.
 
 ### E.4 Regional climate separation (PASS, geographically sound)
 
-| Region | Zone | Jul temp | Jul rain | Jul growth |
-|---|---|---|---|---|
-| chennai | Coastal | 33.0C | 0.30 | 1.30 |
-| mamallapuram | Coastal | 32.0C | 0.25 | 1.24 |
-| pichavaram | Wetland | 31.6C | 0.30 | 1.63 |
-| thanjavur | Delta | 33.9C | 0.35 | 1.82 |
-| chettinad | DryInland | **37.2C** | 0.20 | 1.11 |
-| nilgiris | Hills | **18.3C** | **0.85** | 1.50 |
+| Region       | Zone      | Jul temp  | Jul rain | Jul growth |
+| ------------ | --------- | --------- | -------- | ---------- |
+| chennai      | Coastal   | 33.0C     | 0.30     | 1.30       |
+| mamallapuram | Coastal   | 32.0C     | 0.25     | 1.24       |
+| pichavaram   | Wetland   | 31.6C     | 0.30     | 1.63       |
+| thanjavur    | Delta     | 33.9C     | 0.35     | 1.82       |
+| chettinad    | DryInland | **37.2C** | 0.20     | 1.11       |
+| nilgiris     | Hills     | **18.3C** | **0.85** | 1.50       |
 
 Chettinad is correctly the hottest (rain shadow); Nilgiris correctly coolest with
 a dominant SW monsoon; the Cauvery Delta is correctly the most fertile.
@@ -214,7 +214,7 @@ Severity: **P0** crash/corruption · **P1** game-breaking · **P2** major · **P
 
 Both are on the same `--- MANAGERS ---` object and both run `Update()`.
 
-> The last commit `56a6017` is titled *"enable HDRP dynamic res"*. The real
+> The last commit `56a6017` is titled _"enable HDRP dynamic res"_. The real
 > implementation is `GraphicsPerformanceManager`; `AdaptiveQualityManager` remains
 > a lodBias-only stub. Treat the commit message as unverified marketing.
 
@@ -263,7 +263,7 @@ credential in the binary.
 - `IsEndpointAllowed()` rejects any non-HTTPS or loopback endpoint in a player
   build (localhost is tolerated **only** in the Editor, with an explicit warning).
   A misconfigured build therefore fails closed to local-only saves.
-- Success is reported only on a genuine 2xx (`responseCode` 200–299) *and*
+- Success is reported only on a genuine 2xx (`responseCode` 200–299) _and_
   `UnityWebRequest.Result.Success`; all other outcomes degrade to local
   persistence with a warning.
 - The duplicated upload coroutine was collapsed into one `UploadRoutine`.
@@ -298,7 +298,7 @@ flow, saves nothing, and repositions nobody. It should be removed or delegated.
 
 `RegionalSceneManager.PositionPlayerAtRegionSpawn()` falls back to
 `Vector3.zero` when no `SpawnPoint`/`PlayerSpawn` object exists. §13 requires a
-*validated* spawn; silently placing the player at the origin risks spawning
+_validated_ spawn; silently placing the player at the origin risks spawning
 inside or below geometry. It should fail loudly and retain the current position.
 
 ### F-8 · ALREADY RESOLVED in `56a6017` · Per-frame `LayerMask.GetMask` string lookup
@@ -344,9 +344,9 @@ referenced by any scene and only pollute the asset database.
 `Assets/_Project/Scripts/Editor/BuildPipelineAutomation.cs` **already implements**
 the required split, and does it properly:
 
-| Entry point | Scenes | Output | BuildOptions |
-|---|---|---|---|
-| `BuildProductionWindows()` | 8 gameplay only | `Build/Windows/TheWhisperingWilds.exe` | `None` |
+| Entry point                 | Scenes                   | Output                                       | BuildOptions                    |
+| --------------------------- | ------------------------ | -------------------------------------------- | ------------------------------- |
+| `BuildProductionWindows()`  | 8 gameplay only          | `Build/Windows/TheWhisperingWilds.exe`       | `None`                          |
 | `BuildQABenchmarkWindows()` | 8 gameplay + 4 benchmark | `Build/Windows_QA/TheWhisperingWilds_QA.exe` | `Development \| AllowDebugging` |
 
 Each method also rewrites `EditorBuildSettings.scenes` to match its own profile
@@ -375,15 +375,15 @@ pointed at the repository project.
 
 ## G. Asset inventory (measured)
 
-| Type | Count |
-|---|---|
-| `.glb` models | 109 |
-| `.meta` | 292 |
-| `.cs` | 72 (in `_Project/Scripts`) |
-| Scenes | 12 gameplay/benchmark + 1 stray (`Assets/OutdoorsScene.unity`) |
-| Prefabs | **1** (`New Mesh.prefab`) |
-| Animator controllers | **1** (`PlayerLocomotionController.controller`) |
-| Textures (`.png`/`.jpg`) | **11** total |
+| Type                     | Count                                                          |
+| ------------------------ | -------------------------------------------------------------- |
+| `.glb` models            | 109                                                            |
+| `.meta`                  | 292                                                            |
+| `.cs`                    | 72 (in `_Project/Scripts`)                                     |
+| Scenes                   | 12 gameplay/benchmark + 1 stray (`Assets/OutdoorsScene.unity`) |
+| Prefabs                  | **1** (`New Mesh.prefab`)                                      |
+| Animator controllers     | **1** (`PlayerLocomotionController.controller`)                |
+| Textures (`.png`/`.jpg`) | **11** total                                                   |
 
 Real content confirmed present: `player.glb` (43 KB), 8 NPC models
 (`murugan`, `meenakshi`, `selvam`, `velu`, `farmer`, `fisher`, `artisan`,
@@ -492,13 +492,13 @@ No Firebase connectivity is claimed.
 All are compile-verified **by static analysis only** — the licence loss prevents an
 actual compile, so each is re-checked against the Editor before being trusted.
 
-| ID | File | Fix |
-|---|---|---|
-| F-1 | `Quality/AdaptiveQualityManager.cs` | `ApplyDynamicScaling()` now delegates to the real `GraphicsPerformanceManager.ApplyEngineRenderResolution()` instead of faking resolution via `lodBias`. This also removes a genuine **lodBias write conflict**: both managers were writing `QualitySettings.lodBias` every frame. Warns explicitly when the real manager is absent. |
-| F-6 | `Core/GameManager.cs` | `LoadRegion()` no longer calls `SceneManager.LoadScene()` (implicit `LoadSceneMode.Single`, no save, no reposition). It now resolves the scene name to a canonical region id and delegates to `RegionalSceneManager.TravelToRegion()`. Fails loudly on an unknown region instead of defaulting. Removed the now-unused `UnityEngine.SceneManagement` import. |
-| — | `World/RegionalSceneManager.cs` | Added `ResolveRegionIdFromSceneName()`, backed by the authoritative `TamilNaduGeography.AllRegions` catalogue. Verified all 7 `sceneName` values match the build-settings scene filenames exactly. |
-| F-7 | `World/RegionalSceneManager.cs` | `PositionPlayerAtRegionSpawn()` **no longer falls back to `Vector3.zero`**. With no spawn marker it now logs an error and keeps the player in place, rather than risking a spawn inside or below terrain. Also logs the resolved validated spawn. |
-| F-4 | `Online/CloudSaveManager.cs` | Removed the baked-in `dev_session_token` and `http://localhost:3000` defaults. Endpoint is now runtime-supplied; tokens come from an `IdTokenProvider` fetched per request. Player builds reject non-HTTPS/loopback endpoints and fail closed to local saves. Success requires a genuine 2xx. Duplicated upload coroutine collapsed. |
+| ID  | File                                | Fix                                                                                                                                                                                                                                                                                                                                                          |
+| --- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| F-1 | `Quality/AdaptiveQualityManager.cs` | `ApplyDynamicScaling()` now delegates to the real `GraphicsPerformanceManager.ApplyEngineRenderResolution()` instead of faking resolution via `lodBias`. This also removes a genuine **lodBias write conflict**: both managers were writing `QualitySettings.lodBias` every frame. Warns explicitly when the real manager is absent.                         |
+| F-6 | `Core/GameManager.cs`               | `LoadRegion()` no longer calls `SceneManager.LoadScene()` (implicit `LoadSceneMode.Single`, no save, no reposition). It now resolves the scene name to a canonical region id and delegates to `RegionalSceneManager.TravelToRegion()`. Fails loudly on an unknown region instead of defaulting. Removed the now-unused `UnityEngine.SceneManagement` import. |
+| —   | `World/RegionalSceneManager.cs`     | Added `ResolveRegionIdFromSceneName()`, backed by the authoritative `TamilNaduGeography.AllRegions` catalogue. Verified all 7 `sceneName` values match the build-settings scene filenames exactly.                                                                                                                                                           |
+| F-7 | `World/RegionalSceneManager.cs`     | `PositionPlayerAtRegionSpawn()` **no longer falls back to `Vector3.zero`**. With no spawn marker it now logs an error and keeps the player in place, rather than risking a spawn inside or below terrain. Also logs the resolved validated spawn.                                                                                                            |
+| F-4 | `Online/CloudSaveManager.cs`        | Removed the baked-in `dev_session_token` and `http://localhost:3000` defaults. Endpoint is now runtime-supplied; tokens come from an `IdTokenProvider` fetched per request. Player builds reject non-HTTPS/loopback endpoints and fail closed to local saves. Success requires a genuine 2xx. Duplicated upload coroutine collapsed.                         |
 
 ### Deliberately not changed
 

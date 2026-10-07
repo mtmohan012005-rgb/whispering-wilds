@@ -86,6 +86,7 @@ content/
 ## 3. Authoring Guidelines
 
 ### Quests (`content/quests/*.json`)
+
 ```json
 {
   "id": "quest_cutting_chai_route",
@@ -98,7 +99,11 @@ content/
   "giverNpcId": "npc_murugan",
   "objectives": [
     { "id": "obj_1", "type": "talk_npc", "target": "npc_murugan" },
-    { "id": "obj_2", "type": "collect_item", "target": "item_brass_tea_carrier" }
+    {
+      "id": "obj_2",
+      "type": "collect_item",
+      "target": "item_brass_tea_carrier"
+    }
   ],
   "rewards": {
     "xp": 120,
@@ -109,6 +114,7 @@ content/
 ```
 
 ### Dialogue (`content/dialogue/*.json`)
+
 ```json
 {
   "id": "dialogue_murugan_intro",
@@ -135,20 +141,20 @@ content/
 
 ## 4. Acceptance Criteria Verification
 
-| Requirement | System | Verification Status |
-|-------------|--------|---------------------|
-| 1. Quest from Data | `QuestStateMachine` | Verified via `testQuestSystem` |
-| 2. NPC without editing `main.js` | `ContentRegistry` | Verified via `testNpcContent` |
-| 3. Dialogue branch from Data | `DataDialogueSystem` | Verified via `testDialogueSystem` |
-| 4. Location from Data | `ContentRegistry` | Verified via `testLocationContent` |
-| 5. Cultural activity from Data | `CulturalActivitySystem` | Verified via `testCulturalActivities` |
-| 6. World event from Data | `ContentEvents` | Verified via `testWorldEvents` |
-| 7. Achievement from Data | `ContentRegistry` | Verified via `testContentPipeline` |
-| 8. Automated validation | `ContentValidator` | 0 errors, 0 broken references |
-| 9. Save and reload state | `ContentSaveMigration` | Verified via `testSaveMigration` |
-| 10. No duplicate rewards | `QuestStateMachine` | Idempotent hash lock verified |
-| 11. Bilingual Tamil + English | Data schemas | Human-reviewed Tamil strings verified |
-| 12. Missing optional assets safe | `ContentLoader` | Graceful fallback verified |
-| 13. Production hides dev panel | `DevContentPanel` | Production lock verified |
-| 14. Multiplayer untrusted rewards | Client security check | Authoritative signature verified |
-| 15. Absolute 5-customization limit | Invariant Guard | `customizationChangesUsed <= 5` verified |
+| Requirement                        | System                   | Verification Status                      |
+| ---------------------------------- | ------------------------ | ---------------------------------------- |
+| 1. Quest from Data                 | `QuestStateMachine`      | Verified via `testQuestSystem`           |
+| 2. NPC without editing `main.js`   | `ContentRegistry`        | Verified via `testNpcContent`            |
+| 3. Dialogue branch from Data       | `DataDialogueSystem`     | Verified via `testDialogueSystem`        |
+| 4. Location from Data              | `ContentRegistry`        | Verified via `testLocationContent`       |
+| 5. Cultural activity from Data     | `CulturalActivitySystem` | Verified via `testCulturalActivities`    |
+| 6. World event from Data           | `ContentEvents`          | Verified via `testWorldEvents`           |
+| 7. Achievement from Data           | `ContentRegistry`        | Verified via `testContentPipeline`       |
+| 8. Automated validation            | `ContentValidator`       | 0 errors, 0 broken references            |
+| 9. Save and reload state           | `ContentSaveMigration`   | Verified via `testSaveMigration`         |
+| 10. No duplicate rewards           | `QuestStateMachine`      | Idempotent hash lock verified            |
+| 11. Bilingual Tamil + English      | Data schemas             | Human-reviewed Tamil strings verified    |
+| 12. Missing optional assets safe   | `ContentLoader`          | Graceful fallback verified               |
+| 13. Production hides dev panel     | `DevContentPanel`        | Production lock verified                 |
+| 14. Multiplayer untrusted rewards  | Client security check    | Authoritative signature verified         |
+| 15. Absolute 5-customization limit | Invariant Guard          | `customizationChangesUsed <= 5` verified |
