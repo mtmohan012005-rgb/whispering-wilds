@@ -128,6 +128,10 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
             if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
 
+            // Campaign ending system — bridges quest completion to ending evaluation
+            if (managersObj.GetComponent<WhisperingWilds.Campaign.EndingController>() == null) managersObj.AddComponent<WhisperingWilds.Campaign.EndingController>();
+            if (managersObj.GetComponent<WhisperingWilds.Campaign.QuestEndingBridge>() == null) managersObj.AddComponent<WhisperingWilds.Campaign.QuestEndingBridge>();
+
             // Living World, Ecosystem & Botanical Systems
             if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();
             if (managersObj.GetComponent<RegionalClimateSystem>() == null) managersObj.AddComponent<RegionalClimateSystem>();
