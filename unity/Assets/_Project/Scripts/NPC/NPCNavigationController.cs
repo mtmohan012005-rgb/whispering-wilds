@@ -17,7 +17,8 @@ namespace WhisperingWilds.NPC
         [SerializeField] private float walkSpeed = 1.6f;
         [SerializeField] private float runSpeed = 3.8f;
         [SerializeField] private float stoppingDistance = 0.8f;
-        [SerializeField] private float maxNavMeshSampleDistance = 5.0f;
+        [Tooltip("Maximum distance to search for a valid NavMesh position at spawn. Increased to 15m to accommodate NPCs spawning on elevated platforms or near NavMesh edges.")]
+        [SerializeField] private float maxNavMeshSampleDistance = 15.0f;
 
         [Header("Safety & Boundaries")]
         [SerializeField] private Bounds sceneGameplayBounds = new Bounds(Vector3.zero, new Vector3(300f, 60f, 300f));
@@ -93,6 +94,15 @@ namespace WhisperingWilds.NPC
                 agent = gameObject.AddComponent<NavMeshAgent>();
             }
             ConfigureAgent();
+
+            // Warp the agent to the nearest valid NavMesh position so it doesn't start
+            // floating above or below the surface. This fixes NPCs that spawn slightly
+            // off the baked NavMesh due to authored transform precision.
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit warpHit, maxNavMeshSampleDistance, NavMesh.AllAreas))
+            {
+                agent.Warp(warpHit.position);
+                transform.position = warpHit.position;
+            }
 
             ValidateNavMeshStatusOnStart();
         }

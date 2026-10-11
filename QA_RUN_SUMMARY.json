@@ -1,240 +1,86 @@
 {
-  "step": "STEP 32-35 Combined Validation",
-  "project": "The Whispering Wilds (காட்டு வழி • தடம்)",
-  "date": "2026-10-11",
+  "step": "STEP 36 — Release Stabilization",
+  "timestamp": "2026-10-11T22:50:00Z",
+  "commit": "TBD",
   "branch": "ai/unity-graphics-world-upgrade",
-  "commit": "85b5ffe",
   "unityVersion": "6000.6.3f1",
+  "targetPlatform": "Windows x64",
   "renderPipeline": "HDRP 17.7.0",
-  "target": "Standalone Windows x64",
-  "buildStatus": "BUILT — RUNTIME NOT VERIFIED",
-  "runtimeVerification": "NOT_RUNTIME_VERIFIED",
   "stages": {
     "audit": {
       "status": "PASS",
-      "details": "Complete repository audit: campaign flow, quest system, NPC system, save/load, localization, scene transitions"
+      "detail": "Reviewed RELEASE_VALIDATION_REPORT.md, GAME_QA_STATUS.md, RegionUnlocks.cs, NPCNavigationController.cs, NPCWallet.cs, CampaignFlow.cs, StandaloneSmokeTest.cs, EditorBuildSettings.asset, STORY_PROGRESSION_AND_ENDINGS.md"
     },
-    "codeLevelChecks": {
-      "status": "PASS",
-      "details": "All source code verified: CampaignFlow, QuestManager, RegionalSceneManager, SaveSystem, NPCCharacter, PlayerInteractor"
+    "ending_system": {
+      "status": "IMPLEMENTED",
+      "detail": "Created EndingController.cs with 4 endings, faction affinity, NPC trust, verdict tracking, exploration milestones, bilingual support, save/load"
     },
-    "editorTests": {
-      "status": "NOT_RUNTIME_VERIFIED",
-      "count": 136,
-      "details": "136+ Editor tests exist but Unity editor not available to execute"
+    "npc_navigation": {
+      "status": "IMPLEMENTED",
+      "detail": "Increased maxNavMeshSampleDistance from 5m to 15m, added NavMesh.SamplePosition + agent.Warp after creation"
     },
-    "playmodeTests": {
-      "status": "NOT_RUNTIME_VERIFIED",
-      "count": 8,
-      "details": "8 PlayMode tests created in CampaignFlowTests.cs but Unity editor not available to execute"
+    "vendor_economy": {
+      "status": "IMPLEMENTED",
+      "detail": "Created VendorInteraction.cs with atomic buy/sell, connected to InventoryManager and NPCWallet. Added public methods to NPCWallet."
     },
-    "windowsBuild": {
-      "status": "NOT_RUNTIME_VERIFIED",
-      "details": "Existing build predates character changes; new build requires Unity editor"
+    "campaign_flow_integration": {
+      "status": "IMPLEMENTED",
+      "detail": "Wired EndingController.ResetForNewGame() into CampaignFlow.ResetCampaignForNewGame()"
     },
-    "standaloneLaunch": {
-      "status": "NOT_RUNTIME_VERIFIED",
-      "details": "Cannot launch standalone build without Unity editor rebuild"
+    "graphics_fix": {
+      "status": "NOT_FIXED",
+      "detail": "Cascade shadow atlasing error requires scene-level light configuration in Unity editor"
     },
-    "gameplaySmokeTest": {
-      "status": "NOT_RUNTIME_VERIFIED",
-      "details": "RuntimeAutomatedSmokeTest exists but requires running build"
-    },
-    "campaignValidation": {
-      "status": "PASS",
-      "details": "Campaign progression path verified: Chennai → Pichavaram → Thanjavur → Chettinad → Mamallapuram → Nilgiris"
-    },
-    "npcIntegration": {
-      "status": "PASS",
-      "details": "9 NPC prefabs verified with models, animation, dialogue, and navigation"
-    },
-    "localization": {
-      "status": "PASS",
-      "details": "English and Tamil localization verified at code level"
-    },
-    "saveLoad": {
-      "status": "PASS",
-      "details": "SaveSystem with JSON format, backup, and corrupt recovery verified"
-    },
-    "ciCdWorkflow": {
-      "status": "PASS",
-      "details": "GitHub Actions workflow created with 5 stages: validate, editMode, playMode, build, qaSummary"
+    "ci_cd": {
+      "status": "EXISTS_LOCALLY",
+      "detail": ".github/workflows/unity-ci.yml exists but not pushed (token lacks workflow scope)"
     }
   },
-  "scenarios": [
-    {
-      "id": "SCENARIO_001",
-      "name": "Boot and New Game",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_002",
-      "name": "Player Character Visibility",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_003",
-      "name": "NPC Visibility and Interaction",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_004",
-      "name": "Dialogue System",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_005",
-      "name": "Quest Progression",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_006",
-      "name": "Region Unlocks",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_007",
-      "name": "Scene Transitions",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_008",
-      "name": "Save and Load",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_009",
-      "name": "English and Tamil Localization",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_010",
-      "name": "Graphics Presets",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_011",
-      "name": "Campaign Completion Path",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    },
-    {
-      "id": "SCENARIO_012",
-      "name": "Clean Application Exit",
-      "status": "CODE_VERIFIED",
-      "runtimeVerified": false
-    }
+  "regionProgression": {
+    "chennai": "unlocked_at_start",
+    "pichavaram": "unlocked_at_start",
+    "thanjavur": "unlocked_at_start",
+    "chettinad": "clue_gated_by_thanjavur",
+    "mamallapuram": "clue_gated_by_chettinad",
+    "nilgiris": "clue_gated_by_mamallapuram"
+  },
+  "endingSystem": {
+    "endingA": "Heritage affinity≥60, avg trust≥50, ≥5 clues, LivingSanctuary verdict",
+    "endingB": "Archaeological affinity≥55, StateBiosphere verdict",
+    "endingC": "Fallback for all other cases",
+    "endingD": "≥7 clues, ≥4 milestones, ≥5 central NPCs at trust≥70, LivingSanctuary verdict"
+  },
+  "testResults": {
+    "editMode": "NOT_VERIFIED",
+    "playMode": "NOT_VERIFIED",
+    "windowsBuild": "NOT_VERIFIED",
+    "standaloneSmoke": "NOT_VERIFIED",
+    "reason": "Unity 6 editor not available in this environment"
+  },
+  "filesChanged": [
+    "unity/Assets/_Project/Scripts/Campaign/EndingController.cs (NEW, 389 lines)",
+    "unity/Assets/_Project/Scripts/Core/CampaignFlow.cs (MODIFIED)",
+    "unity/Assets/_Project/Scripts/NPC/NPCNavigationController.cs (MODIFIED)",
+    "unity/Assets/_Project/Scripts/NPC/NPCWallet.cs (MODIFIED)",
+    "unity/Assets/_Project/Scripts/Economy/VendorInteraction.cs (NEW, 339 lines)"
   ],
-  "testSummary": {
-    "editorTests": {
-      "total": 136,
-      "passed": 0,
-      "failed": 0,
-      "skipped": 0,
-      "notRun": 136,
-      "reason": "Unity editor not available"
-    },
-    "playmodeTests": {
-      "total": 8,
-      "passed": 0,
-      "failed": 0,
-      "skipped": 0,
-      "notRun": 8,
-      "reason": "Unity editor not available"
-    },
-    "runtimeSmokeTests": {
-      "total": 3,
-      "passed": 0,
-      "failed": 0,
-      "skipped": 0,
-      "notRun": 3,
-      "reason": "Requires Unity build"
-    }
-  },
-  "bugs": {
-    "fixed": [
-      {
-        "id": "BUG_001",
-        "severity": "High",
-        "description": "Non-Chennai NPCs lacked interaction components",
-        "file": "AssembleAllRegions.cs",
-        "fix": "Added SetupNPC() helper method"
-      },
-      {
-        "id": "BUG_002",
-        "severity": "High",
-        "description": "Legacy GLB models routed to placeholder assets",
-        "file": "CharacterPrefabCatalog.cs",
-        "fix": "Redirects all legacy GLB paths to production prefabs"
-      },
-      {
-        "id": "BUG_003",
-        "severity": "Medium",
-        "description": "Duplicate quality management systems",
-        "file": "AdaptiveQualityManager.cs, AutoQualityDetector.cs, MemoryBudgetManager.cs",
-        "fix": "Removed duplicate systems"
-      }
-    ],
-    "known": [
-      {
-        "id": "ISSUE_001",
-        "severity": "Critical",
-        "description": "Unity editor not available for runtime verification",
-        "status": "BLOCKED"
-      },
-      {
-        "id": "ISSUE_002",
-        "severity": "Low",
-        "description": "Non-Chennai NPCs lack schedule anchors",
-        "status": "KNOWN_LIMITATION"
-      },
-      {
-        "id": "ISSUE_003",
-        "severity": "Medium",
-        "description": "NavMesh for non-Chennai scenes depends on build",
-        "status": "DEPENDS_ON_BUILD"
-      },
-      {
-        "id": "ISSUE_004",
-        "severity": "Low",
-        "description": "No facial animation",
-        "status": "KNOWN_LIMITATION"
-      },
-      {
-        "id": "ISSUE_005",
-        "severity": "Low",
-        "description": "No root motion",
-        "status": "KNOWN_LIMITATION"
-      }
-    ]
-  },
-  "deliverables": [
-    "FULL_CAMPAIGN_VALIDATION_REPORT.md",
-    "AUTOMATED_GAMEPLAY_TEST_REPORT.md",
-    "WINDOWS_BUILD_AND_RUNTIME_REPORT.md",
-    "GAMEPLAY_BUGS_AND_FIXES.md",
-    "PERFORMANCE_STABILITY_REPORT.md",
-    "QA_RUN_SUMMARY.json",
-    "CampaignFlowTests.cs",
-    ".github/workflows/unity-ci.yml"
+  "buildStatus": "BUILT — RUNTIME NOT VERIFIED",
+  "releaseVerdict": "RELEASE_BLOCKED",
+  "blockers": [
+    "Unity editor required to compile and verify changes",
+    "VendorInteraction needs to be attached to an NPC prefab in Unity editor",
+    "EndingController.EvaluateEnding() needs to be triggered by final Nilgiris quest",
+    "Cascade shadow atlasing error requires scene-level light configuration",
+    "Standalone smoke test requires Unity editor build"
   ],
-  "releaseDecision": "BUILT — RUNTIME NOT VERIFIED",
   "nextSteps": [
     "Open project in Unity 6000.6.3f1",
-    "Run Editor and PlayMode tests",
-    "Build Windows x64 standalone player",
-    "Launch executable and verify gameplay",
-    "Run RuntimeAutomatedSmokeTest",
-    "Capture screenshots and performance metrics"
+    "Resolve any compilation errors",
+    "Attach VendorInteraction to an NPC prefab (e.g., Meenakshi in Chennai)",
+    "Wire EndingController.EvaluateEnding() to final Nilgiris quest completion",
+    "Run EditMode tests",
+    "Build Windows x64 player",
+    "Launch executable and run smoke test",
+    "Verify ending triggers in Nilgiris gameplay"
   ]
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using WhisperingWilds.Campaign;
 using WhisperingWilds.Core;
 using WhisperingWilds.Data;
 using WhisperingWilds.Gameplay;
@@ -72,6 +73,9 @@ ChennaiOpeningContent.EnsureInitialized();
             var appearance = UnityEngine.Object.FindObjectOfType<Player.PlayerAppearanceManager>();
             if (appearance != null) appearance.ResetToNewGameDefaults();
             if (Player.PlayerManager.Instance != null) Player.PlayerManager.Instance.ResetAppearanceAllowance();
+
+            // Reset ending evaluation so a new campaign starts fresh.
+            if (EndingController.Instance != null) EndingController.Instance.ResetForNewGame();
 
             SaveManager.PendingSaveToRestore = null;
         }

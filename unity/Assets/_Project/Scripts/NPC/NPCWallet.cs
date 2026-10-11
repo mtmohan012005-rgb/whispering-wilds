@@ -220,5 +220,59 @@ namespace WhisperingWilds.NPC
                 return;
             }
         }
+
+        // ------------------------------------------------------------------
+        // Public helpers for VendorInteraction
+        // ------------------------------------------------------------------
+
+        /// <summary>Adds stock externally (e.g. from VendorInteraction initialization).</summary>
+        public void AddStock(string itemId, int amount, int maxCount)
+        {
+            for (int i = 0; i < stock.Count; i++)
+            {
+                if (stock[i].itemId != itemId) continue;
+                StockLine line = stock[i];
+                line.count = Mathf.Clamp(line.count + amount, 0, Mathf.Max(0, maxCount));
+                stock[i] = line;
+                return;
+            }
+            stock.Add(new StockLine { itemId = itemId, count = Mathf.Max(0, amount), maxCount = Mathf.Max(0, maxCount) });
+        }
+
+        /// <summary>Removes stock externally (e.g. from VendorInteraction transactions).</summary>
+        public void RemoveStock(string itemId, int amount)
+        {
+            for (int i = 0; i < stock.Count; i++)
+            {
+                if (stock[i].itemId != itemId) continue;
+                StockLine line = stock[i];
+                line.count = Mathf.Max(0, line.count - amount);
+                stock[i] = line;
+                return;
+            }
+        }
+
+        /// <summary>Adds coins to the wallet, clamped to [0, maxCoins].</summary>
+        public void AddCoins(int amount)
+        {
+            if (amount <= 0) return;
+            coins = Mathf.Clamp(coins + amount, 0, maxCoins);
+        }
+
+        /// <summary>Removes coins from the wallet, clamped to [0, maxCoins].</summary>
+        public void RemoveCoins(int amount)
+        {
+            if (amount <= 0) return;
+            coins = Mathf.Max(0, coins - amount);
+        }
+
+        /// <summary>Returns a copy of all stock lines for save serialization.</summary>
+        public List<StockLine> SnapshotStock()
+        {
+            var snapshot = new List<StockLine>(stock.Count);
+            for (int i = 0; i < stock.Count; i++)
+                snapshot.Add(stock[i]);
+            return snapshot;
+        }
     }
 }
