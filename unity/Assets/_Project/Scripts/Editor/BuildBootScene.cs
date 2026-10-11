@@ -105,7 +105,6 @@ namespace WhisperingWilds.Editor
                 var btnNew = CreateButton("Btn_NewGame", menuContainer.transform, font, "New Game", new Color(0.15f, 0.45f, 0.35f));
                 var btnCont = CreateButton("Btn_Continue", menuContainer.transform, font, "Continue", new Color(0.2f, 0.35f, 0.5f));
                 var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "Settings", new Color(0.25f, 0.35f, 0.45f));
-                var btnCodex = CreateButton("Btn_Codex", menuContainer.transform, font, "Cultural Archive", new Color(0.35f, 0.3f, 0.45f));
                 var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "Quit", new Color(0.45f, 0.2f, 0.2f));
 
                 // Strict Appearance Rule Notice at bottom
@@ -120,7 +119,6 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
                 serializedTitle.FindProperty("continueButton").objectReferenceValue = btnCont.GetComponent<Button>();
                 serializedTitle.FindProperty("settingsButton").objectReferenceValue = btnSettings.GetComponent<Button>();
-                serializedTitle.FindProperty("codexButton").objectReferenceValue = btnCodex.GetComponent<Button>();
                 serializedTitle.FindProperty("quitButton").objectReferenceValue = btnQuit.GetComponent<Button>();
                 serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
                 serializedTitle.FindProperty("settingsMenu").objectReferenceValue = settingsUi;

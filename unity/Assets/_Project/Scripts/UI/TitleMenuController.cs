@@ -7,22 +7,29 @@ using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.UI
 {
+    /// <summary>
+    /// STEP 40 — Redesigned title menu controller for The Whispering Wilds.
+    /// 
+    /// Manages the main menu with New Game, Continue, Settings, and Quit actions.
+    /// Codex button has been removed per user request.
+    /// Integrates with CinematicIntroController for the opening sequence.
+    /// </summary>
     public class TitleMenuController : MonoBehaviour
     {
         [Header("Menu Buttons")]
         [SerializeField] private Button newGameButton;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button settingsButton;
-        [SerializeField] private Button codexButton;
         [SerializeField] private Button quitButton;
 
         [Header("Panels")]
-        [SerializeField] private GameObject codexPanel;
-        [SerializeField] private Button closeCodexButton;
         [SerializeField] private SettingsMenuUI settingsMenu;
 
         [Header("Info Displays")]
         [SerializeField] private Text ruleNoticeText;
+
+        [Header("Cinematic Intro")]
+        [SerializeField] private CinematicIntroController cinematicIntro;
 
         private CampaignFlow campaignFlow;
 
@@ -47,11 +54,8 @@ namespace WhisperingWilds.UI
                 continueButton.interactable = CampaignFlow.CanContinue();
             }
             if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
-            if (codexButton != null) codexButton.onClick.AddListener(OnOpenCodexClicked);
-            if (closeCodexButton != null) closeCodexButton.onClick.AddListener(OnCloseCodexClicked);
             if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
 
-            if (codexPanel != null) codexPanel.SetActive(false);
             if (settingsMenu != null) settingsMenu.SetVisible(false);
 
             ApplyLocalizedLabels();
@@ -87,7 +91,6 @@ namespace WhisperingWilds.UI
             SetButtonLabel(newGameButton, "menu.new_game");
             SetButtonLabel(continueButton, "menu.continue");
             SetButtonLabel(settingsButton, "menu.settings");
-            SetButtonLabel(codexButton, "menu.codex");
             SetButtonLabel(quitButton, "menu.quit");
 
             LocalizationManager mgr = LocalizationManager.Instance;
@@ -199,16 +202,6 @@ namespace WhisperingWilds.UI
             }
 
             Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> SettingsMenuUI is not assigned on the title screen.");
-        }
-
-        public void OnOpenCodexClicked()
-        {
-            if (codexPanel != null) codexPanel.SetActive(true);
-        }
-
-        public void OnCloseCodexClicked()
-        {
-            if (codexPanel != null) codexPanel.SetActive(false);
         }
 
         public void OnQuitClicked()

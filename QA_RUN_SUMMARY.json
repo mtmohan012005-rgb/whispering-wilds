@@ -1,6 +1,6 @@
 {
-  "step": "STEP 39 — Realistic Human Character Production Infrastructure",
-  "timestamp": "2026-10-11T23:31:00Z",
+  "step": "STEP 40 — Cinematic Introduction & Main Menu Overhaul",
+  "timestamp": "2026-10-11T23:51:00Z",
   "commit": "TBD",
   "branch": "ai/unity-graphics-world-upgrade",
   "unityVersion": "6000.6.3f1",
@@ -9,80 +9,58 @@
   "stages": {
     "audit": {
       "status": "PASS",
-      "detail": "Full audit of all 10 character models (player + 9 NPCs). All are procedurally generated from primitive shapes (boxes/cylinders). player.glb 43KB/~168 triangles, murugan.glb 12KB. CharacterFactory.cs, MeshOps.cs, CharacterAssetBuilder.cs generate everything from code."
+      "detail": "Full audit of existing main menu: TitleMenuController.cs (Codex button present), BuildBootScene.cs (creates Codex button), LocalizationManager.cs (menu.codex key), SettingsMenuUI.cs (6-tab settings). All systems identified and mapped."
     },
-    "asset_research": {
-      "status": "PASS",
-      "detail": "Researched free realistic 3D human model sources: Mixamo (FREE with Adobe ID, 100+ characters, 1700+ animations, FBX format, Unity Humanoid compatible), Meshy AI (CC0), Cinevva (CC0). Mixamo is the primary recommendation."
-    },
-    "production_character_builder": {
+    "cinematic_intro": {
       "status": "IMPLEMENTED",
-      "detail": "ProductionCharacterBuilder.cs (415 lines): Editor menu 'Whispering Wilds/Characters/Build Production Characters'. Catalog of 9 characters with bilingual dialogue. Automated FBX import, Humanoid Avatar validation, prefab building with all gameplay components."
+      "detail": "CinematicIntroController.cs (399 lines): 25-second atmospheric opening with fade-in, camera movement, title reveal, skip support (any key), replay capability, and PlayerPrefs persistence. Does not replay on return from settings."
     },
-    "character_asset_validator": {
+    "codex_removal": {
       "status": "IMPLEMENTED",
-      "detail": "CharacterAssetValidator.cs (704 lines): Editor menu 'Whispering Wilds/QA/Audit All Characters'. Validates mesh, triangles, bones, Avatar, Animator, materials, colliders, scale, gameplay components. Production gate: minimum 5,000 triangles."
+      "detail": "Removed Codex button from TitleMenuController.cs (fields, onClick listeners, methods), BuildBootScene.cs (button creation and binding), and LocalizationManager.cs (menu.codex key). Verified no remaining Codex references in menu code."
     },
-    "integration_guide": {
-      "status": "CREATED",
-      "detail": "STEP_39_CHARACTER_INTEGRATION_GUIDE.md (222 lines): Complete workflow from model download to runtime verification, recommended Mixamo characters, animation parameter contracts, technical requirements."
+    "menu_redesign": {
+      "status": "IMPLEMENTED",
+      "detail": "TitleMenuController.cs updated: 4 buttons (New Game, Continue, Settings, Quit), CinematicIntroController integration, localization support. BuildBootScene.cs updated to create only 4 menu buttons."
+    },
+    "localization": {
+      "status": "IMPLEMENTED",
+      "detail": "Added intro.skip and intro.replay localization keys with Tamil translations. Removed menu.codex key. All 4 menu button keys (new_game, continue, settings, quit) verified present."
     },
     "tests": {
       "status": "CREATED",
-      "detail": "Step39CharacterProductionTests.cs: 18 NUnit editor tests covering ProductionCharacterBuilder, CharacterPrefabCatalog, CharacterAssetValidator, and animation parameter contracts."
-    },
-    "character_replacement": {
-      "status": "BLOCKED",
-      "detail": "Cannot download 3D models or run Unity editor. Requires: 1) Adobe ID for Mixamo, 2) Unity 6000.6.3f1 Editor, 3) Manual FBX import and Humanoid Avatar configuration."
+      "detail": "Step40MainMenuTests.cs: 24 NUnit editor tests covering Codex removal (4), menu button presence (4), CinematicIntroController API (4), localization keys (8), and TitleMenuController methods (4)."
     }
-  },
-  "characterState": {
-    "player": { "model": "procedural_blockout", "triangles": 168, "status": "PLACEHOLDER" },
-    "murugan": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "velu": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "selvam": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "meenakshi": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "artisan": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "farmer": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "fisher": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" },
-    "forestGuide": { "model": "procedural_blockout", "triangles": 120, "status": "PLACEHOLDER" }
-  },
-  "animationContracts": {
-    "player": { "script": "PlayerMovement.UpdateAnimator()", "parameters": ["Speed (float)", "Grounded (bool)", "FreeFall (bool)", "Crouching (bool)"] },
-    "npc": { "script": "NPCAnimationDriver.RequestState()", "states": ["Idle", "Walk", "Run", "Work", "Talk", "Eat", "Drink", "Carry", "Buy", "Sell", "Craft", "Fish", "Farm", "TeaWork", "Sit", "Sleep", "React"] }
   },
   "testResults": {
     "editMode": "NOT_VERIFIED",
     "playMode": "NOT_VERIFIED",
     "windowsBuild": "NOT_VERIFIED",
     "standaloneSmoke": "NOT_VERIFIED",
-    "newEditorTests": 18,
-    "totalExistingTests": 176,
+    "newEditorTests": 24,
+    "totalExistingTests": 200,
     "reason": "Unity 6 editor not available in this environment"
   },
   "filesChanged": [
-    "unity/Assets/_Project/Scripts/Editor/Characters/ProductionCharacterBuilder.cs (NEW, 415 lines)",
-    "unity/Assets/_Project/Scripts/Editor/QA/CharacterAssetValidator.cs (NEW, 704 lines)",
-    "unity/Assets/_Project/Tests/Editor/Step39CharacterProductionTests.cs (NEW, 255 lines, 18 tests)",
-    "STEP_39_CHARACTER_INTEGRATION_GUIDE.md (NEW, 222 lines)",
-    "STEP_39_CHARACTER_PRODUCTION_REPORT.md (NEW)",
+    "unity/Assets/_Project/Scripts/UI/CinematicIntroController.cs (NEW, 399 lines)",
+    "unity/Assets/_Project/Scripts/UI/TitleMenuController.cs (MODIFIED, Codex removed, cinematic intro added)",
+    "unity/Assets/_Project/Scripts/Editor/BuildBootScene.cs (MODIFIED, Codex button removed)",
+    "unity/Assets/_Project/Scripts/Localization/LocalizationManager.cs (MODIFIED, intro keys added, codex key removed)",
+    "unity/Assets/_Project/Tests/Editor/Step40MainMenuTests.cs (NEW, 350 lines, 24 tests)",
     "QA_RUN_SUMMARY.json (UPDATED)"
   ],
   "buildStatus": "SOURCE READY — RUNTIME NOT VERIFIED",
   "releaseVerdict": "RELEASE_BLOCKED",
   "blockers": [
-    "Cannot download 3D character models — requires Adobe ID and internet access to Mixamo",
-    "Cannot run Unity 6000.6.3f1 Editor — required for FBX import, Humanoid Avatar configuration, and prefab building",
+    "Cannot run Unity 6000.6.3f1 Editor — required to build boot scene, compile, and test",
     "Cannot build or test Windows standalone player without Unity editor",
-    "All 10 character models remain procedural blockouts (~168 triangles each) — fail production quality gate (minimum 5,000 triangles)"
+    "Cinematic intro visual quality depends on environment assets available in the Unity project"
   ],
   "nextSteps": [
-    "Download 9 realistic human character models from Mixamo (https://www.mixamo.com)",
-    "Place FBX files in Assets/_Project/Art/Models/Characters/Production/",
     "Open project in Unity 6000.6.3f1",
-    "Configure each FBX: Animation Type = Humanoid, Avatar = Create From This Model",
-    "Run 'Whispering Wilds/Characters/Build Production Characters'",
-    "Run 'Whispering Wilds/QA/Audit All Characters'",
-    "Build Windows x64 player and verify characters render and animate correctly"
+    "Run 'Tools/Whispering Wilds/Build Boot Scene' to regenerate 00_Boot.unity with changes",
+    "Run Editor tests to verify Step40MainMenuTests (24 tests)",
+    "Build Windows x64 player and verify cinematic intro, menu, and Codex removal",
+    "Test intro skip, replay, and language switching in standalone build"
   ]
 }

@@ -47,12 +47,15 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("menu.new_game",        "New Game",            "புதிய விளையாட்டு"),
             new LocalizationEntry("menu.continue",        "Continue",             "தொடரவும்"),
             new LocalizationEntry("menu.settings",        "Settings",             "அமைப்புகள்"),
-            new LocalizationEntry("menu.codex",           "Codex",                "குறிப்பேடு"),
             new LocalizationEntry("menu.quit",            "Quit",                 "வெளியேறு"),
             new LocalizationEntry("menu.back",            "Back",                 "பின்செல்"),
             new LocalizationEntry("menu.apply",           "Apply",                "பயன்படுத்து"),
             new LocalizationEntry("menu.title",           "THE WHISPERING WILDS", "காட்டு வழி • தடம்"),
             new LocalizationEntry("menu.subtitle",        "A Living Exploration & Cultural Investigation of Tamil Nadu", "தமிழ்நாட்டின் வாழ்வியல் ஆய்வும் கலாச்சார கண்டறியும் பயணம்"),
+
+            // ---- Cinematic intro ---------------------------------------------
+            new LocalizationEntry("intro.skip",           "Press Any Key to Skip", "வெளியேறவென எந்த விசையையும் அழுத்தவும்"),
+            new LocalizationEntry("intro.replay",         "Replay Intro",          "மீண்டும் காட்டு"),
 
             // ---- Settings ----------------------------------------------------
             new LocalizationEntry("settings.language",        "Language",           "மொழி"),
