@@ -114,6 +114,33 @@ namespace WhisperingWilds.Editor
             if (Application.isBatchMode) EditorApplication.Exit(success ? 0 : 1);
         }
 
+        /// <summary>
+        /// Batch-mode entry point that regenerates every gameplay scene with the current authored
+        /// characters (boot, playable Chennai + district population, all regional + benchmark scenes)
+        /// and bakes static NavMesh — the exact production pipeline pre-step, without building a
+        /// player. QA benchmark builds consume scene files from disk and do not regenerate them, so
+        /// this must run before a character-integration QA build.
+        /// </summary>
+        public static void RegenerateAllScenesFromCommandLine()
+        {
+            BuildBootScene.CreateBootScene();
+            AssembleWhisperingWilds.BuildPlayableChennaiScene();
+            BuildChennaiPopulation.Build();
+            AssembleAllRegions.BuildAllScenes();
+            EcologyNavMeshBaker.BakeAllRegions();
+            if (Application.isBatchMode) EditorApplication.Exit(0);
+        }
+
+        /// <summary>
+        /// Batch-mode entry point for CI and shell chains around the QA Development build
+        /// (includes the four WW_Benchmark_* scenes). Exits non-zero on failure.
+        /// </summary>
+        public static void BuildQABenchmarkWindowsFromCommandLine()
+        {
+            bool success = BuildQABenchmarkWindows();
+            if (Application.isBatchMode) EditorApplication.Exit(success ? 0 : 1);
+        }
+
         [MenuItem("Tools/Whispering Wilds/Build QA Benchmark Windows x64")]
         public static bool BuildQABenchmarkWindows()
         {

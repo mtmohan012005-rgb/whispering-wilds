@@ -63,6 +63,17 @@ namespace WhisperingWilds.Profiling
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // STEP 26 §21: QA-only duration override. Environment-variable gated so retail
+            // players always run the authored scene duration. Ignored below 5s to prevent
+            // accidental stubbed runs.
+            string durationArg = System.Environment.GetEnvironmentVariable("WW_BENCHMARK_SECONDS");
+            if (!string.IsNullOrEmpty(durationArg)
+                && float.TryParse(durationArg, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float parsedDuration)
+                && parsedDuration >= 5f)
+            {
+                benchmarkDurationSeconds = parsedDuration;
+            }
         }
 
         private void OnEnable()

@@ -471,7 +471,7 @@ namespace WhisperingWilds.Quests
             completedQuestIds.Clear();
         }
 
-        /// <summary>Accepts the opening quests. Used by New Game.</summary>
+/// <summary>Accepts the opening quests. Used by New Game.</summary>
         public void AcceptOpeningQuests()
         {
             ChennaiOpeningContent.EnsureInitialized();
@@ -481,6 +481,21 @@ namespace WhisperingWilds.Quests
 
             var second = GameDataCatalog.GetQuest(ChennaiOpeningContent.QuestTeaLedgerDiscrepancy);
             if (second != null) AcceptQuest(second);
+        }
+
+        /// <summary>
+        /// Accepts the signature quest of a destination region when the player arrives there.
+        /// Idempotent by construction: a quest that is already active (restored from save) or
+        /// completed is left untouched by <see cref="AcceptQuest"/>. Regions without an authored
+        /// signature quest (Thanjavur, Nilgiris) resolve to null and are skipped.
+        /// </summary>
+        public void AcceptRegionArrivalQuest(string regionId)
+        {
+            string questId = GameplayContentRegistry.GetRegionQuestId(regionId);
+            if (string.IsNullOrEmpty(questId)) return;
+
+            var quest = GameDataCatalog.GetQuest(questId);
+            if (quest != null) AcceptQuest(quest);
         }
 
         private static bool HasCraftedRecipe(string recipeId)

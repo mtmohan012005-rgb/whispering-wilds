@@ -138,7 +138,18 @@ namespace WhisperingWilds.Quality
                     break;
             }
 
+            ConfigureTextureStreaming();
+
             Debug.Log($"<color=#00D2FF><b>[MemoryManager]</b></color> Configured budget for {tier}: {activeBudget.totalBudget}MB (Textures: {activeBudget.textures}MB, Meshes: {activeBudget.meshes}MB)");
+        }
+
+        private void ConfigureTextureStreaming()
+        {
+            QualitySettings.streamingMipmapsActive = true;
+            QualitySettings.streamingMipmapsMemoryBudget = activeBudget.textures;
+            QualitySettings.streamingMipmapsRenderersPerFrame = 512;
+            QualitySettings.streamingMipmapsMaxLevelReduction = 3;
+            QualitySettings.streamingMipmapsAddAllCameras = true;
         }
 
         private void Update()

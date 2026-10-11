@@ -88,6 +88,19 @@ namespace WhisperingWilds.Editor
         [MenuItem("Whispering Wilds/World/Build George Town Street Corridor")]
         public static void Build()
         {
+            // The street must be regeneratable from scratch. Earlier runs left a new root
+            // behind every time, so under repeated assembly the scene ended up with a dozen
+            // stacked carriageways and dash/sprites doubling up. Destroy every previous root
+            // before building so a re-run always yields exactly one street.
+            var all = UnityEngine.Object.FindObjectsByType<GameObject>(UnityEngine.FindObjectsSortMode.None);
+            for (int i = 0; i < all.Length; i++)
+            {
+                if (all[i] != null && all[i].transform.parent == null && all[i].name == RootName)
+                {
+                    UnityEngine.Object.DestroyImmediate(all[i]);
+                }
+            }
+
             var root = new GameObject(RootName);
             try
             {
@@ -237,20 +250,29 @@ namespace WhisperingWilds.Editor
             for (int i = 0; i < count; i++)
             {
                 float z = -StreetLength * 0.5f + (i * (dashLength + gap)) + dashLength * 0.5f;
-                Box("CentreDash_" + i, parentGo.transform,
+                var dash = Box("CentreDash_" + i, parentGo.transform,
                     new Vector3(0f, 0.065f, z),
                     new Vector3(0.14f, 0.012f, dashLength),
                     MatDir + "RoadMarking_Paint.mat",
                     new Color(0.85f, 0.84f, 0.78f), 0f, 0.20f);
+                // Road paint is visual only - it must never be a solid barrier. The road
+                // plane already carries the walking surface, so strip the primitive box
+                // collider from the dashes (a 0.012m-high strip read as a wall will freeze
+                // the CharacterController on the centre line, which is where the player
+                // respawn marker and the walk/bike paths sit).
+                var dashCol = dash.GetComponent<BoxCollider>();
+                if (dashCol != null) UnityEngine.Object.DestroyImmediate(dashCol);
             }
 
             for (int side = -1; side <= 1; side += 2)
             {
-                Box("EdgeLine_" + (side < 0 ? "West" : "East"), parent,
+                var edge = Box("EdgeLine_" + (side < 0 ? "West" : "East"), parent,
                     new Vector3(side * (RoadHalfWidth - 0.35f), 0.065f, 0f),
                     new Vector3(0.12f, 0.012f, StreetLength),
                     MatDir + "RoadMarking_Paint.mat",
                     new Color(0.85f, 0.84f, 0.78f), 0f, 0.20f);
+                var edgeCol = edge.GetComponent<BoxCollider>();
+                if (edgeCol != null) UnityEngine.Object.DestroyImmediate(edgeCol);
             }
         }
 

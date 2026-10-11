@@ -28,7 +28,7 @@ namespace WhisperingWilds.Editor.QA
 {
     public static class RunHeadlessBenchmark
     {
-        private const double SceneTimeoutSeconds = 240.0;
+        private static double SceneTimeoutSeconds = 240.0;
         private const double ExitGraceSeconds = 20.0;
         private const string LogTag = "[HeadlessBenchmark]";
 
@@ -75,6 +75,13 @@ namespace WhisperingWilds.Editor.QA
                 else if (string.Equals(args[i], "-benchmarkOut", StringComparison.OrdinalIgnoreCase))
                 {
                     _reportPath = args[i + 1];
+                }
+                else if (string.Equals(args[i], "-benchmarkTimeout", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (double.TryParse(args[i + 1], out double parsed) && parsed > 0)
+                    {
+                        SceneTimeoutSeconds = parsed;
+                    }
                 }
             }
 

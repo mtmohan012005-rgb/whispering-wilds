@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WhisperingWilds.Audio;
 using WhisperingWilds.Cameras;
+using WhisperingWilds.Characters;
 using WhisperingWilds.Core;
 using WhisperingWilds.Inventory;
 using WhisperingWilds.Investigation;
@@ -156,24 +157,27 @@ namespace WhisperingWilds.Editor
             player.AddComponent<PlayerManager>();
             player.AddComponent<PlayerInteractor>();
 
-            var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Models/Characters/Player/player.glb");
-            if (playerPrefab != null)
+            var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabCatalog.PlayerPrefabPath);
+            if (playerPrefab == null)
             {
+                Debug.LogWarning("[AssembleAllRegions] PlayerCharacter.prefab missing - run 'Whispering Wilds/Characters/Build All Characters' first.");
+            }
+            else
+            {
+                // Authored STEP 29 rig: animated skinned character with the real locomotion
+                // controller and appearance system already wired on the prefab.
                 var visual = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab, player.transform);
                 visual.name = "VisualModel";
                 visual.transform.localPosition = Vector3.zero;
                 visual.transform.localRotation = Quaternion.identity;
                 visual.transform.localScale = Vector3.one;
 
+                // The authored rig carries no colliders; guard anyway so the CharacterController
+                // never fights a foreign collider child.
                 foreach (var col in visual.GetComponentsInChildren<Collider>())
                 {
                     UnityEngine.Object.DestroyImmediate(col);
                 }
-
-                var anim = visual.GetComponent<Animator>();
-                if (anim == null) anim = visual.AddComponent<Animator>();
-                var animCtrl = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/_Project/Art/Animations/PlayerLocomotionController.controller");
-                if (animCtrl != null) anim.runtimeAnimatorController = animCtrl;
             }
 
             var camObj = new GameObject("Main Camera");
@@ -435,8 +439,11 @@ namespace WhisperingWilds.Editor
             var npcMani = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/selvam.glb", envRoot.transform, new Vector3(1.5f, 0.4f, 3f), Quaternion.Euler(0f, -140f, 0f), Vector3.one);
             if (npcMani != null)
             {
-                var npcChar = npcMani.AddComponent<NPCCharacter>();
-                npcChar.SetCharacterProfile("Mani (Fisher)", "மணி (மீனவர்)", "Pichavaram", "பாரம்பரிய வலை வீசி மீன்பிடிக்கும் படகோட்டி மணி.");
+                SetupNPC(npcMani, "Mani (Fisher)", "மணி (மீனவர்)", "Pichavaram",
+                    "பாரம்பரிய வலை வீசி மீன்பிடிக்கும் படகோட்டி மணி.",
+                    "The mangrove water is getting saltier every year. You should see Pichavaram before it's gone.",
+                    "மண்டல நீர் ஒவ்வொரு வருசமும் உப்பாடகிறது. பிச்சாவரம் சேரறதற்கு முன்னாடி பாருங்க.",
+                    NPCOccupation.Fisherman, "Fisher", "மீனவர்");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "pichavaram", HabitatType.WetlandMarsh);
@@ -494,8 +501,11 @@ namespace WhisperingWilds.Editor
             var npcFarmer = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/selvam.glb", envRoot.transform, new Vector3(-2f, 0f, 7f), Quaternion.Euler(0f, 180f, 0f), Vector3.one);
             if (npcFarmer != null)
             {
-                var npcChar = npcFarmer.AddComponent<NPCCharacter>();
-                npcChar.SetCharacterProfile("Arumugam (Farmer)", "ஆறுமுகம் (விவசாயி)", "CauveryDelta", "காவிரி டெல்டா பாரம்பரிய நெல் விவசாயி ஆறுமுகம்.");
+                SetupNPC(npcFarmer, "Arumugam (Farmer)", "ஆறுமுகம் (விவசாயி)", "CauveryDelta",
+                    "காவிரி டெல்டா பாரம்பரிய நெல் விவசாயி ஆறுமுகம்.",
+                    "The rice grows tall when the river is kind. This year the water came late.",
+                    "காவிரி நீர் தாமதமா வந்திது. நெலுக்கு நேரமில்லாமுடையாச்சு.",
+                    NPCOccupation.Farmer, "Farmer", "விவசாயி");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "delta", HabitatType.PastoralFarmBoundary);
@@ -571,8 +581,11 @@ namespace WhisperingWilds.Editor
             var npcSundaram = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/selvam.glb", envRoot.transform, new Vector3(-6.5f, 0f, 7.5f), Quaternion.Euler(0f, 150f, 0f), Vector3.one);
             if (npcSundaram != null)
             {
-                var npcChar = npcSundaram.AddComponent<NPCCharacter>();
-                npcChar.SetCharacterProfile("Sundaram (Stone Sculptor)", "சுந்தரம் (சிற்பி)", "Mamallapuram", "பல்லவ மரபுவழி கருங்கல் சிற்பி சுந்தரம்.");
+                SetupNPC(npcSundaram, "Sundaram (Stone Sculptor)", "சுந்தரம் (சிற்பி)", "Mamallapuram",
+                    "பல்லவ மரபுவழி கருங்கல் சிற்பி சுந்தரம்.",
+                    "The stone remembers what the hands forget. I carve what my grandfather taught me.",
+                    "கல்லு என்னு தாத்தா கற்றுத்தந்ததைத் கரவுகிறேன்.",
+                    NPCOccupation.CraftWorker, "Sculptor", "சிற்பி");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "mamallapuram", HabitatType.CoastalShoreline);
@@ -624,8 +637,11 @@ namespace WhisperingWilds.Editor
             var npcRaman = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/forest-guide.glb", envRoot.transform, new Vector3(-4f, 0f, 5f), Quaternion.Euler(0f, 160f, 0f), Vector3.one);
             if (npcRaman != null)
             {
-                var npcChar = npcRaman.AddComponent<NPCCharacter>();
-                npcChar.SetCharacterProfile("Raman (Forest Guide)", "ராமன் (வன வழிகாட்டி)", "Nilgiris", "நீலகிரி சோலைக்காடு மற்றும் தோடர் பண்பாட்டு வழிகாட்டி ராமன்.");
+                SetupNPC(npcRaman, "Raman (Forest Guide)", "ராமன் (வன வழிகாட்டி)", "Nilgiris",
+                    "நீலகிரி சோலைக்காடு மற்றும் தோடர் பண்பாட்டு வழிகாட்டி ராமன்.",
+                    "The forest speaks if you listen. The tahr herds move higher when the monsoon comes.",
+                    "காட்டு பேசும், கேட்கிறீராக்லா. மழை வரறதற்கு முன்த் தவ்றா மேலே போகும்.",
+                    NPCOccupation.Resident, "Forest Guide", "வன வழிகாட்டி");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "nilgiris", HabitatType.SholaGrassland);
@@ -700,8 +716,114 @@ namespace WhisperingWilds.Editor
             habitatObj.AddComponent<WildlifeSpawner>();
         }
 
+        /// <summary>
+        /// Sets up a complete NPC with all required components: NPCCharacter, NPCNavigationController,
+        /// interaction collider, and bilingual dialogue. This ensures every NPC placed by
+        /// AssembleAllRegions is fully functional — visible, navigable, and interactable.
+        /// </summary>
+        internal static void SetupNPC(GameObject npcObject, string nameEn, string nameTa, string location,
+            string profileDescription, string greetingEn, string greetingTa,
+            NPCOccupation occupation, string professionEn, string professionTa)
+        {
+            // Strip any existing runtime components that would conflict
+            StripRuntimeComponents(npcObject);
+
+            // Add interaction collider so PlayerInteractor can detect this NPC
+            var collider = npcObject.GetComponent<CapsuleCollider>();
+            if (collider == null) collider = npcObject.AddComponent<CapsuleCollider>();
+            collider.height = 1.8f;
+            collider.radius = 0.4f;
+            collider.center = new Vector3(0f, 0.9f, 0f);
+            collider.isTrigger = false;
+
+            // Add NPCCharacter (RequireComponent will auto-add NPCNavigationController)
+            var npc = npcObject.GetComponent<NPCCharacter>();
+            if (npc == null) npc = npcObject.AddComponent<NPCCharacter>();
+
+            var so = new SerializedObject(npc);
+            so.FindProperty("npcId").stringValue = nameEn.ToLowerInvariant().Replace(" ", "_").Replace("(", "").Replace(")", "");
+            so.FindProperty("displayNameEn").stringValue = nameEn;
+            so.FindProperty("displayNameTa").stringValue = nameTa;
+            so.FindProperty("occupation").enumValueIndex = (int)occupation;
+            so.FindProperty("profession").stringValue = professionEn;
+            so.FindProperty("profileDescription").stringValue = profileDescription;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            // Add basic dialogue node
+            var nodes = so.FindProperty("dialogueNodes");
+            nodes.ClearArray();
+            nodes.arraySize = 1;
+            var node = nodes.GetArrayElementAtIndex(0);
+            node.FindPropertyRelative("nodeIndex").intValue = 0;
+            node.FindPropertyRelative("speakerTextEn").stringValue = greetingEn;
+            node.FindPropertyRelative("speakerTextTa").stringValue = greetingTa;
+            var choices = node.FindPropertyRelative("choices");
+            choices.ClearArray();
+            choices.arraySize = 1;
+            var choice = choices.GetArrayElementAtIndex(0);
+            choice.FindPropertyRelative("choiceTextEn").stringValue = "Thank you.";
+            choice.FindPropertyRelative("choiceTextTa").stringValue = "நன்றி.";
+            choice.FindPropertyRelative("nextNodeIndex").intValue = -1;
+            choice.FindPropertyRelative("requiredClueId").stringValue = string.Empty;
+            choice.FindPropertyRelative("revealClueId").stringValue = string.Empty;
+            choice.FindPropertyRelative("questTriggerId").stringValue = string.Empty;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorUtility.SetDirty(npc);
+            Debug.Log($"[AssembleAllRegions] SetupNPC: {nameEn} ({nameTa}) at {location} with dialogue and navigation");
+        }
+
+        /// <summary>
+        /// Removes NavMeshAgent and other runtime components that would conflict with the
+        /// NPC system. NPCNavigationController creates its own agent at runtime.
+        /// </summary>
+        private static void StripRuntimeComponents(GameObject root)
+        {
+            var agents = root.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>(true);
+            for (int i = 0; i < agents.Length; i++)
+            {
+                if (agents[i] != null) Object.DestroyImmediate(agents[i]);
+            }
+
+            var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
+            for (int i = behaviours.Length - 1; i >= 0; i--)
+            {
+                var mb = behaviours[i];
+                if (mb == null) continue;
+                if (mb is NPCCharacter) continue;
+
+                string typeName = mb.GetType().Name;
+                if (typeName.Contains("Spawner") || typeName.Contains("Manager") ||
+                    typeName.Contains("Runtime") || typeName.Contains("Benchmark") ||
+                    typeName.Contains("SmokeTest") || typeName.Contains("Diagnostics") ||
+                    typeName.Contains("Controller") || typeName.Contains("Zone"))
+                {
+                    Object.DestroyImmediate(mb);
+                }
+            }
+        }
+
         internal static GameObject InstantiateModel(string assetPath, Transform parent, Vector3 localPos, Quaternion localRot, Vector3 localScale)
         {
+            // Legacy character GLBs are audited placeholders; route people to the authored
+            // STEP 29 prefabs. Prefab roots sit at the ground (feet at y=0), so the legacy spawn
+            // position keeps feet on the surface the old posture was tuned against.
+            string characterPrefabPath = CharacterPrefabCatalog.ResolveCharacter(assetPath);
+            if (characterPrefabPath != null)
+            {
+                var characterPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(characterPrefabPath);
+                if (characterPrefab == null)
+                {
+                    Debug.LogWarning($"[AssembleAllRegions] Character prefab missing at: {characterPrefabPath} (resolved from {assetPath})");
+                    return null;
+                }
+                var character = (GameObject)PrefabUtility.InstantiatePrefab(characterPrefab, parent);
+                character.transform.localPosition = localPos;
+                character.transform.localRotation = localRot;
+                character.transform.localScale = localScale;
+                return character;
+            }
+
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
             if (prefab == null)
             {

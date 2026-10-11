@@ -3,6 +3,7 @@ using UnityEngine;
 using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.NPC;
+using WhisperingWilds.Quests;
 
 namespace WhisperingWilds.Gameplay
 {
@@ -33,6 +34,14 @@ namespace WhisperingWilds.Gameplay
 
             // The region scene owns QuestManager, so the opening quests are seeded once it exists.
             CampaignFlow.ConsumeNewGameRequest();
+
+            // Accept this region's signature quest on arrival (older registrations were never
+            // accepted, so the player could not progress a destination's story). Idempotent for
+            // quests already active or completed from a previous visit.
+            if (QuestManager.Instance != null)
+            {
+                QuestManager.Instance.AcceptRegionArrivalQuest(regionId);
+            }
 
             ApplyRegionDialogue();
             EnsurePersistentManagers();
@@ -77,6 +86,11 @@ namespace WhisperingWilds.Gameplay
             {
                 var shore = MamallapuramShoreContent.BuildDialogueFor(npcId);
                 if (shore.Count > 0) return shore;
+            }
+            else if (regionId == PichavaramContent.RegionId)
+            {
+                var pichavaram = PichavaramContent.BuildDialogueFor(npcId);
+                if (pichavaram.Count > 0) return pichavaram;
             }
 
             return ChennaiOpeningContent.BuildDialogueFor(npcId);

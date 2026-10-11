@@ -400,7 +400,7 @@ namespace WhisperingWilds.PhysicsZones
         private static QualityTier CurrentQualityTier()
         {
             if (QualityPresetManager.Instance != null) return QualityPresetManager.Instance.CurrentTier;
-            if (AdaptiveQualityManager.Instance != null && AdaptiveQualityManager.Instance.QualityStepOffset < -3)
+            if (GraphicsPerformanceManager.Instance != null && GraphicsPerformanceManager.Instance.DynamicStepOffset < -3)
             {
                 return QualityTier.Low;
             }

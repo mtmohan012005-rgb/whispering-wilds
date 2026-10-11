@@ -39,6 +39,7 @@ namespace WhisperingWilds.Wildlife
         // Components
         private NavMeshAgent navAgent;
         private WildlifeHabitatZone habitatZone;
+        private static bool s_loggedWildlifeNavMeshMissingWarning;
 
         // Movement state
         private Vector3 currentDestination;
@@ -76,6 +77,19 @@ namespace WhisperingWilds.Wildlife
             // created here, in Start, after the navmesh registration has happened.
             if (navAgent == null && navMode == NavigationMode.GroundNavMesh)
             {
+                // Sample before constructing: animals pooled at off-mesh spots must not reach
+                // AddComponent, which would log "Failed to create agent because it is not close
+                // enough to the NavMesh". Without a bindable surface the animal simply stays put
+                // (SetDestination falls back to static mode when the agent is absent).
+                if (!NavMesh.SamplePosition(transform.position, out NavMeshHit spawnProbe, 4.0f, NavMesh.AllAreas))
+                {
+                    if (!s_loggedWildlifeNavMeshMissingWarning)
+                    {
+                        s_loggedWildlifeNavMeshMissingWarning = true;
+                        Debug.LogWarning($"<color=#FFAA00><b>[WildlifeNavigation]</b></color> Scene '{gameObject.scene.name}' has no baked NavMesh within 4m of spawn {transform.position}. Ground animal stays in static fallback mode without console spam.");
+                    }
+                    return;
+                }
                 navAgent = gameObject.AddComponent<NavMeshAgent>();
                 ApplyGroundAgentSettings();
             }

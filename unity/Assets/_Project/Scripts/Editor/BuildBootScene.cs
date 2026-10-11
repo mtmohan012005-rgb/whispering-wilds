@@ -458,9 +458,7 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             // scene's UI enables and reads them.
             if (managersObj.GetComponent<LocalizationManager>() == null) managersObj.AddComponent<LocalizationManager>();
             if (managersObj.GetComponent<DisplaySettingsManager>() == null) managersObj.AddComponent<DisplaySettingsManager>();
-            if (managersObj.GetComponent<AdaptiveQualityManager>() == null) managersObj.AddComponent<AdaptiveQualityManager>();
             if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
-            if (managersObj.GetComponent<MemoryBudgetManager>() == null) managersObj.AddComponent<MemoryBudgetManager>();
             if (managersObj.GetComponent<RealtimeManager>() == null) managersObj.AddComponent<RealtimeManager>();
             if (managersObj.GetComponent<CloudSaveManager>() == null) managersObj.AddComponent<CloudSaveManager>();
             if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();

@@ -90,11 +90,31 @@ ChennaiOpeningContent.EnsureInitialized();
 
             Debug.Log("<color=#00FF88><b>[Campaign]</b></color> New game started. Entering Chennai George Town.");
 
-            // The Chennai scene owns QuestManager, so the opening quests are accepted once it
+// The Chennai scene owns QuestManager, so the opening quests are accepted once it
             // exists. PendingNewGame is the hand-off that tells the scene to seed them.
             PendingNewGame = true;
 
-            UnityEngine.SceneManagement.SceneManager.LoadScene("02_Chennai_GeorgeTown");
+            RequestCampaignEntry("chennai");
+        }
+
+        /// <summary>
+        /// Single funnel for every campaign entry (New Game / Continue). All scene loading is owned
+        /// by <see cref="WhisperingWilds.World.RegionalSceneManager"/>; this method only asks it to
+        /// enter the destination region. A direct load is used solely in standalone scenes that have
+        /// no RegionalSceneManager at all (tests, diagnostics), and never for live region travel.
+        /// </summary>
+        public static void RequestCampaignEntry(string regionId)
+        {
+            if (string.IsNullOrEmpty(regionId)) regionId = "chennai";
+
+            if (World.RegionalSceneManager.Instance != null)
+            {
+                World.RegionalSceneManager.Instance.EnterCampaignRegion(regionId);
+                return;
+            }
+
+            Debug.LogWarning($"[Campaign] RegionalSceneManager not present; using RegionalSceneManager fallback for region '{regionId}'.");
+            World.RegionalSceneManager.EnterCampaignRegionFallback(regionId);
         }
 
         /// <summary>
@@ -158,8 +178,8 @@ ChennaiOpeningContent.EnsureInitialized();
                 targetScene = geo.sceneName;
             }
 
-            Debug.Log($"<color=#00D2FF><b>[Campaign]</b></color> Continuing in region '{save.currentRegionId}' via scene '{targetScene}'. Status: {SaveSystem.LastLoadStatus}");
-            UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+Debug.Log($"<color=#00D2FF><b>[Campaign]</b></color> Continuing in region '{save.currentRegionId}' via scene '{targetScene}'. Status: {SaveSystem.LastLoadStatus}");
+            RequestCampaignEntry(save.currentRegionId);
             return true;
         }
 

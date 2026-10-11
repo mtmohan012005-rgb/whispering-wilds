@@ -811,12 +811,13 @@ namespace WhisperingWilds.QA
         }
 
         /// <summary>
-        /// Step 18 gate check: the Chettinad clue opens Mamallapuram, and Nilgiris stays shut.
+        /// Step 18 gate check: the Chettinad clue opens Mamallapuram, and the Mamallapuram clue
+        /// opens Nilgiris. Nilgiris left the deferred bucket when it gained a built scene and a
+        /// gate, so this now has to refuse every way through except the authored clue chain.
         ///
         /// This runs against the static unlock truth rather than by walking the map, because the
-        /// thing worth protecting here is the gate arithmetic: Mamallapuram has to be reachable
-        /// exactly when a Chettinad clue is recorded, and Nilgiris has to refuse every kind of
-        /// attempt, including a direct Unlock call, because it is deferred and its step has not run.
+        /// thing worth protecting here is the gate arithmetic: each destination has to be reachable
+        /// exactly when the clue that gates it is recorded, and never before.
         /// </summary>
         private IEnumerator TestRegionGating()
         {
@@ -825,39 +826,40 @@ namespace WhisperingWilds.QA
             var failures = new List<string>();
 
             if (RegionUnlocks.IsDeferred(RegionUnlocks.NilgirisRegionId))
-            {
-                // expected, but asserted so a later step that un-defers Nilgiris fails here loudly
-            }
-            else
-            {
-                failures.Add("nilgiris is no longer deferred");
-            }
+                failures.Add("nilgiris is still deferred");
 
             if (RegionUnlocks.IsUnlocked(RegionUnlocks.NilgirisRegionId))
                 failures.Add("nilgiris reports unlocked on a fresh campaign");
 
-            if (RegionUnlocks.Unlock(RegionUnlocks.NilgirisRegionId))
-                failures.Add("Unlock(nilgiris) returned true while deferred");
-
             if (RegionUnlocks.IsUnlocked(RegionUnlocks.MamallapuramRegionId))
                 failures.Add("mamallapuram is unlocked before its Chettinad clue");
 
-            // A clue from the wrong region must not open the gate.
+            // A clue from the wrong region must not open any gate.
             RegionUnlocks.EvaluateClueGate(RegionUnlocks.ChennaiRegionId);
             if (RegionUnlocks.IsUnlocked(RegionUnlocks.MamallapuramRegionId))
                 failures.Add("a chennai clue opened mamallapuram");
+            if (RegionUnlocks.IsUnlocked(RegionUnlocks.NilgirisRegionId))
+                failures.Add("a chennai clue opened nilgiris");
 
-            // The real chain: a Chettinad clue opens it exactly once.
+            // The real chain: a Chettinad clue opens Mamallapuram exactly once, and nothing else.
             if (!RegionUnlocks.EvaluateClueGate(RegionUnlocks.ChettinadRegionId))
                 failures.Add("a chettinad clue did not report an unlock for mamallapuram");
-
             if (!RegionUnlocks.IsUnlocked(RegionUnlocks.MamallapuramRegionId))
                 failures.Add("mamallapuram is still locked after the chettinad clue");
+            if (RegionUnlocks.IsUnlocked(RegionUnlocks.NilgirisRegionId))
+                failures.Add("a chettinad clue opened nilgiris before its mamallapuram gate");
 
+            // Only a Mamallapuram clue may open Nilgiris, and only once.
+            if (!RegionUnlocks.EvaluateClueGate(RegionUnlocks.MamallapuramRegionId))
+                failures.Add("a mamallapuram clue did not report an unlock for nilgiris");
+            if (!RegionUnlocks.IsUnlocked(RegionUnlocks.NilgirisRegionId))
+                failures.Add("nilgiris is still locked after the mamallapuram clue");
+            if (RegionUnlocks.EvaluateClueGate(RegionUnlocks.MamallapuramRegionId))
+                failures.Add("replaying the mamallapuram clue reported a duplicate unlock");
             if (RegionUnlocks.EvaluateClueGate(RegionUnlocks.ChettinadRegionId))
                 failures.Add("replaying the chettinad clue reported a duplicate unlock");
 
-            // A migrated pre-gate save must not be handed the new region.
+            // A migrated pre-gate save must not be handed any gated or final destination.
             var migrated = RegionUnlocks.SeedPreGateCampaign();
             if (migrated.Contains(RegionUnlocks.MamallapuramRegionId))
                 failures.Add("a v3 migration seeded mamallapuram open");
@@ -876,7 +878,7 @@ namespace WhisperingWilds.QA
                 yield break;
             }
 
-            Pass("chettinad clue opens mamallapuram once; nilgiris deferred and refused; v3 migration excludes both");
+            Pass("chettinad clue opens mamallapuram; mamallapuram clue opens nilgiris once; v3 migration excludes both");
         }
 
         /// <summary>

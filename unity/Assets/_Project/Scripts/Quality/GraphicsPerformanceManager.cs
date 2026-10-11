@@ -42,6 +42,13 @@ namespace WhisperingWilds.Quality
         public float CurrentRenderScale { get; private set; } = 1.0f;
         public int DynamicStepOffset { get; private set; } = 0;
 
+        /// <summary>
+        /// When set, a fixed user-chosen render scale (e.g. the stored WW_RenderScale setting) is
+        /// enforced exactly and the adaptive loop is suspended. Null restores tier-governed
+        /// adaptive tuning. This is the ONLY sanctioned manual override of the HDRP scaler.
+        /// </summary>
+        public float? UserRenderScaleOverride { get; private set; }
+
         public event Action<QualityTier, QualityPresetSettings> OnQualityProfileChanged;
         public event Action<float> OnDynamicResolutionChanged;
 
@@ -49,6 +56,7 @@ namespace WhisperingWilds.Quality
         private float stableTimer = 0f;
         private float cooldownTimer = 0f;
         private float[] fpsBuffer = new float[60];
+        private int samplesCollected = 0;
         private int bufferIndex = 0;
         private Camera trackedCamera;
 
@@ -101,7 +109,35 @@ namespace WhisperingWilds.Quality
             }
         }
 
-        /// <summary>Force rebind to the current scene's main camera. Call after spawning a new camera.</summary>
+        /// <summary>
+        /// Enforces a fixed user-chosen render scale (0.5-1.0) through the real HDRP dynamic
+        /// resolution pipeline, suspending adaptive tuning until cleared. Pass null to clear the
+        /// override and resume tier-governed adaptation from the current preset baseline.
+        /// </summary>
+        public void SetUserRenderScale(float? scale)
+        {
+            UserRenderScaleOverride = scale;
+            if (!scale.HasValue)
+            {
+                QualityPresetSettings settings = GetPresetSettings(currentTier);
+                CurrentRenderScale = settings.renderScale;
+                DynamicStepOffset = 0;
+                ApplyEngineRenderResolution(CurrentRenderScale);
+                Debug.Log($"<color=#00D2FF><b>[GraphicsPerformanceManager]</b></color> User render-scale override cleared; adaptive tuning resumed at tier band base {CurrentRenderScale:F2}.");
+                return;
+            }
+
+            // User band is 50-100%. Widening the asset percentages is required so the
+            // scaler lerp below 60/65/75% is not clamped away (see ApplyEngineRenderResolution).
+            minRenderScale = 0.5f;
+            maxRenderScale = 1.0f;
+            CurrentRenderScale = Mathf.Clamp(scale.Value, 0.5f, 1.0f);
+            ApplyEngineRenderResolution(CurrentRenderScale);
+            Debug.Log($"<color=#00D2FF><b>[GraphicsPerformanceManager]</b></color> User render-scale override applied: {CurrentRenderScale:F2} via HDRP dynamic resolution.");
+        }
+
+        /// <summary>
+        /// Force rebind to the current scene's main camera. Call after spawning a new camera.</summary>
         public void ForceRebindCamera()
         {
             trackedCamera = null;
@@ -136,7 +172,11 @@ namespace WhisperingWilds.Quality
         {
             UpdateFramerateMetrics();
 
+            // STEP 26 §2: SINGLE PERFORMANCE AUTHORITY — this manager owns the decision loop.
             if (!dynamicAdaptationEnabled) return;
+
+            // A manual user override suspends adaptation: the fixed scale is enforced verbatim.
+            if (UserRenderScaleOverride.HasValue) return;
 
             if (cooldownTimer > 0f)
             {
@@ -156,9 +196,13 @@ namespace WhisperingWilds.Quality
                 fpsBuffer[bufferIndex] = instantFPS;
                 bufferIndex = (bufferIndex + 1) % fpsBuffer.Length;
 
+                // STEP 26 §3: never average over unwritten zero-valued buffer entries.
+                // Averaging the full length during the first second reported a near-zero
+                // startup FPS and could falsely trigger a quality scale-down on boot.
+                samplesCollected = Mathf.Min(samplesCollected + 1, fpsBuffer.Length);
                 float sum = 0f;
-                for (int i = 0; i < fpsBuffer.Length; i++) sum += fpsBuffer[i];
-                CurrentFPS = sum / fpsBuffer.Length;
+                for (int i = 0; i < samplesCollected; i++) sum += fpsBuffer[i];
+                CurrentFPS = sum / samplesCollected;
                 CurrentFrameTimeMS = dt * 1000f;
             }
         }

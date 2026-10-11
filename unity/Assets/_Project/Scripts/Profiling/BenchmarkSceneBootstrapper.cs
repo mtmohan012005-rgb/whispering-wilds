@@ -28,11 +28,18 @@ namespace WhisperingWilds.Profiling
 
         private void Start()
         {
-            // Only benchmark if explicitly flagged - safety guard for production gameplay
+            // Only benchmark if explicitly flagged - safety guard for production gameplay.
+            // STEP 26 §21: an explicit QA-only environment variable can arm the flag so a
+            // QA player build can benchmark on demand without touching retail behaviour.
             if (!BenchmarkSessionFlag.IsActive)
             {
-                Debug.Log("[BenchmarkSceneBootstrapper] Scene entered without benchmark flag - benchmark mode SUPPRESSED.");
-                return;
+                string env = System.Environment.GetEnvironmentVariable("WW_BENCHMARK_AUTOSTART");
+                if (string.IsNullOrEmpty(env) || env == "0")
+                {
+                    Debug.Log("[BenchmarkSceneBootstrapper] Scene entered without benchmark flag - benchmark mode SUPPRESSED.");
+                    return;
+                }
+                BenchmarkSessionFlag.Activate();
             }
 
             // Consume the flag so re-entering this scene normally won't re-trigger it

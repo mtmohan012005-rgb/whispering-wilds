@@ -195,23 +195,39 @@ namespace WhisperingWilds.Quality
             currentTier = tier;
             QualityPresetSettings settings = GetPresetSettings(tier);
 
-            // Frame pacing
-            Application.targetFrameRate = settings.targetFrameRate;
-            QualitySettings.vSyncCount = settings.vSyncCount;
+            // When the authoritative engine is present, delegate the entire engine-side
+            // application to it. GraphicsPerformanceManager is the single owner of the real
+            // HDRP dynamic-resolution pipeline (render scale, buffer resize, camera binding).
+            // Routing tier changes through this facade guarantees presets change actual
+            // rendering cost - previously this path applied shadow/AA/streaming settings only
+            // while resolution stayed pinned at 1.0 until the adaptive loop drifted it down.
+            //
+            // The legacy inline application below is kept ONLY for the run mode where the
+            // graphics manager is absent, so QA headless scenes without it still behave.
+            if (GraphicsPerformanceManager.Instance != null)
+            {
+                GraphicsPerformanceManager.Instance.ApplyProfile(tier);
+            }
+            else
+            {
+                // Frame pacing
+                Application.targetFrameRate = settings.targetFrameRate;
+                QualitySettings.vSyncCount = settings.vSyncCount;
 
-            // Shadows
-            QualitySettings.shadowDistance = settings.shadowDistance;
-            QualitySettings.shadowCascades = settings.shadowCascades;
+                // Shadows
+                QualitySettings.shadowDistance = settings.shadowDistance;
+                QualitySettings.shadowCascades = settings.shadowCascades;
 
-            // Texture Streaming
-            QualitySettings.streamingMipmapsActive = true;
-            QualitySettings.streamingMipmapsMemoryBudget = settings.textureStreamingBudgetMB;
-            QualitySettings.streamingMipmapsRenderersPerFrame = 512;
-            QualitySettings.streamingMipmapsMaxLevelReduction = tier <= QualityTier.Low ? 3 : 2;
+                // Texture Streaming
+                QualitySettings.streamingMipmapsActive = true;
+                QualitySettings.streamingMipmapsMemoryBudget = settings.textureStreamingBudgetMB;
+                QualitySettings.streamingMipmapsRenderersPerFrame = 512;
+                QualitySettings.streamingMipmapsMaxLevelReduction = tier <= QualityTier.Low ? 3 : 2;
 
-            // Aniso & AA
-            QualitySettings.anisotropicFiltering = settings.anisotropicFiltering ? AnisotropicFiltering.Enable : AnisotropicFiltering.Disable;
-            QualitySettings.antiAliasing = settings.antiAliasing;
+                // Aniso & AA
+                QualitySettings.anisotropicFiltering = settings.anisotropicFiltering ? AnisotropicFiltering.Enable : AnisotropicFiltering.Disable;
+                QualitySettings.antiAliasing = settings.antiAliasing;
+            }
 
             PlayerPrefs.SetInt("WW_QualityTier", (int)tier);
             PlayerPrefs.Save();

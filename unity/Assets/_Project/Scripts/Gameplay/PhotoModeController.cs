@@ -28,10 +28,11 @@ namespace WhisperingWilds.Gameplay
         [Tooltip("Cursor mode while photo mode is active.")]
         [SerializeField] private bool lockCursorWhileAiming = false;
 
-        private Camera photoCamera;
+private Camera photoCamera;
         private GameObject playerAvatar;
         private GameState stateBeforePhotoMode = GameState.Gameplay;
         private bool isActive;
+        private Player.PlayerInputHandler cachedInput;
 
         public bool IsActive => isActive;
 
@@ -113,9 +114,12 @@ namespace WhisperingWilds.Gameplay
             Cursor.visible = !lockCursorWhileAiming;
         }
 
-        private void Update()
+private void Update()
         {
-            var input = GetComponent<Player.PlayerInputHandler>();
+            // Steering input is cached once (the component rarely changes). Re-probe only on a
+            // null cache so late-enabled player avatars on the same object still get bound.
+            if (cachedInput == null) cachedInput = GetComponent<Player.PlayerInputHandler>();
+            var input = cachedInput;
             if (input == null) return;
 
             if (!isActive)

@@ -21,6 +21,7 @@ namespace WhisperingWilds.Gameplay
             ChennaiOpeningContent.EnsureInitialized();
             ChettinadMansionContent.EnsureInitialized();
             MamallapuramShoreContent.EnsureInitialized();
+            PichavaramContent.EnsureInitialized();
         }
 
         /// <summary>
@@ -40,6 +41,23 @@ namespace WhisperingWilds.Gameplay
             {
                 MamallapuramShoreContent.EnsureInitialized();
             }
+            else if (regionId == PichavaramContent.RegionId)
+            {
+                PichavaramContent.EnsureInitialized();
+            }
+        }
+
+        /// <summary>
+        /// The signature quest of a destination region, or the opening quest for Chennai itself.
+        /// null for regions that have not authored a signature quest yet (Thanjavur, Nilgiris).
+        /// </summary>
+        public static string GetRegionQuestId(string regionId)
+        {
+            if (regionId == ChettinadMansionContent.RegionId) return ChettinadMansionContent.QuestTheHouseThatRemembers;
+            if (regionId == MamallapuramShoreContent.RegionId) return MamallapuramShoreContent.QuestEchoesAlongTheShore;
+            if (regionId == PichavaramContent.RegionId) return PichavaramContent.QuestTheNightCurrent;
+            if (regionId == ChennaiOpeningContent.RegionId) return ChennaiOpeningContent.QuestFirstDayInGeorgeTown;
+            return null;
         }
     }
 }

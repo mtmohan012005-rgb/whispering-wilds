@@ -219,7 +219,13 @@ namespace WhisperingWilds.Core
         {
             if (SaveManager.Instance != null)
             {
-                SaveManager.Instance.LoadGame();
+                var loaded = SaveManager.Instance.LoadGame();
+                if (loaded != null && SaveManager.Instance != null)
+                {
+                    // In-scene quick load has no pending scene transition to carry the payload,
+                    // so restore immediately (position, appearance, inventory, quests, etc.).
+                    SaveManager.Instance.ApplySaveDataToGame(loaded);
+                }
                 return;
             }
 

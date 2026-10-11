@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WhisperingWilds.Characters;
 using WhisperingWilds.NPC;
 
 namespace WhisperingWilds.Editor
@@ -459,7 +460,10 @@ namespace WhisperingWilds.Editor
         private static NPCCharacter PlaceNpc(Transform parent, RosterEntry entry,
             Dictionary<string, NPCActivityAnchor> anchors, List<string> missing)
         {
-            var modelPath = NpcModelRoot + "/" + entry.modelFile;
+            // Legacy character GLBs are audited placeholders; the catalog redirects every roster
+            // character (murugan, velu, meenakshi, selvam, farmer, artisan, fisher, forest-guide)
+            // to the authored STEP 29 prefab. Prefab root sits at the ground (feet at y=0).
+            var modelPath = CharacterPrefabCatalog.ResolveVisualPath(NpcModelRoot + "/" + entry.modelFile);
             var modelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
             if (modelPrefab == null)
             {

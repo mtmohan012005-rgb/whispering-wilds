@@ -164,7 +164,7 @@ namespace WhisperingWilds.UI
             SaveSystem.DeleteSave();
             SaveManager.PendingSaveToRestore = null;
             CampaignFlow.RequestNewGameEnter();
-            UnityEngine.SceneManagement.SceneManager.LoadScene("02_Chennai_GeorgeTown");
+            CampaignFlow.RequestCampaignEntry("chennai");
         }
 
         public void OnContinueClicked()
@@ -185,12 +185,7 @@ namespace WhisperingWilds.UI
             }
 
             SaveManager.PendingSaveToRestore = save;
-            string targetScene = "02_Chennai_GeorgeTown";
-            if (World.TamilNaduGeography.TryGetRegion(save.currentRegionId, out var geo) && !string.IsNullOrEmpty(geo.sceneName))
-            {
-                targetScene = geo.sceneName;
-            }
-            UnityEngine.SceneManagement.SceneManager.LoadScene(targetScene);
+            CampaignFlow.RequestCampaignEntry(save.currentRegionId);
         }
 
         public void OnSettingsClicked()

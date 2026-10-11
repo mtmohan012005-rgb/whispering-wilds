@@ -35,22 +35,24 @@ namespace WhisperingWilds.World
         /// be unlocked by whatever happens to satisfy a clue gate, and so the state map lists them
         /// as deferred rather than as a failed check.
         ///
-        /// Nilgiris stays deferred until its own step builds it. Mamallapuram left this list when
-        /// it gained a gate and a built scene: a destination the campaign has a real clue chain and
-        /// a playable scene for does not belong in the "not part of this campaign yet" bucket, and
-        /// leaving it here meant its gate could never fire.
+        /// Mamallapuram and Nilgiris both left this list once each gained a gate and a built scene:
+        /// a destination the campaign has a real clue chain and a playable scene for does not belong
+        /// in the "not part of this campaign yet" bucket, and leaving it there meant its gate could
+        /// never fire. The list is intentionally empty now; it exists so a region that is real in
+        /// the geography but not yet reachable in this campaign is added here once, explicitly,
+        /// instead of silently living in the locked bucket forever.
         /// </summary>
-        public static readonly string[] DeferredRegionIds = { NilgirisRegionId };
+        public static readonly string[] DeferredRegionIds = { };
 
         /// <summary>
         /// The campaign's destination order, one entry per destination rather than per region id.
-        /// Chennai, then Pichavaram, then Thanjavur, then Chettinad, then Mamallapuram.
+        /// Chennai, then Pichavaram, then Thanjavur, then Chettinad, then Mamallapuram, then
+        /// Nilgiris. Nilgiris is the campaign's final destination and is held back for the
+        /// Mamallapuram coastal signal, so it can only ever open through the clue chain, never by
+        /// migration and never from a fresh game.
         ///
         /// The delta plain and the Thanjavur city share one scene, so they are one destination here.
         /// See <see cref="DestinationFor"/> for how a region id resolves to one of these.
-        ///
-        /// Nilgiris is not in this list yet: its gate exists in the data but the region has no
-        /// built scene, so listing it would advertise a destination that cannot be entered.
         /// </summary>
         public static readonly string[] ProgressionOrder =
         {
@@ -58,7 +60,8 @@ namespace WhisperingWilds.World
             PichavaramRegionId,
             ThanjavurRegionId,
             ChettinadRegionId,
-            MamallapuramRegionId
+            MamallapuramRegionId,
+            NilgirisRegionId
         };
 
         /// <summary>
@@ -109,6 +112,16 @@ namespace WhisperingWilds.World
         public static readonly string[] MamallapuramGateClueRegionIds =
         {
             ChettinadRegionId
+        };
+
+        /// <summary>
+        /// Nilgiris is the final gated destination: the coastal signal recorded in Mamallapuram
+        /// opens the inland route. Like the other gates it is data-driven, so it stays closed for
+        /// any fresh campaign and any migrated save until a Mamallapuram-region clue is on record.
+        /// </summary>
+        public static readonly string[] NilgirisGateClueRegionIds =
+        {
+            MamallapuramRegionId
         };
 
         private static readonly HashSet<string> UnlockedRegionIds =
@@ -257,7 +270,8 @@ namespace WhisperingWilds.World
             if (string.IsNullOrEmpty(clueRegionId)) return false;
 
             if (TryOpenGate(ChettinadRegionId, ChettinadGateClueRegionIds, clueRegionId)) return true;
-            return TryOpenGate(MamallapuramRegionId, MamallapuramGateClueRegionIds, clueRegionId);
+            if (TryOpenGate(MamallapuramRegionId, MamallapuramGateClueRegionIds, clueRegionId)) return true;
+            return TryOpenGate(NilgirisRegionId, NilgirisGateClueRegionIds, clueRegionId);
         }
 
         /// <summary>

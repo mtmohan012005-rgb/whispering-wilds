@@ -110,6 +110,78 @@ namespace WhisperingWilds.World
             StartCoroutine(SafeRegionTransitionRoutine(targetGeo));
         }
 
+        /// <summary>
+        /// Last-resort campaign entry used only when no RegionalSceneManager instance exists
+        /// (standalone test/diagnostic scenes). Kept on this type so that scene loading stays
+        /// owned by RegionalSceneManager rather than leaking back into campaign/UI callers.
+        /// </summary>
+        public static void EnterCampaignRegionFallback(string regionId)
+        {
+            if (string.IsNullOrEmpty(regionId)) regionId = "chennai";
+            if (TamilNaduGeography.TryGetRegion(regionId, out RegionGeoLocation geo) && !string.IsNullOrEmpty(geo.sceneName))
+            {
+                Debug.LogWarning($"[RegionalSceneManager] No instance present; direct single-scene load for '{geo.sceneName}'.");
+                SceneManager.LoadScene(geo.sceneName);
+            }
+            else
+            {
+                Debug.LogError($"[RegionalSceneManager] Cannot resolve fallback scene for region '{regionId}'.");
+            }
+        }
+
+        /// <summary>
+        /// Cold-start campaign entry (New Game / Continue from the menu). No previous region world
+        /// exists yet, so the outgoing-state capture/save and the additive overlap are skipped by
+        /// design: the menu scene is the only scene to be replaced, and every caller of this method
+        /// has already decided the destination (a New Game target is always unlocked, and a Contin-
+        /// ue target was gated when it was entered in play). The region scene's own bootstrapper
+        /// performs spawn validation and manager binding on load. This is the ONLY scene-loading
+        /// funnel for campaign entry; other code must not call SceneManager directly.
+        /// </summary>
+        public void EnterCampaignRegion(string regionId)
+        {
+            if (isLoadingRegion)
+            {
+                Debug.LogWarning("[RegionalSceneManager] Scene transition already in progress.");
+                return;
+            }
+
+            if (!TamilNaduGeography.TryGetRegion(regionId, out RegionGeoLocation targetGeo))
+            {
+                string errorMsg = $"Cannot enter unknown or invalid region '{regionId}'.";
+                Debug.LogError($"[RegionalSceneManager] {errorMsg}");
+                OnRegionLoadFailed?.Invoke(regionId, errorMsg);
+                return;
+            }
+
+            Debug.Log($"<color=#00D2FF><b>[RegionalSceneManager]</b></color> Cold-start campaign entry: {targetGeo.englishName} ({targetGeo.tamilName}) via '{targetGeo.sceneName}'");
+            OnRegionLoadStarted?.Invoke(targetGeo.regionId);
+
+            isLoadingRegion = true;
+            string sceneName = targetGeo.sceneName;
+            string currentSceneName = SceneManager.GetActiveScene().name;
+
+            // Single-mode load is correct here: there is no playable region world to preserve, and
+            // running the additive transition over the menu would leave two manager sets alive.
+            // Spawn validation and manager binding happen in the arriving scene's bootstrap.
+            try
+            {
+                SceneManager.LoadScene(sceneName);
+            }
+            catch (Exception ex)
+            {
+                string err = $"Failed to enter scene '{sceneName}': {ex.Message}";
+                Debug.LogError($"[RegionalSceneManager] {err}. Staying in '{currentSceneName}'.");
+                isLoadingRegion = false;
+                OnRegionLoadFailed?.Invoke(targetGeo.regionId, err);
+                return;
+            }
+
+            activeRegionId = targetGeo.regionId;
+            isLoadingRegion = false;
+            OnRegionLoadCompleted?.Invoke(targetGeo.regionId);
+        }
+
         private IEnumerator SafeRegionTransitionRoutine(RegionGeoLocation targetGeo)
         {
             isLoadingRegion = true;
@@ -172,6 +244,10 @@ namespace WhisperingWilds.World
             Scene targetScene = SceneManager.GetSceneByName(targetSceneName);
             if (targetScene.IsValid() && targetScene.isLoaded)
             {
+                // Pure additive transitions overlap both directional suns for a window of frames.
+                // Demote the outgoing region's sun to shadowless BEFORE activating the target so
+                // only one directional light casts at a time (avoids cascade-shadow-atlasing failure).
+                DemoteOutgoingRegionSunToShadowless(currentSceneName);
                 SceneManager.SetActiveScene(targetScene);
             }
 
@@ -211,6 +287,39 @@ namespace WhisperingWilds.World
 
             Debug.Log($"<color=#00FF99><b>[RegionalSceneManager]</b></color> Safe transition completed: Arrived at {targetGeo.englishName}");
             OnRegionLoadCompleted?.Invoke(targetGeo.regionId);
+        }
+
+        /// <summary>
+        /// While an additive region transition overlaps two scenes, both directional suns are
+        /// present. Disable shadow casting on the outgoing region's directional light so the
+        /// incoming region's sun is the only shadow caster (HDRP reports cascade shadow atlasing
+        /// failure when more than one directional light casts at a time). The outgoing scene is
+        /// destroyed shortly after by UnloadSceneAsync, so nothing needs restoring.
+        /// </summary>
+        private static void DemoteOutgoingRegionSunToShadowless(string outgoingSceneName)
+        {
+            if (string.IsNullOrEmpty(outgoingSceneName))
+            {
+                return;
+            }
+
+            Scene outgoing = SceneManager.GetSceneByName(outgoingSceneName);
+            if (!outgoing.IsValid() || !outgoing.isLoaded)
+            {
+                return;
+            }
+
+            foreach (var root in outgoing.GetRootGameObjects())
+            {
+                if (root == null) continue;
+                foreach (var sun in root.GetComponentsInChildren<Light>(true))
+                {
+                    if (sun.type == LightType.Directional && sun.shadows != LightShadows.None)
+                    {
+                        sun.shadows = LightShadows.None;
+                    }
+                }
+            }
         }
 
         private void PositionPlayerAtRegionSpawn(Scene targetScene)

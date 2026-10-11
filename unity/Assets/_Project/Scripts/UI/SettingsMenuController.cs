@@ -48,6 +48,7 @@ if (_instance == null)
         public int resolutionHeight = 1080;
         public bool vSync = true;
         public float renderScale = 1.0f;
+        public bool renderScaleOverride = false;
         public float fov = 75f;
         public bool motionBlurEnabled = true;
 
@@ -102,6 +103,7 @@ if (_instance == null)
             isFullscreen = PlayerPrefs.GetInt("WW_Fullscreen", 1) == 1;
             vSync = PlayerPrefs.GetInt("WW_VSync", 1) == 1;
             renderScale = PlayerPrefs.GetFloat("WW_RenderScale", 1.0f);
+            renderScaleOverride = PlayerPrefs.GetInt("WW_RenderScaleOverride", 0) == 1;
             fov = PlayerPrefs.GetFloat("WW_FOV", 75f);
             motionBlurEnabled = PlayerPrefs.GetInt("WW_MotionBlur", 1) == 1;
 
@@ -188,12 +190,36 @@ if (_instance == null)
             SaveSettings();
         }
 
+        /// <summary>
+        /// Enforces the stored render scale on the real HDRP dynamic resolution pipeline via
+        /// <see cref="GraphicsPerformanceManager"/>, or clears the override so adaptive tuning
+        /// resumes. Harmless when no manager is present (standalone test scenes).
+        /// </summary>
+        private void ApplyUserRenderScale()
+        {
+            if (GraphicsPerformanceManager.Instance == null) return;
+            GraphicsPerformanceManager.Instance.SetUserRenderScale(renderScaleOverride ? renderScale : (float?)null);
+        }
+
+        /// <summary>
+        /// Programmatic setting of the render scale (50%-100%). Turning the control past 1.0, or
+        /// any non-default value, installs a fixed override that suspends dynamic adaptation.
+        /// </summary>
+        public void SetRenderScale(float value, bool enableOverride)
+        {
+            renderScale = Mathf.Clamp(value, 0.5f, 1.0f);
+            renderScaleOverride = enableOverride;
+            SaveSettings();
+            ApplyUserRenderScale();
+        }
+
         public void SaveSettings()
         {
             PlayerPrefs.SetInt("WW_QualityTier", (int)activeTier);
             PlayerPrefs.SetInt("WW_Fullscreen", isFullscreen ? 1 : 0);
             PlayerPrefs.SetInt("WW_VSync", vSync ? 1 : 0);
             PlayerPrefs.SetFloat("WW_RenderScale", renderScale);
+            PlayerPrefs.SetInt("WW_RenderScaleOverride", renderScaleOverride ? 1 : 0);
             PlayerPrefs.SetFloat("WW_FOV", fov);
             PlayerPrefs.SetInt("WW_MotionBlur", motionBlurEnabled ? 1 : 0);
 
@@ -236,6 +262,11 @@ if (_instance == null)
             {
                 QualityPresetManager.Instance.ApplyPreset(activeTier);
             }
+
+            // Render scale: the stored value is only obeyed when the user actually chose a
+            // non-default override (WW_RenderScaleOverride). At the default (no override) the
+            // GraphicsPerformanceManager adaptive loop remains the single authority.
+            ApplyUserRenderScale();
 
             // Display
             if (DisplaySettingsManager.Instance != null)

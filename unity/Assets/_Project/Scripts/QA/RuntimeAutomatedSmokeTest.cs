@@ -114,6 +114,10 @@ namespace WhisperingWilds.QA
             // 4. Locomotion: Walk, Sprint, Crouch, Jump
             yield return StartCoroutine(TestPlayerLocomotion());
 
+            // 4b. STEP 29 Character acceptance (Chennai): player rig, NPC visuals,
+            //     live appearance swap, locomotion screenshot
+            yield return StartCoroutine(CharacterRuntimeSmokeTest.RunChennaiCharacterAudit(summary));
+
             // 5. Save System
             yield return StartCoroutine(TestSaveSystem());
 
@@ -137,6 +141,10 @@ namespace WhisperingWilds.QA
             {
                 yield return StartCoroutine(ecoTest.RunEcologyAcceptanceRoutine(summary));
             }
+
+            // 9b. STEP 29 Character acceptance (Pichavaram): NPC talk animation,
+            //     NavMesh movement, NPC talk screenshot, player rig after travel
+            yield return StartCoroutine(CharacterRuntimeSmokeTest.RunPichavaramCharacterAudit(summary));
 
             // Write report to file and console
             WriteReportAndConclude();
@@ -277,18 +285,30 @@ namespace WhisperingWilds.QA
 
             if (pi != null && pm != null && cc != null)
             {
-                Vector3 initialPos = player.transform.position;
-
-                // 1. Move forward
+                // 1. Move forward (walk baseline) - measured in STEADY STATE. The first ~0.8s
+                // of a phase is acceleration ramp (lerp toward target at speedChangeRate), so
+                // averaging displacement across a ramp skews the ratio low. Warm up first, then
+                // sample a clean window.
                 pi.SetSimulatedMovement(Vector2.up, sprint: false, crouch: false);
+                yield return new WaitForSecondsRealtime(0.8f);
+                Vector3 walkStartPos = player.transform.position;
                 yield return new WaitForSecondsRealtime(0.6f);
                 Vector3 movedPos = player.transform.position;
-                float moveDist = Vector3.Distance(new Vector3(initialPos.x, 0, initialPos.z), new Vector3(movedPos.x, 0, movedPos.z));
+                float moveDist = Vector3.Distance(new Vector3(walkStartPos.x, 0, walkStartPos.z), new Vector3(movedPos.x, 0, movedPos.z));
+                float walkSpeed = moveDist / 0.6f;
 
-                // 2. Sprint forward
+                // 2. Sprint forward - measured by actual displacement over a steady-state window.
+                // A single CurrentSpeed instant reads a smoothed magnitude and flakes near the
+                // absolute cutoff. The displacement rate is framerate-robust and is compared to
+                // this run's own walk baseline, so sprint must clearly beat walk or it fails.
                 pi.SetSimulatedMovement(Vector2.up, sprint: true, crouch: false);
-                yield return new WaitForSecondsRealtime(0.4f);
-                float sprintSpeed = pm.CurrentSpeed;
+                yield return new WaitForSecondsRealtime(0.8f);
+                Vector3 sprintStartPos = player.transform.position;
+                yield return new WaitForSecondsRealtime(0.6f);
+                Vector3 sprintEndPos = player.transform.position;
+                float sprintDist = Vector3.Distance(new Vector3(sprintStartPos.x, 0, sprintStartPos.z), new Vector3(sprintEndPos.x, 0, sprintEndPos.z));
+                float sprintSpeed = sprintDist / 0.6f;
+                pi.SetSimulatedMovement(Vector2.up, sprint: false, crouch: false);
 
                 // 3. Crouch forward
                 pi.SetSimulatedMovement(Vector2.up, sprint: false, crouch: true);
@@ -310,17 +330,17 @@ namespace WhisperingWilds.QA
                 yield return new WaitForSecondsRealtime(0.5f);
                 pi.ClearSimulation();
 
-                if (moveDist > 0.3f && sprintSpeed > 4.5f && crouchHeight < 1.7f && jumped)
+                if (moveDist > 0.3f && sprintSpeed > walkSpeed * 1.35f && crouchHeight < 1.7f && jumped)
                 {
                     step.status = "PASS";
-                    step.details = $"MoveDist={moveDist:F2}m, SprintSpeed={sprintSpeed:F1}m/s, CrouchHeight={crouchHeight:F2}m, Jumped=True";
+                    step.details = $"MoveDist={moveDist:F2}m, Walk={walkSpeed:F1}m/s, Sprint={sprintSpeed:F1}m/s, CrouchHeight={crouchHeight:F2}m, Jumped=True";
                     summary.totalPassed++;
                     Debug.Log($"<color=#00FF88><b>[QA_TEST]</b></color> TEST 4 (Locomotion): PASS - {step.details}");
                 }
                 else
                 {
                     step.status = "FAIL";
-                    step.details = $"MoveDist={moveDist:F2}m (>0.3), SprintSpeed={sprintSpeed:F1} (>4.5), CrouchHeight={crouchHeight:F2} (<1.7), Jumped={jumped}";
+                    step.details = $"MoveDist={moveDist:F2}m (>0.3), Walk={walkSpeed:F1}m/s, Sprint={sprintSpeed:F1}m/s (must exceed 1.35x walk), CrouchHeight={crouchHeight:F2} (<1.7), Jumped={jumped}";
                     summary.totalFailed++;
                     Debug.LogError($"<color=#FF4444><b>[QA_TEST]</b></color> TEST 4 (Locomotion): FAIL - {step.details}");
                 }
@@ -526,6 +546,24 @@ namespace WhisperingWilds.QA
                 string jsonPath = Path.Combine(reportDir, "automated_runtime_smoke_test.json");
                 string json = JsonUtility.ToJson(summary, true);
                 File.WriteAllText(jsonPath, json);
+
+                // Mirror beside the executable so CI can collect the report even when the
+                // persistent-data folder is wiped during teardown. Application.dataPath inside
+                // the build is '<exe>/TheWhisperingWilds_QA_Data', so parent = build output dir.
+                try
+                {
+                    string mirrorDir = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                    if (Directory.Exists(mirrorDir))
+                    {
+                        string mirrorPath = Path.Combine(mirrorDir, "automated_runtime_smoke_test.json");
+                        File.WriteAllText(mirrorPath, json);
+                        Debug.Log($"<color=#00FFAA><b>[QA_TEST]</b></color> Summary report mirrored to: {mirrorPath}");
+                    }
+                }
+                catch (Exception mirrorEx)
+                {
+                    Debug.LogWarning($"[QA_TEST] Could not mirror report beside executable: {mirrorEx.Message}");
+                }
 
                 Debug.Log($"<color=#00FFAA><b>[QA_TEST]</b></color> Summary report written to: {jsonPath}");
                 Debug.Log($"<color=#00FFAA><b>[QA_TEST]</b></color> RESULTS: {summary.totalPassed} PASSED, {summary.totalFailed} FAILED.");

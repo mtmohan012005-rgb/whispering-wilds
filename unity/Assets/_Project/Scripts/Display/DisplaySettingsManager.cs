@@ -28,7 +28,7 @@ namespace WhisperingWilds.Display
     /// </summary>
     /// <remarks>
     /// Deliberately does not own graphics quality or memory budgets: those belong to
-    /// <c>QualityPresetManager</c> and <c>MemoryBudgetManager</c>. This manager persists
+    /// <c>GraphicsPerformanceManager</c> (quality) and <c>MemoryManager</c> (memory). This manager persists
     /// display-only choices under distinct PlayerPrefs keys so the two systems never overwrite
     /// each other. Nothing here is required for the game to run: every setting falls back to a
     /// safe default, and the component degrades to a no-op when Unity reports no fullscreen

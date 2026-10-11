@@ -14,7 +14,7 @@ namespace WhisperingWilds.Player
         [Header("Movement Speeds (m/s)")]
         [SerializeField] private float walkSpeed = 3.5f;
         [SerializeField] private float runSpeed = 6.0f;
-        [SerializeField] private float sprintSpeed = 8.5f;
+        [SerializeField] private float sprintSpeed = 9.5f;
         [SerializeField] private float crouchSpeed = 2.0f;
         [SerializeField] private float rotationSmoothTime = 0.12f;
         [SerializeField] private float speedChangeRate = 10.0f;

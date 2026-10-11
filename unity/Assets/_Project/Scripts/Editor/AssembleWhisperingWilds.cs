@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using WhisperingWilds.Core;
 using WhisperingWilds.Player;
 using WhisperingWilds.Cameras;
+using WhisperingWilds.Characters;
 using WhisperingWilds.Inventory;
 using WhisperingWilds.Quests;
 using WhisperingWilds.Investigation;
@@ -227,8 +228,9 @@ namespace WhisperingWilds.Editor
                 UnityEngine.Object.DestroyImmediate(existingVisual.gameObject);
             }
 
-            // Load and instantiate real authored player GLB model
-            var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Models/Characters/Player/player.glb");
+            // Load and instantiate the authored STEP 29 character prefab (rigged, textured,
+            // animated, appearance-wired). Legacy player.glb is an audited placeholder.
+            var playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabCatalog.PlayerPrefabPath);
             if (playerPrefab != null)
             {
                 var visual = (GameObject)PrefabUtility.InstantiatePrefab(playerPrefab, player.transform);
@@ -237,17 +239,16 @@ namespace WhisperingWilds.Editor
                 visual.transform.localRotation = Quaternion.identity;
                 visual.transform.localScale = Vector3.one;
 
-                // Remove any colliders from the visual child to avoid CharacterController collision fighting
+                // The authored rig carries no colliders; guard anyway so the CharacterController
+                // never fights a foreign collider child.
                 foreach (var col in visual.GetComponentsInChildren<Collider>())
                 {
                     UnityEngine.Object.DestroyImmediate(col);
                 }
-
-                // Attach and configure Animator with PlayerLocomotionController
-                var anim = visual.GetComponent<Animator>();
-                if (anim == null) anim = visual.AddComponent<Animator>();
-                var animCtrl = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/_Project/Art/Animations/PlayerLocomotionController.controller");
-                if (animCtrl != null) anim.runtimeAnimatorController = animCtrl;
+            }
+            else
+            {
+                Debug.LogWarning("[AssembleWhisperingWilds] PlayerCharacter.prefab missing - run 'Whispering Wilds/Characters/Build All Characters' first.");
             }
 
             return player;
@@ -500,7 +501,7 @@ namespace WhisperingWilds.Editor
 
             if (murugan == null)
             {
-                var muruganPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Models/Characters/NPCs/murugan.glb");
+                var muruganPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabCatalog.ResolveCharacter("murugan.glb"));
                 if (muruganPrefab != null)
                 {
                     murugan = (GameObject)PrefabUtility.InstantiatePrefab(muruganPrefab, npcRoot.transform);
@@ -535,7 +536,7 @@ namespace WhisperingWilds.Editor
             var velu = GameObject.Find("NPC_Velu");
             if (velu == null)
             {
-                var veluPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Models/Characters/NPCs/velu.glb");
+                var veluPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(CharacterPrefabCatalog.ResolveCharacter("velu.glb"));
                 if (veluPrefab != null)
                 {
                     velu = (GameObject)PrefabUtility.InstantiatePrefab(veluPrefab, npcRoot.transform);

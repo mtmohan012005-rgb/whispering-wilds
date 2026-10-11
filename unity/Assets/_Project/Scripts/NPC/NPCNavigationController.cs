@@ -78,6 +78,18 @@ namespace WhisperingWilds.NPC
             // NavMeshData is already registered by the time the agent is built.
             if (agent == null)
             {
+                // Bind BEFORE constructing the agent. Sampling first means off-mesh spawns never
+                // reach AddComponent, avoiding Unity's "Failed to create agent because it is not
+                // close enough to the NavMesh" error; the NPC instead stays in safe fallback mode.
+                if (!NavMesh.SamplePosition(transform.position, out NavMeshHit spawnProbe, maxNavMeshSampleDistance, NavMesh.AllAreas))
+                {
+                    if (!s_loggedNavMeshMissingWarning)
+                    {
+                        s_loggedNavMeshMissingWarning = true;
+                        Debug.LogWarning($"<color=#FFAA00><b>[NPCNavigation]</b></color> Scene '{gameObject.scene.name}' has no baked NavMesh within {maxNavMeshSampleDistance}m of spawn {transform.position}. NPC stays in safe stationary fallback mode without console spam.");
+                    }
+                    return;
+                }
                 agent = gameObject.AddComponent<NavMeshAgent>();
             }
             ConfigureAgent();
