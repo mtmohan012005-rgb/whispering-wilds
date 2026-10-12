@@ -138,65 +138,131 @@ namespace WhisperingWilds.Editor.Characters
         public static Mesh BuildBodyMesh(Dictionary<string, int> bones)
         {
             var mb = new MeshBuilder();
-            mb.Append(PartFactory.CylinderPart(new Vector3(0f, 0.90f, 0f), 0.155f, 0.30f, 10, true), bones["Hips"], 0);      // pelvis/hips
-            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.10f, 0f), 0.15f, 5, 10), bones["Spine"], 0);                   // abdomen
-            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.29f, 0f), 0.175f, 5, 10), bones["Chest"], 0);                  // chest
-            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.375f, 0f), new Vector3(0.42f, 0.09f, 0.26f)), bones["Chest"], 0); // shoulder block
-            mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.47f, 0f), 0.055f, 0.09f, 8, true), bones["Neck"], 0);        // neck
-            mb.Append(PartFactory.CylinderPart(new Vector3(0.258f, 1.33f, 0f), 0.052f, 0.20f, 8, true), bones["LeftUpperArm"], 0);
-            mb.Append(PartFactory.CylinderPart(new Vector3(-0.258f, 1.33f, 0f), 0.052f, 0.20f, 8, true), bones["RightUpperArm"], 0);
-            mb.Append(PartFactory.CylinderPart(new Vector3(0.435f, 1.33f, 0f), 0.042f, 0.15f, 8, true), bones["LeftLowerArm"], 0);
-            mb.Append(PartFactory.CylinderPart(new Vector3(-0.435f, 1.33f, 0f), 0.042f, 0.15f, 8, true), bones["RightLowerArm"], 0);
-            mb.Append(PartFactory.BoxPart(new Vector3(0.098f, 0.70f, 0f), new Vector3(0.17f, 0.40f, 0.17f)), bones["LeftUpperLeg"], 0);
-            mb.Append(PartFactory.BoxPart(new Vector3(-0.098f, 0.70f, 0f), new Vector3(0.17f, 0.40f, 0.17f)), bones["RightUpperLeg"], 0);
-            mb.Append(PartFactory.CylinderPart(new Vector3(0.098f, 0.34f, 0f), 0.07f, 0.36f, 8, true), bones["LeftLowerLeg"], 0);
-            mb.Append(PartFactory.CylinderPart(new Vector3(-0.098f, 0.34f, 0f), 0.07f, 0.36f, 8, true), bones["RightLowerLeg"], 0);
-            mb.Append(PartFactory.BoxPart(new Vector3(0.098f, 0.055f, 0.025f), new Vector3(0.10f, 0.09f, 0.27f)), bones["LeftFoot"], 0);
-            mb.Append(PartFactory.BoxPart(new Vector3(-0.098f, 0.055f, 0.025f), new Vector3(0.10f, 0.09f, 0.27f)), bones["RightFoot"], 0);
+
+            // === IMPROVED BODY: More natural human proportions ===
+
+            // Pelvis/hips - rounded shape
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 0.90f, 0f), 0.140f, 6, 10), bones["Hips"], 0);
+            mb.Append(PartFactory.CylinderPart(new Vector3(0f, 0.90f, 0f), 0.130f, 0.15f, 10, true), bones["Hips"], 0);
+
+            // Abdomen - tapered waist
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.05f, 0f), 0.130f, 6, 10), bones["Spine"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.12f, 0f), 0.125f, 6, 10), bones["Spine"], 0);
+
+            // Chest - broader and more defined
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.25f, 0f), 0.160f, 6, 10), bones["Chest"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.32f, 0f), 0.165f, 6, 10), bones["Chest"], 0);
+            // Pectoral definition
+            mb.Append(PartFactory.SpherePart(new Vector3(0.060f, 1.33f, 0.080f), 0.055f, 5, 6), bones["Chest"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.060f, 1.33f, 0.080f), 0.055f, 5, 6), bones["Chest"], 0);
+
+            // Shoulders - rounded deltoids
+            mb.Append(PartFactory.SpherePart(new Vector3(0.170f, 1.40f, 0f), 0.065f, 5, 8), bones["LeftShoulder"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.170f, 1.40f, 0f), 0.065f, 5, 8), bones["RightShoulder"], 0);
+
+            // Neck - tapered
+            mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.47f, 0f), 0.045f, 0.06f, 8, true), bones["Neck"], 0);
+            mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.50f, 0f), 0.055f, 0.04f, 8, true), bones["Neck"], 0);
+
+            // Upper arms - bicep/tricep definition
+            mb.Append(PartFactory.CylinderPart(new Vector3(0.258f, 1.36f, 0f), 0.050f, 0.10f, 8, true), bones["LeftUpperArm"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(0.258f, 1.39f, 0f), 0.055f, 5, 6), bones["LeftUpperArm"], 0); // bicep
+            mb.Append(PartFactory.CylinderPart(new Vector3(-0.258f, 1.36f, 0f), 0.050f, 0.10f, 8, true), bones["RightUpperArm"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.258f, 1.39f, 0f), 0.055f, 5, 6), bones["RightUpperArm"], 0); // bicep
+
+            // Elbows - joint definition
+            mb.Append(PartFactory.SpherePart(new Vector3(0.358f, 1.33f, 0f), 0.040f, 5, 6), bones["LeftUpperArm"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.358f, 1.33f, 0f), 0.040f, 5, 6), bones["RightUpperArm"], 0);
+
+            // Lower arms - tapered forearms
+            mb.Append(PartFactory.CylinderPart(new Vector3(0.435f, 1.33f, 0f), 0.038f, 0.15f, 8, true), bones["LeftLowerArm"], 0);
+            mb.Append(PartFactory.CylinderPart(new Vector3(-0.435f, 1.33f, 0f), 0.038f, 0.15f, 8, true), bones["RightLowerArm"], 0);
+
+            // Upper legs - thigh definition
+            mb.Append(PartFactory.CylinderPart(new Vector3(0.098f, 0.72f, 0f), 0.080f, 0.20f, 8, true), bones["LeftUpperLeg"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(0.098f, 0.78f, 0.020f), 0.085f, 5, 8), bones["LeftUpperLeg"], 0); // quad
+            mb.Append(PartFactory.CylinderPart(new Vector3(-0.098f, 0.72f, 0f), 0.080f, 0.20f, 8, true), bones["RightUpperLeg"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.098f, 0.78f, 0.020f), 0.085f, 5, 8), bones["RightUpperLeg"], 0); // quad
+
+            // Knees - joint definition
+            mb.Append(PartFactory.SpherePart(new Vector3(0.098f, 0.55f, 0.020f), 0.055f, 5, 6), bones["LeftUpperLeg"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.098f, 0.55f, 0.020f), 0.055f, 5, 6), bones["RightUpperLeg"], 0);
+
+            // Lower legs - calf definition
+            mb.Append(PartFactory.CylinderPart(new Vector3(0.098f, 0.34f, 0f), 0.060f, 0.30f, 8, true), bones["LeftLowerLeg"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(0.098f, 0.40f, -0.020f), 0.065f, 5, 6), bones["LeftLowerLeg"], 0); // calf
+            mb.Append(PartFactory.CylinderPart(new Vector3(-0.098f, 0.34f, 0f), 0.060f, 0.30f, 8, true), bones["RightLowerLeg"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.098f, 0.40f, -0.020f), 0.065f, 5, 6), bones["RightLowerLeg"], 0); // calf
+
+            // Ankles
+            mb.Append(PartFactory.SpherePart(new Vector3(0.098f, 0.15f, 0f), 0.040f, 4, 6), bones["LeftLowerLeg"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.098f, 0.15f, 0f), 0.040f, 4, 6), bones["RightLowerLeg"], 0);
+
+            // Feet - more natural shape
+            mb.Append(PartFactory.BoxPart(new Vector3(0.098f, 0.055f, 0.025f), new Vector3(0.090f, 0.070f, 0.220f)), bones["LeftFoot"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(0.098f, 0.055f, 0.120f), 0.040f, 4, 6), bones["LeftFoot"], 0); // toes
+            mb.Append(PartFactory.BoxPart(new Vector3(-0.098f, 0.055f, 0.025f), new Vector3(0.090f, 0.070f, 0.220f)), bones["RightFoot"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.098f, 0.055f, 0.120f), 0.040f, 4, 6), bones["RightFoot"], 0); // toes
+
             return mb.Finalize("Procedure_Body");
         }
 
         public static Mesh BuildHandsMesh(Dictionary<string, int> bones)
         {
             var mb = new MeshBuilder();
-            // Palms
-            mb.Append(PartFactory.BoxPart(new Vector3(0.505f, 1.33f, 0f), new Vector3(0.080f, 0.085f, 0.045f)), bones["LeftHand"], 0);
-            mb.Append(PartFactory.BoxPart(new Vector3(-0.505f, 1.33f, 0f), new Vector3(0.080f, 0.085f, 0.045f)), bones["RightHand"], 0);
 
-            // Left fingers. Bases just past the palm at x=0.54.
-            AddFinger(mb, bones, true, "Index", 0.012f);
-            AddFinger(mb, bones, true, "Middle", 0.004f);
-            AddFinger(mb, bones, true, "Ring", -0.004f);
-            AddFinger(mb, bones, true, "Little", -0.012f);
-            AddFinger(mb, bones, true, "Thumb", 0.012f);
-            AddFinger(mb, bones, false, "Index", 0.012f);
-            AddFinger(mb, bones, false, "Middle", 0.004f);
-            AddFinger(mb, bones, false, "Ring", -0.004f);
-            AddFinger(mb, bones, false, "Little", -0.012f);
-            AddFinger(mb, bones, false, "Thumb", 0.012f);
+            // === IMPROVED HANDS: More natural palm and finger shapes ===
+
+            // Palms - rounded shape
+            mb.Append(PartFactory.SpherePart(new Vector3(0.505f, 1.33f, 0f), 0.040f, 5, 6), bones["LeftHand"], 0);
+            mb.Append(PartFactory.BoxPart(new Vector3(0.505f, 1.33f, 0f), new Vector3(0.070f, 0.075f, 0.040f)), bones["LeftHand"], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.505f, 1.33f, 0f), 0.040f, 5, 6), bones["RightHand"], 0);
+            mb.Append(PartFactory.BoxPart(new Vector3(-0.505f, 1.33f, 0f), new Vector3(0.070f, 0.075f, 0.040f)), bones["RightHand"], 0);
+
+            // Left fingers - rounded capsules instead of boxes
+            AddRoundedFinger(mb, bones, true, "Index", 0.012f);
+            AddRoundedFinger(mb, bones, true, "Middle", 0.004f);
+            AddRoundedFinger(mb, bones, true, "Ring", -0.004f);
+            AddRoundedFinger(mb, bones, true, "Little", -0.012f);
+            AddRoundedThumb(mb, bones, true);
+            AddRoundedFinger(mb, bones, false, "Index", 0.012f);
+            AddRoundedFinger(mb, bones, false, "Middle", 0.004f);
+            AddRoundedFinger(mb, bones, false, "Ring", -0.004f);
+            AddRoundedFinger(mb, bones, false, "Little", -0.012f);
+            AddRoundedThumb(mb, bones, false);
             return mb.Finalize("Procedure_Hands");
         }
 
-        private static void AddFinger(MeshBuilder mb, Dictionary<string, int> bones, bool left, string finger, float zOffset)
+        private static void AddRoundedFinger(MeshBuilder mb, Dictionary<string, int> bones, bool left, string finger, float zOffset)
         {
             int sign = left ? 1 : -1;
             string prefix = left ? "Left" : "Right";
             string boneProx = $"{prefix}{finger}Proximal";
             string boneDist = $"{prefix}{finger}Distal";
 
-            if (finger == "Thumb")
-            {
-                // Thumb angles up and slightly forward relative to the palm.
-                float bx = sign * 0.53f;
-                mb.Append(PartFactory.BoxPart(new Vector3(bx + sign * 0.008f, 1.362f, 0.014f), new Vector3(0.022f, 0.020f, 0.020f)), bones[boneProx], 0);
-                mb.Append(PartFactory.BoxPart(new Vector3(bx + sign * 0.020f, 1.378f, 0.024f), new Vector3(0.020f, 0.018f, 0.018f)), bones[boneDist], 0);
-                return;
-            }
-
             float baseX = sign * 0.54f;
             float y = 1.35f;
-            mb.Append(PartFactory.BoxPart(new Vector3(baseX + sign * 0.0085f, y, zOffset), new Vector3(0.016f, 0.021f, 0.021f)), bones[boneProx], 0);
-            mb.Append(PartFactory.BoxPart(new Vector3(baseX + sign * 0.0265f, y + 0.002f, zOffset), new Vector3(0.014f, 0.019f, 0.019f)), bones[boneDist], 0);
+
+            // Proximal phalanx - rounded
+            mb.Append(PartFactory.CylinderPart(new Vector3(baseX + sign * 0.0085f, y, zOffset), 0.007f, 0.021f, 5, true), bones[boneProx], 0);
+            // Distal phalanx - rounded tip
+            mb.Append(PartFactory.CylinderPart(new Vector3(baseX + sign * 0.0265f, y + 0.002f, zOffset), 0.006f, 0.019f, 5, true), bones[boneDist], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(baseX + sign * 0.036f, y + 0.002f, zOffset), 0.006f, 4, 4), bones[boneDist], 0);
+        }
+
+        private static void AddRoundedThumb(MeshBuilder mb, Dictionary<string, int> bones, bool left)
+        {
+            int sign = left ? 1 : -1;
+            string prefix = left ? "Left" : "Right";
+            string boneProx = $"{prefix}ThumbProximal";
+            string boneDist = $"{prefix}ThumbDistal";
+
+            float bx = sign * 0.53f;
+            // Proximal phalanx
+            mb.Append(PartFactory.CylinderPart(new Vector3(bx + sign * 0.008f, 1.362f, 0.014f), 0.010f, 0.020f, 5, true), bones[boneProx], 0);
+            // Distal phalanx
+            mb.Append(PartFactory.CylinderPart(new Vector3(bx + sign * 0.020f, 1.378f, 0.024f), 0.009f, 0.018f, 5, true), bones[boneDist], 0);
+            mb.Append(PartFactory.SpherePart(new Vector3(bx + sign * 0.028f, 1.385f, 0.030f), 0.008f, 4, 4), bones[boneDist], 0);
         }
 
         public static Mesh BuildHeadMesh(Dictionary<string, int> bones, bool female)
@@ -205,31 +271,76 @@ namespace WhisperingWilds.Editor.Characters
             const int Skin = 0, Feature = 1, Hair = 2;
             mb.EnsureSubmesh(3);
 
-            // Skull + jaw (skin)
-            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.605f, 0f), 0.112f, 6, 12), bones["Head"], Skin);
-            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.545f, 0.02f), new Vector3(0.105f, 0.055f, 0.075f)), bones["Head"], Skin);
-            mb.Append(PartFactory.DiscPart(new Vector3(0.112f, 1.60f, 0f), 0.026f, 8, Quaternion.Euler(0f, 0f, 90f)), bones["Head"], Skin);
-            mb.Append(PartFactory.DiscPart(new Vector3(-0.112f, 1.60f, 0f), 0.026f, 8, Quaternion.Euler(0f, 0f, -90f)), bones["Head"], Skin);
+            // === IMPROVED HEAD: More realistic human face shape ===
 
-            // Nose (skin)
-            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.605f, 0.105f), new Vector3(0.034f, 0.050f, 0.045f)), bones["Head"], Skin);
-            // Lips, eyes (features)
-            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.548f, 0.108f), new Vector3(0.052f, 0.016f, 0.020f)), bones["Head"], Feature);
-            mb.Append(PartFactory.BoxPart(new Vector3(0.044f, 1.622f, 0.097f), new Vector3(0.024f, 0.013f, 0.008f)), bones["Head"], Feature);
-            mb.Append(PartFactory.BoxPart(new Vector3(-0.044f, 1.622f, 0.097f), new Vector3(0.024f, 0.013f, 0.008f)), bones["Head"], Feature);
-            // Brows + hair cap (hair)
-            mb.Append(PartFactory.BoxPart(new Vector3(0.045f, 1.655f, 0.090f), new Vector3(0.050f, 0.008f, 0.006f)), bones["Head"], Hair);
-            mb.Append(PartFactory.BoxPart(new Vector3(-0.045f, 1.655f, 0.090f), new Vector3(0.050f, 0.008f, 0.006f)), bones["Head"], Hair);
-            mb.Append(PartFactory.HairCapPart(new Vector3(0f, 1.615f, 0f), 0.128f, 4, 12), bones["Head"], Hair);
+            // Skull - main head sphere (higher resolution for rounder look)
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.610f, 0f), 0.105f, 8, 14), bones["Head"], Skin);
+
+            // Forehead - slightly flattened front
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.660f, 0.020f), 0.080f, 6, 10), bones["Head"], Skin);
+
+            // Cheekbones - wider face shape
+            mb.Append(PartFactory.SpherePart(new Vector3(0.075f, 1.590f, 0.040f), 0.055f, 5, 8), bones["Head"], Skin);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.075f, 1.590f, 0.040f), 0.055f, 5, 8), bones["Head"], Skin);
+
+            // Jaw - more defined chin
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.530f, 0.030f), 0.065f, 5, 8), bones["Head"], Skin);
+            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.510f, 0.040f), new Vector3(0.070f, 0.030f, 0.040f)), bones["Head"], Skin);
+
+            // Chin point
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.495f, 0.055f), 0.030f, 4, 6), bones["Head"], Skin);
+
+            // Ears - proper ear shapes on both sides
+            mb.Append(PartFactory.SpherePart(new Vector3(0.108f, 1.610f, -0.010f), 0.025f, 5, 6), bones["Head"], Skin);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.108f, 1.610f, -0.010f), 0.025f, 5, 6), bones["Head"], Skin);
+            // Ear lobes
+            mb.Append(PartFactory.SpherePart(new Vector3(0.108f, 1.585f, 0.005f), 0.015f, 4, 4), bones["Head"], Skin);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.108f, 1.585f, 0.005f), 0.015f, 4, 4), bones["Head"], Skin);
+
+            // Nose bridge - raised from forehead
+            mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.610f, 0.085f), 0.012f, 0.040f, 6, true), bones["Head"], Skin);
+            // Nose tip - rounded
+            mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.590f, 0.110f), 0.022f, 5, 6), bones["Head"], Skin);
+            // Nostrils
+            mb.Append(PartFactory.SpherePart(new Vector3(0.015f, 1.578f, 0.105f), 0.010f, 4, 4), bones["Head"], Skin);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.015f, 1.578f, 0.105f), 0.010f, 4, 4), bones["Head"], Skin);
+
+            // Eye sockets - slight indentations (darker feature submesh)
+            mb.Append(PartFactory.SpherePart(new Vector3(0.042f, 1.625f, 0.075f), 0.028f, 5, 6), bones["Head"], Feature);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.042f, 1.625f, 0.075f), 0.028f, 5, 6), bones["Head"], Feature);
+            // Eyeballs - slightly protruding
+            mb.Append(PartFactory.SpherePart(new Vector3(0.042f, 1.625f, 0.090f), 0.018f, 5, 6), bones["Head"], Feature);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.042f, 1.625f, 0.090f), 0.018f, 5, 6), bones["Head"], Feature);
+            // Pupils - small dark spheres
+            mb.Append(PartFactory.SpherePart(new Vector3(0.042f, 1.625f, 0.102f), 0.008f, 4, 4), bones["Head"], Feature);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.042f, 1.625f, 0.102f), 0.008f, 4, 4), bones["Head"], Feature);
+
+            // Eyebrows - raised ridges above eyes
+            mb.Append(PartFactory.BoxPart(new Vector3(0.045f, 1.648f, 0.085f), new Vector3(0.040f, 0.006f, 0.012f), Quaternion.Euler(0f, 0f, -5f)), bones["Head"], Hair);
+            mb.Append(PartFactory.BoxPart(new Vector3(-0.045f, 1.648f, 0.085f), new Vector3(0.040f, 0.006f, 0.012f), Quaternion.Euler(0f, 0f, 5f)), bones["Head"], Hair);
+
+            // Lips - upper and lower lip
+            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.555f, 0.095f), new Vector3(0.045f, 0.008f, 0.015f), Quaternion.Euler(5f, 0f, 0f)), bones["Head"], Feature);
+            mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.545f, 0.098f), new Vector3(0.050f, 0.010f, 0.018f), Quaternion.Euler(-5f, 0f, 0f)), bones["Head"], Feature);
+            // Mouth corners
+            mb.Append(PartFactory.SpherePart(new Vector3(0.028f, 1.550f, 0.090f), 0.006f, 3, 4), bones["Head"], Feature);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.028f, 1.550f, 0.090f), 0.006f, 3, 4), bones["Head"], Feature);
+
+            // Hair cap - covers top of head
+            mb.Append(PartFactory.HairCapPart(new Vector3(0f, 1.640f, -0.010f), 0.115f, 5, 12), bones["Head"], Hair);
+            // Hair sides
+            mb.Append(PartFactory.SpherePart(new Vector3(0.090f, 1.630f, -0.020f), 0.040f, 4, 6), bones["Head"], Hair);
+            mb.Append(PartFactory.SpherePart(new Vector3(-0.090f, 1.630f, -0.020f), 0.040f, 4, 6), bones["Head"], Hair);
 
             if (female)
             {
-                // Long back braid: stacked segments down the back.
-                float y = 1.52f;
-                for (int i = 0; i < 5; i++)
+                // Long back hair: stacked segments down the back
+                float y = 1.55f;
+                for (int i = 0; i < 6; i++)
                 {
-                    mb.Append(PartFactory.BoxPart(new Vector3(0f, y, -0.075f - i * 0.01f), new Vector3(0.034f, 0.075f, 0.034f)), bones["Head"], Hair);
-                    y -= 0.075f;
+                    float w = 0.035f - i * 0.003f;
+                    mb.Append(PartFactory.SpherePart(new Vector3(0f, y, -0.060f - i * 0.015f), w, 4, 6), bones["Head"], Hair);
+                    y -= 0.065f;
                 }
             }
             return mb.Finalize(female ? "Procedure_HeadFemale" : "Procedure_HeadMale");

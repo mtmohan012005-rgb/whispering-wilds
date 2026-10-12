@@ -226,7 +226,7 @@ namespace WhisperingWilds.NPC
         // ------------------------------------------------------------------
 
         /// <summary>Adds stock externally (e.g. from VendorInteraction initialization).</summary>
-        public void AddStock(string itemId, int amount, int maxCount)
+        public void AddStockPublic(string itemId, int amount, int maxCount)
         {
             for (int i = 0; i < stock.Count; i++)
             {
@@ -240,7 +240,7 @@ namespace WhisperingWilds.NPC
         }
 
         /// <summary>Removes stock externally (e.g. from VendorInteraction transactions).</summary>
-        public void RemoveStock(string itemId, int amount)
+        public void RemoveStockPublic(string itemId, int amount)
         {
             for (int i = 0; i < stock.Count; i++)
             {

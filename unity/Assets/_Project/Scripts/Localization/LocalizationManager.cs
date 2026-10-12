@@ -52,6 +52,12 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("menu.apply",           "Apply",                "பயன்படுத்து"),
             new LocalizationEntry("menu.title",           "THE WHISPERING WILDS", "காட்டு வழி • தடம்"),
             new LocalizationEntry("menu.subtitle",        "A Living Exploration & Cultural Investigation of Tamil Nadu", "தமிழ்நாட்டின் வாழ்வியல் ஆய்வும் கலாச்சார கண்டறியும் பயணம்"),
+            new LocalizationEntry("menu.new_game_confirm", "Starting a New Game will erase your current save and progress. Continue?",
+                                                        "புதிய விளையாட்டு தொடங்குதலுந் உம்க் தற்போதிக் சேவ் மற்றும் முன்னேற்வை நீக்கிடும். தொடரவா?"),
+
+            // ---- Confirmation dialog -----------------------------------------
+            new LocalizationEntry("dialog.confirm",       "Confirm",              "உறுதிப்படுத்து"),
+            new LocalizationEntry("dialog.cancel",        "Cancel",               "ரத்துசெய்"),
 
             // ---- Cinematic intro ---------------------------------------------
             new LocalizationEntry("intro.skip",           "Press Any Key to Skip", "வெளியேறவென எந்த விசையையும் அழுத்தவும்"),

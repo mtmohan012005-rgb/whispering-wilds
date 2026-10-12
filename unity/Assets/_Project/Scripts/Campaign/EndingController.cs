@@ -201,7 +201,7 @@ namespace WhisperingWilds.Campaign
             endingEvaluated = true;
 
             // Gather current state
-            int clueCount = InvestigationRuntimeState.DiscoveredIds.Count;
+            int clueCount = InvestigationRuntimeState.SnapshotDiscovered().Count;
             float avgTrust = GetAverageTrust();
             int npcsTalkedTo = NPCInteractionLog.Count;
             bool hasLivingSanctuary = string.Equals(sanctuaryVerdict, "LivingSanctuary", StringComparison.OrdinalIgnoreCase);

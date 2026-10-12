@@ -53,9 +53,9 @@ namespace WhisperingWilds.Editor.QA
             public string displayName;
             public string prefabPath;
             public List<Finding> findings = new List<Finding>();
-            public int passCount => findings.Count(f => f.result == ValidationResult.Pass);
-            public int failCount => findings.Count(f => f.result == ValidationResult.Fail);
-            public int warningCount => findings.Count(f => f.result == ValidationResult.Warning);
+            public int passCount => findings.FindAll(f => f.result == ValidationResult.Pass).Count;
+            public int failCount => findings.FindAll(f => f.result == ValidationResult.Fail).Count;
+            public int warningCount => findings.FindAll(f => f.result == ValidationResult.Warning).Count;
             public bool isProductionReady => failCount == 0;
         }
 

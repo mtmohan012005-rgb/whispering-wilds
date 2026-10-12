@@ -4,6 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WhisperingWilds.Characters;
+using WhisperingWilds.Economy;
 using WhisperingWilds.NPC;
 
 namespace WhisperingWilds.Editor
@@ -540,6 +541,12 @@ namespace WhisperingWilds.Editor
             WriteSchedule(npc, entry, work, home, social);
             WriteOpeningDialogue(npc, entry);
 
+            // Wire vendor economy for shopkeepers (Murugan's tea stall)
+            if (entry.occupation == NPCOccupation.Shopkeeper)
+            {
+                SetupVendor(npcObject, entry);
+            }
+
             EditorUtility.SetDirty(npc);
             return npc;
         }
@@ -548,6 +555,63 @@ namespace WhisperingWilds.Editor
         {
             if (string.IsNullOrEmpty(anchorId)) return null;
             return anchors.TryGetValue(anchorId, out var anchor) ? anchor.transform : null;
+        }
+
+        /// <summary>
+        /// Attaches VendorInteraction to a shopkeeper NPC so the player can buy and sell items.
+        /// Murugan's tea stall sells tea, biscuits, water, and first aid; buys herbal remedies and spices.
+        /// </summary>
+        private static void SetupVendor(GameObject npcObject, RosterEntry entry)
+        {
+            var vendor = npcObject.GetComponent<VendorInteraction>();
+            if (vendor == null)
+            {
+                vendor = npcObject.AddComponent<VendorInteraction>();
+            }
+
+            // Configure vendor using SerializedObject to set private fields
+            var so = new SerializedObject(vendor);
+            so.FindProperty("startingCoins").intValue = 500;
+            so.FindProperty("maxCoins").intValue = 4000;
+
+            // Items Murugan sells to the player
+            var sellStock = so.FindProperty("sellStock");
+            sellStock.ClearArray();
+            sellStock.arraySize = 4;
+
+            // Tea - 10 coins
+            SetStockItem(sellStock, 0, "tea", "Tea", "தேய்", 10, 50, 100);
+            // Biscuit - 15 coins
+            SetStockItem(sellStock, 1, "biscuit", "Biscuit", "பிஸ்கட்", 15, 30, 60);
+            // Water - 5 coins
+            SetStockItem(sellStock, 2, "water", "Water", "நீற்க்", 5, 100, 200);
+            // First aid kit - 50 coins
+            SetStockItem(sellStock, 3, "first_aid_kit", "First Aid Kit", "முதலுதவி பெட்டி", 50, 10, 20);
+
+            // Items Murugan buys from the player
+            var buyStock = so.FindProperty("buyStock");
+            buyStock.ClearArray();
+            buyStock.arraySize = 2;
+
+            // Herbal remedy - 20 coins
+            SetStockItem(buyStock, 0, "herbal_remedy", "Herbal Remedy", "காட்பொற்கு மருந்", 20, 0, 50);
+            // Spice blend - 25 coins
+            SetStockItem(buyStock, 1, "spice_blend", "Spice Blend", "மசாலா கலவைய்", 25, 0, 30);
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(vendor);
+            Debug.Log($"[BuildChennaiPopulation] SetupVendor: {entry.nameEn} ({entry.nameTa}) with tea stall inventory");
+        }
+
+        private static void SetStockItem(SerializedProperty list, int index, string itemId, string nameEn, string nameTa, int price, int quantity, int maxQuantity)
+        {
+            var element = list.GetArrayElementAtIndex(index);
+            element.FindPropertyRelative("itemId").stringValue = itemId;
+            element.FindPropertyRelative("displayNameEn").stringValue = nameEn;
+            element.FindPropertyRelative("displayNameTa").stringValue = nameTa;
+            element.FindPropertyRelative("unitPrice").intValue = price;
+            element.FindPropertyRelative("quantity").intValue = quantity;
+            element.FindPropertyRelative("maxQuantity").intValue = maxQuantity;
         }
 
         /// <summary>

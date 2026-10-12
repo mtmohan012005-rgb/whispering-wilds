@@ -22,6 +22,7 @@ namespace WhisperingWilds.Gameplay
             ChettinadMansionContent.EnsureInitialized();
             MamallapuramShoreContent.EnsureInitialized();
             PichavaramContent.EnsureInitialized();
+            NilgirisSanctuaryContent.EnsureInitialized();
         }
 
         /// <summary>
@@ -45,6 +46,10 @@ namespace WhisperingWilds.Gameplay
             {
                 PichavaramContent.EnsureInitialized();
             }
+            else if (regionId == NilgirisSanctuaryContent.RegionId)
+            {
+                NilgirisSanctuaryContent.EnsureInitialized();
+            }
         }
 
         /// <summary>
@@ -57,6 +62,7 @@ namespace WhisperingWilds.Gameplay
             if (regionId == MamallapuramShoreContent.RegionId) return MamallapuramShoreContent.QuestEchoesAlongTheShore;
             if (regionId == PichavaramContent.RegionId) return PichavaramContent.QuestTheNightCurrent;
             if (regionId == ChennaiOpeningContent.RegionId) return ChennaiOpeningContent.QuestFirstDayInGeorgeTown;
+            if (regionId == NilgirisSanctuaryContent.RegionId) return NilgirisSanctuaryContent.QuestNilgirisSanctuaryDestiny;
             return null;
         }
     }

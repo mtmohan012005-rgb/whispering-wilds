@@ -114,6 +114,10 @@ namespace WhisperingWilds.Editor
                 var settingsUiObj = BuildSettingsPanel(canvasObj.transform, font);
                 var settingsUi = settingsUiObj.GetComponent<SettingsMenuUI>();
 
+                // Confirmation dialog, hidden until needed (e.g., New Game overwrites a save).
+                var confirmDialogObj = BuildConfirmationDialog(canvasObj.transform, font);
+                var confirmDialog = confirmDialogObj.GetComponent<ConfirmationDialog>();
+
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
@@ -122,6 +126,7 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("quitButton").objectReferenceValue = btnQuit.GetComponent<Button>();
                 serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
                 serializedTitle.FindProperty("settingsMenu").objectReferenceValue = settingsUi;
+                serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.ApplyModifiedProperties();
 
                 // Save Boot Scene
@@ -441,6 +446,82 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             nav.selectOnLeft = left;
             nav.selectOnRight = right;
             button.navigation = nav;
+        }
+
+        /// <summary>
+        /// Builds a centered confirmation dialog panel with a message and two buttons.
+        /// Starts inactive so the title menu looks unchanged until the player triggers it.
+        /// </summary>
+        private static GameObject BuildConfirmationDialog(Transform parent, Font font)
+        {
+            var root = new GameObject("ConfirmationDialog", typeof(RectTransform), typeof(Image));
+            root.transform.SetParent(parent, false);
+            root.SetActive(false);
+
+            var rect = root.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var bg = root.GetComponent<Image>();
+            bg.color = new Color(0f, 0f, 0f, 0.85f);
+
+            var dialog = root.AddComponent<ConfirmationDialog>();
+
+            // Centered card panel
+            var card = new GameObject("Card", typeof(RectTransform), typeof(Image));
+            card.transform.SetParent(root.transform, false);
+            var cardRect = card.GetComponent<RectTransform>();
+            cardRect.anchorMin = new Vector2(0.5f, 0.5f);
+            cardRect.anchorMax = new Vector2(0.5f, 0.5f);
+            cardRect.pivot = new Vector2(0.5f, 0.5f);
+            cardRect.anchoredPosition = Vector2.zero;
+            cardRect.sizeDelta = new Vector2(560f, 240f);
+            var cardImg = card.GetComponent<Image>();
+            cardImg.color = new Color(0.08f, 0.1f, 0.12f, 1f);
+
+            // Message text
+            var messageObj = CreateText("MessageText", card.transform, new Vector2(0.05f, 0.25f), new Vector2(0.95f, 0.75f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleCenter, new Color(0.9f, 0.95f, 1f));
+            messageObj.GetComponent<Text>().text = "Confirmation message";
+            messageObj.GetComponent<Text>().supportRichText = false;
+
+            // Buttons container
+            var btnContainer = new GameObject("Buttons", typeof(RectTransform));
+            btnContainer.transform.SetParent(card.transform, false);
+            var btnRect = btnContainer.GetComponent<RectTransform>();
+            btnRect.anchorMin = new Vector2(0.5f, 0.05f);
+            btnRect.anchorMax = new Vector2(0.5f, 0.05f);
+            btnRect.pivot = new Vector2(0.5f, 0f);
+            btnRect.anchoredPosition = Vector2.zero;
+            btnRect.sizeDelta = new Vector2(400f, 50f);
+
+            var btnLayout = btnContainer.AddComponent<HorizontalLayoutGroup>();
+            btnLayout.spacing = 20f;
+            btnLayout.childControlWidth = false;
+            btnLayout.childControlHeight = true;
+            btnLayout.childForceExpandWidth = false;
+            btnLayout.childAlignment = TextAnchor.MiddleCenter;
+
+            var btnConfirm = CreateButton("Btn_Confirm", btnContainer.transform, font, "Confirm", new Color(0.15f, 0.45f, 0.35f));
+            var btnCancel = CreateButton("Btn_Cancel", btnContainer.transform, font, "Cancel", new Color(0.45f, 0.2f, 0.2f));
+
+            // Size the buttons
+            foreach (var btn in new[] { btnConfirm, btnCancel })
+            {
+                var bRect = btn.GetComponent<RectTransform>();
+                bRect.sizeDelta = new Vector2(160f, 40f);
+            }
+
+            // Bind to ConfirmationDialog via SerializedObject
+            var serializedDialog = new SerializedObject(dialog);
+            serializedDialog.FindProperty("dialogPanel").objectReferenceValue = root;
+            serializedDialog.FindProperty("messageText").objectReferenceValue = messageObj.GetComponent<Text>();
+            serializedDialog.FindProperty("confirmButton").objectReferenceValue = btnConfirm.GetComponent<Button>();
+            serializedDialog.FindProperty("cancelButton").objectReferenceValue = btnCancel.GetComponent<Button>();
+            serializedDialog.ApplyModifiedProperties();
+
+            return root;
         }
 
         private static void SetupPersistentManagers()

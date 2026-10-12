@@ -1,5 +1,6 @@
 using UnityEngine;
 using WhisperingWilds.Campaign;
+using WhisperingWilds.Data;
 using WhisperingWilds.Quests;
 
 namespace WhisperingWilds.Campaign

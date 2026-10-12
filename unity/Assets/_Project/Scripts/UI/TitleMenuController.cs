@@ -24,6 +24,7 @@ namespace WhisperingWilds.UI
 
         [Header("Panels")]
         [SerializeField] private SettingsMenuUI settingsMenu;
+        [SerializeField] private ConfirmationDialog confirmationDialog;
 
         [Header("Info Displays")]
         [SerializeField] private Text ruleNoticeText;
@@ -153,6 +154,26 @@ namespace WhisperingWilds.UI
         }
 
         public void OnNewGameClicked()
+        {
+            // If a valid save exists, ask the player to confirm before overwriting it.
+            if (SaveSystem.HasValidSave())
+            {
+                ConfirmationDialog dialog = confirmationDialog != null
+                    ? confirmationDialog
+                    : ConfirmationDialog.Instance;
+
+                if (dialog != null)
+                {
+                    dialog.Show("menu.new_game_confirm", () => ExecuteNewGame(), null);
+                    return;
+                }
+            }
+
+            // No dialog available or no save — proceed directly.
+            ExecuteNewGame();
+        }
+
+        private void ExecuteNewGame()
         {
             Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> Starting New Game -> Loading Chennai George Town...");
 

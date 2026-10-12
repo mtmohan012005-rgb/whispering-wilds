@@ -52,21 +52,21 @@ namespace WhisperingWilds.Economy
         private void Awake()
         {
             npcCharacter = GetComponent<NPCCharacter>();
-            wallet = new NPCWallet(npcCharacter?.npcId ?? "vendor", startingCoins, maxCoins);
+            wallet = new NPCWallet(npcCharacter?.NpcId ?? "vendor", startingCoins, maxCoins);
 
             // Initialize stock
             foreach (var item in sellStock)
             {
                 if (item != null)
                 {
-                    wallet.AddStock(item.itemId, item.quantity, item.maxQuantity);
+                    wallet.AddStockPublic(item.itemId, item.quantity, item.maxQuantity);
                 }
             }
             foreach (var item in buyStock)
             {
                 if (item != null)
                 {
-                    wallet.AddStock(item.itemId, item.quantity, item.maxQuantity);
+                    wallet.AddStockPublic(item.itemId, item.quantity, item.maxQuantity);
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace WhisperingWilds.Economy
             }
 
             // 2. Remove from vendor stock
-            wallet.RemoveStock(itemId, quantity);
+            wallet.RemoveStockPublic(itemId, quantity);
 
             // 3. Add to player inventory
             var itemData = GameDataCatalog.GetItem(itemId);
@@ -147,7 +147,7 @@ namespace WhisperingWilds.Economy
             {
                 // Rollback: refund player
                 inv.AddCurrency(totalCost);
-                wallet.AddStock(itemId, quantity);
+                wallet.AddStockPublic(itemId, quantity, stockItem.maxQuantity);
                 resultMessage = GetLocalizedMessage("vendor.item_not_found");
                 return false;
             }
@@ -156,7 +156,7 @@ namespace WhisperingWilds.Economy
             {
                 // Rollback: refund player
                 inv.AddCurrency(totalCost);
-                wallet.AddStock(itemId, quantity);
+                wallet.AddStockPublic(itemId, quantity, stockItem.maxQuantity);
                 resultMessage = GetLocalizedMessage("vendor.inventory_full");
                 return false;
             }
@@ -247,7 +247,7 @@ namespace WhisperingWilds.Economy
             inv.AddCurrency(totalEarned);
 
             // 4. Add to vendor stock
-            wallet.AddStock(itemId, quantity);
+            wallet.AddStockPublic(itemId, quantity, int.MaxValue);
 
             isTrading = true;
             OnItemSold?.Invoke(itemId, quantity, totalEarned);
@@ -305,12 +305,12 @@ namespace WhisperingWilds.Economy
         public void Restore(VendorSaveData data)
         {
             if (data == null) return;
-            wallet = new NPCWallet(npcCharacter?.npcId ?? "vendor", data.coinBalance, maxCoins);
+            wallet = new NPCWallet(npcCharacter?.NpcId ?? "vendor", data.coinBalance, maxCoins);
             if (data.stockSnapshot != null)
             {
                 foreach (var line in data.stockSnapshot)
                 {
-                    wallet.AddStock(line.itemId, line.count, line.maxCount);
+                    wallet.AddStockPublic(line.itemId, line.count, line.maxCount);
                 }
             }
         }

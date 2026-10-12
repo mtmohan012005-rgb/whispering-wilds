@@ -786,7 +786,7 @@ namespace WhisperingWilds.Editor
             var agents = root.GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>(true);
             for (int i = 0; i < agents.Length; i++)
             {
-                if (agents[i] != null) Object.DestroyImmediate(agents[i]);
+                if (agents[i] != null) UnityEngine.Object.DestroyImmediate(agents[i]);
             }
 
             var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
@@ -802,7 +802,7 @@ namespace WhisperingWilds.Editor
                     typeName.Contains("SmokeTest") || typeName.Contains("Diagnostics") ||
                     typeName.Contains("Controller") || typeName.Contains("Zone"))
                 {
-                    Object.DestroyImmediate(mb);
+                    UnityEngine.Object.DestroyImmediate(mb);
                 }
             }
         }

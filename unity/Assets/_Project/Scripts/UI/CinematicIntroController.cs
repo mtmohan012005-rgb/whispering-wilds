@@ -186,7 +186,7 @@ namespace WhisperingWilds.UI
             if (introBackground != null) introBackground.SetActive(true);
             if (introVignette != null) introVignette.SetActive(true);
             if (introTitleGroup != null) introTitleGroup.SetActive(true);
-            if (introSkipText != null) introSkipText.SetActive(true);
+            if (introSkipText != null) introSkipText.gameObject.SetActive(true);
 
             // Mark intro as played for this session
             PlayerPrefs.SetInt("WW_IntroPlayed", 1);
@@ -333,7 +333,7 @@ namespace WhisperingWilds.UI
             if (introBackground != null) introBackground.SetActive(false);
             if (introVignette != null) introVignette.SetActive(false);
             if (introTitleGroup != null) introTitleGroup.SetActive(false);
-            if (introSkipText != null) introSkipText.SetActive(false);
+            if (introSkipText != null) introSkipText.gameObject.SetActive(false);
 
             // Reset camera
             if (introCamera != null)
