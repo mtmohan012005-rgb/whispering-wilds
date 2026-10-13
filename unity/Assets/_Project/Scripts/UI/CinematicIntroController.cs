@@ -59,7 +59,7 @@ namespace WhisperingWilds.UI
 
         [Header("References")]
         [SerializeField] private Camera introCamera;
-        [SerializeField] private GameObject mainMenuCanvas;
+        [SerializeField] private GameObject menuRoot;
         [SerializeField] private TitleMenuController titleMenuController;
 
         private bool _introPlayed = false;
@@ -81,9 +81,11 @@ namespace WhisperingWilds.UI
 
         private void Start()
         {
-            if (mainMenuCanvas != null)
+            // Hide only the menu content during the intro. The canvas itself stays active
+            // so that intro visuals (which are canvas children) remain visible.
+            if (menuRoot != null)
             {
-                mainMenuCanvas.SetActive(false);
+                menuRoot.SetActive(false);
             }
 
             // Setup intro visuals
@@ -346,9 +348,9 @@ namespace WhisperingWilds.UI
             RenderSettings.fog = false;
 
             // Show main menu
-            if (mainMenuCanvas != null)
+            if (menuRoot != null)
             {
-                mainMenuCanvas.SetActive(true);
+                menuRoot.SetActive(true);
             }
 
             Debug.Log("<color=#FFD700><b>[CinematicIntro]</b></color> Intro completed, showing main menu");
@@ -372,9 +374,9 @@ namespace WhisperingWilds.UI
             _elapsedTime = 0f;
 
             // Hide main menu
-            if (mainMenuCanvas != null)
+            if (menuRoot != null)
             {
-                mainMenuCanvas.SetActive(false);
+                menuRoot.SetActive(false);
             }
 
             // Setup and start intro

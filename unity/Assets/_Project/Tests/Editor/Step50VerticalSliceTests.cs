@@ -323,5 +323,108 @@ namespace WhisperingWilds.Tests.Editor
             var prefabPath = "Assets/_Project/Prefabs/Characters/NPC_Velu.prefab";
             Assert.IsTrue(File.Exists(prefabPath), $"Velu NPC prefab should exist at {prefabPath}");
         }
+
+        // ---- STEP 55: Boot scene hierarchy regression tests --------------------
+
+        [Test]
+        public void CinematicIntroController_HasMenuRoot_Field()
+        {
+            // The intro controller must use menuRoot (the menu content group) instead of
+            // mainMenuCanvas (the entire canvas). Disabling the whole canvas hides intro
+            // visuals that are also canvas children.
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
+            var field = type.GetField("menuRoot", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(field, "CinematicIntroController should have menuRoot field");
+            Assert.AreEqual(typeof(GameObject), field.FieldType);
+        }
+
+        [Test]
+        public void CinematicIntroController_HasNoMainMenuCanvas_Field()
+        {
+            // mainMenuCanvas was the old field that caused the intro visibility bug.
+            // It must not exist after the fix.
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
+            var field = type.GetField("mainMenuCanvas", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNull(field, "CinematicIntroController should not have mainMenuCanvas field — use menuRoot instead");
+        }
+
+        [Test]
+        public void BuildBootScene_CreatesMenuRoot()
+        {
+            // BuildBootScene must create a MenuRoot group that holds only menu content,
+            // keeping intro visuals as canvas siblings.
+            var assetsPath = Application.dataPath;
+            var buildBootScenePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+
+            if (!File.Exists(buildBootScenePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(buildBootScenePath);
+            Assert.IsTrue(source.Contains("\"MenuRoot\"), "BuildBootScene should create MenuRoot group");
+            Assert.IsTrue(source.Contains("menuRoot"), "BuildBootScene should reference menuRoot variable");
+        }
+
+        [Test]
+        public void BuildBootScene_BindsMenuRootToIntro()
+        {
+            // The boot scene builder must bind menuRoot to CinematicIntroController,
+            // not the entire canvas.
+            var assetsPath = Application.dataPath;
+            var buildBootScenePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+
+            if (!File.Exists(buildBootScenePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(buildBootScenePath);
+            Assert.IsTrue(source.Contains("menuRoot"), "BuildBootScene should bind menuRoot to intro controller");
+            Assert.IsFalse(source.Contains("\"mainMenuCanvas\""), "BuildBootScene should not serialize mainMenuCanvas");
+        }
+
+        [Test]
+        public void BootScene_ContainsMenuRoot()
+        {
+            // The generated 00_Boot.unity scene must contain the MenuRoot hierarchy element.
+            var scenePath = "Assets/_Project/Scenes/00_Boot.unity";
+            Assert.IsTrue(File.Exists(scenePath), $"Boot scene should exist at {scenePath}");
+
+            var sceneContent = File.ReadAllText(scenePath);
+            Assert.IsTrue(sceneContent.Contains("MenuRoot"), "Boot scene should contain MenuRoot hierarchy element");
+        }
+
+        [Test]
+        public void BootScene_ContainsIntroVisuals()
+        {
+            // The boot scene must contain intro visual elements as siblings of MenuRoot.
+            var scenePath = "Assets/_Project/Scenes/00_Boot.unity";
+            Assert.IsTrue(File.Exists(scenePath), $"Boot scene should exist at {scenePath}");
+
+            var sceneContent = File.ReadAllText(scenePath);
+            Assert.IsTrue(sceneContent.Contains("IntroTitleGroup"), "Boot scene should contain IntroTitleGroup");
+            Assert.IsTrue(sceneContent.Contains("IntroVignette"), "Boot scene should contain IntroVignette");
+            Assert.IsTrue(sceneContent.Contains("IntroSkipText"), "Boot scene should contain IntroSkipText");
+            Assert.IsTrue(sceneContent.Contains("IntroBackground"), "Boot scene should contain IntroBackground");
+        }
+
+        [Test]
+        public void CinematicIntroController_Source_UsesMenuRoot()
+        {
+            // The source code must reference menuRoot in Start, CompleteIntro, and ReplayIntro,
+            // and must not reference mainMenuCanvas anywhere.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("menuRoot"), "CinematicIntroController should use menuRoot");
+            Assert.IsFalse(source.Contains("mainMenuCanvas"), "CinematicIntroController should not reference mainMenuCanvas");
+        }
     }
 }

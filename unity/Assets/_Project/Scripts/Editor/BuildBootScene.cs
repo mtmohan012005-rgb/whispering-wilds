@@ -70,21 +70,34 @@ namespace WhisperingWilds.Editor
                 var bgImg = bgPanel.GetComponent<Image>();
                 bgImg.color = new Color(0.05f, 0.07f, 0.09f, 0.95f);
 
+                // MenuRoot: a dedicated child that holds ONLY the main menu content (title,
+                // subtitle, buttons, rule notice, settings, confirmation dialog). The cinematic
+                // intro controller disables this group during the intro and re-enables it when
+                // the menu appears. Intro visuals are siblings of MenuRoot so they remain visible
+                // while the canvas stays active.
+                var menuRoot = new GameObject("MenuRoot", typeof(RectTransform));
+                menuRoot.transform.SetParent(canvasObj.transform, false);
+                var menuRootRect = menuRoot.GetComponent<RectTransform>();
+                menuRootRect.anchorMin = Vector2.zero;
+                menuRootRect.anchorMax = Vector2.one;
+                menuRootRect.offsetMin = Vector2.zero;
+                menuRootRect.offsetMax = Vector2.zero;
+
                 // Game Title & Tamil Subtitle
-                var titleObj = CreateText("GameTitle", canvasObj.transform, new Vector2(0.5f, 0.8f), new Vector2(0.5f, 0.8f), Vector2.zero, new Vector2(1200, 90), font, 48, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+                var titleObj = CreateText("GameTitle", menuRoot.transform, new Vector2(0.5f, 0.8f), new Vector2(0.5f, 0.8f), Vector2.zero, new Vector2(1200, 90), font, 48, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
                 var titleText = titleObj.GetComponent<Text>();
                 titleText.text = "THE WHISPERING WILDS";
                 titleText.lineSpacing = 1.2f;
                 titleText.supportRichText = false;
 
                 // Subtitle
-                var subtitleObj = CreateText("GameSubtitle", canvasObj.transform, new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.7f), Vector2.zero, new Vector2(800, 40), font, 20, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
+                var subtitleObj = CreateText("GameSubtitle", menuRoot.transform, new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.7f), Vector2.zero, new Vector2(800, 40), font, 20, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
                 var subtitleText = subtitleObj.GetComponent<Text>();
                 subtitleText.text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
 
                 // Menu Buttons Container
                 var menuContainer = new GameObject("MenuContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
-                menuContainer.transform.SetParent(canvasObj.transform, false);
+                menuContainer.transform.SetParent(menuRoot.transform, false);
                 var menuRect = menuContainer.GetComponent<RectTransform>();
                 menuRect.anchorMin = new Vector2(0.5f, 0.45f);
                 menuRect.anchorMax = new Vector2(0.5f, 0.45f);
@@ -108,14 +121,14 @@ namespace WhisperingWilds.Editor
                 var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "Quit", new Color(0.45f, 0.2f, 0.2f));
 
                 // Strict Appearance Rule Notice at bottom
-                var ruleObj = CreateText("RuleNoticeText", canvasObj.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(1000, 60), font, 16, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f));
+                var ruleObj = CreateText("RuleNoticeText", menuRoot.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(1000, 60), font, 16, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f));
 
                 // Settings panel, hidden until the player opens it.
-                var settingsUiObj = BuildSettingsPanel(canvasObj.transform, font);
+                var settingsUiObj = BuildSettingsPanel(menuRoot.transform, font);
                 var settingsUi = settingsUiObj.GetComponent<SettingsMenuUI>();
 
                 // Confirmation dialog, hidden until needed (e.g., New Game overwrites a save).
-                var confirmDialogObj = BuildConfirmationDialog(canvasObj.transform, font);
+                var confirmDialogObj = BuildConfirmationDialog(menuRoot.transform, font);
                 var confirmDialog = confirmDialogObj.GetComponent<ConfirmationDialog>();
 
                 // Cinematic intro visuals, created before the title menu so the intro sequence
@@ -175,8 +188,10 @@ namespace WhisperingWilds.Editor
                 // the intro sequence before the title menu becomes interactive.
                 var introObj = new GameObject("CinematicIntro");
                 var introCtrl = introObj.AddComponent<CinematicIntroController>();
-                // The intro needs references to all its visual elements and the main menu canvas
-                // so it can orchestrate the sequence and reveal the menu when finished.
+                // The intro needs references to all its visual elements and the menu root group
+                // so it can hide only the menu during the intro and reveal it when finished.
+                // The canvas itself stays active so intro visuals (which are canvas children)
+                // remain visible throughout the sequence.
                 var serializedIntro = new SerializedObject(introCtrl);
                 serializedIntro.FindProperty("introBackground").objectReferenceValue = introBgObj;
                 serializedIntro.FindProperty("introVignette").objectReferenceValue = vignetteObj;
@@ -184,7 +199,7 @@ namespace WhisperingWilds.Editor
                 serializedIntro.FindProperty("introTitleText").objectReferenceValue = introTitleObj.GetComponent<Text>();
                 serializedIntro.FindProperty("introSubtitleText").objectReferenceValue = introSubtitleObj.GetComponent<Text>();
                 serializedIntro.FindProperty("introSkipText").objectReferenceValue = skipObj.GetComponent<Text>();
-                serializedIntro.FindProperty("mainMenuCanvas").objectReferenceValue = canvasObj;
+                serializedIntro.FindProperty("menuRoot").objectReferenceValue = menuRoot;
                 serializedIntro.FindProperty("titleMenuController").objectReferenceValue = titleCtrl;
                 serializedIntro.FindProperty("introCamera").objectReferenceValue = camObj.GetComponent<Camera>();
                 serializedIntro.ApplyModifiedProperties();
