@@ -2,8 +2,8 @@
 .SYNOPSIS
     The Whispering Wilds (Kaattu Vazhi) - PC Launcher
 .DESCRIPTION
-    Delegates to the authoritative native Unity 6 executable launcher (Launch-Game-Unity.ps1).
-    Legacy browser testing is available via Launch-Legacy-Web-Game.ps1.
+    Launches the native Unity 6 standalone executable.
+    The executable must be built first (see docs/LOCAL_SETUP.md).
 #>
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path

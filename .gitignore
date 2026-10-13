@@ -148,5 +148,5 @@ unity/TestResults/
 # web assets themselves (.glb/.json) are tracked without Unity metadata.
 assets/**/*.meta
 
-.github/workflows/
-!.github/workflows/antigravity-verify-sync.yml
+# GitHub Actions workflows — must NOT be ignored so CI runs properly.
+# .github/workflows/ is tracked.

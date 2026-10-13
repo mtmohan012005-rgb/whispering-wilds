@@ -2,7 +2,11 @@
     "name": "WhisperingWilds.Tests.Editor",
     "rootNamespace": "",
     "references": [
-        "WhisperingWilds"
+        "WhisperingWilds",
+        "Unity.TestFramework"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
     ],
     "includePlatforms": [
         "Editor"
@@ -10,7 +14,7 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": false,
+    "precompiledReferences": [],
     "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],

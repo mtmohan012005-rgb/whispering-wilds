@@ -13,14 +13,13 @@ An atmospheric open-world exploration, cultural mystery investigation, and survi
 
 The game is delivered as a standalone Windows x64 executable:
 
-- **Executable**: `Build/Windows/TheWhisperingWilds.exe`
+- **Executable**: `unity/Build/Windows/TheWhisperingWilds.exe`
 - **Engine Version**: Unity 6000.6.3f1 (Release x64)
 - **Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0)
 - **Target Graphics API**: Direct3D 11 & Direct3D 12
 - **Unity Project Directory**: [`unity/`](./unity/)
-- **Architecture Documentation**: [`unity/UNITY_MIGRATION.md`](./unity/UNITY_MIGRATION.md)
-- **QA & Verification Guide**: [`unity/QA_AND_VERIFICATION.md`](./unity/QA_AND_VERIFICATION.md)
-- **Asset License Ledger**: [`unity/ASSET_LICENSE_MANIFEST.md`](./unity/ASSET_LICENSE_MANIFEST.md)
+- **Architecture Documentation**: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
+- **Project Health**: [`docs/PROJECT_HEALTH.md`](./docs/PROJECT_HEALTH.md)
 
 ### Running the Standalone PC Game
 
