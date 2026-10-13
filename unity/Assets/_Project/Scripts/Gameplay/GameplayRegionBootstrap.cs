@@ -77,7 +77,17 @@ namespace WhisperingWilds.Gameplay
         /// </summary>
         private List<DialogueNode> BuildDialogueForRegion(string npcId)
         {
-            if (regionId == ChettinadMansionContent.RegionId)
+            if (regionId == PichavaramContent.RegionId)
+            {
+                var pichavaram = PichavaramContent.BuildDialogueFor(npcId);
+                if (pichavaram.Count > 0) return pichavaram;
+            }
+            else if (regionId == ThanjavurDeltaContent.RegionId)
+            {
+                var thanjavur = ThanjavurDeltaContent.BuildDialogueFor(npcId);
+                if (thanjavur.Count > 0) return thanjavur;
+            }
+            else if (regionId == ChettinadMansionContent.RegionId)
             {
                 var chettinad = ChettinadMansionContent.BuildDialogueFor(npcId);
                 if (chettinad.Count > 0) return chettinad;
@@ -87,10 +97,10 @@ namespace WhisperingWilds.Gameplay
                 var shore = MamallapuramShoreContent.BuildDialogueFor(npcId);
                 if (shore.Count > 0) return shore;
             }
-            else if (regionId == PichavaramContent.RegionId)
+            else if (regionId == NilgirisSanctuaryContent.RegionId)
             {
-                var pichavaram = PichavaramContent.BuildDialogueFor(npcId);
-                if (pichavaram.Count > 0) return pichavaram;
+                var nilgiris = NilgirisSanctuaryContent.BuildDialogueFor(npcId);
+                if (nilgiris.Count > 0) return nilgiris;
             }
 
             return ChennaiOpeningContent.BuildDialogueFor(npcId);

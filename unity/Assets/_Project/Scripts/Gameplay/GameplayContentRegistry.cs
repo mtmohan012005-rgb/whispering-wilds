@@ -19,9 +19,10 @@ namespace WhisperingWilds.Gameplay
         public static void EnsureAllInitialized()
         {
             ChennaiOpeningContent.EnsureInitialized();
+            PichavaramContent.EnsureInitialized();
+            ThanjavurDeltaContent.EnsureInitialized();
             ChettinadMansionContent.EnsureInitialized();
             MamallapuramShoreContent.EnsureInitialized();
-            PichavaramContent.EnsureInitialized();
             NilgirisSanctuaryContent.EnsureInitialized();
         }
 
@@ -34,17 +35,21 @@ namespace WhisperingWilds.Gameplay
         {
             ChennaiOpeningContent.EnsureInitialized();
 
-            if (regionId == ChettinadMansionContent.RegionId)
+            if (regionId == PichavaramContent.RegionId)
+            {
+                PichavaramContent.EnsureInitialized();
+            }
+            else if (regionId == ThanjavurDeltaContent.RegionId)
+            {
+                ThanjavurDeltaContent.EnsureInitialized();
+            }
+            else if (regionId == ChettinadMansionContent.RegionId)
             {
                 ChettinadMansionContent.EnsureInitialized();
             }
             else if (regionId == MamallapuramShoreContent.RegionId)
             {
                 MamallapuramShoreContent.EnsureInitialized();
-            }
-            else if (regionId == PichavaramContent.RegionId)
-            {
-                PichavaramContent.EnsureInitialized();
             }
             else if (regionId == NilgirisSanctuaryContent.RegionId)
             {
@@ -54,14 +59,14 @@ namespace WhisperingWilds.Gameplay
 
         /// <summary>
         /// The signature quest of a destination region, or the opening quest for Chennai itself.
-        /// null for regions that have not authored a signature quest yet (Thanjavur, Nilgiris).
         /// </summary>
         public static string GetRegionQuestId(string regionId)
         {
+            if (regionId == ChennaiOpeningContent.RegionId) return ChennaiOpeningContent.QuestFirstDayInGeorgeTown;
+            if (regionId == PichavaramContent.RegionId) return PichavaramContent.QuestTheNightCurrent;
+            if (regionId == ThanjavurDeltaContent.RegionId) return ThanjavurDeltaContent.QuestTheTempleRecord;
             if (regionId == ChettinadMansionContent.RegionId) return ChettinadMansionContent.QuestTheHouseThatRemembers;
             if (regionId == MamallapuramShoreContent.RegionId) return MamallapuramShoreContent.QuestEchoesAlongTheShore;
-            if (regionId == PichavaramContent.RegionId) return PichavaramContent.QuestTheNightCurrent;
-            if (regionId == ChennaiOpeningContent.RegionId) return ChennaiOpeningContent.QuestFirstDayInGeorgeTown;
             if (regionId == NilgirisSanctuaryContent.RegionId) return NilgirisSanctuaryContent.QuestNilgirisSanctuaryDestiny;
             return null;
         }
