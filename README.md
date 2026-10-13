@@ -88,7 +88,7 @@ The game strictly enforces an absolute ceiling of **5 permanent appearance chang
 | **Jump**                 | `Spacebar`                        | `A` / `Cross`                  |
 | **Orbit Camera**         | Mouse Movement                    | Right Analog Stick             |
 | **Interact**             | `E`                               | `X` / `Square`                 |
-| **Inventory & Codex**    | `Tab` / `I`                       | `View` / `Touchpad`            |
+| **Inventory**            | `Tab` / `I`                       | `View` / `Touchpad`            |
 | **Crafting Workbench**   | `G`                               | D-Pad Down                     |
 | **Belt Lantern**         | `L`                               | D-Pad Left                     |
 | **Deploy Campfire**      | `B`                               | D-Pad Right                    |

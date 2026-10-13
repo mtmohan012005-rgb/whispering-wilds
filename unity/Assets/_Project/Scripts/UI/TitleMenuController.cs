@@ -8,10 +8,9 @@ using WhisperingWilds.Localization;
 namespace WhisperingWilds.UI
 {
     /// <summary>
-    /// STEP 40 — Redesigned title menu controller for The Whispering Wilds.
-    /// 
+    /// Title menu controller for The Whispering Wilds.
+    ///
     /// Manages the main menu with New Game, Continue, Settings, and Quit actions.
-    /// Codex button has been removed per user request.
     /// Integrates with CinematicIntroController for the opening sequence.
     /// </summary>
     public class TitleMenuController : MonoBehaviour

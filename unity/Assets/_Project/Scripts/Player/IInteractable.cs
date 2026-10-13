@@ -14,7 +14,7 @@ namespace WhisperingWilds.Player
     }
 
     /// <summary>
-    /// Core interaction contract implemented by NPCs, clues, doors, props, and codex entries.
+    /// Core interaction contract implemented by NPCs, clues, doors, and props.
     /// </summary>
     public interface IInteractable
     {

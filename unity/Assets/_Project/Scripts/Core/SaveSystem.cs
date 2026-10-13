@@ -166,7 +166,7 @@ namespace WhisperingWilds.Core
         public List<string> completedQuestIds = new List<string>();
         public List<SavedQuestProgress> questProgress = new List<SavedQuestProgress>();
 
-        // Investigation & Codex
+        // Investigation
         public List<string> discoveredClueIds = new List<string>();
         public List<string> unlockedDeductions = new List<string>();
 

@@ -3,9 +3,6 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using WhisperingWilds.UI;
-using WhisperingWilds.Core;
-using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.Tests.Editor
 {
@@ -20,7 +17,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void TitleMenuController_HasNoCodexButton_Field()
         {
-            var type = typeof(TitleMenuController);
+            var type = typeof(WhisperingWilds.UI.TitleMenuController);
             var field = type.GetField("codexButton", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             Assert.IsNull(field, "TitleMenuController should not have a codexButton field");
         }
@@ -28,7 +25,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void TitleMenuController_HasNoOnOpenCodexClicked_Method()
         {
-            var type = typeof(TitleMenuController);
+            var type = typeof(WhisperingWilds.UI.TitleMenuController);
             var method = type.GetMethod("OnOpenCodexClicked", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             Assert.IsNull(method, "TitleMenuController should not have OnOpenCodexClicked method");
         }
@@ -36,16 +33,16 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void TitleMenuController_HasConfirmationDialog_Field()
         {
-            var type = typeof(TitleMenuController);
+            var type = typeof(WhisperingWilds.UI.TitleMenuController);
             var field = type.GetField("confirmationDialog", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             Assert.IsNotNull(field, "TitleMenuController should have a confirmationDialog field");
-            Assert.AreEqual(typeof(ConfirmationDialog), field.FieldType);
+            Assert.AreEqual(typeof(WhisperingWilds.UI.ConfirmationDialog), field.FieldType);
         }
 
         [Test]
         public void TitleMenuController_HasExecuteNewGame_Method()
         {
-            var type = typeof(TitleMenuController);
+            var type = typeof(WhisperingWilds.UI.TitleMenuController);
             var method = type.GetMethod("ExecuteNewGame", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             Assert.IsNotNull(method, "TitleMenuController should have ExecuteNewGame method for confirmation flow");
         }
@@ -86,7 +83,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void Localization_HasNewGameConfirm_Key()
         {
-            var mgr = LocalizationManager.Instance;
+            var mgr = WhisperingWilds.Localization.LocalizationManager.Instance;
             if (mgr == null)
             {
                 // In EditMode, the manager may not be instantiated. Check the database directly.
@@ -102,7 +99,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void Localization_HasDialogConfirm_Key()
         {
-            var mgr = LocalizationManager.Instance;
+            var mgr = WhisperingWilds.Localization.LocalizationManager.Instance;
             if (mgr == null)
             {
                 Assert.Pass("LocalizationManager not available in EditMode");
@@ -116,7 +113,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void Localization_HasDialogCancel_Key()
         {
-            var mgr = LocalizationManager.Instance;
+            var mgr = WhisperingWilds.Localization.LocalizationManager.Instance;
             if (mgr == null)
             {
                 Assert.Pass("LocalizationManager not available in EditMode");
@@ -135,7 +132,7 @@ namespace WhisperingWilds.Tests.Editor
 
             foreach (var key in keys)
             {
-                var mgr = LocalizationManager.Instance;
+                var mgr = WhisperingWilds.Localization.LocalizationManager.Instance;
                 if (mgr == null)
                 {
                     Assert.Pass("LocalizationManager not available in EditMode");
@@ -143,21 +140,21 @@ namespace WhisperingWilds.Tests.Editor
                 }
 
                 // Switch to Tamil and check the key
-                mgr.SetLanguage(Language.Tamil);
+                mgr.SetLanguage(WhisperingWilds.Localization.Language.Tamil);
                 var tamilValue = mgr.Get(key);
                 Assert.IsFalse(string.IsNullOrEmpty(tamilValue), $"Tamil translation for {key} should not be empty");
                 Assert.IsFalse(tamilValue.StartsWith("missing."), $"Tamil {key} should not return missing key prefix");
             }
 
             // Restore English
-            LocalizationManager.Instance?.SetLanguage(Language.English);
+            WhisperingWilds.Localization.LocalizationManager.Instance?.SetLanguage(WhisperingWilds.Localization.Language.English);
         }
 
         [Test]
         public void SaveSystem_HasValidSave_ReflectsFileState()
         {
             // When no save file exists, HasValidSave should return false
-            bool hasSave = SaveSystem.HasValidSave();
+            bool hasSave = WhisperingWilds.Core.SaveSystem.HasValidSave();
             // This test is environment-dependent; we just verify the method exists and runs
             Assert.IsNotNull(hasSave, "HasValidSave should return a boolean");
         }
@@ -165,7 +162,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void ConfirmationDialog_TypeExists()
         {
-            var type = typeof(ConfirmationDialog);
+            var type = typeof(WhisperingWilds.UI.ConfirmationDialog);
             Assert.IsNotNull(type, "ConfirmationDialog type should exist");
 
             var showMethod = type.GetMethod("Show", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
@@ -178,7 +175,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void CinematicIntroController_HasSkipIntro_Method()
         {
-            var type = typeof(CinematicIntroController);
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
             var method = type.GetMethod("SkipIntro", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
             Assert.IsNotNull(method, "CinematicIntroController should have SkipIntro method");
         }
@@ -186,7 +183,7 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void CinematicIntroController_HasIntroPlayed_Property()
         {
-            var type = typeof(CinematicIntroController);
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
             var prop = type.GetProperty("IntroPlayed");
             Assert.IsNotNull(prop, "CinematicIntroController should have IntroPlayed property");
         }
@@ -309,21 +306,21 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void PlayerPrefab_FileExists()
         {
-            var prefabPath = "Assets/_Project/Prefabs/PlayerCharacter.prefab";
+            var prefabPath = "Assets/_Project/Prefabs/Characters/PlayerCharacter.prefab";
             Assert.IsTrue(File.Exists(prefabPath), $"Player prefab should exist at {prefabPath}");
         }
 
         [Test]
         public void MuruganPrefab_FileExists()
         {
-            var prefabPath = "Assets/_Project/Prefabs/NPC_Murugan.prefab";
+            var prefabPath = "Assets/_Project/Prefabs/Characters/NPC_Murugan.prefab";
             Assert.IsTrue(File.Exists(prefabPath), $"Murugan NPC prefab should exist at {prefabPath}");
         }
 
         [Test]
         public void VeluPrefab_FileExists()
         {
-            var prefabPath = "Assets/_Project/Prefabs/NPC_Velu.prefab";
+            var prefabPath = "Assets/_Project/Prefabs/Characters/NPC_Velu.prefab";
             Assert.IsTrue(File.Exists(prefabPath), $"Velu NPC prefab should exist at {prefabPath}");
         }
     }

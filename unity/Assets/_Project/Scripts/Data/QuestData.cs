@@ -74,6 +74,6 @@ namespace WhisperingWilds.Data
         [Header("Rewards")]
         public int rewardCoins = 50;
         public ItemData rewardItem;
-        public string unlockedCodexEntry;
+        public string unlockedJournalEntry;
     }
 }

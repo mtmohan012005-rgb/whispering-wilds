@@ -118,6 +118,77 @@ namespace WhisperingWilds.Editor
                 var confirmDialogObj = BuildConfirmationDialog(canvasObj.transform, font);
                 var confirmDialog = confirmDialogObj.GetComponent<ConfirmationDialog>();
 
+                // Cinematic intro visuals, created before the title menu so the intro sequence
+                // can fade them out and reveal the menu when it finishes or is skipped.
+                var introGroup = new GameObject("IntroTitleGroup", typeof(RectTransform));
+                introGroup.transform.SetParent(canvasObj.transform, false);
+                var introGroupRect = introGroup.GetComponent<RectTransform>();
+                introGroupRect.anchorMin = Vector2.zero;
+                introGroupRect.anchorMax = Vector2.one;
+                introGroupRect.offsetMin = Vector2.zero;
+                introGroupRect.offsetMax = Vector2.zero;
+                introGroup.SetActive(false);
+
+                var introTitleObj = CreateText("IntroTitleText", introGroup.transform,
+                    new Vector2(0.1f, 0.35f), new Vector2(0.9f, 0.65f), Vector2.zero, Vector2.zero,
+                    font, 56, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f, 0f));
+                introTitleObj.GetComponent<Text>().text = "THE WHISPERING WILDS";
+                introTitleObj.GetComponent<Text>().supportRichText = false;
+
+                var introSubtitleObj = CreateText("IntroSubtitleText", introGroup.transform,
+                    new Vector2(0.15f, 0.25f), new Vector2(0.85f, 0.75f), Vector2.zero, Vector2.zero,
+                    font, 22, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f, 0f));
+                introSubtitleObj.GetComponent<Text>().text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
+                introSubtitleObj.GetComponent<Text>().supportRichText = false;
+
+                // Vignette overlay for atmospheric fade
+                var vignetteObj = new GameObject("IntroVignette", typeof(RectTransform), typeof(Image));
+                vignetteObj.transform.SetParent(canvasObj.transform, false);
+                var vignetteRect = vignetteObj.GetComponent<RectTransform>();
+                vignetteRect.anchorMin = Vector2.zero;
+                vignetteRect.anchorMax = Vector2.one;
+                vignetteRect.offsetMin = Vector2.zero;
+                vignetteRect.offsetMax = Vector2.zero;
+                vignetteObj.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
+                vignetteObj.SetActive(false);
+
+                // Skip hint text
+                var skipObj = CreateText("IntroSkipText", canvasObj.transform,
+                    new Vector2(0.2f, 0.05f), new Vector2(0.8f, 0.05f), Vector2.zero, new Vector2(600, 30),
+                    font, 14, TextAnchor.MiddleCenter, new Color(0.6f, 0.65f, 0.7f, 0f));
+                skipObj.GetComponent<Text>().text = "Press Any Key to Skip";
+                skipObj.GetComponent<Text>().supportRichText = false;
+                skipObj.SetActive(false);
+
+                // Background overlay for intro fade-in
+                var introBgObj = new GameObject("IntroBackground", typeof(RectTransform), typeof(Image));
+                introBgObj.transform.SetParent(canvasObj.transform, false);
+                var introBgRect = introBgObj.GetComponent<RectTransform>();
+                introBgRect.anchorMin = Vector2.zero;
+                introBgRect.anchorMax = Vector2.one;
+                introBgRect.offsetMin = Vector2.zero;
+                introBgRect.offsetMax = Vector2.zero;
+                introBgObj.GetComponent<Image>().color = new Color(0.02f, 0.03f, 0.05f, 0f);
+                introBgObj.SetActive(false);
+
+                // Cinematic intro controller, placed on its own GameObject so it can manage
+                // the intro sequence before the title menu becomes interactive.
+                var introObj = new GameObject("CinematicIntro");
+                var introCtrl = introObj.AddComponent<CinematicIntroController>();
+                // The intro needs references to all its visual elements and the main menu canvas
+                // so it can orchestrate the sequence and reveal the menu when finished.
+                var serializedIntro = new SerializedObject(introCtrl);
+                serializedIntro.FindProperty("introBackground").objectReferenceValue = introBgObj;
+                serializedIntro.FindProperty("introVignette").objectReferenceValue = vignetteObj;
+                serializedIntro.FindProperty("introTitleGroup").objectReferenceValue = introGroup;
+                serializedIntro.FindProperty("introTitleText").objectReferenceValue = introTitleObj.GetComponent<Text>();
+                serializedIntro.FindProperty("introSubtitleText").objectReferenceValue = introSubtitleObj.GetComponent<Text>();
+                serializedIntro.FindProperty("introSkipText").objectReferenceValue = skipObj.GetComponent<Text>();
+                serializedIntro.FindProperty("mainMenuCanvas").objectReferenceValue = canvasObj;
+                serializedIntro.FindProperty("titleMenuController").objectReferenceValue = titleCtrl;
+                serializedIntro.FindProperty("introCamera").objectReferenceValue = camObj.GetComponent<Camera>();
+                serializedIntro.ApplyModifiedProperties();
+
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
@@ -127,6 +198,7 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
                 serializedTitle.FindProperty("settingsMenu").objectReferenceValue = settingsUi;
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
+                serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
                 serializedTitle.ApplyModifiedProperties();
 
                 // Save Boot Scene
