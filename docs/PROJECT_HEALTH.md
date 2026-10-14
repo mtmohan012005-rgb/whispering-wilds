@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** a7f5f44 (main on GitHub, Step 65 in progress)
+**Commit:** b659c41 (main on GitHub, Step 65 — startup fix complete)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/a7f5f44
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/b659c41
 
 ## Architecture
 
@@ -19,15 +19,18 @@
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
 | Unity EditMode tests | **BLOCKED** | 60 tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 192 MB, 36.7s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
-| Standalone runtime (first launch) | **PASS** | 0 errors in Player.log, reaches MainMenu, 60 FPS |
+| Windows x64 build | **PASS** | 169 MB, 188.4s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Standalone runtime (first launch) | **PASS** | 0 errors, reaches MainMenu, FPS recovers to 60 |
 | Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
+| D3D11 graphics API | **FIXED** | Changed from D3D12+fallback to D3D11 only — eliminates 0.3 FPS freeze on Intel GPUs |
+| Duplicate GameManager | **FIXED** | Added `_isDuplicate` guard to prevent state reset to Boot |
+| Diagnostic launcher | **ADDED** | `Launch-Game-Unity.ps1 -Diagnostic` captures logs, exit codes, and process lifetime |
 | Cinematic intro (Step 61) | **PASS** | Plays by default on every launch, gradient background, animated fog |
 | Campaign managers in boot scene | **PASS** | RegionUnlockManager, EndingController, QuestEndingBridge added |
 | Campaign progression tests (Step 62) | **PASS** | 22 new EditMode tests for campaign, save/load, ending |
 | PlayMode test suite (Step 63) | **PASS** | 22 PlayMode tests: region unlocks, investigation, save/load, campaign flow, ending, content registry, intro preferences |
 | PlayMode test isolation (Step 64) | **PASS** | QaIsolation helper: PlayerPrefs backup/restore, QA save directories, player data protection tests |
-| Standalone smoke test (Step 63) | **PASS** | Process launched, ran 15s without crash (headless, no Player.log) |
+| Standalone smoke test (Step 63) | **PASS** | Process launched, ran 20s without crash |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
@@ -37,7 +40,9 @@
 
 ## Recent Changes (2026-10-14)
 
-- **Step 65 — Trustworthy QA, typed PlayerPrefs, and real SaveSystem tests**: Rewrote `QaIsolation` with typed PlayerPrefs registry (14 keys: int/float/string) so backup/restore uses the correct getter/setter — int preferences like `WW_PlayIntroOnStartup` are no longer corrupted by string round-trips. Fixed `QaSaveDir` to be a stable per-run path instead of generating a new GUID each access. Replaced raw `File.WriteAllText`/`JsonUtility` save tests with real `SaveSystem.CaptureSnapshot`, `SaveSystem.LoadGame`, `SaveSystem.HasValidSave`, and `SaveSystem.LastLoadStatus` assertions. Added corrupt save and backup recovery tests exercising the real `SaveSystem.LoadGame` path. Added 7 PlayerPrefs type preservation regression tests proving int/float/string settings survive the test suite unchanged. Created `scripts/Run-QaTests.ps1` — PowerShell QA runner that sets `WW_SAVE_DIR` before launching Unity so `SaveSystem.SaveDirectory` resolves to a temporary QA path. All tests compile with 0 errors. Unity build 192 MB in 48.2s.
+- **Step 65 — Startup fix: game opens and immediately closes**: Root cause: D3D12 device filter blocked Intel integrated GPUs, forcing fallback to D3D11 with 0.3 FPS freeze. Game appeared to "close" because it was essentially frozen on the first frame. Fix: (1) Changed Windows graphics API from D3D12+D3D11 fallback to D3D11 only in `ProjectSettings.asset`, (2) Added `_isDuplicate` guard to `GameManager.Start()` to prevent duplicate GameManager instances from resetting game state to Boot after MainMenu, (3) Added diagnostic mode to `Launch-Game-Unity.ps1` (`-Diagnostic` flag) that captures Player logs, exit codes, and process lifetime. Verification: game stays alive for 20+ seconds with no errors, FPS recovers from initial HDRP compilation spike to 60 FPS. Build: 169 MB in 188.4s.
+
+- **Step 65 — Trustworthy QA, typed PlayerPrefs, and real SaveSystem tests**: Rewrote `QaIsolation` with typed PlayerPrefs registry (14 keys: int/float/string) so backup/restore uses the correct getter/setter — int preferences like `WW_PlayIntroOnStartup` are no longer corrupted by string round-trips. Fixed `QaSaveDir` to be a stable per-run path instead of generating a new GUID each access. Replaced raw `File.WriteAllText`/`JsonUtility` save tests with real `SaveSystem.CaptureSnapshot`, `SaveSystem.LoadGame`, `SaveSystem.HasValidSave`, and `SaveSystem.LastLoadStatus` assertions. Added corrupt save and backup recovery tests exercising the real `SaveSystem.LoadGame` path. Added 7 PlayerPrefs type preservation regression tests proving int/float/string settings survive the test suite unchanged. Created `scripts/Run-QaTests.ps1` — PowerShell QA runner that sets `WW_SAVE_DIR` before launching Unity so `SaveSystem.SaveDirectory` resolves to a temporary QA path. All tests compile with 0 errors.
 
 - **Step 64 — Safe QA isolation and test assertion fixes**: Added `QaIsolation` static helper class to PlayMode tests that backs up and restores all PlayerPrefs keys (WW_PlayIntroOnStartup, WW_IntroPlayed, etc.) and creates per-test temporary QA save directories so tests never touch real player data. Fixed `RegionUnlocks_ProgressionOrder` test to verify the exact 6-region sequence (Chennai→Pichavaram→Thanjavur→Chettinad→Mamallapuram→Nilgiris) instead of just checking array length. Rewrote SaveSystem tests to use QA-isolated directories instead of `SaveSystem.SaveFilePath` (which points to the real player save). Added 2 player data protection regression tests: one verifies no QA test files leak into the real save directory, another verifies PlayerPrefs backup/restore round-trip. Intro preference tests no longer delete real PlayerPrefs keys. All tests compile with 0 errors. Unity build 192 MB in 43.9s.
 
