@@ -73,8 +73,20 @@ class Database {
         }
     }
 
+    isReady() {
+        if (process.env.NODE_ENV === 'production') {
+            return this.pgReady;
+        }
+        return true;
+    }
+
     async initPg() {
         if (!process.env.DATABASE_URL || !pg) {
+            if (process.env.NODE_ENV === 'production') {
+                console.error('[AuthDB] CRITICAL: DATABASE_URL is not set in production. Persistent relational storage is disabled.');
+                this.pgReady = false;
+                return;
+            }
             console.log('[AuthDB] Running in local transactional file mode (DATABASE_URL not set). Single-player and local dev ready.');
             return;
         }
@@ -127,13 +139,27 @@ class Database {
                         updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                     );
                 `);
+
+                // Migrate existing player data from local store into PostgreSQL if table is empty
+                const countRes = await client.query('SELECT COUNT(*) FROM ww_users');
+                if (parseInt(countRes.rows[0].count, 10) === 0 && Object.keys(this.data.users).length > 0) {
+                    for (const u of Object.values(this.data.users)) {
+                        await client.query(
+                            `INSERT INTO ww_users (id, email, normalized_email, password_hash, display_name, created_at, updated_at, email_verified, status)
+                             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO NOTHING`,
+                            [u.id, u.email, u.normalized_email, u.password_hash, u.display_name, u.created_at, u.updated_at, u.email_verified, u.status]
+                        );
+                    }
+                    console.log(`[AuthDB] Migrated ${Object.keys(this.data.users).length} users from JSON backup to PostgreSQL.`);
+                }
+
                 this.pgReady = true;
-                console.log('[AuthDB] Connected to Neon PostgreSQL database and bootstrapped tables.');
+                console.log('[AuthDB] Connected to PostgreSQL database and bootstrapped tables.');
             } finally {
                 client.release();
             }
         } catch (err) {
-            console.warn('[AuthDB] Neon PostgreSQL initialization warning (falling back to local JSON file):', err.message);
+            console.error('[AuthDB] PostgreSQL initialization warning / error:', err.message);
             this.pgReady = false;
         }
     }
@@ -155,6 +181,9 @@ class Database {
     }
 
     createUser(user) {
+        if (process.env.NODE_ENV === 'production' && !this.pgReady) {
+            throw new Error('Database unavailable: PostgreSQL production authority is not connected.');
+        }
         const id = user.id || `usr_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
         const record = {
             id,
@@ -191,6 +220,9 @@ class Database {
     }
 
     updateUser(id, updates) {
+        if (process.env.NODE_ENV === 'production' && !this.pgReady) {
+            throw new Error('Database unavailable: PostgreSQL production authority is not connected.');
+        }
         if (!this.data.users[id]) return null;
         this.data.users[id] = {
             ...this.data.users[id],
@@ -221,6 +253,9 @@ class Database {
 
     // --- Sessions ---
     createSession(sessionId, userId, expiresAt, remember = false) {
+        if (process.env.NODE_ENV === 'production' && !this.pgReady) {
+            throw new Error('Database unavailable: PostgreSQL production authority is not connected.');
+        }
         this.data.sessions[sessionId] = {
             id: sessionId,
             user_id: userId,
@@ -335,6 +370,9 @@ class Database {
 
     // --- Cloud Saves ---
     saveCloudSave(userId, saveData, revision = 1, checksum = '', clientTimestamp = null, deviceId = null) {
+        if (process.env.NODE_ENV === 'production' && !this.pgReady) {
+            throw new Error('Database unavailable: PostgreSQL production authority is not connected.');
+        }
         this.data.cloud_saves[userId] = {
             user_id: userId,
             revision: revision,
@@ -377,6 +415,9 @@ class Database {
     }
 
     upsertProfile(userId, profileData) {
+        if (process.env.NODE_ENV === 'production' && !this.pgReady) {
+            throw new Error('Database unavailable: PostgreSQL production authority is not connected.');
+        }
         if (!this.data.profiles) this.data.profiles = {};
         const existing = this.data.profiles[userId] || {};
         this.data.profiles[userId] = {

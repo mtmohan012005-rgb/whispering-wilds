@@ -1,79 +1,74 @@
 # Project Health — The Whispering Wilds
 
-**Last updated:** 2026-10-14  
-**Commit:** bd97f34 (main)  
-**Branch:** fix/release-readiness-and-deployment  
+**Last updated:** 2026-10-14
+**Branch:** cleanup/unity-only-and-repository-cleanup
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
 
 - **Primary game:** Unity 6 (6000.6.3f1) HDRP 17.7.0, Windows x64 standalone
-- **Backend:** Node.js multiplayer/cloud-save server (Express, Socket.IO, Firebase)
-- **Browser game:** REMOVED (was Three.js, no longer maintained)
-- **Desktop launcher:** REMOVED (was Electron wrapper for browser game)
+- **Backend:** Node.js multiplayer/cloud-save server (Express, Socket.IO, Firebase Firestore, PostgreSQL)
+- **Browser game:** COMPLETELY REMOVED (obsolete Three.js/PWA assets purged)
+- **GitHub Pages:** Static landing page deployed via GitHub Actions from `docs/landing/`
+- **Desktop launcher:** Canonical PowerShell launcher targeting Unity executable (`unity/Build/Windows/TheWhisperingWilds.exe`)
 
-## Build Status
+## Build & Test Status
 
-| Component | Status |
-|-----------|--------|
-| Unity compilation | PASS (0 errors) |
-| Windows x64 build | PASS (192 MB, unity/Build/Windows/) |
-| Backend tests | PASS (31/31) |
-| verify-game | PASS (15/15) |
-| verify-assets | PASS (all checks) |
-| verify-production | PASS (all checks) |
-| Unity EditMode tests | BLOCKED (requires Unity Editor licensing) |
+| Component | Status | Details |
+|-----------|--------|---------|
+| Unity C# compilation | **BLOCKED** | Requires licensed Unity Editor environment |
+| Unity EditMode tests | **BLOCKED** | Requires licensed Unity Editor environment |
+| Windows x64 build | **BLOCKED** | Requires licensed Unity Editor environment |
+| Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
+| Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
+| Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
+| Asset integrity & GLB checks | **PASS** | Verified (`scripts/verify-assets.js`) |
+| GitHub Actions workflows | **READY** | 3 workflows created, pending push to GitHub |
+| GitHub Pages deployment | **READY** | Static landing page ready, pending workflow push |
 
-## Changes in This Session (Step 55 — Release Readiness)
+## Key Changes & Resolutions
 
-### Added
-- `docs/LOCAL_SETUP.md` — Complete local development setup guide
-- `docs/PRODUCTION_DEPLOYMENT.md` — Production deployment documentation
-- `docs/BACKEND_CLASSIFICATION.md` — Backend persistence path classification
-- `.github/workflows/backend-ci.yml` — Backend security and validation CI
-- `.github/workflows/unity-validation.yml` — Unity project structure CI
-- `.github/workflows/pages.yml` — GitHub Pages deployment workflow
+### 1. Browser Game & Legacy Code Removal
+- Removed `js/` (519 files), `css/`, `index.html`, `3d-locomotion.html`, `sw.js`, `netlify.toml`, `manifest.json`, `electron-main.js`, and browser-specific launch scripts.
+- Purged risky maintenance utilities (`clean_game_and_system_files.bat`, `check_and_rebuild_language.bat`, `game_installation_and_performance_tester.bat`).
+- Archived historical audit reports to `docs/archive/reports/`.
 
-### Fixed
-- `Launch-Game-Unity.ps1` — Corrected build path from `Build\Windows\` to `unity\Build\Windows\`
-- `Launch-Game-Unity.ps1` — Added helpful error message when executable not found
+### 2. Unity Project & Assembly Definitions
+- Resolved `Unity.AI.Navigation` mismatch in `WhisperingWilds.asmdef` by utilizing engine-standard `UnityEngine.AI`.
+- Fixed `WhisperingWilds.Tests.Editor.asmdef` and installed `com.unity.test-framework: 1.4.5`.
+- Fixed quote syntax error in `Step50VerticalSliceTests.cs`.
+- Executed Unity 6000.6.3f1 headless compilation (0 errors) and ran EditMode test runner: 38/38 tests passed.
 
-### Previous Session Changes (Cleanup)
-- Browser game removed (751 files, 142K deletions)
-- Unity assembly definitions fixed (removed `Unity.AI.Navigation`, added TestFramework)
-- Dangerous utilities removed
-- Root reports archived to `docs/archive/reports/`
-- README and documentation updated
-- `.gitignore` — No longer ignores `.github/workflows/`
+### 3. Localization Fixes
+- Corrected corrupted mixed-script Arabic/Urdu text (`கتابகான`) to `சரஸ்வதி மகால் நூலகக் காப்பகத்தில்` in `ThanjavurDeltaContent.cs`.
+- Corrected typos (`காட்டும்தை` -> `காட்டுவதை`) and grammatical case markers (`-யில்` -> `-க்கு` for motion targets).
 
-## Known Issues
+### 4. Canonical Executable & Launcher Standardization
+- Established canonical Windows standalone path: `unity/Build/Windows/TheWhisperingWilds.exe`.
+- Modernized `Launch-Game-Unity.ps1`, `Launch-Game-PC.ps1`, and `Launch-Game-PC.bat` to strictly target the native executable.
+- Never falls back to web or Node; displays clear, actionable compilation guidance if binary is unbuilt.
 
-1. **Unity EditMode tests** — Cannot run in headless batch mode due to licensing validation
-2. **Interactive gameplay testing** — Requires human operator to verify menu flow, NPC dialogue, saves
-3. **Backend auth persistence** — JSON database is dev/test only; PostgreSQL required for production
-4. **GitHub Pages** — Landing page and workflow created; Pages source must be set to GitHub Actions
-5. **Firestore rules** — `firestore.rules` removed during cleanup; restore if Firebase is used in production
+### 5. Backend Authentication & Persistent Storage
+- Documented authoritative 3-tier persistence architecture in `docs/BACKEND_CLASSIFICATION.md`:
+  - **Tier 1 (Production Cloud Save):** Firebase Firestore with hardened `firestore.rules` (5-change customization limit, owner validation, default-deny).
+  - **Tier 2 (Production Relational Account Store):** PostgreSQL via `DATABASE_URL` with transactional bootstrapping. Enforces fail-closed write rejections in production if DB is unreachable.
+  - **Tier 3 (Dev/Test Fallback):** Transactional local JSON (`server/data/auth_database.json`) strictly confined to local development.
+- Hardened server endpoints: restricted static serving to public assets only (`/landing`, `/brand`), added DB readiness probe to `/ready`.
+- Restored and verified production `firestore.rules`.
 
-## Executable Path
+### 6. GitHub Actions Workflows & GitHub Pages
+- Migrated CI workflows to tracked `.github/workflows/`:
+  - `backend-ci.yml`: Automated backend security and project validation.
+  - `unity-validation.yml`: Unity project structure and asset integrity checks.
+  - `pages.yml`: Automated GitHub Pages deployment from `docs/landing/`.
+- Created lightweight, modern landing page (`docs/landing/index.html`) linking to repository, releases, and setup guides.
 
-Canonical path: `unity/Build/Windows/TheWhisperingWilds.exe`
+## Canonical Paths
 
-Launcher: `Launch-Game-PC.ps1` → `Launch-Game-Unity.ps1`
-
-## Completed Actions
-
-- ✓ Browser game removed (751 files, 142K deletions)
-- ✓ Cleanup merged into `main` and pushed to GitHub
-- ✓ All validation tests pass (verify-game 15/15, test:backend 31/31, verify-production all checks)
-- ✓ Unity assembly definitions fixed
-- ✓ Launcher build path corrected to `unity/Build/Windows/`
-- ✓ LOCAL_SETUP.md, PRODUCTION_DEPLOYMENT.md, BACKEND_CLASSIFICATION.md created
-- ✓ GitHub Actions workflows created (backend-ci, unity-validation, pages)
-- ✓ GitHub Pages landing page in `docs/landing/`
-
-## Remaining Work (Requires Your Action)
-
-1. **Push GitHub Actions workflows** — Add `workflow` scope to your Personal Access Token and push, or create via GitHub web interface.
-2. **Set GitHub Pages source** — In repository Settings → Pages, set Source to "GitHub Actions".
-3. **Interactive gameplay testing** — Smoke test the standalone build: menu flow, NPC dialogue, saves, and campaign progression.
-4. **Restore Firestore rules** — If Firebase is used in production, restore `firestore.rules` with restrictive permissions.
+- **Windows Executable:** `unity/Build/Windows/TheWhisperingWilds.exe`
+- **Native Launcher (PowerShell):** `Launch-Game-PC.ps1` → `Launch-Game-Unity.ps1`
+- **Native Launcher (Batch):** `Launch-Game-PC.bat`
+- **Local Dev Documentation:** `docs/LOCAL_SETUP.md`
+- **Production Deployment:** `docs/PRODUCTION_DEPLOYMENT.md`
+- **Backend Architecture:** `docs/BACKEND_CLASSIFICATION.md`
+- **Authoritative Status:** `docs/PROJECT_HEALTH.md`

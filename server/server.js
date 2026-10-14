@@ -19,6 +19,7 @@ const saveRoutes = require('./saves/save-routes');
 const persistenceRoutes = require('./routes/persistence-routes');
 const { socketAuthMiddleware } = require('./auth/auth-middleware');
 const FirebaseAdmin = require('./firebase/admin');
+const authDb = require('./auth/db');
 const { requestContext, requestLogger, errorHandler } = require('./middleware/request-context');
 
 const app = express();
@@ -104,6 +105,13 @@ app.get('/ready', async (req, res) => {
     checks.firebase = firebaseProbe;
     if (!firebaseProbe.ok) ready = false;
 
+    const authDbReady = authDb.isReady();
+    checks.authDb = {
+        ok: authDbReady,
+        mode: process.env.DATABASE_URL && authDb.pgReady ? 'postgresql' : (process.env.NODE_ENV === 'production' ? 'disabled' : 'file-backed')
+    };
+    if (!authDbReady) ready = false;
+
     const memory = process.memoryUsage();
     checks.memory = {
         ok: true,
@@ -137,8 +145,9 @@ if (process.env.NODE_ENV === 'development') {
     });
 }
 
-// Serve static game files from project root
-app.use(express.static(path.join(__dirname, '..')));
+// Serve landing page and brand assets
+app.use('/landing', express.static(path.join(__dirname, '..', 'docs', 'landing')));
+app.use('/brand', express.static(path.join(__dirname, '..', 'brand')));
 
 // Terminal error handler. Must be registered after all routes and static
 // middleware so every thrown/rejected error is converted to a canonical code

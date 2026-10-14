@@ -21,7 +21,7 @@ class EmailService {
         // Base URL for email action links (never defaults to localhost in production)
         this.publicUrl = process.env.APP_PUBLIC_URL || 
             (process.env.NODE_ENV === 'production' 
-                ? 'https://thewhisperingwilds.netlify.app' 
+                ? 'https://mtmohan012005-rgb.github.io/whispering-wilds'
                 : 'http://localhost:8080');
 
         // Recorded sent emails in memory for test verification and audit

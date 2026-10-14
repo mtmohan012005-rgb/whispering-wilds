@@ -1,164 +1,145 @@
-# Local Setup — The Whispering Wilds
+# Local Setup & Developer Guide — The Whispering Wilds (காட்டு வழி • தடம்)
 
-## Prerequisites
+This document provides setup instructions for playing, developing, testing, and building the native **Unity 6 (HDRP)** game and its supporting **Node.js** multiplayer/persistence backend.
 
-- **Unity Editor:** 6000.6.3f1 (Unity 6)
-- **Render Pipeline:** HDRP 17.7.0 (installed via package manifest)
-- **Node.js:** 18.x or 20.x (for backend server and tests)
-- **OS:** Windows 10/11 x64 (for standalone builds)
+---
 
-## Opening the Project
+## 1. System Requirements & Prerequisites
 
-1. Install Unity 6000.6.3f1 via Unity Hub.
-2. Click **Add** → **Add project from drive**.
-3. Navigate to and select the `unity/` folder in the repository root.
-4. Open the project. Unity will import assets and resolve packages on first load.
+### Minimum Hardware
+- **Operating System:** Windows 10/11 64-bit
+- **Processor:** Intel Core i5 (8th Gen) / AMD Ryzen 5 or better
+- **Memory:** 8 GB RAM minimum (16 GB recommended for Unity Editor)
+- **Graphics:** DirectX 11 or DirectX 12 compatible GPU with minimum 4 GB VRAM (Intel Iris Xe, NVIDIA GTX 1050+, AMD Radeon RX 560+)
+- **Storage:** 10 GB available SSD storage
 
-## Building the Windows x64 Game
+### Required Software
+- **Unity Engine:** **Unity 6 (6000.6.3f1)** installed via Unity Hub
+- **Render Pipeline:** High Definition Render Pipeline (HDRP 17.7.0)
+- **Node.js Runtime:** Node.js **>= 18.0.0** and npm **>= 9.0.0**
+- **Git:** Git for Windows (with Git LFS support)
+- **Shell:** Windows PowerShell 5.1+ or PowerShell 7
 
-### Option A: Unity Editor
+---
 
-1. Open `Assets/_Project/Scenes/00_Boot.unity`.
-2. Go to **File** → **Build Settings**.
-3. Select **Windows** platform.
-4. Click **Build and Run**.
+## 2. Repository Setup
 
-The executable is generated at:
+Clone the repository and inspect the branch structure:
+
+```powershell
+git clone https://github.com/mtmohan012005-rgb/whispering-wilds.git
+cd whispering-wilds
+```
+
+Install backend dependencies:
+
+```powershell
+npm install
+```
+
+---
+
+## 3. Playing the Standalone PC Game
+
+The canonical executable path for the native game is:
 
 ```
 unity/Build/Windows/TheWhisperingWilds.exe
 ```
 
-### Option B: Command Line
+### Launch Options
+- **PowerShell:**
+  ```powershell
+  .\Launch-Game-PC.ps1
+  ```
+- **Command Prompt / Windows Explorer:**
+  Double-click `Launch-Game-PC.bat`.
 
-Use the build pipeline automation script from within the Unity Editor:
+If the executable has not been built yet, the launcher will display a warning explaining that a Unity build is required and point to this guide.
 
-```
-Assets/_Project/Scripts/Editor/BuildPipelineAutomation.cs
-```
+---
 
-Or run via Unity's command line (requires licensed Unity Editor):
+## 4. Opening the Project in Unity Editor
 
-```powershell
-"Unity\Editor\Unity.exe" -batchmode -nographics -projectPath unity -executeMethod WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindowsFromCommandLine -quit
-```
+1. Open **Unity Hub**.
+2. Click **Add** $\rightarrow$ **Add project from disk**.
+3. Select the `unity/` subdirectory inside the repository root (`<repo-root>/unity`).
+4. Ensure the Editor version is set to **6000.6.3f1**.
+5. Once opened, navigate to:
+   `Assets/_Project/Scenes/00_Boot.unity`
+6. Press the **Play** button in the Editor to test the game in PlayMode.
 
-## Launching the Game
+### Scene Structure
+- `Assets/_Project/Scenes/00_Boot.unity` — Title menu, settings, campaign intro
+- `Assets/_Project/Scenes/01_StateMap_TamilNadu.unity` — Overworld macro travel map
+- `Assets/_Project/Scenes/02_Chennai_GeorgeTown.unity` — Region 1: Chennai High Court & Tea Kadai
+- `Assets/_Project/Scenes/03_Pichavaram_Wetlands.unity` — Region 2: Mangrove wetlands & waterwheel
+- `Assets/_Project/Scenes/04_Thanjavur_Delta.unity` — Region 3: Cauvery delta & bronze workshop
+- `Assets/_Project/Scenes/05_Chettinad_Mansion.unity` — Region 4: Heritage mansion courtyards
+- `Assets/_Project/Scenes/06_Mamallapuram_Shore.unity` — Region 5: Shore temples & granite carvings
+- `Assets/_Project/Scenes/07_Nilgiris_Sanctuary.unity` — Region 6: Western Ghats Toda mund & finale
 
-After building, launch via PowerShell:
+---
 
-```powershell
-.\Launch-Game-PC.ps1
-```
+## 5. Building the Game
 
-Or directly:
+### From Unity Editor
+1. In the top menu bar, select:
+   **Tools** $\rightarrow$ **Whispering Wilds** $\rightarrow$ **Build Production Windows x64 (Retail)**
+2. The automated build pipeline will:
+   - Regenerate authoritative scenes (`00_Boot` through `07_Nilgiris`)
+   - Populate scheduled NPC district populations
+   - Bake static NavMesh for all regions
+   - Build the Windows x64 executable to `unity/Build/Windows/TheWhisperingWilds.exe`
 
-```powershell
-.\Launch-Game-Unity.ps1
-```
-
-If the executable is not found, build the game first (see above).
-
-## Backend Server
-
-The Node.js backend provides multiplayer and cloud-save services.
-
-### Installation
-
-```powershell
-npm ci
-```
-
-### Required Environment Variables
-
-| Variable | Purpose | Required |
-|----------|---------|----------|
-| `FIREBASE_PROJECT_ID` | Firebase project identifier | Production |
-| `FIREBASE_CLIENT_EMAIL` | Firebase service account email | Production |
-| `FIREBASE_PRIVATE_KEY` | Firebase service account key | Production |
-| `DATABASE_URL` | PostgreSQL connection string | Optional (production) |
-| `JWT_SECRET` | Session signing secret | Production |
-| `NODE_ENV` | `development` or `production` | Recommended |
-
-For local development without Firebase, the server runs in a limited mode with file-backed persistence.
-
-### Starting the Server
+### From Command Line (Batch Mode)
+Run the automated build method headless:
 
 ```powershell
-node server.js
+& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" `
+  -batchmode -quit -nographics `
+  -projectPath "$((Get-Location).Path)\unity" `
+  -executeMethod "WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindowsFromCommandLine"
 ```
 
-The server starts on port 3000 by default.
+---
 
-## Running Tests
+## 6. Running the Node.js Backend Server
 
-### Backend Tests
+The Node.js server provides optional co-op multiplayer (up to 5 players per room), session management, and cloud-save persistence.
+
+### Starting Local Development Server
+```powershell
+npm start
+```
+By default, the server runs on `http://localhost:3000`:
+- **Local Transactional Storage:** Operates in file-backed mode using `server/data/auth_database.json` when `DATABASE_URL` is omitted.
+- **Liveness probe:** `http://localhost:3000/health`
+- **Readiness probe:** `http://localhost:3000/ready`
+- **Socket.IO:** Real-time multiplayer synchronization on port 3000.
+
+---
+
+## 7. Automated Testing & Verification
+
+Run the full automated test and verification suite:
 
 ```powershell
-npm run test:backend
+npm test
 ```
 
-Runs 31 security and authentication tests. No production credentials required.
+This executes:
+1. **`test:backend`** — 31 backend security and save validation tests (CSRF, HMAC/FNV-1a checksums, 5-customization appearance cap, optimistic concurrency control).
+2. **`verify-game`** — 15-point Unity project integrity check (scenes, asmdefs, packages, fonts, models).
+3. **`verify-production`** — Server security, room caps, and production configuration check.
+4. **`verify-assets`** — 3D model and skeletal rig validation (`player.glb`, animations, licensing metadata).
 
-### Game Verification
+### Running Unity EditMode Unit Tests
+Run the NUnit test suite in Unity 6:
 
 ```powershell
-npm run verify-game
+& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" `
+  -batchmode -projectPath "$((Get-Location).Path)\unity" `
+  -runTests -testPlatform editmode -testResults "test-results.xml"
 ```
-
-Checks 15 Unity project structure criteria (scenes, asmdefs, assets, etc.).
-
-### Asset Validation
-
-```powershell
-npm run verify-assets
-```
-
-Validates required 3D models, fonts, and textures.
-
-### Production Readiness
-
-```powershell
-npm run verify-production
-```
-
-Checks deployment configuration, security endpoints, and documentation.
-
-## Unity Tests
-
-EditMode and PlayMode tests require the Unity Editor Test Runner window:
-
-1. Open Unity Editor.
-2. Go to **Window** → **General** → **Test Runner**.
-3. Select **EditMode** or **PlayMode**.
-4. Click **Run All**.
-
-Tests cannot run in headless batch mode due to Unity licensing validation.
-
-## Common Issues
-
-### Unity Licensing Error
-
-If you see "Unity License not found" or similar errors:
-- Ensure you have a valid Unity license (Personal or Pro).
-- Sign in via Unity Hub with your Unity account.
-
-### Missing HDRP Package
-
-If HDRP is not found:
-- Verify `unity/Packages/manifest.json` contains `com.unity.render-pipelines.high-definition`.
-- Let Unity resolve packages automatically on project open.
-
-### Tamil Font Missing
-
-The Tamil font (`NotoSansTamil-Regular.ttf`) is located at:
-- `unity/Assets/_Project/Resources/Fonts/TamilFont.ttf`
-- `unity/Assets/_Project/Fonts/NotoSansTamil-Regular.ttf`
-
-If Tamil text renders as boxes, verify the font is imported and the `LocalizedFontProvider` can find it.
-
-### NavMesh Warnings
-
-NPC navigation uses the built-in `UnityEngine.AI` module. If you see NavMesh warnings:
-- Verify the scene has a `NavMeshSurface` component with baked data.
-- Check that NPC spawn positions are on walkable surfaces.
+Test results will be written to `test-results.xml` (or `unity/test-results.xml`).

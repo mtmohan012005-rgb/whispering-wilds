@@ -125,7 +125,7 @@ namespace WhisperingWilds.Gameplay
                 ItemSealRubbing,
                 "Seal Rubbing", "முத்திரை அச்சு",
                 "A charcoal rubbing of the brass seal found in the library archive. The ring pattern matches the wax seal from the Pichavaram bundle.",
-                "கتابகான நூலகக் காப்பகத்தில் கிடைத்த வெண்கல முத்திரையின் கரி அச்சு. வளைய வடிவம் பிச்சாவரம் கட்டியின் மெழுகு முத்திரையுடன் பொருந்துகிறது.",
+                "சரஸ்வதி மகால் நூலகக் காப்பகத்தில் கிடைத்த வெண்கல முத்திரையின் கரி அச்சு. வளைய வடிவம் பிச்சாவரம் கட்டியின் மெழுகு முத்திரையுடன் பொருந்துகிறது.",
                 ItemCategory.Quest, baseValue: 0, maxStack: 1, weightKg: 0.03f);
 
             GameDataCatalog.RegisterItem(
@@ -180,7 +180,7 @@ namespace WhisperingWilds.Gameplay
                 QuestTheTempleRecord,
                 "The Temple Record", "கோயிலின் பதிகம்",
                 "The bronze caster near the Brihadisvara temple knows more about the old records than he lets on. Find what the temple ledger says about the shipments crossing Tamil Nadu.",
-                "பிரகதிசுவரர் கோயிலருகே உள்ள வெண்கலக் கலைஞர் பழைய பதிவுகள் பற்றி அவர் காட்டும்தை விட அதிகமாக அறிவார். தமிழ்நாட்டைக் கடக்கும் சரக்குகள் பற்றி கோயில் பதிகம் என்ன சொல்கிறது என்பதைக் கண்டறியுங்கள்.",
+                "பிரகதிசுவரர் கோயிலருகே உள்ள வெண்கலக் கலைஞர் பழைய பதிவுகள் பற்றி அவர் காட்டுவதை விட அதிகமாக அறிவார். தமிழ்நாட்டைக் கடக்கும் சரக்குகள் பற்றி கோயில் பதிகம் என்ன சொல்கிறது என்பதைக் கண்டறியுங்கள்.",
                 RegionId,
                 new[]
                 {
@@ -210,7 +210,7 @@ namespace WhisperingWilds.Gameplay
 
                     Stage(6, "The Workshop", "தொழிற்சாலை",
                         Objective("reach_workshop", QuestObjectiveType.ReachLocation, LocationBronzeWorkshop,
-                            "Return to Selvam's workshop.", "செல்வத்தின் தொழிற்சாலையில் திரும்பவும்.")),
+                            "Return to Selvam's workshop.", "செல்வத்தின் தொழிற்சாலைக்குத் திரும்பவும்.")),
 
                     Stage(7, "The Dispatch", "அறிக்கை",
                         Objective("major_evidence", QuestObjectiveType.DiscoverClue, ClueUnsentDispatch,
@@ -294,13 +294,13 @@ namespace WhisperingWilds.Gameplay
                     nodeIndex = 3,
                     requiredClueId = ClueBrassSeal,
                     speakerTextEn = "The seal matches, then. You have the ledger and the seal — two pieces of the same mark. Come to the workshop. There is something my grandfather left on the anvil table. He never sent it, but it tells the whole story.",
-                    speakerTextTa = "முத்திரை பொருந்துகிறது. பதிகமும் முத்திரையும் உள்ளன — அதே அடையாளத்தின் இரண்டு பகுதிகள். தொழிற்சாலையில் வா. என் தாத்தா தட்டி மேசையில் விட்டுச் சென்ற ஒன்று உள்ளது. அவர் அனுப்பவில்லை, ஆனால் முழு கதையையும் சொல்கிறது.",
+                    speakerTextTa = "முத்திரை பொருந்துகிறது. பதிகமும் முத்திரையும் உள்ளன — அதே அடையாளத்தின் இரண்டு பகுதிகள். தொழிற்சாலைக்கு வா. என் தாத்தா தட்டி மேசையில் விட்டுச் சென்ற ஒன்று உள்ளது. அவர் அனுப்பவில்லை, ஆனால் முழு கதையையும் சொல்கிறது.",
                     choices = new List<DialogueChoice>
                     {
                         new DialogueChoice
                         {
                             choiceTextEn = "I will come to the workshop.",
-                            choiceTextTa = "தொழிற்சாலையில் வருகிறேன்.",
+                            choiceTextTa = "தொழிற்சாலைக்கு வருகிறேன்.",
                             nextNodeIndex = -1
                         }
                     }
