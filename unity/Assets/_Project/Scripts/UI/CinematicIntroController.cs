@@ -10,17 +10,18 @@ using WhisperingWilds.Localization;
 namespace WhisperingWilds.UI
 {
     /// <summary>
-    /// STEP 40 — Cinematic introduction sequence for The Whispering Wilds.
+    /// STEP 61 — Cinematic introduction sequence for The Whispering Wilds.
     /// 
     /// Plays a 20-30 second atmospheric opening before the main menu:
-    /// 1. Fade from black with ambient soundscape
-    /// 2. Reveal Tamil Nadu landscape at dawn
+    /// 1. Fade from black with atmospheric gradient background
+    /// 2. Reveal Tamil Nadu landscape at dawn with fog and mist
     /// 3. Camera moves toward a mysterious trail
     /// 4. Title fades in with Tamil subtitle
     /// 5. Transition to main menu
     /// 
     /// Supports skip via keyboard, mouse, or controller.
-    /// Does not replay when returning from Settings or resuming.
+    /// Plays by default on every launch unless the player explicitly disables it
+    /// via the WW_PlayIntroOnStartup preference or the -forceIntro launch argument.
     /// </summary>
     public class CinematicIntroController : MonoBehaviour
     {
@@ -65,7 +66,6 @@ namespace WhisperingWilds.UI
         [SerializeField] private GameObject menuRoot;
         [SerializeField] private TitleMenuController titleMenuController;
 
-        private bool _introPlayed = false;
         private bool _skipped = false;
         private bool _isPlaying = false;
         private float _elapsedTime = 0f;
@@ -73,17 +73,53 @@ namespace WhisperingWilds.UI
         private Vector3 _originalCameraPos;
         private Quaternion _originalCameraRot;
 
-        public bool IntroPlayed => _introPlayed;
         public bool IsPlaying => _isPlaying;
 
         private void Awake()
         {
-            // Check if intro was already played this session
-            _introPlayed = PlayerPrefs.GetInt("WW_IntroPlayed", 0) == 1;
+            // STEP 61: Use WW_PlayIntroOnStartup preference instead of WW_IntroPlayed.
+            // Default is 1 (play intro). Player can disable it via settings.
+            // Also support -forceIntro launch argument for QA/debug testing.
+            bool playIntro = PlayerPrefs.GetInt("WW_PlayIntroOnStartup", 1) == 1;
+            
+            // Check for -forceIntro launch argument (debug/QA only)
+            string[] args = System.Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "-forceIntro")
+                {
+                    playIntro = true;
+                    break;
+                }
+            }
+            
+            // Legacy support: if WW_IntroPlayed is set but WW_PlayIntroOnStartup is not,
+            // default to playing the intro (the new behavior).
+            if (!playIntro && PlayerPrefs.HasKey("WW_IntroPlayed") && !PlayerPrefs.HasKey("WW_PlayIntroOnStartup"))
+            {
+                // Old build set WW_IntroPlayed=1. New build should play by default.
+                playIntro = true;
+            }
+            
+            Debug.Log($"<color=#FFD700><b>[CinematicIntro]</b></color> PlayIntroOnStartup={playIntro}");
         }
 
         private void Start()
         {
+            // Determine whether to play the intro
+            bool playIntro = PlayerPrefs.GetInt("WW_PlayIntroOnStartup", 1) == 1;
+            
+            // Check for -forceIntro launch argument (debug/QA only)
+            string[] args = System.Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == "-forceIntro")
+                {
+                    playIntro = true;
+                    break;
+                }
+            }
+
             // Hide only the menu content during the intro. The canvas itself stays active
             // so that intro visuals (which are canvas children) remain visible.
             if (menuRoot != null)
@@ -94,19 +130,15 @@ namespace WhisperingWilds.UI
             // Setup intro visuals
             SetupIntroVisuals();
 
-            // Start or skip intro
-            if (_introPlayed)
+            // Start or skip intro based on preference
+            if (playIntro)
             {
-                // Intro was already played in a previous session.
-                // Do NOT call SkipIntro() here: SkipIntro() returns immediately when
-                // _isPlaying is false, which would leave menuRoot hidden and the
-                // player stuck on a blank screen. Instead, complete the intro state
-                // directly so the menu becomes visible.
-                CompleteIntro();
+                StartIntro();
             }
             else
             {
-                StartIntro();
+                // Player has disabled the intro — go straight to menu.
+                CompleteIntro();
             }
         }
 
@@ -234,22 +266,41 @@ namespace WhisperingWilds.UI
         {
             float elapsed = 0f;
 
+            // STEP 61: Atmospheric gradient colors for the intro background.
+            // Deep forest night → dawn mist → warm sunrise tones.
+            Color bgDeepNight = new Color(0.01f, 0.02f, 0.03f);
+            Color bgDawnMist = new Color(0.08f, 0.12f, 0.15f);
+            Color bgSunrise = new Color(0.15f, 0.18f, 0.22f);
+
+            // Fog density animation: starts thick, thins as dawn breaks
+            float fogStartDensity = 0.05f;
+            float fogEndDensity = 0.015f;
+
             while (elapsed < totalDuration && _isPlaying && !_skipped)
             {
                 elapsed += Time.deltaTime;
                 _elapsedTime = elapsed;
 
-                // Phase 1: Fade in background (0-5s)
+                // Phase 1: Fade in background with gradient (0-5s)
+                // Transition from deep night to dawn mist
                 if (elapsed < 5f)
                 {
                     float t = elapsed / 5f;
+                    t = SmoothStep(t);
                     if (introBackground != null)
                     {
                         var bgImage = introBackground.GetComponent<Image>();
                         if (bgImage != null)
                         {
-                            bgImage.color = new Color(backgroundColor.r, backgroundColor.g, backgroundColor.b, t);
+                            Color bg = Color.Lerp(bgDeepNight, bgDawnMist, t);
+                            bgImage.color = new Color(bg.r, bg.g, bg.b, t);
                         }
+                    }
+                    // Animate fog density: thick at start, thinning
+                    if (introCamera != null)
+                    {
+                        float fogT = t;
+                        RenderSettings.fogDensity = Mathf.Lerp(fogStartDensity, fogEndDensity, fogT);
                     }
                 }
 
@@ -269,7 +320,8 @@ namespace WhisperingWilds.UI
                     introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.6f);
                 }
 
-                // Phase 3: Camera movement (5-15s)
+                // Phase 3: Camera movement & background transition (5-15s)
+                // Camera slowly pushes forward while background shifts to sunrise tones
                 if (elapsed >= 5f && elapsed < 15f && introCamera != null)
                 {
                     float t = (elapsed - 5f) / 10f;
@@ -280,6 +332,17 @@ namespace WhisperingWilds.UI
 
                     introCamera.transform.position = _originalCameraPos + pos;
                     introCamera.transform.rotation = Quaternion.Euler(rot);
+
+                    // Background transitions from dawn mist to sunrise
+                    if (introBackground != null)
+                    {
+                        var bgImage = introBackground.GetComponent<Image>();
+                        if (bgImage != null)
+                        {
+                            Color bg = Color.Lerp(bgDawnMist, bgSunrise, t);
+                            bgImage.color = new Color(bg.r, bg.g, bg.b, 1f);
+                        }
+                    }
                 }
 
                 // Phase 4: Title fade in (14-18s)
@@ -319,6 +382,15 @@ namespace WhisperingWilds.UI
                         if (vigImage != null)
                         {
                             vigImage.color = new Color(0f, 0f, 0f, 0.6f * (1f - t));
+                        }
+                    }
+                    // Fade out background
+                    if (introBackground != null)
+                    {
+                        var bgImage = introBackground.GetComponent<Image>();
+                        if (bgImage != null)
+                        {
+                            bgImage.color = new Color(bgSunrise.r, bgSunrise.g, bgSunrise.b, 1f - t);
                         }
                     }
                 }
@@ -368,10 +440,9 @@ namespace WhisperingWilds.UI
 
             _isPlaying = false;
 
-            // Persist the intro-played flag now that the intro has actually finished.
-            PlayerPrefs.SetInt("WW_IntroPlayed", 1);
-            PlayerPrefs.Save();
-            _introPlayed = true;
+            // STEP 61: Do NOT persist WW_IntroPlayed. The intro plays by default on every
+            // launch unless the player explicitly disables WW_PlayIntroOnStartup in settings.
+            // This ensures the intro appears on subsequent launches as intended.
 
             // Hide intro elements
             if (introBackground != null) introBackground.SetActive(false);
@@ -410,12 +481,12 @@ namespace WhisperingWilds.UI
         {
             if (_isPlaying) return;
 
-            // Clear the played flag so a subsequent launch will show the intro again.
-            PlayerPrefs.SetInt("WW_IntroPlayed", 0);
+            // STEP 61: Ensure the intro preference is enabled so a subsequent launch
+            // will show the intro again.
+            PlayerPrefs.SetInt("WW_PlayIntroOnStartup", 1);
             PlayerPrefs.Save();
 
             // Reset state
-            _introPlayed = false;
             _skipped = false;
             _elapsedTime = 0f;
 

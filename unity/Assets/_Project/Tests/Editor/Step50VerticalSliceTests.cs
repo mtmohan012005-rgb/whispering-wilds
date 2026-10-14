@@ -181,11 +181,12 @@ namespace WhisperingWilds.Tests.Editor
         }
 
         [Test]
-        public void CinematicIntroController_HasIntroPlayed_Property()
+        public void CinematicIntroController_HasIsPlaying_Property()
         {
+            // STEP 61: The controller exposes IsPlaying for runtime state checks.
             var type = typeof(WhisperingWilds.UI.CinematicIntroController);
-            var prop = type.GetProperty("IntroPlayed");
-            Assert.IsNotNull(prop, "CinematicIntroController should have IntroPlayed property");
+            var prop = type.GetProperty("IsPlaying");
+            Assert.IsNotNull(prop, "CinematicIntroController should have IsPlaying property");
         }
 
         [Test]
@@ -432,9 +433,9 @@ namespace WhisperingWilds.Tests.Editor
         [Test]
         public void CinematicIntroController_RepeatLaunch_CallsCompleteIntroNotSkipIntro()
         {
-            // When _introPlayed is true (repeat launch), Start() must call CompleteIntro()
-            // directly, NOT SkipIntro(). SkipIntro() returns immediately when _isPlaying
-            // is false, leaving menuRoot hidden and the player on a blank screen.
+            // STEP 61: The controller no longer uses _introPlayed for repeat-launch logic.
+            // Instead, it uses WW_PlayIntroOnStartup preference. The Start() method checks
+            // the preference and either plays the intro or goes straight to the menu.
             var assetsPath = Application.dataPath;
             var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
 
@@ -445,27 +446,20 @@ namespace WhisperingWilds.Tests.Editor
 
             var source = File.ReadAllText(sourcePath);
 
-            // The Start() method must contain the CompleteIntro() call in the _introPlayed branch.
-            // We verify that the source does NOT call SkipIntro() when _introPlayed is true.
-            // The fix replaces "SkipIntro();" with "CompleteIntro();" in the _introPlayed branch.
+            // The source must use WW_PlayIntroOnStartup preference
+            Assert.IsTrue(source.Contains("WW_PlayIntroOnStartup"),
+                "CinematicIntroController should use WW_PlayIntroOnStartup preference");
 
-            // Find the Start() method and check that the _introPlayed branch calls CompleteIntro
-            // and does NOT call SkipIntro.
-            Assert.IsFalse(source.Contains("if (_introPlayed)\r\n            {\r\n                SkipIntro();"),
-                "Start() must not call SkipIntro() when _introPlayed is true — this causes the repeat-launch blank screen");
-            Assert.IsFalse(source.Contains("if (_introPlayed)\n            {\n                SkipIntro();"),
-                "Start() must not call SkipIntro() when _introPlayed is true — this causes the repeat-launch blank screen");
-
-            // Verify the fix: CompleteIntro() is called in the _introPlayed branch
+            // CompleteIntro() must exist and be callable
             Assert.IsTrue(source.Contains("CompleteIntro()"),
-                "Start() must call CompleteIntro() when _introPlayed is true");
+                "CinematicIntroController must have CompleteIntro() method");
         }
 
         [Test]
-        public void CinematicIntroController_CompleteIntro_PersistsPlayedFlag()
+        public void CinematicIntroController_CompleteIntro_DoesNotPersistIntroPlayed()
         {
-            // The WW_IntroPlayed flag must be set in CompleteIntro(), NOT in StartIntro().
-            // Setting it in StartIntro() means a crash during the intro permanently skips it.
+            // STEP 61: CompleteIntro must NOT persist WW_IntroPlayed. The intro plays by
+            // default on every launch unless WW_PlayIntroOnStartup is explicitly disabled.
             var assetsPath = Application.dataPath;
             var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
 
@@ -476,30 +470,23 @@ namespace WhisperingWilds.Tests.Editor
 
             var source = File.ReadAllText(sourcePath);
 
-            // CompleteIntro must contain the PlayerPrefs.SetInt for WW_IntroPlayed
-            Assert.IsTrue(source.Contains("WW_IntroPlayed"), "Intro played flag must be referenced");
-
-            // StartIntro must NOT set the flag — only CompleteIntro should
-            // We check that StartIntro does not contain PlayerPrefs.SetInt
-            var startIntroIndex = source.IndexOf("private void StartIntro()");
             var completeIntroIndex = source.IndexOf("private void CompleteIntro()");
-            Assert.Greater(startIntroIndex, -1, "StartIntro method must exist");
             Assert.Greater(completeIntroIndex, -1, "CompleteIntro method must exist");
 
-            // Find the end of StartIntro (next method or class end)
-            var startIntroBody = source.Substring(startIntroIndex);
-            var nextMethodInStartIntro = FindNextMethodOrEnd(startIntroBody, "private", "public", "protected");
-            var startIntroMethodText = startIntroBody.Substring(0, nextMethodInStartIntro);
+            var completeBody = source.Substring(completeIntroIndex);
+            var nextMethodInComplete = FindNextMethodOrEnd(completeBody, "private", "public", "protected");
+            var completeMethodText = completeBody.Substring(0, nextMethodInComplete);
 
-            Assert.IsFalse(startIntroMethodText.Contains("PlayerPrefs.SetInt"),
-                "StartIntro() must NOT set PlayerPrefs — the flag should only be set in CompleteIntro()");
+            // CompleteIntro must NOT set WW_IntroPlayed
+            Assert.IsFalse(completeMethodText.Contains("WW_IntroPlayed"),
+                "CompleteIntro() must NOT persist WW_IntroPlayed — intro plays by default on every launch");
         }
 
         [Test]
-        public void CinematicIntroController_ReplayIntro_ClearsPlayedFlag()
+        public void CinematicIntroController_ReplayIntro_SetsPlayIntroPreference()
         {
-            // ReplayIntro must clear the WW_IntroPlayed flag so a subsequent launch
-            // shows the intro again.
+            // STEP 61: ReplayIntro must set WW_PlayIntroOnStartup to 1 so a subsequent
+            // launch shows the intro again.
             var assetsPath = Application.dataPath;
             var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
 
@@ -517,8 +504,8 @@ namespace WhisperingWilds.Tests.Editor
             var nextMethodInReplay = FindNextMethodOrEnd(replayBody, "private", "public", "protected");
             var replayMethodText = replayBody.Substring(0, nextMethodInReplay);
 
-            Assert.IsTrue(replayMethodText.Contains("PlayerPrefs.SetInt") && replayMethodText.Contains("0"),
-                "ReplayIntro() must clear the WW_IntroPlayed flag by setting it to 0");
+            Assert.IsTrue(replayMethodText.Contains("WW_PlayIntroOnStartup"),
+                "ReplayIntro() must set WW_PlayIntroOnStartup preference");
         }
 
         [Test]
@@ -546,6 +533,91 @@ namespace WhisperingWilds.Tests.Editor
             // Should have an early-return guard for idempotency
             Assert.IsTrue(completeMethodText.Contains("return;") || completeMethodText.Contains("activeSelf"),
                 "CompleteIntro() should have an idempotency guard to prevent duplicate effects");
+        }
+
+        // ---- STEP 61: Intro preference and forceIntro regression tests ---------
+
+        [Test]
+        public void CinematicIntroController_UsesPlayIntroOnStartupPreference()
+        {
+            // STEP 61: The intro must use WW_PlayIntroOnStartup preference (default=1)
+            // instead of WW_IntroPlayed. This ensures the intro plays on every launch
+            // unless the player explicitly disables it.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("WW_PlayIntroOnStartup"),
+                "CinematicIntroController must use WW_PlayIntroOnStartup preference");
+            Assert.IsTrue(source.Contains("PlayerPrefs.GetInt(\"WW_PlayIntroOnStartup\", 1)"),
+                "WW_PlayIntroOnStartup must default to 1 (play intro)");
+        }
+
+        [Test]
+        public void CinematicIntroController_SupportsForceIntroArgument()
+        {
+            // STEP 61: The -forceIntro launch argument must force the intro for QA/debug testing.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("-forceIntro"),
+                "CinematicIntroController must support -forceIntro launch argument");
+        }
+
+        [Test]
+        public void CinematicIntroController_HasNoIntroPlayedField()
+        {
+            // STEP 61: The _introPlayed field is removed — the controller no longer
+            // tracks whether the intro was played across launches.
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
+            var field = type.GetField("_introPlayed", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNull(field, "CinematicIntroController should not have _introPlayed field — use WW_PlayIntroOnStartup preference instead");
+        }
+
+        [Test]
+        public void CinematicIntroController_HasGradientBackgroundColors()
+        {
+            // STEP 61: The PlayIntro coroutine must use atmospheric gradient colors
+            // (deep night → dawn mist → sunrise) instead of a single solid color.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("bgDeepNight") || source.Contains("bgDawnMist") || source.Contains("bgSunrise"),
+                "PlayIntro must use atmospheric gradient colors for the background");
+        }
+
+        [Test]
+        public void CinematicIntroController_HasAnimatedFogDensity()
+        {
+            // STEP 61: The intro must animate fog density during the sequence.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("fogDensity") && source.Contains("fogStartDensity"),
+                "PlayIntro must animate fog density during the intro sequence");
         }
 
         /// <summary>

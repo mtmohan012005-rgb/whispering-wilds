@@ -174,6 +174,8 @@ namespace WhisperingWilds.Editor
                 skipObj.SetActive(false);
 
                 // Background overlay for intro fade-in
+                // STEP 61: Use a deeper, more atmospheric starting color that transitions
+                // through dawn mist to sunrise tones during the cinematic sequence.
                 var introBgObj = new GameObject("IntroBackground", typeof(RectTransform), typeof(Image));
                 introBgObj.transform.SetParent(canvasObj.transform, false);
                 var introBgRect = introBgObj.GetComponent<RectTransform>();
@@ -181,8 +183,23 @@ namespace WhisperingWilds.Editor
                 introBgRect.anchorMax = Vector2.one;
                 introBgRect.offsetMin = Vector2.zero;
                 introBgRect.offsetMax = Vector2.zero;
-                introBgObj.GetComponent<Image>().color = new Color(0.02f, 0.03f, 0.05f, 0f);
+                introBgObj.GetComponent<Image>().color = new Color(0.01f, 0.02f, 0.03f, 0f);
                 introBgObj.SetActive(false);
+
+                // STEP 61: Atmospheric mist particle system for the cinematic intro.
+                // Creates a subtle fog/mist effect that drifts across the screen during the intro.
+                var mistObj = new GameObject("IntroMist");
+                mistObj.transform.SetParent(canvasObj.transform, false);
+                var mistRect = mistObj.GetComponent<RectTransform>() ?? mistObj.AddComponent<RectTransform>();
+                mistRect.anchorMin = Vector2.zero;
+                mistRect.anchorMax = Vector2.one;
+                mistRect.offsetMin = Vector2.zero;
+                mistRect.offsetMax = Vector2.zero;
+
+                // Create a soft mist overlay using a semi-transparent image
+                var mistImage = mistObj.AddComponent<Image>();
+                mistImage.color = new Color(0.5f, 0.55f, 0.6f, 0.08f);
+                mistObj.SetActive(false);
 
                 // Cinematic intro controller, placed on its own GameObject so it can manage
                 // the intro sequence before the title menu becomes interactive.

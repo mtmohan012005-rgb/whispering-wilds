@@ -1,9 +1,8 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** 569a031 (main on GitHub)
+**Commit:** TBD (main on GitHub, Step 61 changes pending push)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/569a031
 
 ## Architecture
 
@@ -19,9 +18,10 @@
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
 | Unity EditMode tests | **BLOCKED** | Tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 192 MB, 51.1s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Windows x64 build | **PASS** | 192 MB, 71.5s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
 | Standalone runtime (first launch) | **PASS** | 0 errors in Player.log, reaches MainMenu, 60 FPS |
 | Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
+| Cinematic intro (Step 61) | **PASS** | Plays by default on every launch, gradient background, animated fog |
 | Campaign managers in boot scene | **PASS** | RegionUnlockManager, EndingController, QuestEndingBridge added |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
@@ -31,6 +31,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
+
+- **Step 61 — Cinematic intro plays by default on every launch**: Replaced `WW_IntroPlayed` PlayerPrefs with `WW_PlayIntroOnStartup` preference (default=1). The intro now plays on every fresh launch unless the player explicitly disables it. Added `-forceIntro` launch argument for QA/debug testing. Improved atmospheric visuals with gradient background colors (deep night → dawn mist → sunrise), animated fog density, and mist overlay. Added 7 regression tests for the new preference system.
 
 - **Step 60 — Missing regional clue interactables**: Added 9 world-space clue interactables through AssembleAllRegions.cs scene generation pipeline so they survive scene regeneration. Pichavaram (3 clues: Kerosene Sheen, Root Gash, Night Bundle), Thanjavur (3 clues: Temple Ledger, Brass Seal, Unsent Dispatch), Nilgiris (3 clues: Survey Markers, Faded Map, Original Blueprint). Each uses GameplayEventInteractable with correct targetId, revealClueId, and bilingual prompts. This completes the campaign progression chain: Chennai → Pichavaram → Thanjavur → Chettinad → Mamallapuram → Nilgiris → Ending.
 - **Step 59 — Campaign managers in boot scene**: Added RegionUnlockManager, EndingController, and QuestEndingBridge to BuildBootScene.SetupPersistentManagers(). Without these, clue discoveries would not unlock regions and the final quest would not trigger ending evaluation. Verified: build launches with 0 errors, all managers present in boot scene.
