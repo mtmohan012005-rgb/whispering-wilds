@@ -362,7 +362,7 @@ namespace WhisperingWilds.Tests.Editor
             }
 
             var source = File.ReadAllText(buildBootScenePath);
-            Assert.IsTrue(source.Contains("\"MenuRoot\"), "BuildBootScene should create MenuRoot group");
+            Assert.IsTrue(source.Contains("\"MenuRoot\""), "BuildBootScene should create MenuRoot group");
             Assert.IsTrue(source.Contains("menuRoot"), "BuildBootScene should reference menuRoot variable");
         }
 

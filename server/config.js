@@ -16,7 +16,7 @@ const config = {
     CORS_ORIGIN: process.env.CORS_ORIGIN 
       ? (process.env.CORS_ORIGIN.includes(',') ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : process.env.CORS_ORIGIN)
       : (process.env.NODE_ENV === 'production' 
-          ? ['https://whispering-wilds.netlify.app'] 
+          ? ['https://mtmohan012005-rgb.github.io']
           : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:8080']),
 
     // ------------------------------------------------------------------------

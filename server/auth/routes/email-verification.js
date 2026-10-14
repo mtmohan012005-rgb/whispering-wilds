@@ -73,7 +73,7 @@ router.get('/verify-email', (req, res) => {
         const ip = req.ip || req.connection.remoteAddress;
         const result = EmailVerificationService.verifyToken(token, ip);
 
-        const appUrl = (process.env.APP_PUBLIC_URL || 'https://thewhisperingwilds.netlify.app').replace(/\/+$/, '');
+        const appUrl = (process.env.APP_PUBLIC_URL || 'https://mtmohan012005-rgb.github.io/whispering-wilds').replace(/\/+$/, '');
         const redirectUrl = `${appUrl}/?verified=${result.success ? 'true' : 'false'}&msg=${encodeURIComponent(result.message || result.reason)}`;
 
         // Render response page with automatic return redirect

@@ -1,12 +1,11 @@
 # Architecture — The Whispering Wilds
 
 ## Overview
+The Whispering Wilds (காட்டு வழி • தடம்) is an open-world narrative exploration game set across Tamil Nadu. The project architecture comprises:
 
-The Whispering Wilds (காட்டு வழி • தடம்) is an open-world narrative exploration game set across Tamil Nadu. The repository contains **three implementation layers**:
-
-1. **Unity 6 standalone PC game** (primary release target)
-2. **Browser/Three.js web game** (legacy parallel implementation)
-3. **Node.js multiplayer & cloud-save backend** (shared by both)
+1. **Unity 6 HDRP Standalone PC Game** (authoritative client)
+2. **Node.js Multiplayer & Cloud-Save Backend** (services, real-time networking, persistence)
+3. **GitHub Pages Project Portal** (lightweight project landing page and release portal)
 
 ## 1. Unity 6 Standalone Game (Primary)
 
@@ -14,15 +13,15 @@ The Whispering Wilds (காட்டு வழி • தடம்) is an open-
 
 **Directory:** `unity/`
 
-**Executable:** `unity/Build/Windows/TheWhisperingWilds.exe` (192 MB)
+**Canonical Executable:** `unity/Build/Windows/TheWhisperingWilds.exe`
 
 ### Assembly Structure
 
 | Assembly | Path | Purpose |
 |----------|------|---------|
-| `WhisperingWilds` | `unity/Assets/_Project/Scripts/` | Main game code (159 scripts) |
-| `WhisperingWilds.Editor` | `unity/Assets/_Project/Scripts/Editor/` | Editor tools, build pipeline, QA |
-| `WhisperingWilds.Tests.Editor` | `unity/Assets/_Project/Tests/Editor/` | EditMode unit tests |
+| `WhisperingWilds` | `unity/Assets/_Project/Scripts/` | Main game runtime (movement, dialogue, quests, ecology, save system) |
+| `WhisperingWilds.Editor` | `unity/Assets/_Project/Scripts/Editor/` | Editor tools, scene generation, ecology NavMesh baking, build pipeline |
+| `WhisperingWilds.Tests.Editor` | `unity/Assets/_Project/Tests/Editor/` | EditMode unit tests (NUnit, Unity Test Framework) |
 
 ### Key Systems
 
@@ -43,7 +42,7 @@ The Whispering Wilds (காட்டு வழி • தடம்) is an open-
 
 | Scene | Path | Status |
 |-------|------|--------|
-| Boot | `00_Boot.unity` | Entry point, title menu |
+| Boot | `00_Boot.unity` | Entry point, title menu, cinematic intro |
 | State Map | `01_StateMap_TamilNadu.unity` | Regional overview |
 | Chennai | `02_Chennai_GeorgeTown.unity` | Opening region |
 | Pichavaram | `03_Pichavaram_Wetlands.unity` | Mangrove wetlands |
@@ -59,93 +58,88 @@ All 6 gameplay regions have baked NavMeshData assets.
 - Unity.InputSystem 1.20.0
 - Unity.RenderPipelines.HighDefinition 17.7.0
 - Unity.TextMeshPro
-- Unity.AI.Navigation (built-in module)
+- Built-in UnityEngine.AI (UnityEngine.AIModule)
 - Unity.Cinemachine 3.1.2
 - Unity.Timeline 6.6.0
 - com.unity.cloud.gltfast 6.20.0
+- com.unity.test-framework 1.4.5
 
-## 2. Browser/Three.js Web Game (Legacy)
-
-**Directory:** Root level (`js/`, `css/`, `index.html`, `assets/`)
-
-**Scripts:** 519 JavaScript files in `js/`
-
-**Entry point:** `index.html`
-
-This is a complete parallel implementation of the game using Three.js, Canvas, and Web Audio. It shares the same backend server for multiplayer and cloud saves but runs independently in the browser.
-
-**Status:** Maintained in parallel. Not the primary release target per README.
-
-## 3. Node.js Backend Server
+## 2. Node.js Backend Server
 
 **Entry point:** `server.js` → `server/server.js`
 
 **Port:** Configurable via `server/config.js` (default: 3000)
 
-**Dependencies:** Express, Socket.IO, Firebase Admin, PostgreSQL (optional), CORS
+**Dependencies:** Express, Socket.IO, Firebase Admin, PostgreSQL (`pg`), CORS
 
 ### API Endpoints
 
 | Path | Purpose | Auth |
 |------|---------|------|
-| `/health` | Liveness check | None |
-| `/ready` | Readiness probe (Firebase, rooms) | None |
-| `/api/v1/health` | Versioned health with memory stats | None |
-| `/api/auth/*` | Registration, login, password reset | Public |
-| `/api/profile/*` | Player profile CRUD | JWT required |
-| `/api/saves/*` | Local save persistence | JWT required |
-| `/api/v1/persistence/*` | Firebase-backed cloud saves | Firebase ID token |
+| `/health` | Process liveness check | None |
+| `/ready` | Full subsystem readiness probe (Firebase, PostgreSQL, rooms) | None |
+| `/api/v1/health` | Versioned health with memory telemetry | None |
+| `/api/auth/*` | Registration, login, session validation | Public / Session |
+| `/api/profile/*` | Player profile CRUD | Session cookie / Bearer |
+| `/api/saves/*` | Relational save persistence (PostgreSQL) | Session cookie / Bearer |
+| `/api/v1/persistence/*` | Authoritative cloud saves & appearance tokens | Firebase ID token |
 
-### Security
+### Security Architecture
 
 - CSRF protection on state-changing routes
-- Rate limiting on auth endpoints
-- Firebase ID token verification for cloud saves
-- Save integrity checksums (HMAC)
+- Rate limiting on authentication and registration endpoints
+- Firebase ID token verification for authoritative cloud saves
+- Save integrity checksums (FNV-1a / HMAC)
 - Optimistic concurrency control (revision-based)
-- 5-player room cap enforced server-side
+- 5-player co-op room cap enforced server-side
+- Session rotation on authentication against session fixation
+- Strict no-logging rule for secrets, tokens, and passwords
 
 ### Deployment
 
-- **Frontend:** Netlify (`netlify.toml`)
-- **Backend:** Render (`render.yaml`)
-- **Firebase:** Firestore for cloud persistence
+- **Landing Page:** GitHub Pages (`docs/landing/index.html`) via `.github/workflows/pages.yml`
+- **Backend:** Node.js container / cloud service (Render / GCP)
+- **Authoritative Persistence:** Firebase Firestore / Cloud Storage
+- **Relational Storage:** PostgreSQL
 
-## 4. Desktop Launcher
+## 3. Desktop Launchers
 
-**Scripts:** `Launch-Game-PC.ps1`, `Launch-Game-Unity.ps1`, `Launch-Legacy-Web-Game.ps1`
+**Scripts:**
+- `Launch-Game-PC.ps1` — Canonical native game launcher
+- `Launch-Game-PC.bat` — Windows double-click wrapper invoking `Launch-Game-PC.ps1`
+- `Launch-Game-Unity.ps1` — Core launcher targeting `unity/Build/Windows/TheWhisperingWilds.exe`
 
-These PowerShell scripts launch the appropriate game version:
-- `Launch-Game-PC.ps1` — Unity standalone executable
-- `Launch-Game-Unity.ps1` — Unity Editor play mode
-- `Launch-Legacy-Web-Game.ps1` — Browser game via localhost server
+These launchers target the native standalone executable and never fall back to obsolete web wrappers. If the executable is missing, clear build guidance is presented.
 
-## 5. Build & Test
+## 4. Build & Verification Pipeline
 
 ### Unity Build
 
 ```powershell
 # Production Windows x64 build
-& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" ^
-  -batchMode -quit -nographics ^
-  -projectRoot "unity" ^
+& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" `
+  -batchmode -quit -nographics `
+  -projectPath "unity" `
   -executeMethod "WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindowsFromCommandLine"
 ```
 
-### Web Game Verification
+### Automated Verification
 
 ```bash
-npm run verify-game      # 15-point production verification
-npm run verify-production # Production readiness checks
-npm run verify-assets     # Asset manifest validation
-npm run test:backend      # Backend security tests (31 tests)
+npm run verify-game       # 15-point Unity project & scene verification
+npm run verify-production # Production configuration & security audit
+npm run verify-assets     # Authoritative 3D & audio asset manifest verification
+npm run test:backend      # Backend security & persistence test suite (31 tests)
 ```
 
-### Unity Tests
+### Unity EditMode Tests
 
-EditMode tests in `unity/Assets/_Project/Tests/Editor/` require Unity Editor Test Runner. Batch mode test discovery is limited by licensing validation in headless mode.
+```powershell
+# Run EditMode unit tests
+& "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" `
+```
 
-## 6. Data Flow
+## 5. Data Flow
 
 ```
 Player → Unity Game → SaveSystem (local JSON)
