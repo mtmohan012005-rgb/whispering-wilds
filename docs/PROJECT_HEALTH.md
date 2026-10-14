@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** 70494fd (main on GitHub)
+**Commit:** 2b15804 (main on GitHub)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/70494fd
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/2b15804
 
 ## Architecture
 
@@ -19,7 +19,9 @@
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
 | Unity EditMode tests | **BLOCKED** | Tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 192 MB, 95.3s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Windows x64 build | **PASS** | 192 MB, 71.7s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Standalone runtime (first launch) | **PASS** | 0 errors in Player.log, reaches MainMenu, 60 FPS |
+| Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
@@ -29,6 +31,7 @@
 
 ## Recent Changes (2026-10-14)
 
+- **Step 58 — Input System runtime crash fix**: CinematicIntroController.Update() threw `InvalidOperationException` every frame because it used legacy `UnityEngine.Input.anyKeyDown` while the project uses the Input System package. Fix: Added `IsAnyKeyOrButtonPressed()` with `#if ENABLE_INPUT_SYSTEM` guards using `Keyboard.current`, `Mouse.current`, and `Gamepad.current`. Verified: standalone build launches with 0 errors, reaches MainMenu, and repeat-launch works correctly.
 - **Step 57 — Repeat-launch blank screen fix**: CinematicIntroController no longer shows a blank screen on second and subsequent launches. Root cause: `SkipIntro()` returned immediately when `_isPlaying` was false, leaving `menuRoot` hidden. Fix: call `CompleteIntro()` directly when intro was already played. Also moved `WW_IntroPlayed` flag from `StartIntro()` to `CompleteIntro()` so a crash during the intro does not permanently skip it. Made `CompleteIntro()` idempotent. `ReplayIntro()` now clears the flag. Added 4 regression tests.
 - **Tamil translations**: Fixed mixed-script Tamil in ThanjavurDeltaContent.cs (items, clues, quests, dialogue)
 - **Vendor UI wiring**: NPCCharacter.Interact now opens VendorUI when interacting with vendor NPCs
