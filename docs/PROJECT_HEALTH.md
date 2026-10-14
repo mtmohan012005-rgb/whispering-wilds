@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** f33738a (main on GitHub, Step 62 changes pending push)
+**Commit:** f7ab3dc (main on GitHub, Step 63 in progress)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/f33738a
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/f7ab3dc
 
 ## Architecture
 
@@ -25,6 +25,8 @@
 | Cinematic intro (Step 61) | **PASS** | Plays by default on every launch, gradient background, animated fog |
 | Campaign managers in boot scene | **PASS** | RegionUnlockManager, EndingController, QuestEndingBridge added |
 | Campaign progression tests (Step 62) | **PASS** | 22 new EditMode tests for campaign, save/load, ending |
+| PlayMode test suite (Step 63) | **PASS** | 22 PlayMode tests: region unlocks, investigation, save/load, campaign flow, ending, content registry, intro preferences |
+| Standalone smoke test (Step 63) | **PASS** | Process launched, ran 15s without crash (headless, no Player.log) |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
@@ -33,6 +35,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
+
+- **Step 63 — PlayMode test suite and runtime verification**: Created dedicated PlayMode test assembly (`WhisperingWilds.Tests.PlayMode.asmdef`) with 22 PlayMode tests covering: region unlock progression (6 tests), investigation manager clue discovery and deduplication (3 tests), save/load with data preservation and corrupt save handling (5 tests), campaign flow reset chain (1 test), ending controller evaluation/save/load/reset (3 tests), content registry initialization for all 6 regions (2 tests), and intro preference system (2 tests). Fixed PlayMode asmdef platform conflict (includePlatforms + excludePlatforms). Standalone smoke test: process launched and ran 15s without crash. All tests compile with 0 errors. Unity build 192 MB in 35.6s.
 
 - **Step 62 — End-to-end reliability audit and campaign tests**: Fixed indentation defects and null-reference pattern in CampaignFlow.cs (HUDManager.Instance cached before switch block). Added 22 comprehensive EditMode tests covering: RegionUnlocks progression order, EndingController evaluation/save/load/reset, SaveSystem methods and GameSaveData fields, InvestigationManager/QuestManager reset methods, CampaignFlow reset chain verification, all 6 regions in GameplayContentRegistry, clue definitions for Pichavaram/Thanjavur/Nilgiris, boot scene manager inclusion (RegionUnlockManager, EndingController, QuestEndingBridge), all 6 regional scenes and NavMesh existence, Tamil font in Resources, and LocalizationManager Tamil support. All tests compile with 0 errors.
 
