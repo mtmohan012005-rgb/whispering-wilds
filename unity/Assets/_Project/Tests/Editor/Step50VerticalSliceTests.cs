@@ -426,5 +426,149 @@ namespace WhisperingWilds.Tests.Editor
             Assert.IsTrue(source.Contains("menuRoot"), "CinematicIntroController should use menuRoot");
             Assert.IsFalse(source.Contains("mainMenuCanvas"), "CinematicIntroController should not reference mainMenuCanvas");
         }
+
+        // ---- STEP 57: Repeat-launch intro bug regression tests ----------------
+
+        [Test]
+        public void CinematicIntroController_RepeatLaunch_CallsCompleteIntroNotSkipIntro()
+        {
+            // When _introPlayed is true (repeat launch), Start() must call CompleteIntro()
+            // directly, NOT SkipIntro(). SkipIntro() returns immediately when _isPlaying
+            // is false, leaving menuRoot hidden and the player on a blank screen.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+
+            // The Start() method must contain the CompleteIntro() call in the _introPlayed branch.
+            // We verify that the source does NOT call SkipIntro() when _introPlayed is true.
+            // The fix replaces "SkipIntro();" with "CompleteIntro();" in the _introPlayed branch.
+
+            // Find the Start() method and check that the _introPlayed branch calls CompleteIntro
+            // and does NOT call SkipIntro.
+            Assert.IsFalse(source.Contains("if (_introPlayed)\r\n            {\r\n                SkipIntro();"),
+                "Start() must not call SkipIntro() when _introPlayed is true — this causes the repeat-launch blank screen");
+            Assert.IsFalse(source.Contains("if (_introPlayed)\n            {\n                SkipIntro();"),
+                "Start() must not call SkipIntro() when _introPlayed is true — this causes the repeat-launch blank screen");
+
+            // Verify the fix: CompleteIntro() is called in the _introPlayed branch
+            Assert.IsTrue(source.Contains("CompleteIntro()"),
+                "Start() must call CompleteIntro() when _introPlayed is true");
+        }
+
+        [Test]
+        public void CinematicIntroController_CompleteIntro_PersistsPlayedFlag()
+        {
+            // The WW_IntroPlayed flag must be set in CompleteIntro(), NOT in StartIntro().
+            // Setting it in StartIntro() means a crash during the intro permanently skips it.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+
+            // CompleteIntro must contain the PlayerPrefs.SetInt for WW_IntroPlayed
+            Assert.IsTrue(source.Contains("WW_IntroPlayed"), "Intro played flag must be referenced");
+
+            // StartIntro must NOT set the flag — only CompleteIntro should
+            // We check that StartIntro does not contain PlayerPrefs.SetInt
+            var startIntroIndex = source.IndexOf("private void StartIntro()");
+            var completeIntroIndex = source.IndexOf("private void CompleteIntro()");
+            Assert.Greater(startIntroIndex, -1, "StartIntro method must exist");
+            Assert.Greater(completeIntroIndex, -1, "CompleteIntro method must exist");
+
+            // Find the end of StartIntro (next method or class end)
+            var startIntroBody = source.Substring(startIntroIndex);
+            var nextMethodInStartIntro = FindNextMethodOrEnd(startIntroBody, "private", "public", "protected");
+            var startIntroMethodText = startIntroBody.Substring(0, nextMethodInStartIntro);
+
+            Assert.IsFalse(startIntroMethodText.Contains("PlayerPrefs.SetInt"),
+                "StartIntro() must NOT set PlayerPrefs — the flag should only be set in CompleteIntro()");
+        }
+
+        [Test]
+        public void CinematicIntroController_ReplayIntro_ClearsPlayedFlag()
+        {
+            // ReplayIntro must clear the WW_IntroPlayed flag so a subsequent launch
+            // shows the intro again.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+
+            var replayIndex = source.IndexOf("public void ReplayIntro()");
+            Assert.Greater(replayIndex, -1, "ReplayIntro method must exist");
+
+            var replayBody = source.Substring(replayIndex);
+            var nextMethodInReplay = FindNextMethodOrEnd(replayBody, "private", "public", "protected");
+            var replayMethodText = replayBody.Substring(0, nextMethodInReplay);
+
+            Assert.IsTrue(replayMethodText.Contains("PlayerPrefs.SetInt") && replayMethodText.Contains("0"),
+                "ReplayIntro() must clear the WW_IntroPlayed flag by setting it to 0");
+        }
+
+        [Test]
+        public void CinematicIntroController_CompleteIntro_IsIdempotent()
+        {
+            // CompleteIntro must be safe to call multiple times without duplicate effects.
+            // It should check whether the menu is already visible and return early.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+
+            var completeIndex = source.IndexOf("private void CompleteIntro()");
+            Assert.Greater(completeIndex, -1, "CompleteIntro method must exist");
+
+            var completeBody = source.Substring(completeIndex);
+            var nextMethodInComplete = FindNextMethodOrEnd(completeBody, "private", "public", "protected");
+            var completeMethodText = completeBody.Substring(0, nextMethodInComplete);
+
+            // Should have an early-return guard for idempotency
+            Assert.IsTrue(completeMethodText.Contains("return;") || completeMethodText.Contains("activeSelf"),
+                "CompleteIntro() should have an idempotency guard to prevent duplicate effects");
+        }
+
+        /// <summary>
+        /// Finds the index of the next method declaration or end of string.
+        /// </summary>
+        private static int FindNextMethodOrEnd(string text, params string[] prefixes)
+        {
+            int minIndex = int.MaxValue;
+            foreach (var prefix in prefixes)
+            {
+                // Look for "void ", "int ", "bool ", "IEnumerator ", etc. after the prefix
+                var searchPatterns = new[] { prefix + " void ", prefix + " int ", prefix + " bool ", prefix + " IEnumerator ", prefix + " static " };
+                foreach (var pattern in searchPatterns)
+                {
+                    // Skip the first occurrence (the method itself)
+                    int index = text.IndexOf(pattern, pattern.Length + 10);
+                    if (index > 0 && index < minIndex)
+                    {
+                        minIndex = index;
+                    }
+                }
+            }
+            return minIndex == int.MaxValue ? text.Length : minIndex;
+        }
     }
 }

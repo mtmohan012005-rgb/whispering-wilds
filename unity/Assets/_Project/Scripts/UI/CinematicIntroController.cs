@@ -94,7 +94,12 @@ namespace WhisperingWilds.UI
             // Start or skip intro
             if (_introPlayed)
             {
-                SkipIntro();
+                // Intro was already played in a previous session.
+                // Do NOT call SkipIntro() here: SkipIntro() returns immediately when
+                // _isPlaying is false, which would leave menuRoot hidden and the
+                // player stuck on a blank screen. Instead, complete the intro state
+                // directly so the menu becomes visible.
+                CompleteIntro();
             }
             else
             {
@@ -190,10 +195,9 @@ namespace WhisperingWilds.UI
             if (introTitleGroup != null) introTitleGroup.SetActive(true);
             if (introSkipText != null) introSkipText.gameObject.SetActive(true);
 
-            // Mark intro as played for this session
-            PlayerPrefs.SetInt("WW_IntroPlayed", 1);
-            PlayerPrefs.Save();
-            _introPlayed = true;
+            // Do NOT mark the intro as played yet — it hasn't finished.
+            // The flag is set in CompleteIntro() so a crash during the intro
+            // does not permanently skip it on the next launch.
 
             // Start the intro coroutine
             if (_introCoroutine != null) StopCoroutine(_introCoroutine);
@@ -329,7 +333,19 @@ namespace WhisperingWilds.UI
 
         private void CompleteIntro()
         {
+            // Idempotent: safe to call multiple times.
+            if (!_isPlaying && menuRoot != null && menuRoot.activeSelf)
+            {
+                // Already completed and menu is visible — nothing to do.
+                return;
+            }
+
             _isPlaying = false;
+
+            // Persist the intro-played flag now that the intro has actually finished.
+            PlayerPrefs.SetInt("WW_IntroPlayed", 1);
+            PlayerPrefs.Save();
+            _introPlayed = true;
 
             // Hide intro elements
             if (introBackground != null) introBackground.SetActive(false);
@@ -367,6 +383,10 @@ namespace WhisperingWilds.UI
         public void ReplayIntro()
         {
             if (_isPlaying) return;
+
+            // Clear the played flag so a subsequent launch will show the intro again.
+            PlayerPrefs.SetInt("WW_IntroPlayed", 0);
+            PlayerPrefs.Save();
 
             // Reset state
             _introPlayed = false;
