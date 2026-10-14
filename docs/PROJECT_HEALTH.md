@@ -1,8 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Branch:** cleanup/unity-only-and-repository-cleanup
+**Commit:** d4cbc5f (main)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/d4cbc5f
 
 ## Architecture
 
@@ -23,8 +24,8 @@
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
 | Asset integrity & GLB checks | **PASS** | Verified (`scripts/verify-assets.js`) |
-| GitHub Actions workflows | **READY** | 3 workflows created, pending push to GitHub |
-| GitHub Pages deployment | **READY** | Static landing page ready, pending workflow push |
+| GitHub Actions workflows | **PARTIAL** | 3 workflow files created locally; push blocked — PAT lacks `workflow` scope |
+| GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; see action items below |
 
 ## Key Changes & Resolutions
 
@@ -72,3 +73,42 @@
 - **Production Deployment:** `docs/PRODUCTION_DEPLOYMENT.md`
 - **Backend Architecture:** `docs/BACKEND_CLASSIFICATION.md`
 - **Authoritative Status:** `docs/PROJECT_HEALTH.md`
+
+## Action Items (Require Your Attention)
+
+### 1. Push GitHub Actions workflow files (Blocked — PAT scope)
+
+Your Personal Access Token does not have the `workflow` scope, so GitHub rejects pushing files under `.github/workflows/`. The 3 workflow files exist locally and are ready:
+
+- `.github/workflows/backend-ci.yml`
+- `.github/workflows/unity-validation.yml`
+- `.github/workflows/pages.yml`
+
+**To fix:**
+
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Edit your token
+2. Add the **workflow** scope
+3. Then run:
+
+```bash
+git add .github/workflows/backend-ci.yml .github/workflows/pages.yml .github/workflows/unity-validation.yml
+git commit -m "ci: add GitHub Actions workflows"
+git push origin main
+```
+
+Alternatively, create the files manually via GitHub's web interface (repository → Files → `.github/workflows/` → Add file).
+
+### 2. Enable GitHub Pages deployment
+
+After the workflow files are pushed, go to your repository → Settings → Pages → Build and deployment → Source → Select **GitHub Actions**. The `pages.yml` workflow will then deploy the landing page from `docs/landing/` automatically.
+
+### 3. Clean up stale branches (Optional)
+
+The following branches are superseded and can be deleted:
+
+- `fix/github-branches-ci-pages-release` (superseded by direct main push)
+- `fix/missing-workflows-and-production-readiness` (superseded)
+- `fix/release-readiness-and-deployment` (already merged)
+- `cleanup/unity-only-and-repository-cleanup` (already merged)
+- `ai/unity-graphics-world-upgrade` (already merged)
+- `cleanup/gh-pages-landing-page` (**DO NOT MERGE** — deletes unity/, server/, assets/)
