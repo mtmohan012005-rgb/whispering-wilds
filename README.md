@@ -24,8 +24,10 @@ The game is delivered as a standalone Windows x64 executable:
 ### Running the Standalone PC Game
 
 ```powershell
-# Double-click or launch directly from PowerShell / Command Prompt:
-& ".\Build\Windows\TheWhisperingWilds.exe"
+# Launch using the PowerShell or Batch launcher:
+.\Launch-Game-PC.ps1
+# Or run the built executable directly:
+& ".\unity\Build\Windows\TheWhisperingWilds.exe"
 ```
 
 ### Opening in Unity 6 Editor
