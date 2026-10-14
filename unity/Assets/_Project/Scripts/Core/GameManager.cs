@@ -40,6 +40,7 @@ namespace WhisperingWilds.Core
 
         public event Action<GameState> OnGameStateChanged;
 
+        private bool _isDuplicate;
         private float autosaveTimer;
         private bool autosaveInProgress;
 
@@ -49,6 +50,7 @@ namespace WhisperingWilds.Core
             {
                 // Destroy only the duplicate component. Destroy(gameObject) here would take
                 // every sibling manager on the shared '--- MANAGERS ---' object with it.
+                _isDuplicate = true;
                 Destroy(this);
                 return;
             }
@@ -61,6 +63,11 @@ namespace WhisperingWilds.Core
 
         private void Start()
         {
+            // Prevent duplicate GameManager instances from resetting state.
+            // Destroy(this) in Awake() defers destruction to end of frame, but Start()
+            // still runs in the same frame, so we need this guard.
+            if (_isDuplicate) return;
+
             // The boot scene owns the menu, so start in Boot and let the menu hand over to
             // Gameplay. Previously this forced Gameplay immediately, which meant the main menu
             // was reachable only as an overlay on a running campaign.
