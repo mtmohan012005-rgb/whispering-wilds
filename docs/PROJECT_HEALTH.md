@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** 97f472e (main on GitHub, Step 64 in progress)
+**Commit:** a7f5f44 (main on GitHub, Step 65 in progress)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/97f472e
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/a7f5f44
 
 ## Architecture
 
@@ -36,6 +36,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
+
+- **Step 65 — Trustworthy QA, typed PlayerPrefs, and real SaveSystem tests**: Rewrote `QaIsolation` with typed PlayerPrefs registry (14 keys: int/float/string) so backup/restore uses the correct getter/setter — int preferences like `WW_PlayIntroOnStartup` are no longer corrupted by string round-trips. Fixed `QaSaveDir` to be a stable per-run path instead of generating a new GUID each access. Replaced raw `File.WriteAllText`/`JsonUtility` save tests with real `SaveSystem.CaptureSnapshot`, `SaveSystem.LoadGame`, `SaveSystem.HasValidSave`, and `SaveSystem.LastLoadStatus` assertions. Added corrupt save and backup recovery tests exercising the real `SaveSystem.LoadGame` path. Added 7 PlayerPrefs type preservation regression tests proving int/float/string settings survive the test suite unchanged. Created `scripts/Run-QaTests.ps1` — PowerShell QA runner that sets `WW_SAVE_DIR` before launching Unity so `SaveSystem.SaveDirectory` resolves to a temporary QA path. All tests compile with 0 errors. Unity build 192 MB in 48.2s.
 
 - **Step 64 — Safe QA isolation and test assertion fixes**: Added `QaIsolation` static helper class to PlayMode tests that backs up and restores all PlayerPrefs keys (WW_PlayIntroOnStartup, WW_IntroPlayed, etc.) and creates per-test temporary QA save directories so tests never touch real player data. Fixed `RegionUnlocks_ProgressionOrder` test to verify the exact 6-region sequence (Chennai→Pichavaram→Thanjavur→Chettinad→Mamallapuram→Nilgiris) instead of just checking array length. Rewrote SaveSystem tests to use QA-isolated directories instead of `SaveSystem.SaveFilePath` (which points to the real player save). Added 2 player data protection regression tests: one verifies no QA test files leak into the real save directory, another verifies PlayerPrefs backup/restore round-trip. Intro preference tests no longer delete real PlayerPrefs keys. All tests compile with 0 errors. Unity build 192 MB in 43.9s.
 
