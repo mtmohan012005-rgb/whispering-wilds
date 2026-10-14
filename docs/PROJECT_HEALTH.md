@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** b659c41 (main on GitHub, Step 65 — startup fix complete)
+**Commit:** 151f02d (main on GitHub, Step 66 — Chennai chapter audit complete)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/b659c41
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/151f02d
 
 ## Architecture
 
@@ -19,9 +19,10 @@
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
 | Unity EditMode tests | **BLOCKED** | 60 tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 169 MB, 188.4s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
-| Standalone runtime (first launch) | **PASS** | 0 errors, reaches MainMenu, FPS recovers to 60 |
+| Windows x64 build | **PASS** | 169 MB, 46.5s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Standalone runtime (first launch) | **PASS** | 0 errors, reaches MainMenu, FPS recovers to 58.5 |
 | Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
+| Chennai chapter code audit (Step 66) | **PASS** | All systems wired: NPCs, dialogue, clues, quests, region unlocks, save/load |
 | D3D11 graphics API | **FIXED** | Changed from D3D12+fallback to D3D11 only — eliminates 0.3 FPS freeze on Intel GPUs |
 | Duplicate GameManager | **FIXED** | Added `_isDuplicate` guard to prevent state reset to Boot |
 | Diagnostic launcher | **ADDED** | `Launch-Game-Unity.ps1 -Diagnostic` captures logs, exit codes, and process lifetime |
@@ -39,6 +40,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
+
+- **Step 66 — Chennai chapter code audit and verification**: Comprehensive inspection of all Chennai opening systems confirmed the code architecture is complete and correctly wired. Verified: (1) ChennaiOpeningContent.cs defines 2 NPCs (Murugan, Velu), 3 clues, 2 quests, items, recipes, and full bilingual dialogue trees, (2) AssembleWhisperingWilds.cs places NPCs, clue interactables (notice board, tea ledger), ingredient pickups, photo targets, and the region bootstrap in the Chennai scene, (3) BuildChennaiPopulation.cs adds 14 scheduled NPCs with 10 activity anchors, (4) GameplayRegionBootstrap connects content data to scene — initializes registry, sets region, accepts quests, applies dialogue to NPCs, (5) NPCCharacter.Interact() registers conversation, reports TalkToNPC event, opens dialogue or vendor UI, (6) DialogueUI.ProcessChoice() reveals clues via InvestigationManager, (7) GameplayEventInteractable reports events, grants items, reveals clues, (8) QuestManager subscribes to GameplayEventBus for event-driven objective advancement, (9) RegionUnlockManager subscribes to InvestigationManager.OnClueDiscovered for clue-gated region unlocks, (10) RegionUnlocks progression chain: Chennai→Pichavaram→Thanjavur (starting unlocked), Chettinad (Thanjavur clue), Mamallapuram (Chettinad clue), Nilgiris (Mamallapuram clue). All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks. Build: 169 MB in 46.5s. Interactive gameplay testing (NPC dialogue, clue discovery, save/load, region transition) requires human operator.
 
 - **Step 65 — Startup fix: game opens and immediately closes**: Root cause: D3D12 device filter blocked Intel integrated GPUs, forcing fallback to D3D11 with 0.3 FPS freeze. Game appeared to "close" because it was essentially frozen on the first frame. Fix: (1) Changed Windows graphics API from D3D12+D3D11 fallback to D3D11 only in `ProjectSettings.asset`, (2) Added `_isDuplicate` guard to `GameManager.Start()` to prevent duplicate GameManager instances from resetting game state to Boot after MainMenu, (3) Added diagnostic mode to `Launch-Game-Unity.ps1` (`-Diagnostic` flag) that captures Player logs, exit codes, and process lifetime. Verification: game stays alive for 20+ seconds with no errors, FPS recovers from initial HDRP compilation spike to 60 FPS. Build: 169 MB in 188.4s.
 
