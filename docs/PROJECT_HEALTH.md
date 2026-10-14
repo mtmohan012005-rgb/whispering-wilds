@@ -1,8 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** TBD (main on GitHub, Step 61 changes pending push)
+**Commit:** 5a22b37 (main on GitHub)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/5a22b37
 
 ## Architecture
 
