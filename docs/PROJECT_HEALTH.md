@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** d4cbc5f (main)
+**Commit:** b383305 (main on GitHub), bc053b5 (local, unpushed workflow files)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/d4cbc5f
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/b383305
 
 ## Architecture
 
@@ -24,8 +24,8 @@
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
 | Asset integrity & GLB checks | **PASS** | Verified (`scripts/verify-assets.js`) |
-| GitHub Actions workflows | **PARTIAL** | 3 workflow files created locally; push blocked — PAT lacks `workflow` scope |
-| GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; see action items below |
+| GitHub Actions workflows | **BLOCKED** | 3 workflow files committed locally (bc053b5); push rejected — PAT lacks `workflow` scope |
+| GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Key Changes & Resolutions
 
@@ -58,11 +58,12 @@
 - Restored and verified production `firestore.rules`.
 
 ### 6. GitHub Actions Workflows & GitHub Pages
-- Migrated CI workflows to tracked `.github/workflows/`:
-  - `backend-ci.yml`: Automated backend security and project validation.
-  - `unity-validation.yml`: Unity project structure and asset integrity checks.
-  - `pages.yml`: Automated GitHub Pages deployment from `docs/landing/`.
+- Created 3 CI workflows in `.github/workflows/` (committed locally, not yet on GitHub):
+  - `backend-ci.yml`: Automated backend security and project validation (Node 20, npm ci, test:backend, verify-game, verify-production, verify-assets).
+  - `unity-validation.yml`: Unity project structure, scenes, scripts, and asset integrity checks.
+  - `pages.yml`: Automated GitHub Pages deployment from `docs/landing/` via official actions.
 - Created lightweight, modern landing page (`docs/landing/index.html`) linking to repository, releases, and setup guides.
+- **Status:** Push blocked — Personal Access Token requires `workflow` scope. Files are committed locally at bc053b5 and ready to push once the token is updated.
 
 ## Canonical Paths
 
@@ -78,25 +79,21 @@
 
 ### 1. Push GitHub Actions workflow files (Blocked — PAT scope)
 
-Your Personal Access Token does not have the `workflow` scope, so GitHub rejects pushing files under `.github/workflows/`. The 3 workflow files exist locally and are ready:
+Your Personal Access Token does not have the `workflow` scope, so GitHub rejects pushing files under `.github/workflows/`. The 3 workflow files are **already committed locally** (commit bc053b5) and ready to push:
 
 - `.github/workflows/backend-ci.yml`
 - `.github/workflows/unity-validation.yml`
 - `.github/workflows/pages.yml`
 
-**To fix:**
+**To fix (one-time, ~30 seconds):**
 
 1. Go to GitHub → Settings → Developer settings → Personal access tokens → Edit your token
-2. Add the **workflow** scope
-3. Then run:
+2. Check the **workflow** scope box
+3. Save and generate the new token
+4. Update your git credentials with the new token
+5. Then run: `git push origin main`
 
-```bash
-git add .github/workflows/backend-ci.yml .github/workflows/pages.yml .github/workflows/unity-validation.yml
-git commit -m "ci: add GitHub Actions workflows"
-git push origin main
-```
-
-Alternatively, create the files manually via GitHub's web interface (repository → Files → `.github/workflows/` → Add file).
+Alternatively, create the files manually via GitHub's web interface (repository → Files → `.github/workflows/` → Add file → paste content from the local files).
 
 ### 2. Enable GitHub Pages deployment
 
