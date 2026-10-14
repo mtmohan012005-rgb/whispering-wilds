@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** b383305 (main on GitHub), bc053b5 (local, unpushed workflow files)
+**Commit:** a277c7d (main on GitHub)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/b383305
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/a277c7d
 
 ## Architecture
 
@@ -26,6 +26,15 @@
 | Asset integrity & GLB checks | **PASS** | Verified (`scripts/verify-assets.js`) |
 | GitHub Actions workflows | **BLOCKED** | 3 workflow files committed locally (bc053b5); push rejected — PAT lacks `workflow` scope |
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
+
+## Recent Changes (2026-10-14)
+
+- **Tamil translations**: Fixed mixed-script Tamil in ThanjavurDeltaContent.cs (items, clues, quests, dialogue)
+- **Vendor UI wiring**: NPCCharacter.Interact now opens VendorUI when interacting with vendor NPCs
+- **Vendor trade system**: VendorUI.cs (400 lines) with buy/sell interface, localization, and atomic transactions
+- **Backend hardening**: Production PostgreSQL enforcement, DB readiness check, JSON→PostgreSQL migration
+- **Firestore security**: Restrictive rules with owner validation and server-owned field protection
+- **Documentation**: Updated ARCHITECTURE.md, LOCAL_SETUP.md, PRODUCTION_DEPLOYMENT.md, BACKEND_CLASSIFICATION.md
 
 ## Key Changes & Resolutions
 
