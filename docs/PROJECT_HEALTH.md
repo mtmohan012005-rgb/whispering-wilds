@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** f7ab3dc (main on GitHub, Step 63 in progress)
+**Commit:** 97f472e (main on GitHub, Step 64 in progress)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/f7ab3dc
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/97f472e
 
 ## Architecture
 
@@ -26,6 +26,7 @@
 | Campaign managers in boot scene | **PASS** | RegionUnlockManager, EndingController, QuestEndingBridge added |
 | Campaign progression tests (Step 62) | **PASS** | 22 new EditMode tests for campaign, save/load, ending |
 | PlayMode test suite (Step 63) | **PASS** | 22 PlayMode tests: region unlocks, investigation, save/load, campaign flow, ending, content registry, intro preferences |
+| PlayMode test isolation (Step 64) | **PASS** | QaIsolation helper: PlayerPrefs backup/restore, QA save directories, player data protection tests |
 | Standalone smoke test (Step 63) | **PASS** | Process launched, ran 15s without crash (headless, no Player.log) |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
@@ -35,6 +36,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
+
+- **Step 64 — Safe QA isolation and test assertion fixes**: Added `QaIsolation` static helper class to PlayMode tests that backs up and restores all PlayerPrefs keys (WW_PlayIntroOnStartup, WW_IntroPlayed, etc.) and creates per-test temporary QA save directories so tests never touch real player data. Fixed `RegionUnlocks_ProgressionOrder` test to verify the exact 6-region sequence (Chennai→Pichavaram→Thanjavur→Chettinad→Mamallapuram→Nilgiris) instead of just checking array length. Rewrote SaveSystem tests to use QA-isolated directories instead of `SaveSystem.SaveFilePath` (which points to the real player save). Added 2 player data protection regression tests: one verifies no QA test files leak into the real save directory, another verifies PlayerPrefs backup/restore round-trip. Intro preference tests no longer delete real PlayerPrefs keys. All tests compile with 0 errors. Unity build 192 MB in 43.9s.
 
 - **Step 63 — PlayMode test suite and runtime verification**: Created dedicated PlayMode test assembly (`WhisperingWilds.Tests.PlayMode.asmdef`) with 22 PlayMode tests covering: region unlock progression (6 tests), investigation manager clue discovery and deduplication (3 tests), save/load with data preservation and corrupt save handling (5 tests), campaign flow reset chain (1 test), ending controller evaluation/save/load/reset (3 tests), content registry initialization for all 6 regions (2 tests), and intro preference system (2 tests). Fixed PlayMode asmdef platform conflict (includePlatforms + excludePlatforms). Standalone smoke test: process launched and ran 15s without crash. All tests compile with 0 errors. Unity build 192 MB in 35.6s.
 
