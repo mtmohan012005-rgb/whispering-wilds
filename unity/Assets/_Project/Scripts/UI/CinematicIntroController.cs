@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.UI
@@ -110,10 +113,33 @@ namespace WhisperingWilds.UI
         private void Update()
         {
             // Skip on any input
-            if (_isPlaying && !_skipped && Input.anyKeyDown)
+            if (_isPlaying && !_skipped && IsAnyKeyOrButtonPressed())
             {
                 SkipIntro();
             }
+        }
+
+        /// <summary>
+        /// Detects any key or button press, compatible with both the legacy Input Manager
+        /// and the new Input System. The project uses the Input System package, so the
+        /// legacy UnityEngine.Input API throws InvalidOperationException at runtime.
+        /// </summary>
+        private static bool IsAnyKeyOrButtonPressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            var keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.anyKey.wasPressedThisFrame)
+                return true;
+            var mouse = Mouse.current;
+            if (mouse != null && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame || mouse.middleButton.wasPressedThisFrame))
+                return true;
+            var gamepad = Gamepad.current;
+            if (gamepad != null && (gamepad.buttonSouth.wasPressedThisFrame || gamepad.buttonNorth.wasPressedThisFrame || gamepad.buttonEast.wasPressedThisFrame || gamepad.buttonWest.wasPressedThisFrame || gamepad.startButton.wasPressedThisFrame || gamepad.selectButton.wasPressedThisFrame))
+                return true;
+            return false;
+#else
+            return Input.anyKeyDown;
+#endif
         }
 
         private void SetupIntroVisuals()
