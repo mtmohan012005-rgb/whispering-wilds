@@ -620,6 +620,326 @@ namespace WhisperingWilds.Tests.Editor
                 "PlayIntro must animate fog density during the intro sequence");
         }
 
+        // ---- STEP 62: Campaign progression, save/load, and ending tests --------
+
+        [Test]
+        public void RegionUnlocks_HasProgressionOrder()
+        {
+            // The campaign must define a clear progression order through all 6 regions.
+            var type = typeof(WhisperingWilds.World.RegionUnlocks);
+            var field = type.GetField("ProgressionOrder", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            Assert.IsNotNull(field, "RegionUnlocks should define ProgressionOrder");
+            
+            var order = field.GetValue(null) as string[];
+            Assert.IsNotNull(order, "ProgressionOrder should be a string array");
+            Assert.GreaterOrEqual(order.Length, 6, "ProgressionOrder should include at least 6 regions");
+        }
+
+        [Test]
+        public void RegionUnlocks_HasResetForNewGame_Method()
+        {
+            // New game must be able to reset all region unlocks.
+            var type = typeof(WhisperingWilds.World.RegionUnlocks);
+            var method = type.GetMethod("ResetForNewGame", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            Assert.IsNotNull(method, "RegionUnlocks should have ResetForNewGame static method");
+        }
+
+        [Test]
+        public void EndingController_HasEvaluateEnding_Method()
+        {
+            // The ending system must have an evaluation method.
+            var type = typeof(WhisperingWilds.Campaign.EndingController);
+            var method = type.GetMethod("EvaluateEnding", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(method, "EndingController should have EvaluateEnding method");
+        }
+
+        [Test]
+        public void EndingController_HasResetForNewGame_Method()
+        {
+            // New game must reset ending state.
+            var type = typeof(WhisperingWilds.Campaign.EndingController);
+            var method = type.GetMethod("ResetForNewGame", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(method, "EndingController should have ResetForNewGame method");
+        }
+
+        [Test]
+        public void EndingController_HasFourEndings()
+        {
+            // The ending enum must define all 4 endings.
+            var enumType = typeof(WhisperingWilds.Campaign.EndingController.EndingType);
+            var values = System.Enum.GetNames(enumType);
+            
+            Assert.IsTrue(values.Contains("EndingA_LivingHeritage"), "Should have Ending A");
+            Assert.IsTrue(values.Contains("EndingB_RecordedChronicle"), "Should have Ending B");
+            Assert.IsTrue(values.Contains("EndingC_ShadowedSanctuary"), "Should have Ending C");
+            Assert.IsTrue(values.Contains("EndingD_SongOfAncestralSoil"), "Should have Ending D (secret)");
+        }
+
+        [Test]
+        public void EndingController_HasSnapshotAndRestore()
+        {
+            // Ending state must be serializable for save/load.
+            var type = typeof(WhisperingWilds.Campaign.EndingController);
+            var snapshotMethod = type.GetMethod("Snapshot", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            var restoreMethod = type.GetMethod("Restore", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            
+            Assert.IsNotNull(snapshotMethod, "EndingController should have Snapshot method for save");
+            Assert.IsNotNull(restoreMethod, "EndingController should have Restore method for load");
+        }
+
+        [Test]
+        public void SaveSystem_HasSaveAndLoad_Methods()
+        {
+            // SaveSystem must have the core save/load methods.
+            var type = typeof(WhisperingWilds.Core.SaveSystem);
+            
+            var saveMethod = type.GetMethod("SaveGame", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var loadMethod = type.GetMethod("LoadGame", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var hasValidMethod = type.GetMethod("HasValidSave", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            var deleteMethod = type.GetMethod("DeleteSave", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            
+            Assert.IsNotNull(saveMethod, "SaveSystem should have SaveGame method");
+            Assert.IsNotNull(loadMethod, "SaveSystem should have LoadGame method");
+            Assert.IsNotNull(hasValidMethod, "SaveSystem should have HasValidSave method");
+            Assert.IsNotNull(deleteMethod, "SaveSystem should have DeleteSave method");
+        }
+
+        [Test]
+        public void SaveSystem_SaveData_HasRequiredFields()
+        {
+            // Save data must contain all required campaign fields.
+            var type = typeof(WhisperingWilds.Core.GameSaveData);
+            
+            var regionField = type.GetField("currentRegionId", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            var cluesField = type.GetField("discoveredClueIds", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            var questField = type.GetField("questProgress", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            
+            Assert.IsNotNull(regionField, "SaveData should have currentRegionId field");
+            Assert.IsNotNull(cluesField, "SaveData should have discoveredClueIds field");
+            Assert.IsNotNull(questField, "SaveData should have questProgress field");
+        }
+
+        [Test]
+        public void InvestigationManager_HasResetState_Method()
+        {
+            // Investigation state must be resettable for new game.
+            var type = typeof(WhisperingWilds.Investigation.InvestigationManager);
+            var method = type.GetMethod("ResetState", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(method, "InvestigationManager should have ResetState method");
+        }
+
+        [Test]
+        public void QuestManager_HasResetAllProgress_Method()
+        {
+            // Quest progress must be resettable for new game.
+            var type = typeof(WhisperingWilds.Quests.QuestManager);
+            var method = type.GetMethod("ResetAllProgress", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(method, "QuestManager should have ResetAllProgress method");
+        }
+
+        [Test]
+        public void CampaignFlow_ResetCampaign_CallsAllResets()
+        {
+            // ResetCampaignForNewGame must call resets on all major subsystems.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/Core/CampaignFlow.cs");
+            
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CampaignFlow.cs not found at expected path");
+            }
+            
+            var source = File.ReadAllText(sourcePath);
+            
+            // Must reset region unlocks
+            Assert.IsTrue(source.Contains("RegionUnlocks.ResetForNewGame"),
+                "ResetCampaignForNewGame must reset region unlocks");
+            
+            // Must reset ending controller
+            Assert.IsTrue(source.Contains("EndingController.Instance") && source.Contains("ResetForNewGame"),
+                "ResetCampaignForNewGame must reset ending controller");
+            
+            // Must reset investigation
+            Assert.IsTrue(source.Contains("InvestigationManager") && source.Contains("ResetState"),
+                "ResetCampaignForNewGame must reset investigation state");
+            
+            // Must reset quests
+            Assert.IsTrue(source.Contains("QuestManager") && source.Contains("ResetAllProgress"),
+                "ResetCampaignForNewGame must reset quest progress");
+            
+            // Must reset inventory
+            Assert.IsTrue(source.Contains("InventoryManager") && source.Contains("ResetToNewGameDefaults"),
+                "ResetCampaignForNewGame must reset inventory");
+        }
+
+        [Test]
+        public void GameplayContentRegistry_HasAllRegions()
+        {
+            // All 6 regions must be registered in the content registry.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/Gameplay/GameplayContentRegistry.cs");
+            
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("GameplayContentRegistry.cs not found at expected path");
+            }
+            
+            var source = File.ReadAllText(sourcePath);
+            
+            Assert.IsTrue(source.Contains("ChennaiOpeningContent"), "Registry must include Chennai");
+            Assert.IsTrue(source.Contains("PichavaramContent"), "Registry must include Pichavaram");
+            Assert.IsTrue(source.Contains("ThanjavurDeltaContent"), "Registry must include Thanjavur");
+            Assert.IsTrue(source.Contains("ChettinadMansionContent"), "Registry must include Chettinad");
+            Assert.IsTrue(source.Contains("MamallapuramShoreContent"), "Registry must include Mamallapuram");
+            Assert.IsTrue(source.Contains("NilgirisSanctuaryContent"), "Registry must include Nilgiris");
+        }
+
+        [Test]
+        public void PichavaramContent_HasClues()
+        {
+            // Pichavaram must have clue definitions for the campaign chain.
+            var content = typeof(WhisperingWilds.Gameplay.PichavaramContent);
+            var fields = content.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            
+            // Should have at least one clue field
+            var clueFields = fields.Where(f => f.Name.StartsWith("Clue")).ToArray();
+            Assert.GreaterOrEqual(clueFields.Length, 1, "PichavaramContent should define at least one clue");
+        }
+
+        [Test]
+        public void ThanjavurContent_HasClues()
+        {
+            // Thanjavur must have clue definitions for the campaign chain.
+            var content = typeof(WhisperingWilds.Gameplay.ThanjavurDeltaContent);
+            var fields = content.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            
+            var clueFields = fields.Where(f => f.Name.StartsWith("Clue")).ToArray();
+            Assert.GreaterOrEqual(clueFields.Length, 1, "ThanjavurDeltaContent should define at least one clue");
+        }
+
+        [Test]
+        public void NilgirisContent_HasClues()
+        {
+            // Nilgiris must have clue definitions for the final campaign chain.
+            var content = typeof(WhisperingWilds.Gameplay.NilgirisSanctuaryContent);
+            var fields = content.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+            
+            var clueFields = fields.Where(f => f.Name.StartsWith("Clue")).ToArray();
+            Assert.GreaterOrEqual(clueFields.Length, 1, "NilgirisSanctuaryContent should define at least one clue");
+        }
+
+        [Test]
+        public void BuildBootScene_IncludesRegionUnlockManager()
+        {
+            // The boot scene must include RegionUnlockManager for region progression.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+            
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+            
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("RegionUnlockManager"),
+                "BuildBootScene must include RegionUnlockManager for region progression");
+        }
+
+        [Test]
+        public void BuildBootScene_IncludesEndingController()
+        {
+            // The boot scene must include EndingController for ending evaluation.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+            
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+            
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("EndingController"),
+                "BuildBootScene must include EndingController for ending evaluation");
+        }
+
+        [Test]
+        public void BuildBootScene_IncludesQuestEndingBridge()
+        {
+            // The boot scene must include QuestEndingBridge for quest-to-ending connection.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+            
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+            
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("QuestEndingBridge"),
+                "BuildBootScene must include QuestEndingBridge for quest-to-ending connection");
+        }
+
+        [Test]
+        public void AllRegionalScenes_Exist()
+        {
+            // All 6 regional gameplay scenes must exist.
+            var scenes = new[]
+            {
+                "Assets/_Project/Scenes/02_Chennai_GeorgeTown.unity",
+                "Assets/_Project/Scenes/03_Pichavaram_Wetlands.unity",
+                "Assets/_Project/Scenes/04_Thanjavur_Delta.unity",
+                "Assets/_Project/Scenes/05_Chettinad_Mansion.unity",
+                "Assets/_Project/Scenes/06_Mamallapuram_Shore.unity",
+                "Assets/_Project/Scenes/07_Nilgiris_Sanctuary.unity"
+            };
+            
+            foreach (var scene in scenes)
+            {
+                Assert.IsTrue(File.Exists(scene), $"Regional scene should exist: {scene}");
+            }
+        }
+
+        [Test]
+        public void AllRegionalNavMeshData_Exist()
+        {
+            // All 6 regional NavMesh data assets must exist.
+            var navMeshes = new[]
+            {
+                "Assets/_Project/NavMeshData/02_Chennai_GeorgeTown/02_Chennai_GeorgeTown.asset",
+                "Assets/_Project/NavMeshData/03_Pichavaram_Wetlands/03_Pichavaram_Wetlands.asset",
+                "Assets/_Project/NavMeshData/04_Thanjavur_Delta/04_Thanjavur_Delta.asset",
+                "Assets/_Project/NavMeshData/05_Chettinad_Mansion/05_Chettinad_Mansion.asset",
+                "Assets/_Project/NavMeshData/06_Mamallapuram_Shore/06_Mamallapuram_Shore.asset",
+                "Assets/_Project/NavMeshData/07_Nilgiris_Sanctuary/07_Nilgiris_Sanctuary.asset"
+            };
+            
+            foreach (var navMesh in navMeshes)
+            {
+                Assert.IsTrue(File.Exists(navMesh), $"NavMesh data should exist: {navMesh}");
+            }
+        }
+
+        [Test]
+        public void TamilFont_ExistsInResources()
+        {
+            // Tamil font must be available in Resources for standalone builds.
+            var fontPath = "Assets/_Project/Resources/Fonts/TamilFont.ttf";
+            Assert.IsTrue(File.Exists(fontPath), "Tamil font should exist in Resources/Fonts/");
+        }
+
+        [Test]
+        public void LocalizationManager_HasTamilFontSupport()
+        {
+            // LocalizationManager must support Tamil font rendering.
+            var type = typeof(WhisperingWilds.Localization.LocalizationManager);
+            var method = type.GetMethod("SetLanguage", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(method, "LocalizationManager should have SetLanguage method");
+            
+            var enumType = typeof(WhisperingWilds.Localization.Language);
+            var values = System.Enum.GetNames(enumType);
+            Assert.IsTrue(values.Contains("Tamil"), "Language enum should include Tamil");
+        }
+
         /// <summary>
         /// Finds the index of the next method declaration or end of string.
         /// </summary>

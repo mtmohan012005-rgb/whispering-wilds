@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** 5a22b37 (main on GitHub)
+**Commit:** f33738a (main on GitHub, Step 62 changes pending push)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/5a22b37
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/f33738a
 
 ## Architecture
 
@@ -18,12 +18,13 @@
 | Component | Status | Details |
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
-| Unity EditMode tests | **BLOCKED** | Tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 192 MB, 71.5s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Unity EditMode tests | **BLOCKED** | 60 tests compile; Unity Test Runner requires interactive Editor |
+| Windows x64 build | **PASS** | 192 MB, 36.7s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
 | Standalone runtime (first launch) | **PASS** | 0 errors in Player.log, reaches MainMenu, 60 FPS |
 | Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
 | Cinematic intro (Step 61) | **PASS** | Plays by default on every launch, gradient background, animated fog |
 | Campaign managers in boot scene | **PASS** | RegionUnlockManager, EndingController, QuestEndingBridge added |
+| Campaign progression tests (Step 62) | **PASS** | 22 new EditMode tests for campaign, save/load, ending |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
@@ -32,6 +33,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
+
+- **Step 62 — End-to-end reliability audit and campaign tests**: Fixed indentation defects and null-reference pattern in CampaignFlow.cs (HUDManager.Instance cached before switch block). Added 22 comprehensive EditMode tests covering: RegionUnlocks progression order, EndingController evaluation/save/load/reset, SaveSystem methods and GameSaveData fields, InvestigationManager/QuestManager reset methods, CampaignFlow reset chain verification, all 6 regions in GameplayContentRegistry, clue definitions for Pichavaram/Thanjavur/Nilgiris, boot scene manager inclusion (RegionUnlockManager, EndingController, QuestEndingBridge), all 6 regional scenes and NavMesh existence, Tamil font in Resources, and LocalizationManager Tamil support. All tests compile with 0 errors.
 
 - **Step 61 — Cinematic intro plays by default on every launch**: Replaced `WW_IntroPlayed` PlayerPrefs with `WW_PlayIntroOnStartup` preference (default=1). The intro now plays on every fresh launch unless the player explicitly disables it. Added `-forceIntro` launch argument for QA/debug testing. Improved atmospheric visuals with gradient background colors (deep night → dawn mist → sunrise), animated fog density, and mist overlay. Added 7 regression tests for the new preference system.
 

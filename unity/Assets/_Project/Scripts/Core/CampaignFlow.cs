@@ -43,7 +43,7 @@ namespace WhisperingWilds.Campaign
         /// </summary>
         public static void ResetCampaignForNewGame()
         {
-ChennaiOpeningContent.EnsureInitialized();
+            ChennaiOpeningContent.EnsureInitialized();
             // Re-registers the save v4 content after the clears below. Without this a new run
             // would hold recorded ids whose definitions no longer exist in the journal.
             GameplayContentRegistry.EnsureAllInitialized();
@@ -94,7 +94,7 @@ ChennaiOpeningContent.EnsureInitialized();
 
             Debug.Log("<color=#00FF88><b>[Campaign]</b></color> New game started. Entering Chennai George Town.");
 
-// The Chennai scene owns QuestManager, so the opening quests are accepted once it
+            // The Chennai scene owns QuestManager, so the opening quests are accepted once it
             // exists. PendingNewGame is the hand-off that tells the scene to seed them.
             PendingNewGame = true;
 
@@ -182,26 +182,27 @@ ChennaiOpeningContent.EnsureInitialized();
                 targetScene = geo.sceneName;
             }
 
-Debug.Log($"<color=#00D2FF><b>[Campaign]</b></color> Continuing in region '{save.currentRegionId}' via scene '{targetScene}'. Status: {SaveSystem.LastLoadStatus}");
+            Debug.Log($"<color=#00D2FF><b>[Campaign]</b></color> Continuing in region '{save.currentRegionId}' via scene '{targetScene}'. Status: {SaveSystem.LastLoadStatus}");
             RequestCampaignEntry(save.currentRegionId);
             return true;
         }
 
         private static void ShowContinueFailure()
         {
-            if (HUDManager.Instance == null) return;
+            var hud = HUDManager.Instance;
+            if (hud == null) return;
 
-switch (SaveSystem.LastLoadStatus)
+            switch (SaveSystem.LastLoadStatus)
             {
                 case SaveOperationStatus.CorruptPrimaryRecoveredFromBackup:
-                    HUDManager.Instance.ShowNotificationKey("notify.save_recovered_backup");
+                    hud.ShowNotificationKey("notify.save_recovered_backup");
                     break;
                 case SaveOperationStatus.CorruptSave:
-                    HUDManager.Instance.ShowNotificationKey("notify.save_corrupt");
+                    hud.ShowNotificationKey("notify.save_corrupt");
                     break;
                 case SaveOperationStatus.NoSaveFound:
                 default:
-                    HUDManager.Instance.ShowNotificationKey("notify.save_none_continue");
+                    hud.ShowNotificationKey("notify.save_none_continue");
                     break;
             }
         }
