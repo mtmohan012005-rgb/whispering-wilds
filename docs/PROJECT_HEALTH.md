@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** a277c7d (main on GitHub)
+**Commit:** 70494fd (main on GitHub)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/a277c7d
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/70494fd
 
 ## Architecture
 
@@ -17,18 +17,19 @@
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| Unity C# compilation | **BLOCKED** | Requires licensed Unity Editor environment |
-| Unity EditMode tests | **BLOCKED** | Requires licensed Unity Editor environment |
-| Windows x64 build | **BLOCKED** | Requires licensed Unity Editor environment |
+| Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
+| Unity EditMode tests | **BLOCKED** | Tests compile; Unity Test Runner requires interactive Editor |
+| Windows x64 build | **PASS** | 192 MB, 95.3s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
 | Backend security suite | **PASS** | 31/31 passed (`scripts/test-backend-security.js`) |
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
 | Asset integrity & GLB checks | **PASS** | Verified (`scripts/verify-assets.js`) |
-| GitHub Actions workflows | **BLOCKED** | 3 workflow files committed locally (bc053b5); push rejected — PAT lacks `workflow` scope |
+| GitHub Actions workflows | **BLOCKED** | 3 workflow files committed locally; push rejected — PAT lacks `workflow` scope |
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-14)
 
+- **Step 57 — Repeat-launch blank screen fix**: CinematicIntroController no longer shows a blank screen on second and subsequent launches. Root cause: `SkipIntro()` returned immediately when `_isPlaying` was false, leaving `menuRoot` hidden. Fix: call `CompleteIntro()` directly when intro was already played. Also moved `WW_IntroPlayed` flag from `StartIntro()` to `CompleteIntro()` so a crash during the intro does not permanently skip it. Made `CompleteIntro()` idempotent. `ReplayIntro()` now clears the flag. Added 4 regression tests.
 - **Tamil translations**: Fixed mixed-script Tamil in ThanjavurDeltaContent.cs (items, clues, quests, dialogue)
 - **Vendor UI wiring**: NPCCharacter.Interact now opens VendorUI when interacting with vendor NPCs
 - **Vendor trade system**: VendorUI.cs (400 lines) with buy/sell interface, localization, and atomic transactions
