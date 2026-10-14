@@ -78,7 +78,7 @@ namespace WhisperingWilds.Editor
                 scenes = ProductionGameplayScenes,
                 locationPathName = exePath,
                 target = BuildTarget.StandaloneWindows64,
-                options = BuildOptions.None
+                options = BuildOptions.CompressWithLz4HC | BuildOptions.DetailedBuildReport
             };
 
             Debug.Log($"<color=#00D2FF><b>[BuildPipeline]</b></color> Starting PRODUCTION Windows x64 build with {ProductionGameplayScenes.Length} gameplay scenes...");
@@ -208,5 +208,6 @@ namespace WhisperingWilds.Editor
                 Debug.LogWarning($"[BuildPipeline] Could not write BUILD_REPORT.json: {ex.Message}");
             }
         }
+
     }
 }

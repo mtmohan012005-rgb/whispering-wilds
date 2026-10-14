@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
-**Last updated:** 2026-10-14
-**Commit:** 151f02d (main on GitHub, Step 66 — Chennai chapter audit complete)
+**Last updated:** 2026-10-15
+**Commit:** 83ded24 (main on GitHub, Step 67 — build size optimization complete)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/151f02d
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/83ded24
 
 ## Architecture
 
@@ -19,7 +19,8 @@
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
 | Unity EditMode tests | **BLOCKED** | 60 tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 169 MB, 46.5s (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Windows x64 build | **PASS** | 140 MB, 48.8s, LZ4HC compression (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Build size reduction (Step 67) | **PASS** | 170 MB → 140 MB, 30 MB reduction (17.6%) with LZ4HC compression |
 | Standalone runtime (first launch) | **PASS** | 0 errors, reaches MainMenu, FPS recovers to 58.5 |
 | Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
 | Chennai chapter code audit (Step 66) | **PASS** | All systems wired: NPCs, dialogue, clues, quests, region unlocks, save/load |
@@ -39,7 +40,9 @@
 | GitHub Actions workflows | **BLOCKED** | 3 workflow files committed locally; push rejected — PAT lacks `workflow` scope |
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
-## Recent Changes (2026-10-14)
+## Recent Changes (2026-10-15)
+
+- **Step 67 — Build size optimization with LZ4HC compression**: Added `BuildOptions.CompressWithLz4HC | BuildOptions.DetailedBuildReport` to `BuildPipelineAutomation.BuildProductionWindows()`. Baseline build was 170 MB on-disk with no compression. LZ4HC-optimized build is 140 MB on-disk — a 30 MB reduction (17.6% smaller). The main asset archive (`data.unity3d`) shrank from ~35 MB to 15.8 MB. Build time: 48.8s. Standalone runtime verified: 0 errors, reaches MainMenu, FPS recovers to 58.5. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
 - **Step 66 — Chennai chapter code audit and verification**: Comprehensive inspection of all Chennai opening systems confirmed the code architecture is complete and correctly wired. Verified: (1) ChennaiOpeningContent.cs defines 2 NPCs (Murugan, Velu), 3 clues, 2 quests, items, recipes, and full bilingual dialogue trees, (2) AssembleWhisperingWilds.cs places NPCs, clue interactables (notice board, tea ledger), ingredient pickups, photo targets, and the region bootstrap in the Chennai scene, (3) BuildChennaiPopulation.cs adds 14 scheduled NPCs with 10 activity anchors, (4) GameplayRegionBootstrap connects content data to scene — initializes registry, sets region, accepts quests, applies dialogue to NPCs, (5) NPCCharacter.Interact() registers conversation, reports TalkToNPC event, opens dialogue or vendor UI, (6) DialogueUI.ProcessChoice() reveals clues via InvestigationManager, (7) GameplayEventInteractable reports events, grants items, reveals clues, (8) QuestManager subscribes to GameplayEventBus for event-driven objective advancement, (9) RegionUnlockManager subscribes to InvestigationManager.OnClueDiscovered for clue-gated region unlocks, (10) RegionUnlocks progression chain: Chennai→Pichavaram→Thanjavur (starting unlocked), Chettinad (Thanjavur clue), Mamallapuram (Chettinad clue), Nilgiris (Mamallapuram clue). All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks. Build: 169 MB in 46.5s. Interactive gameplay testing (NPC dialogue, clue discovery, save/load, region transition) requires human operator.
 
