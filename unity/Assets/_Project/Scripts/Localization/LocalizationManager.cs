@@ -364,6 +364,20 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             // ---- Discovery log -------------------------------------------------
             new LocalizationEntry("journal.discoveries",     "Important Discoveries",   "முக்கியக் கண்டுபிடிப்புகள்"),
             new LocalizationEntry("journal.no_discoveries",  "Nothing resolved yet.",   "இன்னும் எதுவும் தீர்மானிக்கப்படவில்லை."),
+
+            // ---- Vendor trade UI ---------------------------------------------
+            new LocalizationEntry("vendor.sell_to_player",   "Buy from vendor",          "வணிகரிடமிருந்து வாங்கு"),
+            new LocalizationEntry("vendor.buy_from_player",  "Sell to vendor",           "வணிகருக்கு விற்பனை"),
+            new LocalizationEntry("vendor.coins",            "Vendor Coins",             "வணிகர் காசுகள்"),
+            new LocalizationEntry("vendor.coins_value",      "Coins: {0}",               "காசுகள்: {0}"),
+            new LocalizationEntry("vendor.buy_success",      "Bought {0}",               "{0} வாங்கப்பட்டது"),
+            new LocalizationEntry("vendor.sell_success",     "Sold {0}",                 "{0} விற்பனை செய்யப்பட்டது"),
+            new LocalizationEntry("vendor.invalid_quantity", "Invalid quantity",         "தவறான அளவு"),
+            new LocalizationEntry("vendor.item_not_found",   "Item not available",       "பொருள் கிடைக்கவில்லை"),
+            new LocalizationEntry("vendor.not_enough_coins", "Not enough coins",         "போதுமான காசுகள் இல்லை"),
+            new LocalizationEntry("vendor.not_enough_stock", "Vendor out of stock",      "வணிகர் இருப்பு இல்லை"),
+            new LocalizationEntry("vendor.inventory_full",   "Inventory full",           "பொருளடக்கம் நிரம்பியது"),
+            new LocalizationEntry("vendor.item_not_bought",  "Vendor does not buy this", "வணிகர் இதை வாங்குவதில்லை"),
         };
 
         private static readonly Dictionary<string, LocalizationEntry> Lookup = BuildLookup();

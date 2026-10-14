@@ -15,7 +15,8 @@ namespace WhisperingWilds.Core
         Cinematic,
         Dialogue,
         InvestigationBoard,
-        PhotoMode
+        PhotoMode,
+        VendorMenu
     }
 
     /// <summary>
