@@ -645,6 +645,9 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             // same WW_Fullscreen, WW_VSync and WW_QualityTier keys a second time.
 if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddComponent<SettingsMenuController>();
             if (managersObj.GetComponent<CampaignFlow>() == null) managersObj.AddComponent<CampaignFlow>();
+            if (managersObj.GetComponent<RegionUnlockManager>() == null) managersObj.AddComponent<RegionUnlockManager>();
+            if (managersObj.GetComponent<EndingController>() == null) managersObj.AddComponent<EndingController>();
+            if (managersObj.GetComponent<QuestEndingBridge>() == null) managersObj.AddComponent<QuestEndingBridge>();
             if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
             var pbm = managersObj.GetComponent<PerformanceBenchmarkManager>();
             pbm.AutoStartOnLoad = false;
