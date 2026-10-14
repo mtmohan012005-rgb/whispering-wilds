@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14  
-**Commit:** 0fd1f87  
-**Branch:** main (merged and pushed to GitHub)  
-**GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/0fd1f87
+**Commit:** bd97f34 (main)  
+**Branch:** fix/release-readiness-and-deployment  
+**GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
 
@@ -24,43 +24,35 @@
 | verify-production | PASS (all checks) |
 | Unity EditMode tests | BLOCKED (requires Unity Editor licensing) |
 
-## Changes in This Session
-
-### Removed (751 files, 142K deletions)
-- Browser game: `js/` (519 files), `css/`, `index.html`, `3d-locomotion.html`, `sw.js`, `netlify.toml`, `manifest.json` (PWA)
-- Electron/desktop: `desktop/`, `launcher/`, `electron-main.js`
-- Browser platforms: `platform/`, `content/`
-- Dangerous utilities: `clean_game_and_system_files.bat`, `check_and_rebuild_language.bat`, `game_installation_and_performance_tester.bat`
-- Browser launchers: `Launch-Game-PC.bat`, `The-Whispering-Wilds.bat`, `Install-On-Laptop.*`, `install-laptop.ps1`, `sync_unity_to_repo.ps1`, `Launch-Legacy-Web-Game.ps1`, `serve.ps1`
-- Old CI: `ci/workflows/` (6 browser/Electron workflows)
-- Deployment configs: `render.yaml`, `firebase.json`, `firestore.indexes.json`, `firestore.rules`, `config/`, `distribution/`, `reports/`, `TestReports/`
-- Root-level reports: 68 files + 9 screenshots + 14 build logs moved to `docs/archive/reports/`
+## Changes in This Session (Step 55 — Release Readiness)
 
 ### Added
+- `docs/LOCAL_SETUP.md` — Complete local development setup guide
+- `docs/PRODUCTION_DEPLOYMENT.md` — Production deployment documentation
+- `docs/BACKEND_CLASSIFICATION.md` — Backend persistence path classification
 - `.github/workflows/backend-ci.yml` — Backend security and validation CI
 - `.github/workflows/unity-validation.yml` — Unity project structure CI
-- `.github/workflows/pages.yml` — GitHub Pages deployment
-- `docs/landing/index.html` — GitHub Pages landing page
-- `docs/ARCHITECTURE.md` — Complete architecture documentation
+- `.github/workflows/pages.yml` — GitHub Pages deployment workflow
 
 ### Fixed
+- `Launch-Game-Unity.ps1` — Corrected build path from `Build\Windows\` to `unity\Build\Windows\`
+- `Launch-Game-Unity.ps1` — Added helpful error message when executable not found
+
+### Previous Session Changes (Cleanup)
+- Browser game removed (751 files, 142K deletions)
+- Unity assembly definitions fixed (removed `Unity.AI.Navigation`, added TestFramework)
+- Dangerous utilities removed
+- Root reports archived to `docs/archive/reports/`
+- README and documentation updated
 - `.gitignore` — No longer ignores `.github/workflows/`
-- `WhisperingWilds.asmdef` — Removed unused `Unity.AI.Navigation` reference
-- `WhisperingWilds.Tests.Editor.asmdef` — Added `Unity.TestFramework` and `TestAssemblies`
-- `package.json` — Removed browser game scripts and puppeteer-core dependency
-- `Launch-Game-PC.ps1` — Removed reference to deleted legacy launcher
-- `scripts/verify-game.js` — Rewritten for Unity project verification
-- `scripts/verify-production.js` — Rewritten for Unity/backend verification
-- `scripts/test-backend-security.js` — Fixed client checksum test path
-- `README.md` — Updated executable path and documentation links
 
 ## Known Issues
 
 1. **Unity EditMode tests** — Cannot run in headless batch mode due to licensing validation
 2. **Interactive gameplay testing** — Requires human operator to verify menu flow, NPC dialogue, saves
-3. **Backend auth persistence** — Legacy JSON auth database; PostgreSQL/Firebase migration pending
-4. **GitHub Pages** — Landing page created; deployment requires GitHub Pages settings configuration
-5. **GitHub Actions workflows** — 3 workflow files exist locally; push requires `workflow` scope on Personal Access Token
+3. **Backend auth persistence** — JSON database is dev/test only; PostgreSQL required for production
+4. **GitHub Pages** — Landing page and workflow created; Pages source must be set to GitHub Actions
+5. **Firestore rules** — `firestore.rules` removed during cleanup; restore if Firebase is used in production
 
 ## Executable Path
 
@@ -71,14 +63,17 @@ Launcher: `Launch-Game-PC.ps1` → `Launch-Game-Unity.ps1`
 ## Completed Actions
 
 - ✓ Browser game removed (751 files, 142K deletions)
-- ✓ Cleanup branch merged into `main` and pushed to GitHub
+- ✓ Cleanup merged into `main` and pushed to GitHub
 - ✓ All validation tests pass (verify-game 15/15, test:backend 31/31, verify-production all checks)
 - ✓ Unity assembly definitions fixed
-- ✓ Dangerous utilities removed
-- ✓ Root reports archived to `docs/archive/reports/`
-- ✓ README and documentation updated
+- ✓ Launcher build path corrected to `unity/Build/Windows/`
+- ✓ LOCAL_SETUP.md, PRODUCTION_DEPLOYMENT.md, BACKEND_CLASSIFICATION.md created
+- ✓ GitHub Actions workflows created (backend-ci, unity-validation, pages)
+- ✓ GitHub Pages landing page in `docs/landing/`
 
 ## Remaining Work (Requires Your Action)
 
-1. **Add GitHub Actions workflows** — Either add `workflow` scope to your Personal Access Token and push `.github/workflows/`, or create the 3 workflow files via GitHub's web interface.
-2. **Interactive gameplay testing** — Smoke test the standalone build: menu flow, NPC dialogue, saves, and campaign progression.
+1. **Push GitHub Actions workflows** — Add `workflow` scope to your Personal Access Token and push, or create via GitHub web interface.
+2. **Set GitHub Pages source** — In repository Settings → Pages, set Source to "GitHub Actions".
+3. **Interactive gameplay testing** — Smoke test the standalone build: menu flow, NPC dialogue, saves, and campaign progression.
+4. **Restore Firestore rules** — If Firebase is used in production, restore `firestore.rules` with restrictive permissions.
