@@ -9,6 +9,7 @@ using WhisperingWilds.Audio;
 using WhisperingWilds.Cameras;
 using WhisperingWilds.Characters;
 using WhisperingWilds.Core;
+using WhisperingWilds.Gameplay;
 using WhisperingWilds.Inventory;
 using WhisperingWilds.Investigation;
 using WhisperingWilds.NPC;
@@ -452,6 +453,33 @@ namespace WhisperingWilds.Editor
 
             SetupWildlifeHabitat(envRoot.transform, "pichavaram", HabitatType.WetlandMarsh);
 
+            // ---- Clue interactables for Pichavaram ----
+            GameplayContentRegistry.EnsureAllInitialized();
+            PlaceClueInteractable(
+                "Clue_KeroseneSheen",
+                envRoot.transform,
+                new Vector3(-2f, 0.6f, 2f),
+                PichavaramContent.ObjectDockEdge,
+                PichavaramContent.ClueKeroseneSheen,
+                "Examine the sheen on the water",
+                "நீரிலுள்க் குழைவை ஆராயுங்கள்");
+            PlaceClueInteractable(
+                "Clue_RootGash",
+                envRoot.transform,
+                new Vector3(8f, 0.6f, 10f),
+                PichavaramContent.ObjectSternCutting,
+                PichavaramContent.ClueRootGash,
+                "Inspect the rope cut on the mangrove root",
+                "மரத்க் கீற்றை ஆராயுங்கள்");
+            PlaceClueInteractable(
+                "Clue_NightBundle",
+                envRoot.transform,
+                new Vector3(12f, 0.6f, -6f),
+                PichavaramContent.ObjectRootCache,
+                PichavaramContent.ClueNightBundle,
+                "Search the hollowed root",
+                "வெற்றுப் பட்டைக ஆராயுங்கள்");
+
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
         }
@@ -513,6 +541,33 @@ namespace WhisperingWilds.Editor
             }
 
             SetupWildlifeHabitat(envRoot.transform, "delta", HabitatType.PastoralFarmBoundary);
+
+            // ---- Clue interactables for Thanjavur/Delta ----
+            GameplayContentRegistry.EnsureAllInitialized();
+            PlaceClueInteractable(
+                "Clue_TempleLedger",
+                envRoot.transform,
+                new Vector3(2f, 0.6f, 4f),
+                ThanjavurDeltaContent.ObjectTempleSteps,
+                ThanjavurDeltaContent.ClueTempleLedger,
+                "Examine the faded ledger on the temple steps",
+                "கோவில் படிகளிலுள்க் பதிகையை ஆராயுங்கள்");
+            PlaceClueInteractable(
+                "Clue_BrassSeal",
+                envRoot.transform,
+                new Vector3(-10f, 0.6f, 8f),
+                ThanjavurDeltaContent.ObjectLibraryShelf,
+                ThanjavurDeltaContent.ClueBrassSeal,
+                "Inspect the brass seal in the library",
+                "புத்தகசாலையிலுள்க் வெண்கல மூத்திரையை ஆராயுங்கள்");
+            PlaceClueInteractable(
+                "Clue_UnsentDispatch",
+                envRoot.transform,
+                new Vector3(-4f, 0.6f, 13f),
+                ThanjavurDeltaContent.ObjectWorkshopAnvil,
+                ThanjavurDeltaContent.ClueUnsentDispatch,
+                "Search the workshop for the unsent dispatch",
+                "வேலைச்சாலையிலுள்க் அனுப்பப்படாத கடிதத்தை ஆராயுங்கள்");
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
@@ -650,8 +705,80 @@ namespace WhisperingWilds.Editor
 
             SetupWildlifeHabitat(envRoot.transform, "nilgiris", HabitatType.SholaGrassland);
 
+            // ---- Clue interactables for Nilgiris ----
+            GameplayContentRegistry.EnsureAllInitialized();
+            PlaceClueInteractable(
+                "Clue_SurveyMarkers",
+                envRoot.transform,
+                new Vector3(-12f, 0.6f, 8f),
+                NilgirisSanctuaryContent.ObjectSurveyPost,
+                NilgirisSanctuaryContent.ClueSurveyMarkers,
+                "Examine the survey markers near the forest station",
+                "வனத் துறை நிலையத்தருகே உள்ள அளவீட்டு குறிகளை ஆராயுங்கள்");
+            PlaceClueInteractable(
+                "Clue_FadedMap",
+                envRoot.transform,
+                new Vector3(2f, 0.6f, 13f),
+                NilgirisSanctuaryContent.ObjectWatchtowerMap,
+                NilgirisSanctuaryContent.ClueFadedMap,
+                "Inspect the faded map at the watchtower",
+                "காட்சி கோபுரத்தில் உள்ள மங்கிய வரைபடத்தை ஆராயுங்கள்");
+            PlaceClueInteractable(
+                "Clue_OriginalBlueprint",
+                envRoot.transform,
+                new Vector3(0f, 0.6f, 30f),
+                NilgirisSanctuaryContent.ObjectBlueprintPedestal,
+                NilgirisSanctuaryContent.ClueOriginalBlueprint,
+                "Examine the original blueprint at the botanical portal",
+                "தாவரவியல் வாயிலில் உள்ள அசல் வரைபடத்தை ஆராயுங்கள்");
+
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
+        }
+
+        /// <summary>
+        /// Creates a world-space clue interactable: a small box with GameplayEventInteractable
+        /// that reveals a registered clue when the player interacts with it.
+        ///
+        /// The box is placed on the ground surface so the player can approach it from walkable
+        /// terrain. The interactable is configured with the stable target id, the clue id to
+        /// reveal, and a bilingual prompt so the HUD can display the interaction label.
+        /// </summary>
+        internal static void PlaceClueInteractable(
+            string name,
+            Transform parent,
+            Vector3 localPos,
+            string targetId,
+            string revealClueId,
+            string promptEn,
+            string promptTa)
+        {
+            // Small box representing the evidence object
+            var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            obj.name = name;
+            obj.transform.SetParent(parent, false);
+            obj.transform.localPosition = localPos;
+            obj.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+
+            // Give it a distinct color so it's visible as an interactable
+            Shader shader = Shader.Find("HDRP/Lit") ?? Shader.Find("Standard");
+            var mat = new Material(shader) { name = name + "_Mat" };
+            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", new Color(0.85f, 0.75f, 0.45f));
+            if (mat.HasProperty("_Color")) mat.SetColor("_Color", new Color(0.85f, 0.75f, 0.45f));
+            obj.GetComponent<MeshRenderer>().sharedMaterial = mat;
+
+            var interactable = obj.AddComponent<Gameplay.GameplayEventInteractable>();
+
+            var so = new SerializedObject(interactable);
+            so.FindProperty("targetId").stringValue = targetId;
+            so.FindProperty("reportType").enumValueIndex = (int)Data.QuestObjectiveType.InvestigateObject;
+            so.FindProperty("promptEn").stringValue = promptEn;
+            so.FindProperty("promptTa").stringValue = promptTa;
+            so.FindProperty("revealClueId").stringValue = revealClueId;
+            so.FindProperty("acknowledgeAsImportant").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            Debug.Log($"[AssembleAllRegions] Placed clue interactable: {name} (targetId={targetId}, clue={revealClueId}) at {localPos}");
         }
 
         private static void BuildBenchmarkScene(string sceneName, string regionId)
