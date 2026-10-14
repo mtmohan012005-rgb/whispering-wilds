@@ -106,9 +106,9 @@ namespace WhisperingWilds.Gameplay
                 discoveryId = DiscoveryTempleRecord,
                 regionId = RegionId,
                 titleEn = "The Temple Record",
-                titleTa = "கோயிலின் பதிகம்",
+                titleTa = "கோயிலின் பதிவு",
                 bodyEn = "The Chola temple kept records of every shipment that passed through its gates. The ledger page matches the wax seal from Pichavaram, and the dispatch names the same families found in the Chettinad letter. Whatever network moves goods through the wetlands also moves them through the temple — and the temple has been watching.",
-                bodyTa = "சோழர் கோயில் அதன் வாசல்களின் வழியாகக் கடந்த ஒவ்வொரு சரக்கையும் பதிவு செய்து வைத்திருந்தது. பதிகம் பக்கம் பிச்சாவரத்தின் மெழுகு முத்திரையுடன் பொருந்துகிறது, மற்றும் அனுப்புகை செட்டிநாட்டுக் கடிதத்தில் உள்ள அதே குடும்பங்களைப் பெயரிடுகிறது. சதுப்பு நிலத்தின் வழியாகச் சரக்குகளை நகர்த்தும் வலையமைப்பு கோயிலின் வழியாகவும் நகர்கிறது — கோயில் கண்காணித்து வருகிறது."
+                bodyTa = "சோழர் கோயில் அதன் வாசல்களின் வழியாகக் கடந்த ஒவ்வொரு சரக்கையும் பதிவு செய்து வைத்திருந்தது. பதிவு பக்கம் பிச்சாவரத்தின் மெழுகு முத்திரையுடன் பொருந்துகிறது, மேலும் அனுப்புகை செட்டிநாட்டுக் கடிதத்தில் உள்ள அதே குடும்பங்களைப் பெயரிடுகிறது. சதுப்பு நிலத்தின் வழியாகச் சரக்குகளை நகர்த்தும் வலையமைப்பு கோயிலின் வழியாகவும் நகர்கிறது — கோயில் கண்காணித்து வருகிறது."
             });
         }
 
@@ -116,23 +116,23 @@ namespace WhisperingWilds.Gameplay
         {
             GameDataCatalog.RegisterItem(
                 ItemTornLedgerPage,
-                "Torn Ledger Page", "கிழிந்த பதிகம் பக்கம்",
+                "Torn Ledger Page", "கிழிந்த பதிவேடு பக்கம்",
                 "A page torn from an old temple ledger. It lists shipments with dates and a wax-stamped ring identical to the one found on the tea chests.",
-                "பழைய கோயில் பதிகத்திலிருந்து கிழிந்த ஒரு பக்கம். தேநீர் பெட்டிகளில் உள்ள அதே மெழுகு வளைய முத்திரையுடன் தேதிகளுடன் சரக்குகளைப் பட்டியலிடுகிறது.",
+                "பழைய கோயில் பதிவேட்டிலிருந்து கிழிந்த ஒரு பக்கம். தேநீர் பெட்டிகளில் உள்ள அதே மெழுகு வளைய முத்திரையுடன் தேதிகளுடன் சரக்குகளைப் பட்டியலிடுகிறது.",
                 ItemCategory.Quest, baseValue: 0, maxStack: 1, weightKg: 0.05f);
 
             GameDataCatalog.RegisterItem(
                 ItemSealRubbing,
                 "Seal Rubbing", "முத்திரை அச்சு",
                 "A charcoal rubbing of the brass seal found in the library archive. The ring pattern matches the wax seal from the Pichavaram bundle.",
-                "சரஸ்வதி மகால் நூலகக் காப்பகத்தில் கிடைத்த வெண்கல முத்திரையின் கரி அச்சு. வளைய வடிவம் பிச்சாவரம் கட்டியின் மெழுகு முத்திரையுடன் பொருந்துகிறது.",
+                "சரஸ்வதி மகால் நூலகக் காப்பகத்தில் கிடந்த வெண்கல முத்திரையின் கரி அச்சு. வளைய வடிவம் பிச்சாவரம் கட்டியின் மெழுகு முத்திரையுடன் பொருந்துகிறது.",
                 ItemCategory.Quest, baseValue: 0, maxStack: 1, weightKg: 0.03f);
 
             GameDataCatalog.RegisterItem(
                 ItemDispatchCopy,
                 "Dispatch Copy", "அனுப்புகை நகல்",
                 "A copy of an unsent dispatch listing names and routes. The names connect to the families mentioned in the Chettinad unsent letter.",
-                "பெயர்களையும் வழிகளையும் பட்டியலிட்ட அனுப்பப்படாத அனுப்புகையின் நகல். பெயர்கள் செட்டிநாட்டு அனுப்பப்படாத கடிதத்தில் குறிப்பிடப்பட்ட குடும்பங்களுடன் இணைகின்றன.",
+                "பெயர்களையும் வழிகளையும் பட்டியலிட்ட அனுப்பப்படாத அனுப்புகையின் நகல். பெயர்கள் செட்டிநாடு அனுப்பப்படாத கடிதத்தில் குறிப்பிடப்பட்ட குடும்பங்களுடன் இணைகின்றன.",
                 ItemCategory.Quest, baseValue: 0, maxStack: 1, weightKg: 0.08f);
         }
 
@@ -141,35 +141,35 @@ namespace WhisperingWilds.Gameplay
             // First clue. Linked forward to the brass seal so holding both unlocks the deduction.
             GameDataCatalog.RegisterClue(
                 ClueTempleLedger,
-                "Temple Ledger Page", "கோயில் பதிகம் பக்கம்",
+                "Temple Ledger Page", "கோயில் பதிவேடு பக்கம்",
                 "On the temple steps, a torn ledger page lies half-buried in dust. It lists shipments with dates, quantities, and a wax-stamped ring — the same narrow ring found on the tea chests in George Town.",
-                "கோயில் படிகங்களில், ஒரு கிழிந்த பதிகம் பக்கம் தூளில் பாதியாகக் புதைந்திருக்கிறது. தேதிகள், அளவுகள் மற்றும் ஒரு மெழுகு வளைய முத்திரையுடன் சரக்குகளைப் பட்டியலிடுகிறது — ஜார்ஜ் டவுனின் தேநீர் பெட்டிகளில் உள்ள அதே குறுகிய வளையம்.",
+                "கோயில் படிகங்களில், ஒரு கிழிந்த பதிவேடு பக்கம் தூளில் பாதியாகக் புதைந்திருக்கிறது. தேதிகள், அளவுகள் மேலும் ஒரு மெழுகு வளைய முத்திரையுடன் சரக்குகளைப் பட்டியலிடுகிறது — ஜார்ஜ் டவுனின் தேநீர் பெட்டிகளில் உள்ள அதே குறுகிய வளையம்.",
                 ClueType.Document, RegionId,
                 relatedClueId: ClueBrassSeal,
                 deductionNoteEn: "The temple ledger uses the same seal as the tea chests. Whatever network controls the shipments also controls the temple records.",
-                deductionNoteTa: "கோயில் பதிகம் தேநீர் பெட்டிகளின் அதே முத்திரையைப் பயன்படுத்துகிறது. சரக்குகளைக் கட்டுப்படுத்தும் வலையமைப்பு கோயில் பதிவுகளையும் கட்டுப்படுத்துகிறது.");
+                deductionNoteTa: "கோயில் பதிவேடம் தேநீர் பெட்டிகளின் அதே முத்திரையைப் பயன்படுத்துகிறது. சரக்குகளைக் கட்டுப்படுத்தும் வலையமைப்பு கோயில் பதிவுகளையும் கட்டுப்படுத்துகிறது.");
 
             // Second clue: the brass seal in the library archive.
             GameDataCatalog.RegisterClue(
                 ClueBrassSeal,
                 "Brass Seal Impression", "வெண்கல முத்திரை அச்சு",
                 "In the library archive, a brass seal sits behind a shelf of old folios. Its ring pattern matches the wax seal from the Pichavaram bundle and the stamp on the temple ledger.",
-                "நூலகக் காப்பகத்தில், பழைய கையெழுத்துப் பிரதிகளின் அலமாரியின் பின்னால் ஒரு வெண்கல முத்திரை இருக்கிறது. அதன் வளைய வடிவம் பிச்சாவரம் கட்டியின் மெழுகு முத்திரையையும் கோயில் பதிகத்தின் முத்திரையையும் பொருந்துகிறது.",
+                "நூலகக் காப்பகத்தில், பழைய கையெழுத்துப் பிரதிகளின் அலமாரியின் பின்னால் ஒரு வெண்கல முத்திரை இருக்கிறது. அதன் வளைய வடிவம் பிச்சாவரம் கட்டியின் மெழுகு முத்திரையையும் கோயில் பதிவேடத்தின் முத்திரையையும் பொருந்துகிறது.",
                 ClueType.PhysicalEvidence, RegionId,
                 relatedClueId: ClueTempleLedger,
                 deductionNoteEn: "Three seals, one pattern: the tea chests, the Pichavaram bundle, and the temple ledger all use the same mark. This is a single network, not separate operations.",
-                deductionNoteTa: "மூன்று முத்திரைகள், ஒரு வடிவம்: தேநீர் பெட்டிகள், பிச்சாவரம் கட்டி மற்றும் கோயில் பதிகம் அனைத்தும் அதே அடையாளத்தைப் பயன்படுத்துகின்றன. இது ஒரு வலையமைப்பு, தனித்தனி செயல்பாடுகள் அல்ல.");
+                deductionNoteTa: "மூன்று முத்திரைகள், ஒரு வடிவம்: தேநீர் பெட்டிகள், பிச்சாவரம் கட்டி மேலும் கோயில் பதிவேடம் அனைத்தும் அதே அடையாளத்தைப் பயன்படுத்துகின்றன. இது ஒரு வலையமைப்பு, தனியான செயல்பாடுகள் அல்ல.");
 
             // Major evidence. Invented story prop written for this quest.
             GameDataCatalog.RegisterClue(
                 ClueUnsentDispatch,
                 "The Unsent Dispatch", "அனுப்பப்படாத அறிக்கை",
                 "In the bronze workshop, a dispatch lies on the anvil table, never sealed for sending. It lists names, routes, and quantities — connecting the Chettinad families to the temple shipments and the Pichavaram night current. The dispatch was meant for the High Court, but whoever wrote it changed their mind.",
-                "வெண்கலத் தொழிற்சாலையில், ஒரு அறிக்கை தட்டி மேசையில் கிடக்கிறது, அனுப்ப மூடப்படவில்லை. பெயர்கள், வழிகள் மற்றும் அளவுகளைப் பட்டியலிடுகிறது — செட்டிநாட்டுக் குடும்பங்களை கோயில் சரக்குகள் மற்றும் பிச்சாவரம் இரவு ஓட்டத்துடன் இணைக்கிறது. அறிக்கை உயர்நீதிமன்றத்திற்காக எழுதப்பட்டது, ஆனால் எழுதியவர் மனம் மாறினார்.",
+                "வெண்கலத் தொழிற்சாலையில், ஒரு அறிக்கை தட்டி மேசையில் கிடக்கிறது, அனுப்ப மூடப்படவில்லை. பெயர்கள், வழிகள் மேலும் அளவுகளைப் பட்டியலிடுகிறது — செட்டிநாடு குடும்பங்களை கோயில் சரக்குகள் மேலும் பிச்சாவரம் இரவு ஓடட்டத்துடன் இணைக்கிறது. அறிக்கை உயர்நீதிமன்றத்திற்காக எழுதப்பட்டது, ஆனால் எழுதியவர் மனம் மாறினார்.",
                 ClueType.Document, RegionId,
                 relatedClueId: ClueBrassSeal,
                 deductionNoteEn: "The dispatch connects every thread: Chettinad families, temple shipments, Pichavaram cargo, and the tea ledger. Someone inside the network tried to expose it, then stopped. The question is why.",
-                deductionNoteTa: "அறிக்கை ஒவ்வொரு நூலையும் இணைக்கிறது: செட்டிநாட்டுக் குடும்பங்கள், கோயில் சரக்குகள், பிச்சாவரம் சரக்கு மற்றும் தேநீர் பதிகம். வலையமைப்பிற்குள் ஒருவர் அதை வெளிப்படுத்த முயற்சித்தார், பின்னர் நிறுத்தினார். ஏன் என்பது கேள்வி.",
+                deductionNoteTa: "அறிக்கை ஒவ்வொரு நூலையும் இணைக்கிறது: செட்டிநாடு குடும்பங்கள், கோயில் சரக்குகள், பிச்சாவரம் சரக்கு மேலும் தேநீர் பதிகம். வலையமைப்பிற்குள் ஒருவர் அதை வெளிப்படுத்த முயற்சித்தார், பின்னர் நிறுத்தினார். ஏன் என்பது கேள்வி.",
                 isKeyLead: true);
         }
 
@@ -180,7 +180,7 @@ namespace WhisperingWilds.Gameplay
                 QuestTheTempleRecord,
                 "The Temple Record", "கோயிலின் பதிகம்",
                 "The bronze caster near the Brihadisvara temple knows more about the old records than he lets on. Find what the temple ledger says about the shipments crossing Tamil Nadu.",
-                "பிரகதிசுவரர் கோயிலருகே உள்ள வெண்கலக் கலைஞர் பழைய பதிவுகள் பற்றி அவர் காட்டுவதை விட அதிகமாக அறிவார். தமிழ்நாட்டைக் கடக்கும் சரக்குகள் பற்றி கோயில் பதிகம் என்ன சொல்கிறது என்பதைக் கண்டறியுங்கள்.",
+                "பிரகதீஸ்வரர் கோயிலருகே உள்ள வெண்கலக் கலைஞர் பழைய பதிவுகள் பற்றி அவர் காட்டுவதை விட அதிகமாக அறிவார். தமிழ்நாட்டைக் கடக்கும் சரக்குகள் பற்றி கோயில் பதிவேடு என்ன சொல்கிறது என்பதைக் கண்டறியுங்கள்.",
                 RegionId,
                 new[]
                 {
@@ -194,11 +194,11 @@ namespace WhisperingWilds.Gameplay
 
                     Stage(2, "The Temple Steps", "கோயில் படிகள்",
                         Objective("investigate_temple", QuestObjectiveType.InvestigateObject, ObjectTempleSteps,
-                            "Examine the temple steps for records.", "பதிவுகளுக்காக கோயில் படிகளை ஆராயுங்கள்.")),
+                            "Examine the temple steps for records.", "பதிவுகளுக்குக் கோயில் படிகளை ஆராயுங்கள்.")),
 
-                    Stage(3, "The Ledger Page", "பதிகம் பக்கம்",
+                    Stage(3, "The Ledger Page", "பதிவேடு பக்கம்",
                         Objective("first_clue", QuestObjectiveType.DiscoverClue, ClueTempleLedger,
-                            "Find the torn ledger page.", "கிழிந்த பதிகம் பக்கத்தைக் கண்டறியுங்கள்.")),
+                            "Find the torn ledger page.", "கிழிந்த பதிவேடு பக்கத்தைக் கண்டறியுங்கள்.")),
 
                     Stage(4, "The Library", "நூலகம்",
                         Objective("reach_library", QuestObjectiveType.ReachLocation, LocationLibraryArchive,

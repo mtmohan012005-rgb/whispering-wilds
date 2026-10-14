@@ -6,6 +6,7 @@ using WhisperingWilds.Player;
 using WhisperingWilds.World;
 using WhisperingWilds.Vegetation;
 using WhisperingWilds.Localization;
+using WhisperingWilds.Economy;
 
 namespace WhisperingWilds.NPC
 {
@@ -628,6 +629,15 @@ namespace WhisperingWilds.NPC
             // Meeting the resident is recorded here as well as in the dialogue UI, so the record
             // survives even if no dialogue view is present in the scene.
             RegisterConversationWithPlayer();
+
+            // Check if this NPC is a vendor and open the vendor UI instead of dialogue
+            var vendor = GetComponent<VendorInteraction>();
+            if (vendor != null && UI.VendorUI.Instance != null)
+            {
+                Debug.Log($"<color=#00D2FF><b>[Vendor]</b></color> Opening trade with {displayNameEn}");
+                UI.VendorUI.Instance.Open(vendor, this);
+                return;
+            }
 
             if (dialogueNodes != null && dialogueNodes.Count > 0)
             {
