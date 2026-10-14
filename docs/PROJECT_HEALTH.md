@@ -1,9 +1,9 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-14
-**Commit:** 2ed27f9 (main on GitHub)
+**Commit:** 569a031 (main on GitHub)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/2ed27f9
+**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/569a031
 
 ## Architecture
 
@@ -32,8 +32,9 @@
 
 ## Recent Changes (2026-10-14)
 
+- **Step 60 — Missing regional clue interactables**: Added 9 world-space clue interactables through AssembleAllRegions.cs scene generation pipeline so they survive scene regeneration. Pichavaram (3 clues: Kerosene Sheen, Root Gash, Night Bundle), Thanjavur (3 clues: Temple Ledger, Brass Seal, Unsent Dispatch), Nilgiris (3 clues: Survey Markers, Faded Map, Original Blueprint). Each uses GameplayEventInteractable with correct targetId, revealClueId, and bilingual prompts. This completes the campaign progression chain: Chennai → Pichavaram → Thanjavur → Chettinad → Mamallapuram → Nilgiris → Ending.
 - **Step 59 — Campaign managers in boot scene**: Added RegionUnlockManager, EndingController, and QuestEndingBridge to BuildBootScene.SetupPersistentManagers(). Without these, clue discoveries would not unlock regions and the final quest would not trigger ending evaluation. Verified: build launches with 0 errors, all managers present in boot scene.
-- **Step 59 — Campaign structural audit**: Verified 6-region campaign chain (Chennai→Pichavaram→Thanjavur→Chettinad→Mamallapuram→Nilgiris) with clue-based unlock gates. Chennai has 14 NPCs, 2 vendors, 5 clue interactables, InvestigationManager, and QuestManager. All regions have NavMesh data. Pichavaram, Thanjavur, and Nilgiris need clue interactable objects placed in scenes (requires Unity Editor scene authoring).
+- **Step 59 — Campaign structural audit**: Verified 6-region campaign chain (Chennai→Pichavaram→Thanjavur→Chettinad→Mamallapuram→Nilgiris) with clue-based unlock gates. All 6 regions now have clue interactables in their scenes. Pichavaram, Thanjavur, and Nilgiris clue objects added through scene generation pipeline.
 - **Step 58 — Input System runtime crash fix**: CinematicIntroController.Update() threw `InvalidOperationException` every frame because it used legacy `UnityEngine.Input.anyKeyDown` while the project uses the Input System package. Fix: Added `IsAnyKeyOrButtonPressed()` with `#if ENABLE_INPUT_SYSTEM` guards using `Keyboard.current`, `Mouse.current`, and `Gamepad.current`. Verified: standalone build launches with 0 errors, reaches MainMenu, and repeat-launch works correctly.
 - **Step 57 — Repeat-launch blank screen fix**: CinematicIntroController no longer shows a blank screen on second and subsequent launches. Root cause: `SkipIntro()` returned immediately when `_isPlaying` was false, leaving `menuRoot` hidden. Fix: call `CompleteIntro()` directly when intro was already played. Also moved `WW_IntroPlayed` flag from `StartIntro()` to `CompleteIntro()` so a crash during the intro does not permanently skip it. Made `CompleteIntro()` idempotent. `ReplayIntro()` now clears the flag. Added 4 regression tests.
 - **Tamil translations**: Fixed mixed-script Tamil in ThanjavurDeltaContent.cs (items, clues, quests, dialogue)
