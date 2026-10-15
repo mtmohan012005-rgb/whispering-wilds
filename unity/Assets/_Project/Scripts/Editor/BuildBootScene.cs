@@ -83,35 +83,38 @@ namespace WhisperingWilds.Editor
                 menuRootRect.offsetMin = Vector2.zero;
                 menuRootRect.offsetMax = Vector2.zero;
 
-                // Game Title & Tamil Subtitle
-                var titleObj = CreateText("GameTitle", menuRoot.transform, new Vector2(0.5f, 0.8f), new Vector2(0.5f, 0.8f), Vector2.zero, new Vector2(1200, 90), font, 48, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+                // Game Title & Tamil Subtitle — STEP 71: Centered in upper half of screen
+                var titleObj = CreateText("GameTitle", menuRoot.transform, new Vector2(0f, 0.72f), new Vector2(1f, 0.72f), Vector2.zero, new Vector2(1400, 100), font, 56, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
                 var titleText = titleObj.GetComponent<Text>();
                 titleText.text = "THE WHISPERING WILDS";
                 titleText.lineSpacing = 1.2f;
                 titleText.supportRichText = false;
 
                 // Subtitle
-                var subtitleObj = CreateText("GameSubtitle", menuRoot.transform, new Vector2(0.5f, 0.7f), new Vector2(0.5f, 0.7f), Vector2.zero, new Vector2(800, 40), font, 20, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
+                var subtitleObj = CreateText("GameSubtitle", menuRoot.transform, new Vector2(0f, 0.62f), new Vector2(1f, 0.62f), Vector2.zero, new Vector2(1000, 40), font, 22, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
                 var subtitleText = subtitleObj.GetComponent<Text>();
                 subtitleText.text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
 
-                // Menu Buttons Container
+                // Menu Buttons Container — STEP 71: Centered vertically and horizontally
                 var menuContainer = new GameObject("MenuContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
                 menuContainer.transform.SetParent(menuRoot.transform, false);
                 var menuRect = menuContainer.GetComponent<RectTransform>();
-                menuRect.anchorMin = new Vector2(0.5f, 0.45f);
-                menuRect.anchorMax = new Vector2(0.5f, 0.45f);
-                menuRect.sizeDelta = new Vector2(400, 260);
+                menuRect.anchorMin = new Vector2(0.5f, 0.5f);
+                menuRect.anchorMax = new Vector2(0.5f, 0.5f);
+                menuRect.pivot = new Vector2(0.5f, 0.5f);
+                menuRect.anchoredPosition = new Vector2(0f, -40f);
+                menuRect.sizeDelta = new Vector2(320, 240);
 
                 var layout = menuContainer.GetComponent<VerticalLayoutGroup>();
-                layout.spacing = 14f;
+                layout.spacing = 12f;
                 layout.childControlWidth = true;
-                layout.childControlHeight = false;
+                layout.childControlHeight = true;
                 layout.childForceExpandWidth = true;
-                layout.childForceExpandHeight = false;
+                layout.childForceExpandHeight = true;
                 layout.childAlignment = TextAnchor.MiddleCenter;
+                layout.padding = new RectOffset(10, 10, 10, 10);
 
-                // Buttons
+                // Buttons — STEP 71: Consistent width/height, evenly spaced
                 // Placeholder labels only. TitleMenuController.ApplyLocalizedLabels rewrites these from
                 // localization keys on Start, so the visible text always matches the active
                 // language instead of being frozen at build time.
@@ -245,6 +248,7 @@ namespace WhisperingWilds.Editor
                 menuBgRect.offsetMax = Vector2.zero;
                 var menuBgImg = menuBgObj.GetComponent<Image>();
                 menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
+                menuBgImg.raycastTarget = false; // STEP 71: Don't block button clicks
 
                 // Mist layer 1 — slow horizontal drift
                 var menuMist1Obj = new GameObject("MenuMistLayer1", typeof(RectTransform), typeof(Image));
@@ -256,6 +260,7 @@ namespace WhisperingWilds.Editor
                 menuMist1Rect.offsetMax = Vector2.zero;
                 var menuMist1Img = menuMist1Obj.GetComponent<Image>();
                 menuMist1Img.color = new Color(0.3f, 0.35f, 0.4f, 0.06f);
+                menuMist1Img.raycastTarget = false; // STEP 71: Don't block button clicks
                 menuMist1Obj.SetActive(false);
 
                 // Mist layer 2 — different speed for parallax
@@ -268,6 +273,7 @@ namespace WhisperingWilds.Editor
                 menuMist2Rect.offsetMax = Vector2.zero;
                 var menuMist2Img = menuMist2Obj.GetComponent<Image>();
                 menuMist2Img.color = new Color(0.25f, 0.3f, 0.35f, 0.04f);
+                menuMist2Img.raycastTarget = false; // STEP 71: Don't block button clicks
                 menuMist2Obj.SetActive(false);
 
                 // Fireflies — subtle pulsing light particles
@@ -280,6 +286,7 @@ namespace WhisperingWilds.Editor
                 menuFirefliesRect.offsetMax = Vector2.zero;
                 var menuFirefliesImg = menuFirefliesObj.GetComponent<Image>();
                 menuFirefliesImg.color = new Color(1f, 0.9f, 0.5f, 0.3f);
+                menuFirefliesImg.raycastTarget = false; // STEP 71: Don't block button clicks
                 menuFirefliesObj.SetActive(false);
 
                 // Menu vignette — subtle edge darkening to keep center readable
@@ -292,6 +299,7 @@ namespace WhisperingWilds.Editor
                 menuVignetteRect.offsetMax = Vector2.zero;
                 var menuVignetteImg = menuVignetteObj.GetComponent<Image>();
                 menuVignetteImg.color = new Color(0f, 0f, 0f, 0.35f);
+                menuVignetteImg.raycastTarget = false; // STEP 71: Don't block button clicks
 
                 // STEP 70: MainMenuAnimator — orchestrates title, subtitle, button, and background animation.
                 // Parented to the canvas so it persists in the scene hierarchy and is discoverable by FindObjectOfType.
@@ -383,7 +391,7 @@ namespace WhisperingWilds.Editor
             var btnObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
             btnObj.transform.SetParent(parent, false);
             var rect = btnObj.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(360, 48);
+            rect.sizeDelta = new Vector2(0, 48); // Width controlled by VerticalLayoutGroup
 
             var img = btnObj.GetComponent<Image>();
             img.color = btnColor;

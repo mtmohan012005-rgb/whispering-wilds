@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Step 70 — cinematic main menu animation and atmospheric UI polish)
+**Commit:** Pending push (Step 71 — finalize main menu, settings layout, performance)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -18,7 +18,11 @@
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
 | Unity EditMode tests | **BLOCKED** | 70 tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 140 MB, LZ4HC compression (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Unity splash screen (Step 71) | **FIXED** | Disabled in Player Settings (m_ShowUnitySplashScreen=0) |
+| Main menu layout (Step 71) | **FIXED** | Centered title/subtitle, evenly spaced button column, consistent sizing |
+| Background raycast blocking (Step 71) | **FIXED** | raycastTarget=false on all 5 background layers so buttons are clickable |
+| Settings panel (Step 71) | **VERIFIED** | 6 tabs (Language, Display, Quality, Audio, Controls, Accessibility), all functional |
+| Windows x64 build | **PASS** | 139 MB, LZ4HC compression (`unity/Build/Windows/TheWhisperingWilds.exe`) |
 | Build size reduction (Step 67) | **PASS** | 170 MB → 140 MB, 30 MB reduction (17.6%) with LZ4HC compression |
 | Standalone runtime (first launch) | **PASS** | 0 errors, intro completes, reaches MainMenu, 60 FPS |
 | Standalone runtime (60s stability) | **PASS** | 0 errors, 60 FPS, stable for 60+ seconds |
@@ -45,6 +49,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-15)
+
+- **Step 71 — Finalize main menu, settings layout, and performance**: Disabled Unity splash screen in Player Settings (m_ShowUnitySplashScreen=0, m_ShowUnitySplashLogo=0). Improved main menu layout: title centered at 72% height with 56px font, subtitle at 62%, button container centered at screen center with pivot 0.5/0.5 and -40px offset. Buttons now have consistent 320x240 container with proper padding and 48px height each. Fixed raycastTarget=false on all 5 atmospheric background layers (MenuBackground, MenuMistLayer1, MenuMistLayer2, MenuFireflies, MenuVignette) so they don't block button clicks. Settings panel verified: 6 tabs (Language, Display, Quality, Audio, Controls, Accessibility) all functional with SettingsMenuController save/load. Verification: standalone build 139 MB, 0 errors, MainMenuAnimator entrance animation complete, all references OK, 60 FPS. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
 - **Step 70 — Cinematic main menu animation and atmospheric UI polish**: Added `MainMenuAnimator.cs` (367 lines) that orchestrates the main menu entrance: title fades in with golden glow sweep and rises into position, subtitle fades in slightly later, buttons appear one by one with staggered timing, and rule notice fades in at the bottom. Added `MenuButtonAnimator.cs` (150 lines) for hover/press/focus feedback on each menu button. Added atmospheric background layers to the main menu: deep teal dawn sky background, two mist layers with slow parallax drift, pulsing fireflies, and subtle vignette. All animations use `Time.unscaledDeltaTime` so they work at `Time.timeScale=0`. Root cause fix: `MainMenuAnimator` existed in the boot scene but `FindObjectOfType` returned null in `TitleMenuController.Start()` because the scene wasn't fully initialized — fixed by delaying the animation trigger by 2 frames via coroutine. Verification: standalone build launched, Player.log confirms `MainMenuAnimator PlayEntrance called - titleText=OK, subtitleText=OK, menuContainer=OK, ruleNoticeText=OK`, `Entrance animation complete`, 0 errors, 60 FPS. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
