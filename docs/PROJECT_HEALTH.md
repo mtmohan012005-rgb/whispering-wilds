@@ -1,9 +1,8 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** 83ded24 (main on GitHub, Step 68 — runtime QA verification complete)
+**Commit:** Pending push (Step 69 — stuck intro fix and startup visual improvements)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
-**GitHub Link:** https://github.com/mtmohan012005-rgb/whispering-wilds/commit/83ded24
 
 ## Architecture
 
@@ -18,12 +17,15 @@
 | Component | Status | Details |
 |-----------|--------|---------|
 | Unity C# compilation | **PASS** | 0 errors, batch mode build succeeded |
-| Unity EditMode tests | **BLOCKED** | 60 tests compile; Unity Test Runner requires interactive Editor |
-| Windows x64 build | **PASS** | 140 MB, 48.8s, LZ4HC compression (`unity/Build/Windows/TheWhisperingWilds.exe`) |
+| Unity EditMode tests | **BLOCKED** | 70 tests compile; Unity Test Runner requires interactive Editor |
+| Windows x64 build | **PASS** | 140 MB, LZ4HC compression (`unity/Build/Windows/TheWhisperingWilds.exe`) |
 | Build size reduction (Step 67) | **PASS** | 170 MB → 140 MB, 30 MB reduction (17.6%) with LZ4HC compression |
-| Standalone runtime (first launch) | **PASS** | 0 errors, reaches MainMenu, FPS recovers to 60 |
+| Standalone runtime (first launch) | **PASS** | 0 errors, intro completes, reaches MainMenu, 60 FPS |
 | Standalone runtime (60s stability) | **PASS** | 0 errors, 60 FPS, stable for 60+ seconds |
 | Standalone runtime (repeat launch) | **PASS** | 0 errors, menu visible immediately, no blank screen |
+| Intro stuck bug (Step 69) | **FIXED** | Time.unscaledDeltaTime — intro advances even when Time.timeScale=0 |
+| Intro duration (Step 69) | **FIXED** | Reduced from 25s to 7s; title at 1.5s; skip text at 0.5s |
+| Intro visuals (Step 69) | **IMPROVED** | Sky gradient overlay and treeline silhouette replace flat dark screen |
 | QA runner cleanup (Step 68) | **FIXED** | Run-QaTests.ps1 uses temp directories; all artifacts cleaned up |
 | Chennai chapter code audit (Step 66) | **PASS** | All systems wired: NPCs, dialogue, clues, quests, region unlocks, save/load |
 | D3D11 graphics API | **FIXED** | Changed from D3D12+fallback to D3D11 only — eliminates 0.3 FPS freeze on Intel GPUs |
@@ -43,6 +45,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-15)
+
+- **Step 69 — Fixed stuck intro and improved startup visuals**: Root cause: `CinematicIntroController.PlayIntro()` used `Time.deltaTime`, but `GameManager` sets `Time.timeScale = 0` in MainMenu state, so the intro timer never advanced, leaving the player on a dark blank screen. Fix: (1) Replaced `Time.deltaTime` with `Time.unscaledDeltaTime` so the intro advances using real-world time even when game time is paused, (2) Reduced intro duration from 25 seconds to 7 seconds — title appears at 1.5s, skip text at 0.5s, menu at 7s, (3) Added sky gradient overlay (`IntroSkyGradient`) and treeline silhouette (`IntroTreeline`) to `BuildBootScene.cs` so the first frame shows a dawn sky composition instead of a flat dark color, (4) Added 9 regression tests verifying unscaled delta time, short duration, early title, early skip text, sky gradient, and treeline. Verification: standalone build launched, Player.log confirms `PlayIntroOnStartup=True`, `Intro completed, showing main menu`, 0 errors, 60 FPS. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
 - **Step 68 — Runtime QA verification and cleanup**: Verified the standalone Windows build runs stably for 60+ seconds with 0 errors in Player.log, reaching MainMenu at 60 FPS. Fixed `scripts/Run-QaTests.ps1` to use a unique temporary directory for all QA artifacts (logs, test results, saves) instead of writing into the repository — all artifacts are cleaned up after each test run. Removed 24 stale build log files (26.6 MB) from the repository root. Player.log confirms: CinematicIntro plays, Tamil font loads from Resources, LocalizationManager loads 253 keys, RegionalClimateSystem loads Chennai profile, GraphicsPerformanceManager applies High tier, GameManager reaches MainMenu. QA save isolation verified with `-wwSaveDir` flag. All automated tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 

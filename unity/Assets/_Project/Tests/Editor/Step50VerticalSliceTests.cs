@@ -940,6 +940,156 @@ namespace WhisperingWilds.Tests.Editor
             Assert.IsTrue(values.Contains("Tamil"), "Language enum should include Tamil");
         }
 
+        // ---- STEP 69: Intro stuck bug and startup visual regression tests -------
+
+        [Test]
+        public void CinematicIntroController_UsesUnscaledDeltaTime()
+        {
+            // STEP 69: The intro coroutine MUST use Time.unscaledDeltaTime so it advances
+            // even when Time.timeScale is 0 (MainMenu state). This is the root cause fix
+            // for the stuck intro — the game pauses time at the menu, but the intro
+            // coroutine must use real-world time.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+
+            if (!File.Exists(sourcePath))
+            {
+                Assert.Fail("CinematicIntroController.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(sourcePath);
+            Assert.IsTrue(source.Contains("Time.unscaledDeltaTime"),
+                "CinematicIntroController PlayIntro must use Time.unscaledDeltaTime");
+            Assert.IsFalse(source.Contains("elapsed += Time.deltaTime"),
+                "CinematicIntroController must NOT use Time.deltaTime for intro elapsed time");
+        }
+
+        [Test]
+        public void CinematicIntroController_HasShortDuration()
+        {
+            // STEP 69: Total intro duration should be ~7 seconds, not 25 seconds.
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
+            var field = type.GetField("totalDuration", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(field, "CinematicIntroController should have totalDuration field");
+
+            // The default value should be around 7 seconds
+            var defaultValueAttr = field.GetCustomAttributes(false)
+                .OfType<SerializeField>()
+                .FirstOrDefault();
+            // We can't easily read the default from reflection, so check source
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+            var source = File.ReadAllText(sourcePath);
+
+            Assert.IsTrue(source.Contains("totalDuration = 7f"),
+                "CinematicIntroController totalDuration should default to 7 seconds");
+        }
+
+        [Test]
+        public void CinematicIntroController_TitleAppearsEarly()
+        {
+            // STEP 69: Title should start fading in at ~1.5 seconds, not 14 seconds.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+            var source = File.ReadAllText(sourcePath);
+
+            Assert.IsTrue(source.Contains("titleFadeInStart = 1.5f"),
+                "CinematicIntroController titleFadeInStart should be 1.5 seconds");
+            Assert.IsTrue(source.Contains("titleFadeInEnd = 3f"),
+                "CinematicIntroController titleFadeInEnd should be 3 seconds");
+        }
+
+        [Test]
+        public void CinematicIntroController_SkipTextAppearsEarly()
+        {
+            // STEP 69: Skip text should appear at ~0.5 seconds so the player knows
+            // they can skip the intro immediately.
+            var assetsPath = Application.dataPath;
+            var sourcePath = Path.Combine(assetsPath, "_Project/Scripts/UI/CinematicIntroController.cs");
+            var source = File.ReadAllText(sourcePath);
+
+            // The skip text phase should start at 0.5s
+            Assert.IsTrue(source.Contains("elapsed >= 0.5f"),
+                "CinematicIntroController should show skip text at 0.5 seconds");
+        }
+
+        [Test]
+        public void CinematicIntroController_HasSkyGradientField()
+        {
+            // STEP 69: The intro controller must have a sky gradient field for visual depth.
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
+            var field = type.GetField("introSkyGradient", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(field, "CinematicIntroController should have introSkyGradient field");
+            Assert.AreEqual(typeof(GameObject), field.FieldType);
+        }
+
+        [Test]
+        public void CinematicIntroController_HasTreelineField()
+        {
+            // STEP 69: The intro controller must have a treeline field for visual depth.
+            var type = typeof(WhisperingWilds.UI.CinematicIntroController);
+            var field = type.GetField("introTreeline", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            Assert.IsNotNull(field, "CinematicIntroController should have introTreeline field");
+            Assert.AreEqual(typeof(GameObject), field.FieldType);
+        }
+
+        [Test]
+        public void BuildBootScene_CreatesSkyGradient()
+        {
+            // STEP 69: BuildBootScene must create IntroSkyGradient for visual depth.
+            var assetsPath = Application.dataPath;
+            var buildBootScenePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+
+            if (!File.Exists(buildBootScenePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(buildBootScenePath);
+            Assert.IsTrue(source.Contains("IntroSkyGradient"),
+                "BuildBootScene should create IntroSkyGradient object");
+            Assert.IsTrue(source.Contains("introSkyGradient"),
+                "BuildBootScene should reference introSkyGradient variable");
+        }
+
+        [Test]
+        public void BuildBootScene_CreatesTreeline()
+        {
+            // STEP 69: BuildBootScene must create IntroTreeline silhouette.
+            var assetsPath = Application.dataPath;
+            var buildBootScenePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+
+            if (!File.Exists(buildBootScenePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(buildBootScenePath);
+            Assert.IsTrue(source.Contains("IntroTreeline"),
+                "BuildBootScene should create IntroTreeline object");
+            Assert.IsTrue(source.Contains("introTreeline"),
+                "BuildBootScene should reference introTreeline variable");
+        }
+
+        [Test]
+        public void BuildBootScene_BindsSkyGradientAndTreeline()
+        {
+            // STEP 69: BuildBootScene must bind skyGradient and treeline to the intro controller.
+            var assetsPath = Application.dataPath;
+            var buildBootScenePath = Path.Combine(assetsPath, "_Project/Scripts/Editor/BuildBootScene.cs");
+
+            if (!File.Exists(buildBootScenePath))
+            {
+                Assert.Fail("BuildBootScene.cs not found at expected path");
+            }
+
+            var source = File.ReadAllText(buildBootScenePath);
+            Assert.IsTrue(source.Contains("introSkyGradient"),
+                "BuildBootScene should bind introSkyGradient to CinematicIntroController");
+            Assert.IsTrue(source.Contains("introTreeline"),
+                "BuildBootScene should bind introTreeline to CinematicIntroController");
+        }
+
         /// <summary>
         /// Finds the index of the next method declaration or end of string.
         /// </summary>

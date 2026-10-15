@@ -173,9 +173,11 @@ namespace WhisperingWilds.Editor
                 skipObj.GetComponent<Text>().supportRichText = false;
                 skipObj.SetActive(false);
 
-                // Background overlay for intro fade-in
-                // STEP 61: Use a deeper, more atmospheric starting color that transitions
-                // through dawn mist to sunrise tones during the cinematic sequence.
+                // STEP 69: Intro background with layered dawn sky gradient and treeline silhouette.
+                // The IntroBackground is the base layer (animated by CinematicIntroController).
+                // Additional layers provide visual depth so the first frame is not a blank dark screen.
+
+                // Base background overlay for intro fade-in
                 var introBgObj = new GameObject("IntroBackground", typeof(RectTransform), typeof(Image));
                 introBgObj.transform.SetParent(canvasObj.transform, false);
                 var introBgRect = introBgObj.GetComponent<RectTransform>();
@@ -186,8 +188,33 @@ namespace WhisperingWilds.Editor
                 introBgObj.GetComponent<Image>().color = new Color(0.01f, 0.02f, 0.03f, 0f);
                 introBgObj.SetActive(false);
 
-                // STEP 61: Atmospheric mist particle system for the cinematic intro.
-                // Creates a subtle fog/mist effect that drifts across the screen during the intro.
+                // Dawn sky gradient overlay — visible immediately so the first frame is not blank.
+                // Top: deep night blue, bottom: warm horizon glow.
+                var skyGradientObj = new GameObject("IntroSkyGradient", typeof(RectTransform), typeof(Image));
+                skyGradientObj.transform.SetParent(canvasObj.transform, false);
+                var skyGradientRect = skyGradientObj.GetComponent<RectTransform>();
+                skyGradientRect.anchorMin = Vector2.zero;
+                skyGradientRect.anchorMax = Vector2.one;
+                skyGradientRect.offsetMin = Vector2.zero;
+                skyGradientRect.offsetMax = Vector2.zero;
+                var skyGradientImg = skyGradientObj.GetComponent<Image>();
+                skyGradientImg.color = new Color(0.05f, 0.08f, 0.12f, 0.5f);
+                skyGradientObj.SetActive(false);
+
+                // Treeline silhouette at the bottom of the screen — a dark band suggesting
+                // distant Tamil Nadu hills and forest canopy against the dawn sky.
+                var treelineObj = new GameObject("IntroTreeline", typeof(RectTransform), typeof(Image));
+                treelineObj.transform.SetParent(canvasObj.transform, false);
+                var treelineRect = treelineObj.GetComponent<RectTransform>();
+                treelineRect.anchorMin = new Vector2(0f, 0f);
+                treelineRect.anchorMax = new Vector2(1f, 0.15f);
+                treelineRect.offsetMin = Vector2.zero;
+                treelineRect.offsetMax = Vector2.zero;
+                var treelineImg = treelineObj.GetComponent<Image>();
+                treelineImg.color = new Color(0.02f, 0.03f, 0.04f, 0.85f);
+                treelineObj.SetActive(false);
+
+                // Atmospheric mist overlay for the cinematic intro.
                 var mistObj = new GameObject("IntroMist");
                 mistObj.transform.SetParent(canvasObj.transform, false);
                 var mistRect = mistObj.GetComponent<RectTransform>() ?? mistObj.AddComponent<RectTransform>();
@@ -195,8 +222,6 @@ namespace WhisperingWilds.Editor
                 mistRect.anchorMax = Vector2.one;
                 mistRect.offsetMin = Vector2.zero;
                 mistRect.offsetMax = Vector2.zero;
-
-                // Create a soft mist overlay using a semi-transparent image
                 var mistImage = mistObj.AddComponent<Image>();
                 mistImage.color = new Color(0.5f, 0.55f, 0.6f, 0.08f);
                 mistObj.SetActive(false);
@@ -219,6 +244,8 @@ namespace WhisperingWilds.Editor
                 serializedIntro.FindProperty("menuRoot").objectReferenceValue = menuRoot;
                 serializedIntro.FindProperty("titleMenuController").objectReferenceValue = titleCtrl;
                 serializedIntro.FindProperty("introCamera").objectReferenceValue = camObj.GetComponent<Camera>();
+                serializedIntro.FindProperty("introSkyGradient").objectReferenceValue = skyGradientObj;
+                serializedIntro.FindProperty("introTreeline").objectReferenceValue = treelineObj;
                 serializedIntro.ApplyModifiedProperties();
 
                 // Bind to TitleMenuController via SerializedObject

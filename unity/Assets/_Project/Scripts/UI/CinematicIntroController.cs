@@ -33,17 +33,21 @@ namespace WhisperingWilds.UI
         [SerializeField] private Text introSubtitleText;
         [SerializeField] private Text introSkipText;
 
+        [Header("STEP 69 — Additional Visual Layers")]
+        [SerializeField] private GameObject introSkyGradient;
+        [SerializeField] private GameObject introTreeline;
+
         [Header("Timing")]
         [Tooltip("Total duration of the cinematic intro in seconds")]
-        [SerializeField] private float totalDuration = 25f;
+        [SerializeField] private float totalDuration = 7f;
         [Tooltip("Time when title starts fading in")]
-        [SerializeField] private float titleFadeInStart = 14f;
+        [SerializeField] private float titleFadeInStart = 1.5f;
         [Tooltip("Time when title is fully visible")]
-        [SerializeField] private float titleFadeInEnd = 18f;
+        [SerializeField] private float titleFadeInEnd = 3f;
         [Tooltip("Time when intro fades to main menu")]
-        [SerializeField] private float menuFadeStart = 21f;
+        [SerializeField] private float menuFadeStart = 5.5f;
         [Tooltip("Time when intro completes and menu appears")]
-        [SerializeField] private float menuFadeEnd = 25f;
+        [SerializeField] private float menuFadeEnd = 7f;
 
         [Header("Camera Movement")]
         [Tooltip("Starting camera position offset")]
@@ -186,6 +190,24 @@ namespace WhisperingWilds.UI
                 }
             }
 
+            // STEP 69: Setup sky gradient and treeline for visual depth
+            if (introSkyGradient != null)
+            {
+                var skyImg = introSkyGradient.GetComponent<Image>();
+                if (skyImg != null)
+                {
+                    skyImg.color = new Color(0.05f, 0.08f, 0.12f, 0.5f);
+                }
+            }
+            if (introTreeline != null)
+            {
+                var treeImg = introTreeline.GetComponent<Image>();
+                if (treeImg != null)
+                {
+                    treeImg.color = new Color(0.02f, 0.03f, 0.04f, 0.85f);
+                }
+            }
+
             // Setup vignette
             if (introVignette != null)
             {
@@ -249,6 +271,8 @@ namespace WhisperingWilds.UI
 
             // Show intro elements
             if (introBackground != null) introBackground.SetActive(true);
+            if (introSkyGradient != null) introSkyGradient.SetActive(true);
+            if (introTreeline != null) introTreeline.SetActive(true);
             if (introVignette != null) introVignette.SetActive(true);
             if (introTitleGroup != null) introTitleGroup.SetActive(true);
             if (introSkipText != null) introSkipText.gameObject.SetActive(true);
@@ -278,14 +302,18 @@ namespace WhisperingWilds.UI
 
             while (elapsed < totalDuration && _isPlaying && !_skipped)
             {
-                elapsed += Time.deltaTime;
+                // STEP 69: Use unscaled delta time so the intro advances even when
+                // Time.timeScale is 0 (MainMenu state). This is the root cause fix for
+                // the stuck intro — the game pauses time at the menu, but the intro
+                // coroutine must use real-world time.
+                elapsed += Time.unscaledDeltaTime;
                 _elapsedTime = elapsed;
 
-                // Phase 1: Fade in background with gradient (0-5s)
-                // Transition from deep night to dawn mist
-                if (elapsed < 5f)
+                // Phase 1: Fade in background (0-1.5s)
+                // Quick transition from deep night to dawn mist so the player sees something immediately
+                if (elapsed < 1.5f)
                 {
-                    float t = elapsed / 5f;
+                    float t = elapsed / 1.5f;
                     t = SmoothStep(t);
                     if (introBackground != null)
                     {
@@ -304,27 +332,28 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 2: Show skip text (3-8s)
-                if (elapsed >= 3f && elapsed < 8f)
+                // Phase 2: Show skip text immediately (0.5-5s)
+                // Player should know they can skip within the first second
+                if (elapsed >= 0.5f && elapsed < 5f)
                 {
-                    float t = Mathf.Clamp01((elapsed - 3f) / 1f);
+                    float t = Mathf.Clamp01((elapsed - 0.5f) / 0.5f);
                     if (introSkipText != null)
                     {
-                        introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.6f);
+                        introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.7f);
                     }
                 }
-                else if (elapsed >= 8f && introSkipText != null)
+                else if (elapsed >= 5f && introSkipText != null)
                 {
-                    // Fade out skip text
-                    float t = Mathf.Clamp01(1f - (elapsed - 8f) / 2f);
-                    introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.6f);
+                    // Fade out skip text as menu transition begins
+                    float t = Mathf.Clamp01(1f - (elapsed - 5f) / 0.5f);
+                    introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.7f);
                 }
 
-                // Phase 3: Camera movement & background transition (5-15s)
+                // Phase 3: Camera movement & background transition (1-4s)
                 // Camera slowly pushes forward while background shifts to sunrise tones
-                if (elapsed >= 5f && elapsed < 15f && introCamera != null)
+                if (elapsed >= 1f && elapsed < 4f && introCamera != null)
                 {
-                    float t = (elapsed - 5f) / 10f;
+                    float t = (elapsed - 1f) / 3f;
                     t = SmoothStep(t);
 
                     Vector3 pos = Vector3.Lerp(cameraStartOffset, cameraEndOffset, t);
@@ -345,7 +374,8 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 4: Title fade in (14-18s)
+                // Phase 4: Title fade in (1.5-3s)
+                // Title appears early so the player knows what game they're launching
                 if (elapsed >= titleFadeInStart && elapsed < titleFadeInEnd)
                 {
                     float t = (elapsed - titleFadeInStart) / (titleFadeInEnd - titleFadeInStart);
@@ -361,7 +391,7 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 5: Fade to menu (21-25s)
+                // Phase 5: Fade to menu (5.5-7s)
                 if (elapsed >= menuFadeStart && elapsed < menuFadeEnd)
                 {
                     float t = (elapsed - menuFadeStart) / (menuFadeEnd - menuFadeStart);
@@ -446,6 +476,8 @@ namespace WhisperingWilds.UI
 
             // Hide intro elements
             if (introBackground != null) introBackground.SetActive(false);
+            if (introSkyGradient != null) introSkyGradient.SetActive(false);
+            if (introTreeline != null) introTreeline.SetActive(false);
             if (introVignette != null) introVignette.SetActive(false);
             if (introTitleGroup != null) introTitleGroup.SetActive(false);
             if (introSkipText != null) introSkipText.gameObject.SetActive(false);
