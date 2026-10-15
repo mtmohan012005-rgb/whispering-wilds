@@ -21,11 +21,26 @@ namespace WhisperingWilds.Online
     }
 
     /// <summary>
+    /// Generic server response wrapper: { success, message, data?, token? }
+    /// Used for login, register, logout, and me endpoints.
+    /// </summary>
+    [Serializable]
+    internal class AuthResponse
+    {
+        public bool success;
+        public string message;
+        public AuthUser data;
+        public string token;
+    }
+
+    /// <summary>
     /// Unity-side HTTP client for the Whispering Wilds authentication backend.
     ///
     /// Talks to the session-based /api/auth endpoints (login, logout, register, me).
     /// The session token is kept in memory only and is NOT stored as PlayerPrefs.
     /// If the backend is unreachable, single-player gameplay remains fully functional.
+    ///
+    /// Sends X-WW-CSRF: 1 on all POST requests to satisfy the server's CSRF middleware.
     /// </summary>
     public class AuthService : MonoBehaviour
     {
@@ -45,6 +60,9 @@ namespace WhisperingWilds.Online
 
         /// <summary>The currently signed-in user, or null when offline.</summary>
         public AuthUser CurrentUser { get; private set; }
+
+        /// <summary>The configured backend base URL.</summary>
+        public string BaseUrl => baseUrl;
 
         public event Action<bool, string> OnSignInComplete;
         public event Action OnSignOutComplete;
@@ -105,7 +123,6 @@ namespace WhisperingWilds.Online
             IsRequesting = true;
             string url = $"{baseUrl.TrimEnd('/')}/api/auth/login";
 
-            var payload = new System.Text.Json.JsonSerializerOptions();
             string json = $"{{\"email\":\"{EscapeJson(email)}\",\"password\":\"{EscapeJson(password)}\"}}";
 
             using (var uwr = new UnityWebRequest(url, "POST"))
@@ -114,6 +131,7 @@ namespace WhisperingWilds.Online
                 uwr.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 uwr.downloadHandler = new DownloadHandlerBuffer();
                 uwr.SetRequestHeader("Content-Type", "application/json");
+                uwr.SetRequestHeader("X-WW-CSRF", "1");
                 uwr.timeout = requestTimeoutSeconds;
 
                 yield return uwr.SendWebRequest();
@@ -133,7 +151,7 @@ namespace WhisperingWilds.Online
                 {
                     string response = uwr.downloadHandler?.text;
                     var result = ParseSignInResponse(response);
-                    if (result.success)
+                    if (result.success && !string.IsNullOrEmpty(result.token))
                     {
                         _sessionToken = result.token;
                         CurrentUser = result.user;
@@ -142,9 +160,10 @@ namespace WhisperingWilds.Online
                     }
                     else
                     {
-                        callback?.Invoke(false, result.message);
-                        OnError?.Invoke(result.message);
-                        OnSignInComplete?.Invoke(false, result.message);
+                        string msg = result.message ?? "Sign in failed: no session received.";
+                        callback?.Invoke(false, msg);
+                        OnError?.Invoke(msg);
+                        OnSignInComplete?.Invoke(false, msg);
                     }
                 }
             }
@@ -202,6 +221,7 @@ namespace WhisperingWilds.Online
                 uwr.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 uwr.downloadHandler = new DownloadHandlerBuffer();
                 uwr.SetRequestHeader("Content-Type", "application/json");
+                uwr.SetRequestHeader("X-WW-CSRF", "1");
                 uwr.timeout = requestTimeoutSeconds;
 
                 yield return uwr.SendWebRequest();
@@ -252,6 +272,7 @@ namespace WhisperingWilds.Online
                 uwr.uploadHandler = new UploadHandlerRaw(new byte[0]);
                 uwr.downloadHandler = new DownloadHandlerBuffer();
                 uwr.SetRequestHeader("Content-Type", "application/json");
+                uwr.SetRequestHeader("X-WW-CSRF", "1");
                 if (!string.IsNullOrEmpty(_sessionToken))
                 {
                     uwr.SetRequestHeader("Authorization", $"Bearer {_sessionToken}");
@@ -314,79 +335,81 @@ namespace WhisperingWilds.Online
         /// </summary>
         public string GetSessionToken() => _sessionToken;
 
-        // --- Parsing helpers ---
+        // --- Parsing helpers using JsonUtility ---
 
-        private struct SignInResult
+        private AuthResponse ParseSignInResponse(string response)
         {
-            public bool success;
-            public string message;
-            public string token;
-            public AuthUser user;
-        }
+            if (string.IsNullOrEmpty(response))
+                return new AuthResponse { success = false, message = "Invalid server response." };
 
-        private struct GenericResult
-        {
-            public bool success;
-            public string message;
-        }
-
-        private SignInResult ParseSignInResponse(string response)
-        {
-            var result = new SignInResult { success = false, message = "Invalid server response." };
-
-            if (string.IsNullOrEmpty(response)) return result;
-
-            // Simple JSON parsing without external dependency
-            bool success = response.Contains("\"success\":true") || response.Contains("\"success\": true");
-            result.success = success;
-
-            string message = ExtractJsonString(response, "message");
-            result.message = message ?? "Sign in failed.";
-
-            string token = ExtractJsonString(response, "token");
-            result.token = token;
-
-            // Extract user data
-            int userStart = response.IndexOf("\"data\"");
-            if (userStart >= 0)
+            try
             {
-                int userObjStart = response.IndexOf("{", userStart);
-                int userObjEnd = FindMatchingBrace(response, userObjStart);
-                if (userObjStart >= 0 && userObjEnd > userObjStart)
+                var authResponse = JsonUtility.FromJson<AuthResponse>(response);
+                if (authResponse != null)
                 {
-                    string userJson = response.Substring(userObjStart, userObjEnd - userObjStart + 1);
-                    var user = new AuthUser
-                    {
-                        id = ExtractJsonString(userJson, "id"),
-                        email = ExtractJsonString(userJson, "email"),
-                        displayName = ExtractJsonString(userJson, "displayName"),
-                        emailVerified = userJson.Contains("\"emailVerified\":true") || userJson.Contains("\"emailVerified\": true")
-                    };
-                    result.user = user;
+                    return authResponse;
                 }
             }
-
-            return result;
-        }
-
-        private GenericResult ParseGenericResponse(string response)
-        {
-            bool success = false;
-            string message = "Unknown error.";
-
-            if (!string.IsNullOrEmpty(response))
+            catch
             {
-                success = response.Contains("\"success\":true") || response.Contains("\"success\": true");
-                message = ExtractJsonString(response, "message") ?? message;
+                // Fall through to manual parsing if JsonUtility fails
             }
 
-            return new GenericResult { success = success, message = message };
+            // Fallback: manual extraction for responses JsonUtility cannot parse
+            return new AuthResponse
+            {
+                success = response.Contains("\"success\":true") || response.Contains("\"success\": true"),
+                message = ExtractJsonString(response, "message") ?? "Sign in failed.",
+                token = ExtractJsonString(response, "token"),
+                data = ExtractUserFromResponse(response)
+            };
+        }
+
+        private AuthResponse ParseGenericResponse(string response)
+        {
+            if (string.IsNullOrEmpty(response))
+                return new AuthResponse { success = false, message = "Unknown error." };
+
+            try
+            {
+                var authResponse = JsonUtility.FromJson<AuthResponse>(response);
+                if (authResponse != null)
+                    return authResponse;
+            }
+            catch
+            {
+                // Fall through
+            }
+
+            return new AuthResponse
+            {
+                success = response.Contains("\"success\":true") || response.Contains("\"success\": true"),
+                message = ExtractJsonString(response, "message") ?? "Unknown error."
+            };
         }
 
         private AuthUser ParseMeResponse(string response)
         {
             if (string.IsNullOrEmpty(response)) return null;
 
+            try
+            {
+                var authResponse = JsonUtility.FromJson<AuthResponse>(response);
+                if (authResponse != null && authResponse.success)
+                    return authResponse.data;
+            }
+            catch
+            {
+                // Fall through
+            }
+
+            return ExtractUserFromResponse(response);
+        }
+
+        private AuthUser ExtractUserFromResponse(string response)
+        {
+            // The server returns { success, message, data: { id, email, displayName, emailVerified } }
+            // or for login: { success, message, data: { ... }, token: "..." }
             int dataStart = response.IndexOf("\"data\"");
             if (dataStart < 0) return null;
 
@@ -455,5 +478,6 @@ namespace WhisperingWilds.Online
                         .Replace("\r", "\\r")
                         .Replace("\t", "\\t");
         }
+
     }
 }

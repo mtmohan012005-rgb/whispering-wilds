@@ -343,11 +343,151 @@ namespace WhisperingWilds.Editor
                 serializedMenuAnim.FindProperty("menuVignette").objectReferenceValue = menuVignetteImg;
                 serializedMenuAnim.ApplyModifiedProperties();
 
-                // STEP 73: Create LoginUI panel
+                // STEP 73: Create LoginUI panel with all visual elements
                 var loginUIObj = new GameObject("LoginUI");
                 loginUIObj.transform.SetParent(canvasObj.transform, false);
                 var loginUI = loginUIObj.AddComponent<WhisperingWilds.UI.LoginUI>();
                 loginUIObj.SetActive(false);
+
+                // Login panel background
+                var loginBg = new GameObject("LoginBackground", typeof(RectTransform), typeof(Image));
+                loginBg.transform.SetParent(loginUIObj.transform, false);
+                var loginBgRect = loginBg.GetComponent<RectTransform>();
+                loginBgRect.anchorMin = Vector2.zero;
+                loginBgRect.anchorMax = Vector2.one;
+                loginBgRect.offsetMin = Vector2.zero;
+                loginBgRect.offsetMax = Vector2.zero;
+                loginBg.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.1f, 0.97f);
+
+                // --- Sign In Panel ---
+                var signInPanel = new GameObject("SignInPanel", typeof(RectTransform));
+                signInPanel.transform.SetParent(loginUIObj.transform, false);
+                var signInRect = signInPanel.GetComponent<RectTransform>();
+                signInRect.anchorMin = new Vector2(0.3f, 0.2f);
+                signInRect.anchorMax = new Vector2(0.7f, 0.8f);
+                signInRect.pivot = new Vector2(0.5f, 0.5f);
+
+                // Sign In title
+                var signInTitle = CreateText("SignInTitle", signInPanel.transform,
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(0f, 40f),
+                    font, 28, TextAnchor.MiddleCenter, Color.white);
+
+                // Email field
+                var emailField = CreateInputField("EmailField", signInPanel.transform,
+                    new Vector2(0f, 0.65f), new Vector2(1f, 0.65f), new Vector2(0f, -10f), new Vector2(0f, 40f), font, "Email");
+
+                // Password field
+                var passwordField = CreateInputField("PasswordField", signInPanel.transform,
+                    new Vector2(0f, 0.45f), new Vector2(1f, 0.45f), new Vector2(0f, -10f), new Vector2(0f, 40f), font, "Password");
+                passwordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
+
+                // Sign In button
+                var signInBtn = CreateButton("SignInButton", signInPanel.transform,
+                    new Vector2(0.2f, 0.2f), new Vector2(0.8f, 0.2f), new Vector2(0f, 0f), new Vector2(0f, 40f),
+                    font, "Sign In", new Color(0.2f, 0.5f, 0.4f));
+
+                // Sign In status text
+                var signInStatus = CreateText("SignInStatus", signInPanel.transform,
+                    new Vector2(0f, 0.1f), new Vector2(1f, 0.1f), new Vector2(0f, -10f), new Vector2(0f, 30f),
+                    font, 12, TextAnchor.MiddleCenter, Color.gray);
+
+                // Switch to register button
+                var switchToRegBtn = CreateButton("SwitchToRegisterBtn", signInPanel.transform,
+                    new Vector2(0.15f, 0.02f), new Vector2(0.85f, 0.02f), new Vector2(0f, 0f), new Vector2(0f, 36f),
+                    font, "No account? Create one", new Color(0.3f, 0.3f, 0.4f));
+
+                // --- Register Panel ---
+                var registerPanel = new GameObject("RegisterPanel", typeof(RectTransform));
+                registerPanel.transform.SetParent(loginUIObj.transform, false);
+                var regRect = registerPanel.GetComponent<RectTransform>();
+                regRect.anchorMin = new Vector2(0.3f, 0.15f);
+                regRect.anchorMax = new Vector2(0.7f, 0.85f);
+                regRect.pivot = new Vector2(0.5f, 0.5f);
+                registerPanel.SetActive(false);
+
+                // Register title
+                CreateText("RegisterTitle", registerPanel.transform,
+                    new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(0f, 40f),
+                    font, 28, TextAnchor.MiddleCenter, Color.white);
+
+                // Register email field
+                var regEmailField = CreateInputField("RegEmailField", registerPanel.transform,
+                    new Vector2(0f, 0.72f), new Vector2(1f, 0.72f), new Vector2(0f, -10f), new Vector2(0f, 40f), font, "Email");
+
+                // Register name field
+                var regNameField = CreateInputField("RegNameField", registerPanel.transform,
+                    new Vector2(0f, 0.56f), new Vector2(1f, 0.56f), new Vector2(0f, -10f), new Vector2(0f, 40f), font, "Display name");
+
+                // Register password field
+                var regPasswordField = CreateInputField("RegPasswordField", registerPanel.transform,
+                    new Vector2(0f, 0.40f), new Vector2(1f, 0.40f), new Vector2(0f, -10f), new Vector2(0f, 40f), font, "Password");
+                regPasswordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
+
+                // Register confirm password field
+                var regConfirmPasswordField = CreateInputField("RegConfirmPasswordField", registerPanel.transform,
+                    new Vector2(0f, 0.24f), new Vector2(1f, 0.24f), new Vector2(0f, -10f), new Vector2(0f, 40f), font, "Confirm password");
+                regConfirmPasswordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
+
+                // Register button
+                var registerBtn = CreateButton("RegisterButton", registerPanel.transform,
+                    new Vector2(0.2f, 0.12f), new Vector2(0.8f, 0.12f), new Vector2(0f, 0f), new Vector2(0f, 40f),
+                    font, "Create Account", new Color(0.2f, 0.5f, 0.4f));
+
+                // Register status text
+                var regStatus = CreateText("RegisterStatus", registerPanel.transform,
+                    new Vector2(0f, 0.06f), new Vector2(1f, 0.06f), new Vector2(0f, -10f), new Vector2(0f, 30f),
+                    font, 12, TextAnchor.MiddleCenter, Color.gray);
+
+                // Switch to sign in button
+                var switchToSignInBtn = CreateButton("SwitchToSignInBtn", registerPanel.transform,
+                    new Vector2(0.15f, 0.01f), new Vector2(0.85f, 0.01f), new Vector2(0f, 0f), new Vector2(0f, 36f),
+                    font, "Have an account? Sign in", new Color(0.3f, 0.3f, 0.4f));
+
+                // --- Signed In Panel ---
+                var signedInPanel = new GameObject("SignedInPanel", typeof(RectTransform));
+                signedInPanel.transform.SetParent(loginUIObj.transform, false);
+                var signedInRect = signedInPanel.GetComponent<RectTransform>();
+                signedInRect.anchorMin = new Vector2(0.3f, 0.35f);
+                signedInRect.anchorMax = new Vector2(0.7f, 0.65f);
+                signedInRect.pivot = new Vector2(0.5f, 0.5f);
+                signedInPanel.SetActive(false);
+
+                // Signed in label
+                var signedInLabel = CreateText("SignedInLabel", signedInPanel.transform,
+                    new Vector2(0f, 0.6f), new Vector2(1f, 0.6f), new Vector2(0f, 0f), new Vector2(0f, 40f),
+                    font, 18, TextAnchor.MiddleCenter, new Color(0.8f, 0.9f, 0.7f));
+
+                // Sign out button
+                var signOutBtn = CreateButton("SignOutButton", signedInPanel.transform,
+                    new Vector2(0.25f, 0.15f), new Vector2(0.75f, 0.15f), new Vector2(0f, 0f), new Vector2(0f, 40f),
+                    font, "Sign Out", new Color(0.5f, 0.2f, 0.2f));
+
+                // --- Back Button (shared, at top of login UI) ---
+                var backBtn = CreateButton("BackButton", loginUIObj.transform,
+                    new Vector2(0.02f, 0.92f), new Vector2(0.15f, 0.92f), new Vector2(0f, 0f), new Vector2(100f, 40f),
+                    font, "Back", new Color(0.3f, 0.3f, 0.3f));
+
+                // Wire all references using SerializedObject
+                var serializedLoginUI = new SerializedObject(loginUI);
+                serializedLoginUI.FindProperty("emailField").objectReferenceValue = emailField;
+                serializedLoginUI.FindProperty("passwordField").objectReferenceValue = passwordField;
+                serializedLoginUI.FindProperty("signInButton").objectReferenceValue = signInBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("signInStatusText").objectReferenceValue = signInStatus.GetComponent<Text>();
+                serializedLoginUI.FindProperty("registerEmailField").objectReferenceValue = regEmailField;
+                serializedLoginUI.FindProperty("registerNameField").objectReferenceValue = regNameField;
+                serializedLoginUI.FindProperty("registerPasswordField").objectReferenceValue = regPasswordField;
+                serializedLoginUI.FindProperty("registerConfirmPasswordField").objectReferenceValue = regConfirmPasswordField;
+                serializedLoginUI.FindProperty("registerButton").objectReferenceValue = registerBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("registerStatusText").objectReferenceValue = regStatus.GetComponent<Text>();
+                serializedLoginUI.FindProperty("backButton").objectReferenceValue = backBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("switchToRegisterButton").objectReferenceValue = switchToRegBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("switchToSignInButton").objectReferenceValue = switchToSignInBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("signedInLabel").objectReferenceValue = signedInLabel.GetComponent<Text>();
+                serializedLoginUI.FindProperty("signOutButton").objectReferenceValue = signOutBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("signInPanel").objectReferenceValue = signInPanel;
+                serializedLoginUI.FindProperty("registerPanel").objectReferenceValue = registerPanel;
+                serializedLoginUI.FindProperty("signedInPanel").objectReferenceValue = signedInPanel;
+                serializedLoginUI.ApplyModifiedProperties();
 
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
@@ -415,6 +555,61 @@ namespace WhisperingWilds.Editor
             textObj.GetComponent<Text>().text = label;
 
             return btnObj;
+        }
+
+        /// <summary>
+        /// Creates an InputField with a placeholder text for the login panel.
+        /// </summary>
+        private static GameObject CreateInputField(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 sizeDelta, Font font, string placeholder)
+        {
+            var fieldObj = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(InputField));
+            fieldObj.transform.SetParent(parent, false);
+            var rect = fieldObj.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.anchoredPosition = anchoredPos;
+            rect.sizeDelta = sizeDelta;
+
+            var img = fieldObj.GetComponent<Image>();
+            img.color = new Color(0.12f, 0.14f, 0.16f, 0.9f);
+
+            var inputField = fieldObj.GetComponent<InputField>();
+            inputField.textComponent = null; // We'll create a separate text child
+
+            // Create placeholder text
+            var placeholderObj = new GameObject("Placeholder", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            placeholderObj.transform.SetParent(fieldObj.transform, false);
+            var placeholderRect = placeholderObj.GetComponent<RectTransform>();
+            placeholderRect.anchorMin = new Vector2(0f, 0f);
+            placeholderRect.anchorMax = new Vector2(1f, 1f);
+            placeholderRect.offsetMin = new Vector2(10f, 5f);
+            placeholderRect.offsetMax = new Vector2(10f, 5f);
+            var placeholderText = placeholderObj.GetComponent<Text>();
+            placeholderText.font = font;
+            placeholderText.fontSize = 16;
+            placeholderText.alignment = TextAnchor.MiddleLeft;
+            placeholderText.color = new Color(0.5f, 0.5f, 0.5f);
+            placeholderText.text = placeholder;
+            placeholderText.raycastTarget = false;
+            inputField.placeholder = placeholderText;
+
+            // Create text component
+            var textObj = new GameObject("Text", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            textObj.transform.SetParent(fieldObj.transform, false);
+            var textRect = textObj.GetComponent<RectTransform>();
+            textRect.anchorMin = new Vector2(0f, 0f);
+            textRect.anchorMax = new Vector2(1f, 1f);
+            textRect.offsetMin = new Vector2(10f, 5f);
+            textRect.offsetMax = new Vector2(10f, 5f);
+            var textComp = textObj.GetComponent<Text>();
+            textComp.font = font;
+            textComp.fontSize = 16;
+            textComp.alignment = TextAnchor.MiddleLeft;
+            textComp.color = Color.white;
+            textComp.raycastTarget = false;
+            inputField.textComponent = textComp;
+
+            return fieldObj;
         }
 
         /// <summary>

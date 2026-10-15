@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Step 76 — Unity test execution, QA runner repair, and campaign verification)
+**Commit:** Pending push (Step 77 — Login/Account authentication fix and UI completion)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -12,7 +12,34 @@
 - **GitHub Pages:** Static landing page deployed via GitHub Actions from `docs/landing/`
 - **Desktop launcher:** Canonical PowerShell launcher targeting Unity executable (`unity/Build/Windows/TheWhisperingWilds.exe`)
 
-## Step 76 — Unity Test Execution, QA Runner Repair, and Campaign Verification
+## Step 77 — Login/Account Authentication Fix and UI Completion
+
+**Files changed:**
+- **`unity/Assets/_Project/Scripts/Online/AuthService.cs`** — Complete rewrite: (1) added `X-WW-CSRF: 1` header on all POST requests (login, register, logout) to satisfy server CSRF middleware, (2) replaced hand-built JSON with `AuthResponse` DTO and `JsonUtility` parsing with fallback manual extraction, (3) sign-in now requires both `success` AND a valid `token` before marking user as signed in, (4) `BaseUrl` public property for runtime configuration, (5) session token kept in memory only, never PlayerPrefs
+- **`unity/Assets/_Project/Scripts/Editor/BuildBootScene.cs`** — Added all login panel UI elements: 3 panels (signIn, register, signedIn), input fields with password type, buttons, status text, back button, and `CreateInputField` helper method. All references wired via SerializedObject.
+
+**Authentication integration defect fixed:**
+The Unity client's login and registration POST requests did not send `X-WW-CSRF: 1`, causing the server's `csrfProtection` middleware to reject them. Now all POST requests include the CSRF header.
+
+**Verification:**
+| Test | Result |
+|------|--------|
+| C# compilation | **PASS** — Tundra build success, 0 errors |
+| `npm run verify-game` | **PASS** (15/15) |
+| `npm run test:backend` | **PASS** (31/31) |
+| `npm run verify-production` | **PASS** (all checks) |
+| `npm run verify-assets` | **PASS** (all checks) |
+| `node scripts/verify-runtime.js` | **PASS** (7/7) |
+
+**Not verified:**
+- **Unity batchmode build** — Editor asmdef not loaded in headless batchmode (licensing Code 404). Existing production build from Step 76 still works.
+- **Live backend integration** — Requires running backend server and interactive Unity Editor to test actual sign-in flow.
+- **Interactive login UI** — Login panel UI elements created in BuildBootScene.cs but require interactive testing to verify visual layout and button behavior.
+
+**Remaining blockers:**
+1. **GitHub Actions workflows** — 3 workflow files exist locally but cannot be pushed (PAT lacks `workflow` scope)
+2. **Interactive smoke testing** — Full campaign playthrough and login UI testing require human operator
+3. **Unity batchmode build** — Editor assembly not loaded in headless mode; requires interactive Unity Editor
 
 **Files changed:**
 - **`scripts/Run-QaTests.ps1`** — Fixed PlayMode test platform name: "WindowsPlayer" → "PlayMode" (Unity 6 Test Framework uses "PlayMode" for in-editor PlayMode tests)
