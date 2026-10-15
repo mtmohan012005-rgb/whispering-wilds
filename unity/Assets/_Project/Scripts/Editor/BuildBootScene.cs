@@ -120,6 +120,12 @@ namespace WhisperingWilds.Editor
                 var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "Settings", new Color(0.25f, 0.35f, 0.45f));
                 var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "Quit", new Color(0.45f, 0.2f, 0.2f));
 
+                // STEP 70: Add MenuButtonAnimator to each button for hover/press/focus feedback
+                foreach (var btnGo in new[] { btnNew, btnCont, btnSettings, btnQuit })
+                {
+                    btnGo.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+                }
+
                 // Strict Appearance Rule Notice at bottom
                 var ruleObj = CreateText("RuleNoticeText", menuRoot.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(1000, 60), font, 16, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f));
 
@@ -215,16 +221,83 @@ namespace WhisperingWilds.Editor
                 treelineObj.SetActive(false);
 
                 // Atmospheric mist overlay for the cinematic intro.
-                var mistObj = new GameObject("IntroMist");
+                var mistObj = new GameObject("IntroMist", typeof(RectTransform), typeof(Image));
                 mistObj.transform.SetParent(canvasObj.transform, false);
-                var mistRect = mistObj.GetComponent<RectTransform>() ?? mistObj.AddComponent<RectTransform>();
+                var mistRect = mistObj.GetComponent<RectTransform>();
                 mistRect.anchorMin = Vector2.zero;
                 mistRect.anchorMax = Vector2.one;
                 mistRect.offsetMin = Vector2.zero;
                 mistRect.offsetMax = Vector2.zero;
-                var mistImage = mistObj.AddComponent<Image>();
+                var mistImage = mistObj.GetComponent<Image>();
                 mistImage.color = new Color(0.5f, 0.55f, 0.6f, 0.08f);
                 mistObj.SetActive(false);
+
+                // STEP 70: Main menu atmospheric background layers.
+                // These sit behind the menu content and provide layered depth with slow parallax drift.
+
+                // Menu background gradient — deep teal/blue dawn sky
+                var menuBgObj = new GameObject("MenuBackground", typeof(RectTransform), typeof(Image));
+                menuBgObj.transform.SetParent(canvasObj.transform, false);
+                var menuBgRect = menuBgObj.GetComponent<RectTransform>();
+                menuBgRect.anchorMin = Vector2.zero;
+                menuBgRect.anchorMax = Vector2.one;
+                menuBgRect.offsetMin = Vector2.zero;
+                menuBgRect.offsetMax = Vector2.zero;
+                var menuBgImg = menuBgObj.GetComponent<Image>();
+                menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
+
+                // Mist layer 1 — slow horizontal drift
+                var menuMist1Obj = new GameObject("MenuMistLayer1", typeof(RectTransform), typeof(Image));
+                menuMist1Obj.transform.SetParent(canvasObj.transform, false);
+                var menuMist1Rect = menuMist1Obj.GetComponent<RectTransform>();
+                menuMist1Rect.anchorMin = Vector2.zero;
+                menuMist1Rect.anchorMax = Vector2.one;
+                menuMist1Rect.offsetMin = Vector2.zero;
+                menuMist1Rect.offsetMax = Vector2.zero;
+                var menuMist1Img = menuMist1Obj.GetComponent<Image>();
+                menuMist1Img.color = new Color(0.3f, 0.35f, 0.4f, 0.06f);
+                menuMist1Obj.SetActive(false);
+
+                // Mist layer 2 — different speed for parallax
+                var menuMist2Obj = new GameObject("MenuMistLayer2", typeof(RectTransform), typeof(Image));
+                menuMist2Obj.transform.SetParent(canvasObj.transform, false);
+                var menuMist2Rect = menuMist2Obj.GetComponent<RectTransform>();
+                menuMist2Rect.anchorMin = Vector2.zero;
+                menuMist2Rect.anchorMax = Vector2.one;
+                menuMist2Rect.offsetMin = Vector2.zero;
+                menuMist2Rect.offsetMax = Vector2.zero;
+                var menuMist2Img = menuMist2Obj.GetComponent<Image>();
+                menuMist2Img.color = new Color(0.25f, 0.3f, 0.35f, 0.04f);
+                menuMist2Obj.SetActive(false);
+
+                // Fireflies — subtle pulsing light particles
+                var menuFirefliesObj = new GameObject("MenuFireflies", typeof(RectTransform), typeof(Image));
+                menuFirefliesObj.transform.SetParent(canvasObj.transform, false);
+                var menuFirefliesRect = menuFirefliesObj.GetComponent<RectTransform>();
+                menuFirefliesRect.anchorMin = Vector2.zero;
+                menuFirefliesRect.anchorMax = Vector2.one;
+                menuFirefliesRect.offsetMin = Vector2.zero;
+                menuFirefliesRect.offsetMax = Vector2.zero;
+                var menuFirefliesImg = menuFirefliesObj.GetComponent<Image>();
+                menuFirefliesImg.color = new Color(1f, 0.9f, 0.5f, 0.3f);
+                menuFirefliesObj.SetActive(false);
+
+                // Menu vignette — subtle edge darkening to keep center readable
+                var menuVignetteObj = new GameObject("MenuVignette", typeof(RectTransform), typeof(Image));
+                menuVignetteObj.transform.SetParent(canvasObj.transform, false);
+                var menuVignetteRect = menuVignetteObj.GetComponent<RectTransform>();
+                menuVignetteRect.anchorMin = Vector2.zero;
+                menuVignetteRect.anchorMax = Vector2.one;
+                menuVignetteRect.offsetMin = Vector2.zero;
+                menuVignetteRect.offsetMax = Vector2.zero;
+                var menuVignetteImg = menuVignetteObj.GetComponent<Image>();
+                menuVignetteImg.color = new Color(0f, 0f, 0f, 0.35f);
+
+                // STEP 70: MainMenuAnimator — orchestrates title, subtitle, button, and background animation.
+                // Parented to the canvas so it persists in the scene hierarchy and is discoverable by FindObjectOfType.
+                var menuAnimatorObj = new GameObject("MainMenuAnimator");
+                menuAnimatorObj.transform.SetParent(canvasObj.transform, false);
+                var menuAnimator = menuAnimatorObj.AddComponent<WhisperingWilds.UI.MainMenuAnimator>();
 
                 // Cinematic intro controller, placed on its own GameObject so it can manage
                 // the intro sequence before the title menu becomes interactive.
@@ -248,6 +321,19 @@ namespace WhisperingWilds.Editor
                 serializedIntro.FindProperty("introTreeline").objectReferenceValue = treelineObj;
                 serializedIntro.ApplyModifiedProperties();
 
+                // STEP 70: Wire MainMenuAnimator references
+                var serializedMenuAnim = new SerializedObject(menuAnimator);
+                serializedMenuAnim.FindProperty("titleText").objectReferenceValue = titleText;
+                serializedMenuAnim.FindProperty("subtitleText").objectReferenceValue = subtitleText;
+                serializedMenuAnim.FindProperty("menuContainer").objectReferenceValue = menuContainer;
+                serializedMenuAnim.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
+                serializedMenuAnim.FindProperty("menuBackground").objectReferenceValue = menuBgImg;
+                serializedMenuAnim.FindProperty("menuMistLayer1").objectReferenceValue = menuMist1Obj;
+                serializedMenuAnim.FindProperty("menuMistLayer2").objectReferenceValue = menuMist2Obj;
+                serializedMenuAnim.FindProperty("menuFireflies").objectReferenceValue = menuFirefliesObj;
+                serializedMenuAnim.FindProperty("menuVignette").objectReferenceValue = menuVignetteImg;
+                serializedMenuAnim.ApplyModifiedProperties();
+
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
@@ -258,6 +344,7 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("settingsMenu").objectReferenceValue = settingsUi;
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
+                serializedTitle.FindProperty("mainMenuAnimator").objectReferenceValue = menuAnimator;
                 serializedTitle.ApplyModifiedProperties();
 
                 // Save Boot Scene

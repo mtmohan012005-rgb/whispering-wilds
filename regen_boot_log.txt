@@ -1,0 +1,551 @@
+VBCSCompilerPreWarmer: watching VBCSCompiler (PID 8404)
+VBCSCompilerPreWarmer: pre-warm launched (dotnet PID 14816)
+VBCSCompiler prewarm took 59.85 ms
+[Licensing::Module] Trying to connect to existing licensing client channel...
+[Licensing::IpcConnector] Channel LicenseClient-mohan doesn't exist
+Built from '6000.6/staging' branch; Version is '6000.6.3f1 (45d8eee7de74) revision 4577518'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) Core' Language: 'en' Physical Memory: 7931 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-15T02:45:13Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 12772)
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe
+-batchMode
+-nographics
+-projectPath
+.
+-executeMethod
+WhisperingWilds.Editor.BuildBootScene.CreateBootScene
+-quit
+-logFile
+C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\regen_boot_log.txt
+Successfully changed project path to: C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-remapper-allocator-initial-capacity=32768"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-main-allocator-mimalloc-enabled=1"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Logging is directed to a specific file, skipping project log.
+Player connection [15656]  Target information:
+
+Player connection [15656]  * "[IP] 10.209.248.3 [Port] 55504 [Flags] 2 [Guid] 1286645071 [EditorId] 1286645071 [Version] 1048832 [Id] WindowsEditor(7,MTMOHAN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [15656] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [15656] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-7268" after 0.6 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-mohan" at "2026-10-15T02:45:14.1270475Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 12772, path: "C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.3+d7ffd15
+  Session Id:              0200295d77a244eba477544a76238740
+  Correlation Id:          8b4185edb169aaec7c3d576c431b9ed9
+  External correlation Id: 935409757663465513
+  Machine Id:              r8Baj456OclkPBnQzehVz6LSj8k=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-mohan" (connect: 0.86s, validation: 0.27s, handshake: 0.09s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-mohan-notifications" at "2026-10-15T02:45:14.4929041Z"
+[Licensing::Module] Connected to LicensingClient (PId: 12772, launch time: 0.02, total connection time: 1.23s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 13469956654421-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.02
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 1.38s
+[Licensing::Module] Licensing is initialized (took 0.52s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+Initialising UDS system complete:
+  - System type: Client
+  - Resource namespace: 72f986e6b4e9f6af9719a57e840b9c6f
+  - Shared memory size: 1073741824
+  - Command buffer id: 1052576
+  - Command buffer size: 8192
+  - Hashmap size: 4194304
+  - Service connected: false
+Launching Unity Data Store - C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Tools/Unity.DataStore.exe 
+Unity Data Store artifact dir = Library/DataStore, working dir = C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unityActive build profile path: `Assets/Settings/Build Profiles/Windows.asset`
+Unity Data Store running and initialised
+Got setting from build profile YAML, name `m_BuildTarget`, value `19`
+Got setting from build profile YAML, name `m_Subtarget`, value `2`
+Refreshing native plugins compatible for Editor in 2.72 ms, found 0 plugins.
+[Physics::Module] Selected backend (deferred post-plugins).
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Initialize engine version: 6000.6.3f1 (45d8eee7de74)
+[EntityIdStore] init: VM path (explicit commit), pageSize=4096, blockCount=1048576, entitiesPerBlock=256, slots reserved=4294967296 bytes
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Assets
+Forcing GfxDevice: Null
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/BCLExtensions/runtime/netstandard2.1'
+Mono path[2] = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56268
+CodeReloadManager initialized
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.009998 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Scripting: successfully reloaded assembly
+- Finished resetting the current domain, in  1.787 seconds
+Domain Reload Profiling: 3612ms
+	BeginReloadAssembly (453ms)
+		CreateAndSetChildDomain (11ms)
+	RebuildCommonClasses (30ms)
+	RebuildNativeTypeToScriptingClass (55ms)
+	initialDomainReloadingComplete (220ms)
+	LoadAllAssembliesAndSetupDomain (1062ms)
+		LoadAssemblies (431ms)
+		TypeCache.Refresh (785ms)
+			TypeCache.ScanAssembly (739ms)
+		AnalyzeDomain (1ms)
+	FinalizeReload (1792ms)
+		SetupLoadedEditorAssemblies (0ms)
+			LogAssemblyErrors (3ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			BeforeProcessingInitializeOnLoad (244ms)
+			ProcessInitializeOnLoadAttributes (206ms)
+			ProcessInitializeOnLoadMethodAttributes (714ms)
+			EditorAssembliesLoaded (3ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 79 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.ai.assistant@2.20.0-pre.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ai.assistant@ceb45b7b3ebd)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.cloud.gltfast@6.20.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.cloud.gltfast@11ddc2436f97)
+    com.unity.collab-proxy@2.13.6 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.collab-proxy@4628d2ba6ea4)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.inputsystem@1.20.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.inputsystem@7a4e1a2a8194)
+    com.unity.pipeline@0.8.0-exp.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.pipeline@62c08c808737)
+    com.unity.visualscripting@1.9.12 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.visualscripting@4edfcc09512f)
+    com.unity.xr.management@4.7.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.xr.management@2ad85c7dd480)
+    com.unity.xr.core-utils@2.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.xr.core-utils@a8b900321199)
+    com.unity.xr.legacyinputhelpers@3.0.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.xr.legacyinputhelpers@3f62d634f63b)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.performance.profile-analyzer@1.4.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.performance.profile-analyzer@2bb26871883c)
+    com.unity.testtools.codecoverage@1.3.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.testtools.codecoverage@19a841221620)
+    com.unity.splines@2.9.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.splines@edbe9aefec91)
+    com.unity.dt.app-ui@2.1.11 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.dt.app-ui@cd5609b130ce)
+    com.unity.searcher@4.9.5 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.searcher@a463122f2c00)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.settings-manager@2.1.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.settings-manager@0b8638c5ce86)
+  Built-in packages:
+    com.unity.cinemachine@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.cinemachine@f53aa49b3acc)
+    com.unity.feature.development@1.0.2 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.feature.development@767aadbc6eb7)
+    com.unity.render-pipelines.high-definition@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.render-pipelines.high-definition@8aadf824e504)
+    com.unity.timeline@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.timeline@c56d56b0070b)
+    com.unity.test-framework@1.8.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.test-framework@80f691d4262b)
+    com.unity.ugui@2.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ugui@0727b404f3a0)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.physicscore2d@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.physicscore2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tetgen@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.tetgen)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.timelinefoundation@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.timelinefoundation)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.1.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ext.nunit@0198eae3b53e)
+    com.unity.render-pipelines.core@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.render-pipelines.core@02d75770e4b3)
+    com.unity.shadergraph@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.shadergraph@1dd0fd24b57e)
+    com.unity.visualeffectgraph@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.visualeffectgraph@3c55eb193cdb)
+    com.unity.render-pipelines.high-definition-config@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.render-pipelines.high-definition-config@399121e4b3f1)
+    com.unity.editorcoroutines@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.editorcoroutines@8cd72baa102a)
+    com.unity.burst@2.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.burst@626e66ab421b)
+    com.unity.collections@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.collections@10fff0607388)
+    com.unity.mathematics@1.4.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.mathematics@8306a64d0cd6)
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.2d.sprite@26bcb5e737a2)
+    com.unity.graph-authoring@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.graph-authoring@cfd2588851ee)
+    com.unity.test-framework.performance@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.test-framework.performance@b6023decb532)
+  Git packages:
+    com.community.antigravity-unity@https://github.com/usmanbutt-dev/antigravity-unity.git (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.community.antigravity-unity@9d13ba48c1e2)
+    com.coplaydev.unity-mcp@https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.coplaydev.unity-mcp@045e809812a8)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.10 seconds
+Asset Packages/com.community.antigravity-unity/images has no meta file, but it's in an immutable folder. The asset will be ignored.
+Asset Packages/com.community.antigravity-unity/images/hero_banner_2to1.png has no meta file, but it's in an immutable folder. The asset will be ignored.
+Refreshing native plugins compatible for Editor in 23.22 ms, found 5 plugins.
+Starting: C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 1s858ms
+[ 348/1926  0s] WriteResponseFile Library/Bee/artifacts/rsp/4747638433968585886.rsp
+[1451/1926  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra build success (1.66 seconds), 2 items updated, 1926 evaluated
+AssetDatabase: script compilation time: 4.196910s
+Begin MonoManager ReloadAssembly
+'Packages/com.unity.render-pipelines.core/Editor/Deprecated.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.render-pipelines.core/Editor/Deprecated.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Obsolete/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+Refreshing native plugins compatible for Editor in 30.65 ms, found 5 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 12.39 ms, found 5 plugins.
+Start HTTP server: port:7800
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Scripting: successfully reloaded assembly
+- Finished resetting the current domain, in 10.663 seconds
+Domain Reload Profiling: 20678ms
+	BeginReloadAssembly (1578ms)
+		DisableScriptedObjects (87ms)
+		CreateAndSetChildDomain (297ms)
+	RebuildCommonClasses (33ms)
+	RebuildNativeTypeToScriptingClass (83ms)
+	initialDomainReloadingComplete (598ms)
+	LoadAllAssembliesAndSetupDomain (7716ms)
+		LoadAssemblies (5924ms)
+		TypeCache.Refresh (1739ms)
+			TypeCache.ScanAssembly (1577ms)
+		AnalyzeDomain (439ms)
+			BuildScriptInfoCaches (395ms)
+			ResolveRequiredComponents (30ms)
+	FinalizeReload (10671ms)
+		SetupLoadedEditorAssemblies (0ms)
+			LogAssemblyErrors (5ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			BeforeProcessingInitializeOnLoad (437ms)
+			ProcessInitializeOnLoadAttributes (5404ms)
+			ProcessInitializeOnLoadMethodAttributes (3550ms)
+			AfterProcessingInitializeOnLoad (64ms)
+			EditorAssembliesLoaded (14ms)
+		AwakeInstancesAfterBackupRestoration (209ms)
+Starting new worker id: 0 with log in C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Logs/AssetImportWorkerHW0.log
+[Antigravity] Project files synchronized.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Community.Antigravity.AntigravityEditor:SyncAll () (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:148)
+Community.Antigravity.AntigravityEditor:SyncIfNeeded (string[],string[],string[],string[],string[]) (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:158)
+UnityEditor.CodeEditorProjectSync:PostprocessSyncProject (string[],string[],string[],string[],string[])
+UnityEditor.AssetPostprocessingInternal:PostprocessAllAssets (string[],string[],string[],string[],string[],bool)
+
+(Filename: ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs Line: 148)
+
+
+Asset Pipeline Refresh (id=e31fc26556418b3499cbdab58d143654): Total: 33.834 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=18585 ms
+		Asset DB Callback time: managed=289 ms, native=107 ms
+		Scripting: domain reloads=1, domain reload time=10370 ms, compile time=4208 ms, other=272 ms
+		Project Asset Count: scripts=2847, non-scripts=6850
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.642ms
+	InvokePackagesCallback: 119.150ms
+	ApplyChangesToAssetFolders: 3.104ms
+	Scan: 907.118ms
+	Collect global state as custom dependencies: 86.076ms
+	CategorizeScriptCompilationAssets: 250.642ms
+	ProcessAssetsWithTransientArtifactChanges: 407.457ms
+	CategorizeAssets: 4893.671ms
+	CompileScripts: 4207.544ms
+	ImportOutOfDateAssets: 10887.572ms (10782.160ms without children)
+		ReloadNativeAssets: 0.682ms
+		UnloadImportedAssets: 42.192ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 8.126ms
+		ImportSchedulerStart: 54.363ms
+	PostProcessAllAssets: 625.295ms
+		MonoPostProcessAllAssets: 624.407ms
+			SyncVS.PostprocessSyncProject 354.572ms
+			HDRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 107.595ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 10.987ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 10.746ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 10.271ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 9.485ms
+			DomainReloadProcessor.OnPostprocessAllAssets 7.196ms
+			AssetChangeDetector.OnPostprocessAllAssets 5.643ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 4.140ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 3.297ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 2.219ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 2.087ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 1.922ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 1.898ms
+			CinemachineSettings.OnPostprocessAllAssets 1.669ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 1.082ms
+	GatherAllCurrentPrimaryImportResultRevisions: 0.912ms
+	UnloadStreamsBegin: 2.756ms
+	PersistCurrentRevisions: 1.962ms
+	GenerateScriptTypeHashes: 20.518ms
+	GenerateScriptTypeSerializationHashes: 26.819ms
+	Untracked: 11717.184ms
+
+Application.AssetDatabase Initial Refresh End
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Shader Hidden/ChartRasterizerHardware is not supported: GPU does not support conservative rasterization
+Scanning for USB devices : 8.357ms
+Initializing Unity extensions:
+Asset Pipeline Refresh (id=f129fc277b3b58247a7b6e9a1f9a683f): Total: 0.022 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[Antigravity] Project files synchronized.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Community.Antigravity.AntigravityEditor:SyncAll () (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:148)
+UnityEditor.CodeEditorProjectSync:SyncEditorProject ()
+
+(Filename: ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs Line: 148)
+
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-The Whispering Wilds
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 13192 unused Assets / (15.1 MB). Loaded Objects now: 14215.
+Memory consumption went from 0.70 GB to 0.69 GB.
+Total: 86.641200 ms (FindLiveObjects: 1.711400 ms CreateObjectMapping: 1.476600 ms MarkObjects: 68.949800 ms  DeleteObjects: 13.723000 ms)
+
+<color=#00D2FF><b>[Whispering Wilds]</b></color> Building 00_Boot Scene...
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+WhisperingWilds.Editor.BuildBootScene:CreateBootScene () (at Assets/_Project/Scripts/Editor/BuildBootScene.cs:30)
+
+(Filename: Assets/_Project/Scripts/Editor/BuildBootScene.cs Line: 30)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 1 unused Assets / (108.4 KB). Loaded Objects now: 14217.
+Memory consumption went from 0.68 GB to 0.68 GB.
+Total: 42.196300 ms (FindLiveObjects: 1.571400 ms CreateObjectMapping: 1.321400 ms MarkObjects: 38.380900 ms  DeleteObjects: 0.129100 ms)
+
+<color=#00FF99><b>[LocalizedFontProvider]</b></color> Using project font asset from Resources/Fonts/TamilFont: TamilFont
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+WhisperingWilds.Localization.LocalizedFontProvider:EnsureResolved () (at Assets/_Project/Scripts/Localization/LocalizedFontProvider.cs:93)
+WhisperingWilds.Localization.LocalizedFontProvider:get_Font () (at Assets/_Project/Scripts/Localization/LocalizedFontProvider.cs:57)
+WhisperingWilds.Editor.BuildBootScene:CreateBootScene () (at Assets/_Project/Scripts/Editor/BuildBootScene.cs:61)
+
+(Filename: Assets/_Project/Scripts/Localization/LocalizedFontProvider.cs Line: 93)
+
+[Whispering Wilds] Boot scene creation failed: UnityEngine.MissingComponentException: There is no 'RectTransform' attached to the "IntroMist" game object, but a script is trying to access it.
+You probably need to add a RectTransform to the game object "IntroMist". Or your script needs to check if the component is attached before using it.
+  at UnityEngine.Object+MarshalledUnityObject.TryThrowEditorNullExceptionObject (UnityEngine.Object unityObj, System.String parameterName) [0x000b4] in <93e6391e4688454a985ab5dc6ed6bd98>:0 
+  at UnityEngine.Bindings.ThrowHelper.ThrowNullReferenceException (System.Object obj) [0x0000a] in <93e6391e4688454a985ab5dc6ed6bd98>:0 
+  at UnityEngine.RectTransform.set_anchorMin (UnityEngine.Vector2 value) [0x00006] in <93e6391e4688454a985ab5dc6ed6bd98>:0 
+  at WhisperingWilds.Editor.BuildBootScene.CreateBootScene () [0x009be] in C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Assets\_Project\Scripts\Editor\BuildBootScene.cs:227 
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:LogError (object)
+WhisperingWilds.Editor.BuildBootScene:CreateBootScene () (at Assets/_Project/Scripts/Editor/BuildBootScene.cs:359)
+
+(Filename: Assets/_Project/Scripts/Editor/BuildBootScene.cs Line: 359)
+
+Batchmode quit successfully invoked - shutting down!
+Pipeline Server stopped
+Importing 'GUID: 0000000000000000b000000000000000 - Path: ProjectSettings/EditorBuildSettings.asset' with importer (LibraryAssetImporter)
+Imported 'GUID: 0000000000000000b000000000000000' -> (Import Result ID: 'fc82a5d8aa632dfcf2844bd275b3af48') in 0.014 seconds [static dependencies only]. Details - ImportResultOutputID=0a89a5c5f492143e0fa186859e17ba6f DependenciesID=c17da5b91932961bb00d4f8ce92200a0 StaticDependenciesID=37819f8d3d1e0c51919d4ad061d24da1 
+Curl error 42: Callback aborted
+[Antigravity] Project files synchronized.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Community.Antigravity.AntigravityEditor:SyncAll () (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:148)
+Community.Antigravity.AntigravityEditor:SyncIfNeeded (string[],string[],string[],string[],string[]) (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:158)
+UnityEditor.CodeEditorProjectSync:PostprocessSyncProject (string[],string[],string[],string[],string[])
+UnityEditor.AssetPostprocessingInternal:PostprocessAllAssets (string[],string[],string[],string[],string[],bool)
+
+(Filename: ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs Line: 148)
+
+Refreshing native plugins compatible for Editor in 6.85 ms, found 5 plugins.
+
+Asset Pipeline Refresh (id=a72a9ea8fe11899468267e01daffb702): Total: 0.821 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=1 (actual=1, local cache=0, cache server=0)
+		Asset DB Process Time: managed=4 ms, native=80 ms
+		Asset DB Callback time: managed=704 ms, native=31 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=2847, non-scripts=6850
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	ApplyChangesToAssetFolders: 0.393ms
+	Scan: 42.054ms
+	Collect global state as custom dependencies: 1.170ms
+	ProcessAssetsWithTransientArtifactChanges: 0.273ms
+	CategorizeAssets: 5.947ms
+	ImportOutOfDateAssets: 24.293ms (0.480ms without children)
+		ImportManagerImport: 21.338ms (2.884ms without children)
+		ReloadNativeAssets: 0.068ms
+		UnloadImportedAssets: 0.296ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 1.570ms
+		ImportSchedulerStart: 0.538ms
+	PostProcessAllAssets: 731.599ms
+		XRBuildSystem.XRAssetImported 18.326ms
+		PostProcessCallbackCreateDeferredMaterials 0.557ms
+		SpriteAtlasDatabase.OnAssetPostprocessCallback 0.297ms
+		MonoPostProcessAllAssets: 709.396ms
+			AssetPostprocessor.OnPostprocessAllAssets 75.202ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 68.036ms
+			AssetReferenceReimportMonitor.OnPostprocessAllAssets 59.649ms
+			AssetCallbacks.OnPostprocessAllAssets 25.145ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 17.762ms
+			MaterialPostprocessor.OnPostprocessAllAssets 9.982ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 5.987ms
+			VFXGraphPreprocessor.OnPostprocessAllAssets 5.889ms
+			SpriteSlicePostprocessor.OnPostprocessAllAssets 5.654ms
+			SyncVS.PostprocessSyncProject 5.614ms
+			AssetChangedListener.OnPostprocessAllAssets 5.250ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 3.766ms
+			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 1.806ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 1.558ms
+			ModelAssetProcessor.OnPostprocessAllAssets 1.359ms
+			PostProcessor.OnPostprocessAllAssets 1.284ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 1.276ms
+			UVCSAssetPostprocessor.OnPostprocessAllAssets 1.243ms
+			SkillsProjectAssetPostprocessor.OnPostprocessAllAssets 0.938ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 0.925ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 0.808ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 0.644ms
+			SamplePostprocessor.OnPostprocessAllAssets 0.620ms
+			AssetEvents.OnPostprocessAllAssets 0.569ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.550ms
+			AssetReloadNotifier.OnPostprocessAllAssets 0.525ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 0.512ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.436ms
+			ThemePostprocessor.OnPostprocessAllAssets 0.395ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 0.243ms
+			TrackSelectedAssetsProcessor.OnPostprocessAllAssets 0.223ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.207ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 0.192ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 0.191ms
+	PostAssetChangesProfiler: 9.748ms
+	GatherAllCurrentPrimaryImportResultRevisions: 1.220ms
+	PersistCurrentRevisions: 0.455ms
+	Untracked: 5.267ms
+
+Worker ready: AssetImportWorkerHW0 0
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-mohan-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-mohan channel disconnected successfully.
+Worker process still running after shutdown timeout - Worker ID: 0, Name: AssetImportWorkerHW0
+Waited for 1 workers to exit gracefully, force killed 1 workers
+WorkerManagerASIO did not receive session closed signal from shut down worker (0/1 closed)
+Lingering sessions upon destruction of worker manager
+Unity Data Store service was successfully shut down
+UDS shutting down local client system
+Shut down UDS service system complete
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+Exiting batchmode successfully now!
+[ExitDontLaunchBugReporter] Exiting without the bug reporter. Application will exit with return code 0

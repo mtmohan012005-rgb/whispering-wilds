@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Step 69 — stuck intro fix and startup visual improvements)
+**Commit:** Pending push (Step 70 — cinematic main menu animation and atmospheric UI polish)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -45,6 +45,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-15)
+
+- **Step 70 — Cinematic main menu animation and atmospheric UI polish**: Added `MainMenuAnimator.cs` (367 lines) that orchestrates the main menu entrance: title fades in with golden glow sweep and rises into position, subtitle fades in slightly later, buttons appear one by one with staggered timing, and rule notice fades in at the bottom. Added `MenuButtonAnimator.cs` (150 lines) for hover/press/focus feedback on each menu button. Added atmospheric background layers to the main menu: deep teal dawn sky background, two mist layers with slow parallax drift, pulsing fireflies, and subtle vignette. All animations use `Time.unscaledDeltaTime` so they work at `Time.timeScale=0`. Root cause fix: `MainMenuAnimator` existed in the boot scene but `FindObjectOfType` returned null in `TitleMenuController.Start()` because the scene wasn't fully initialized — fixed by delaying the animation trigger by 2 frames via coroutine. Verification: standalone build launched, Player.log confirms `MainMenuAnimator PlayEntrance called - titleText=OK, subtitleText=OK, menuContainer=OK, ruleNoticeText=OK`, `Entrance animation complete`, 0 errors, 60 FPS. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
 - **Step 69 — Fixed stuck intro and improved startup visuals**: Root cause: `CinematicIntroController.PlayIntro()` used `Time.deltaTime`, but `GameManager` sets `Time.timeScale = 0` in MainMenu state, so the intro timer never advanced, leaving the player on a dark blank screen. Fix: (1) Replaced `Time.deltaTime` with `Time.unscaledDeltaTime` so the intro advances using real-world time even when game time is paused, (2) Reduced intro duration from 25 seconds to 7 seconds — title appears at 1.5s, skip text at 0.5s, menu at 7s, (3) Added sky gradient overlay (`IntroSkyGradient`) and treeline silhouette (`IntroTreeline`) to `BuildBootScene.cs` so the first frame shows a dawn sky composition instead of a flat dark color, (4) Added 9 regression tests verifying unscaled delta time, short duration, early title, early skip text, sky gradient, and treeline. Verification: standalone build launched, Player.log confirms `PlayIntroOnStartup=True`, `Intro completed, showing main menu`, 0 errors, 60 FPS. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 

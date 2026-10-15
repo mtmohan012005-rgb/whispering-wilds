@@ -31,6 +31,9 @@ namespace WhisperingWilds.UI
         [Header("Cinematic Intro")]
         [SerializeField] private CinematicIntroController cinematicIntro;
 
+        [Header("STEP 70 — Menu Animation")]
+        [SerializeField] private MainMenuAnimator mainMenuAnimator;
+
         private CampaignFlow campaignFlow;
 
         private void Start()
@@ -59,6 +62,32 @@ namespace WhisperingWilds.UI
             if (settingsMenu != null) settingsMenu.SetVisible(false);
 
             ApplyLocalizedLabels();
+
+            // STEP 70: Start the menu entrance animation after a short delay to ensure
+            // the scene is fully initialized and MainMenuAnimator is discoverable.
+            StartCoroutine(StartMenuAnimationDelayed());
+        }
+
+        private System.Collections.IEnumerator StartMenuAnimationDelayed()
+        {
+            // Wait a couple of frames to let all scene objects finish Awake/Start
+            yield return null;
+            yield return null;
+
+            MainMenuAnimator animator = mainMenuAnimator;
+            if (animator == null)
+            {
+                animator = FindObjectOfType<MainMenuAnimator>();
+            }
+            if (animator != null)
+            {
+                Debug.Log("<color=#FFD700><b>[TitleMenuController]</b></color> Starting MainMenuAnimator entrance animation");
+                animator.PlayEntrance();
+            }
+            else
+            {
+                Debug.LogWarning("<color=#FF6666><b>[TitleMenuController]</b></color> MainMenuAnimator not found after delay — menu entrance animation will not play");
+            }
         }
 
         private void OnEnable()
@@ -74,6 +103,14 @@ namespace WhisperingWilds.UI
             if (LocalizationManager.Instance != null)
             {
                 LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
+            }
+
+            // STEP 70: Stop menu animations when leaving the title screen
+            MainMenuAnimator anim = mainMenuAnimator;
+            if (anim == null) anim = FindObjectOfType<MainMenuAnimator>();
+            if (anim != null)
+            {
+                anim.StopAnimations();
             }
         }
 
