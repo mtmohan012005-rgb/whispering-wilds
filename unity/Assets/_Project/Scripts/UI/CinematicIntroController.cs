@@ -112,7 +112,7 @@ namespace WhisperingWilds.UI
         {
             // Determine whether to play the intro
             bool playIntro = PlayerPrefs.GetInt("WW_PlayIntroOnStartup", 1) == 1;
-            
+
             // Check for -forceIntro launch argument (debug/QA only)
             string[] args = System.Environment.GetCommandLineArgs();
             for (int i = 0; i < args.Length; i++)
@@ -142,6 +142,33 @@ namespace WhisperingWilds.UI
             else
             {
                 // Player has disabled the intro — go straight to menu.
+                CompleteIntro();
+            }
+
+            // STEP 78: Safety timeout — if the intro coroutine never starts or gets stuck
+            // (e.g. due to a missing reference or exception), force-show the menu after 10s
+            // so the player is never stranded on a blank screen.
+            StartCoroutine(IntroSafetyTimeout());
+        }
+
+        /// <summary>
+        /// Safety net: if the intro is still playing after 10 seconds of unscaled time,
+        /// force-complete it and show the menu. This prevents a stuck coroutine or missing
+        /// reference from leaving the player on a blank screen indefinitely.
+        /// </summary>
+        private IEnumerator IntroSafetyTimeout()
+        {
+            // Wait 10 unscaled seconds
+            float timeout = 10f;
+            while (timeout > 0f)
+            {
+                yield return null;
+                timeout -= Time.unscaledDeltaTime;
+            }
+
+            if (_isPlaying)
+            {
+                Debug.LogWarning("<color=#FF6666><b>[CinematicIntro]</b></color> Intro safety timeout reached — forcing menu display");
                 CompleteIntro();
             }
         }
@@ -180,13 +207,14 @@ namespace WhisperingWilds.UI
 
         private void SetupIntroVisuals()
         {
-            // Setup background
+            // Setup background — start with a visible dark color so the first frame is not blank
+            // during shader compilation. The intro coroutine will animate it from here.
             if (introBackground != null)
             {
                 var bgImage = introBackground.GetComponent<Image>();
                 if (bgImage != null)
                 {
-                    bgImage.color = new Color(backgroundColor.r, backgroundColor.g, backgroundColor.b, 0f);
+                    bgImage.color = new Color(0.01f, 0.02f, 0.03f, 1f);
                 }
             }
 
@@ -261,6 +289,16 @@ namespace WhisperingWilds.UI
             RenderSettings.fog = true;
             RenderSettings.fogColor = dawnFogColor;
             RenderSettings.fogDensity = 0.02f;
+
+            // STEP 78: Make intro visuals active immediately so the first rendered frame
+            // is not blank during HDRP shader compilation. StartIntro() will also call
+            // SetActive(true), but this ensures visibility even before the coroutine starts.
+            if (introBackground != null) introBackground.SetActive(true);
+            if (introSkyGradient != null) introSkyGradient.SetActive(true);
+            if (introTreeline != null) introTreeline.SetActive(true);
+            if (introVignette != null) introVignette.SetActive(true);
+            if (introTitleGroup != null) introTitleGroup.SetActive(true);
+            if (introSkipText != null) introSkipText.gameObject.SetActive(true);
         }
 
         private void StartIntro()
@@ -269,7 +307,7 @@ namespace WhisperingWilds.UI
             _skipped = false;
             _elapsedTime = 0f;
 
-            // Show intro elements
+            // Show intro elements immediately so the first frame is not blank
             if (introBackground != null) introBackground.SetActive(true);
             if (introSkyGradient != null) introSkyGradient.SetActive(true);
             if (introTreeline != null) introTreeline.SetActive(true);

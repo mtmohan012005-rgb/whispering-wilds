@@ -154,7 +154,7 @@ namespace WhisperingWilds.Online
                     if (result.success && !string.IsNullOrEmpty(result.token))
                     {
                         _sessionToken = result.token;
-                        CurrentUser = result.user;
+                        CurrentUser = result.data;
                         callback?.Invoke(true, "Signed in successfully.");
                         OnSignInComplete?.Invoke(true, "Signed in successfully.");
                     }

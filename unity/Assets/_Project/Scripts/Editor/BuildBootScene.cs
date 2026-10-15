@@ -557,6 +557,31 @@ namespace WhisperingWilds.Editor
             return btnObj;
         }
 
+        private static GameObject CreateButton(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 sizeDelta, Font font, string label, Color btnColor)
+        {
+            var btnObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            btnObj.transform.SetParent(parent, false);
+            var rect = btnObj.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.anchoredPosition = anchoredPos;
+            rect.sizeDelta = sizeDelta;
+
+            var img = btnObj.GetComponent<Image>();
+            img.color = btnColor;
+
+            var btn = btnObj.GetComponent<Button>();
+            var colors = btn.colors;
+            colors.highlightedColor = btnColor * 1.25f;
+            colors.pressedColor = btnColor * 0.8f;
+            btn.colors = colors;
+
+            var textObj = CreateText("Label", btnObj.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, font, 18, TextAnchor.MiddleCenter, Color.white);
+            textObj.GetComponent<Text>().text = label;
+
+            return btnObj;
+        }
+
         /// <summary>
         /// Creates an InputField with a placeholder text for the login panel.
         /// </summary>
