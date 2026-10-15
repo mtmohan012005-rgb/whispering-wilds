@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** 4a8ffd6 (Step 74 — Full campaign playthrough audit and verification)
+**Commit:** Pending push (Step 75 — Unity test execution, QA runner repair, and campaign verification)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -11,6 +11,32 @@
 - **Browser game:** COMPLETELY REMOVED (obsolete Three.js/PWA assets purged)
 - **GitHub Pages:** Static landing page deployed via GitHub Actions from `docs/landing/`
 - **Desktop launcher:** Canonical PowerShell launcher targeting Unity executable (`unity/Build/Windows/TheWhisperingWilds.exe`)
+
+## Step 75 — Unity Test Execution, QA Runner Repair, and Campaign Verification
+
+**Files changed:**
+- **`scripts/Run-QaTests.ps1`** — Fixed 3 critical bugs: (1) replaced `Start-Process -Environment` with `$env:` variable (PowerShell compatibility), (2) added modern Unity Test Framework XML parsing (`<test-run>` schema) alongside legacy fallback, (3) proper failure detection — fails when tests don't execute, preserves logs/artifacts on failure instead of deleting everything
+- **`unity/Assets/_Project/Tests/PlayMode/WhisperingWilds.Tests.PlayMode.asmdef`** — Fixed invalid platform name: "PlayMode" is not a valid Unity platform; changed to `includePlatforms: ["WindowsStandalone64"]` and removed conflicting `excludePlatforms`
+
+**Unity test execution:**
+- **EditMode tests: BLOCKED** — Tests compile with 0 errors but Unity Test Framework cannot execute in headless batch mode. Root cause: `[Licensing::Client] Error: Code 404` — Unity Editor requires an interactive license for test runner activation. 70 EditMode tests exist in `Step50VerticalSliceTests.cs` but cannot be executed without interactive Unity Editor Test Runner.
+- **PlayMode tests: BLOCKED** — Same licensing blocker. 42 PlayMode tests in `CampaignProgressionTests.cs` cover region unlocks, investigation manager, save/load, campaign flow, ending controller, content registry, intro preferences, and player data protection.
+
+**Automated validations (all executed and passed):**
+- `npm run verify-game`: **PASS** (15/15)
+- `npm run test:backend`: **PASS** (31/31)
+- `npm run verify-production`: **PASS** (all checks)
+- `npm run verify-assets`: **PASS** (all checks)
+- `node scripts/verify-runtime.js`: **PASS** (7/7)
+- `node scripts/verify-compatibility.js`: **PASS** (20/20, 1 skip)
+
+**Windows build:** 140 MB in 64.2s, LZ4HC compression, 0 compilation errors.
+**Standalone smoke test:** **PASS** — Game launched, cinematic intro played, MainMenuAnimator entrance animation complete, intro completed, menu visible, 60 FPS, 0 errors in Player.log. Tamil font loaded, 265 localization keys loaded.
+
+**Not verified (requires human operator):**
+- Interactive gameplay: NPC dialogue, clue discovery, quest progression, save/load, region transitions
+- Full campaign playthrough: Chennai → Pichavaram → Thanjavur → Chettinad → Mamallapuram → Nilgiris → Ending
+- Unity EditMode/PlayMode test execution: Requires interactive Unity Editor Test Runner (licensing fails in batch mode)
 
 ## Step 74 — Full Campaign Playthrough Audit and Verification
 

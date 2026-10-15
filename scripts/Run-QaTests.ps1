@@ -95,39 +95,89 @@ Write-Host "Launching Unity with WW_SAVE_DIR=$qaSaveDir ..."
 Write-Host ""
 
 # Launch Unity with WW_SAVE_DIR set in the environment
-$envVars = @{
-    "WW_SAVE_DIR" = $qaSaveDir
+# Use $env: variable directly instead of Start-Process -Environment (not supported in older PowerShell)
+$originalWwSaveDir = $env:WW_SAVE_DIR
+$env:WW_SAVE_DIR = $qaSaveDir
+
+try {
+    $process = Start-Process -FilePath $unityExe `
+        -ArgumentList $unityArgs `
+        -Wait `
+        -NoNewWindow `
+        -PassThru
+
+    $exitCode = $process.ExitCode
+}
+finally {
+    # Restore original environment variable
+    if ($null -ne $originalWwSaveDir) {
+        $env:WW_SAVE_DIR = $originalWwSaveDir
+    }
+    else {
+        $env:WW_SAVE_DIR = $null
+    }
 }
 
-$process = Start-Process -FilePath $unityExe `
-    -ArgumentList $unityArgs `
-    -Environment $envVars `
-    -Wait `
-    -NoNewWindow `
-    -PassThru
-
-$exitCode = $process.ExitCode
 Write-Host ""
 Write-Host "Unity exited with code: $exitCode"
 
 # Check for test results
+$testsExecuted = $false
+$testPassed = 0
+$testFailed = 0
+$testSkipped = 0
+$testTotal = 0
+
 if (Test-Path $resultXml) {
     Write-Host "Test results written to: $resultXml"
     
-    # Parse basic results from XML
+    # Parse test results from XML - support both legacy and modern Unity Test Framework schemas
     try {
         $xml = [xml](Get-Content $resultXml)
-        $passed = $xml.selectSingleNode("//test-results").'passed'
-        $failed = $xml.selectSingleNode("//test-results").'failures'
-        $total = $xml.selectSingleNode("//test-results").'total'
-        Write-Host "Tests: $passed passed, $failed failed, $total total"
+        
+        # Modern Unity Test Framework uses <test-run> root element
+        $testRun = $xml.SelectSingleNode("//test-run")
+        if ($testRun -ne $null) {
+            $testTotal = [int]$testRun.GetAttribute("total")
+            $testPassed = [int]$testRun.GetAttribute("passed")
+            $testFailed = [int]$testRun.GetAttribute("failed")
+            $testSkipped = [int]$testRun.GetAttribute("skipped")
+            $testsExecuted = ($testTotal -gt 0)
+        }
+        else {
+            # Legacy schema fallback
+            $testResults = $xml.SelectSingleNode("//test-results")
+            if ($testResults -ne $null) {
+                $testTotal = [int]$testResults.GetAttribute("total")
+                $testPassed = [int]$testResults.GetAttribute("passed")
+                $testFailed = [int]$testResults.GetAttribute("failures")
+                $testsExecuted = ($testTotal -gt 0)
+            }
+        }
+        
+        if ($testsExecuted) {
+            Write-Host "Tests executed: $testTotal total, $testPassed passed, $testFailed failed, $testSkipped skipped"
+        }
+        else {
+            Write-Warning "Test results XML exists but no tests were discovered or executed."
+        }
     }
     catch {
-        Write-Host "Could not parse test results XML. Check the file manually."
+        Write-Warning "Could not parse test results XML: $_"
+        Write-Host "Check the file manually: $resultXml"
     }
 }
 else {
     Write-Warning "Test results file not found. Tests may not have executed."
+}
+
+# Fail if tests didn't execute or had failures
+if (-not $testsExecuted) {
+    Write-Error "Tests did not execute! Exit code: $exitCode"
+    Write-Host "Check Unity log for details: $unityLog"
+}
+elseif ($testFailed -gt 0) {
+    Write-Error "$testFailed test(s) failed!"
 }
 
 # Verify SaveSystem used the QA directory
@@ -156,25 +206,45 @@ if (Test-Path $unityLog) {
     }
 }
 
-# Cleanup ALL QA artifacts — saves, logs, and result XML
+# Cleanup QA artifacts — preserve logs and results on failure
 Write-Host ""
-Write-Host "Cleaning up ALL QA artifacts: $qaTempRoot"
-try {
-    Remove-Item -Recurse -Force $qaTempRoot -ErrorAction SilentlyContinue
-    Write-Host "OK: All QA artifacts cleaned up."
-}
-catch {
-    Write-Warning "Could not clean up QA directory: $_"
-}
-
-Write-Host ""
-Write-Host "========================================"
-if ($exitCode -eq 0) {
-    Write-Host "QA test run completed successfully."
+if ($testsExecuted -and $testFailed -eq 0 -and $exitCode -eq 0) {
+    # Success: clean up all QA artifacts
+    Write-Host "Tests passed. Cleaning up QA artifacts: $qaTempRoot"
+    try {
+        Remove-Item -Recurse -Force $qaTempRoot -ErrorAction SilentlyContinue
+        Write-Host "OK: All QA artifacts cleaned up."
+    }
+    catch {
+        Write-Warning "Could not clean up QA directory: $_"
+    }
 }
 else {
-    Write-Host "QA test run finished with exit code: $exitCode"
+    # Failure: preserve artifacts for inspection
+    Write-Warning "Tests failed or did not execute. Preserving QA artifacts for inspection:"
+    Write-Warning "  QA temp root: $qaTempRoot"
+    Write-Warning "  Unity log: $unityLog"
+    Write-Warning "  Test results: $resultXml"
 }
-Write-Host "========================================"
 
-exit $exitCode
+Write-Host ""
+Write-Host "========================================"
+if ($testsExecuted -and $testFailed -eq 0 -and $exitCode -eq 0) {
+    Write-Host "QA test run completed successfully."
+    Write-Host "========================================"
+    exit 0
+}
+else {
+    Write-Host "QA test run FAILED."
+    if (-not $testsExecuted) {
+        Write-Host "  - Tests did not execute"
+    }
+    if ($testFailed -gt 0) {
+        Write-Host "  - $testFailed test(s) failed"
+    }
+    if ($exitCode -ne 0) {
+        Write-Host "  - Unity exit code: $exitCode"
+    }
+    Write-Host "========================================"
+    exit 1
+}
