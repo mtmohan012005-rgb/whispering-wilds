@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Flowchart audit fixes — QA runner path, stale browser scripts, missing npm script, GitHub Actions workflows)
+**Commit:** 4a8ffd6 (Step 74 — Full campaign playthrough audit and verification)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -11,6 +11,24 @@
 - **Browser game:** COMPLETELY REMOVED (obsolete Three.js/PWA assets purged)
 - **GitHub Pages:** Static landing page deployed via GitHub Actions from `docs/landing/`
 - **Desktop launcher:** Canonical PowerShell launcher targeting Unity executable (`unity/Build/Windows/TheWhisperingWilds.exe`)
+
+## Step 74 — Full Campaign Playthrough Audit and Verification
+
+**Campaign progression chain verified (code audit):**
+- **RegionUnlocks.cs**: Chennai, Pichavaram, Thanjavur start unlocked. Chettinad gated by Thanjavur clue. Mamallapuram gated by Chettinad clue. Nilgiris gated by Mamallapuram clue.
+- **CampaignFlow.cs**: New Game resets all subsystems (InvestigationRuntimeState, NPCInteractionLog, CraftingHistory, PhotoJournal, RegionUnlocks, PuzzleStateStore, DiscoveryLog, InventoryManager, QuestManager, InvestigationManager, PlayerAppearanceManager, PlayerManager, EndingController). Continue validates save before offering it.
+- **NPCCharacter.cs**: Interact() checks CanInteract, stops navigation, faces player, registers conversation, opens vendor UI or dialogue with clue-gated entry node resolution.
+- **AssembleAllRegions.cs**: Places clue interactables in Pichavaram (3 clues), Thanjavur (3 clues), Nilgiris (3 clues) through scene generation pipeline.
+- **EndingController.cs**: 4 endings (A: Living Heritage, B: Recorded Chronicle, C: Shadowed Sanctuary, D: Song of Ancestral Soil) evaluated on final Nilgiris quest completion.
+
+**QA candidate build:** 140 MB in 71.6s, LZ4HC compression, 0 errors.
+**Standalone runtime:** Intro plays, menu appears, MainMenuAnimator entrance animation complete, 58.5 FPS, 0 errors, Tamil font loaded, 265 localization keys loaded.
+**Automated tests:** verify-game 15/15 PASS, test:backend 31/31 PASS, verify-production PASS, verify-runtime 7/7 PASS.
+
+**Not verified (requires human operator):**
+- Interactive gameplay: NPC dialogue, clue discovery, quest progression, save/load, region transitions
+- Full campaign playthrough: Chennai → Pichavaram → Thanjavur → Chettinad → Mamallapuram → Nilgiris → Ending
+- Unity EditMode/PlayMode test execution: Tests compile but require Unity Editor Test Runner
 
 ## Step 73 — Login / Account Page
 
