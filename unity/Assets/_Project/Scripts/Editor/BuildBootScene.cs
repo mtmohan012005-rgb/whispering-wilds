@@ -448,10 +448,13 @@ namespace WhisperingWilds.Editor
             var btnTabLang = CreateButton("Tab_Language", tabs.transform, font, "Language", new Color(0.18f, 0.32f, 0.42f));
             var btnTabDisplay = CreateButton("Tab_Display", tabs.transform, font, "Display", new Color(0.18f, 0.32f, 0.42f));
             var btnTabQuality = CreateButton("Tab_Quality", tabs.transform, font, "Graphics", new Color(0.18f, 0.32f, 0.42f));
-            foreach (var b in new[] { btnTabLang, btnTabDisplay, btnTabQuality })
+            var btnTabAudio = CreateButton("Tab_Audio", tabs.transform, font, "Audio", new Color(0.18f, 0.32f, 0.42f));
+            var btnTabControls = CreateButton("Tab_Controls", tabs.transform, font, "Controls", new Color(0.18f, 0.32f, 0.42f));
+            var btnTabAccessibility = CreateButton("Tab_Accessibility", tabs.transform, font, "A11y", new Color(0.18f, 0.32f, 0.42f));
+            foreach (var b in new[] { btnTabLang, btnTabDisplay, btnTabQuality, btnTabAudio, btnTabControls, btnTabAccessibility })
             {
                 var bRect = b.GetComponent<RectTransform>();
-                bRect.sizeDelta = new Vector2(200f, 48f);
+                bRect.sizeDelta = new Vector2(120f, 48f);
             }
 
             var btnClose = CreateButton("Btn_Close", root.transform, font, "Back", new Color(0.4f, 0.24f, 0.24f));
@@ -524,12 +527,144 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             var qHint = CreateText("QualityHint", qualityPage.transform, new Vector2(0.5f, 0.34f), new Vector2(0.5f, 0.34f), Vector2.zero, new Vector2(760f, 40f), font, 16, TextAnchor.MiddleCenter, new Color(0.75f, 0.8f, 0.85f));
 
+            // Audio page
+            var audioPage = CreatePage("Page_Audio", root.transform);
+            var aTitle = CreateText("Title", audioPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+
+            Text masterVolValue, musicVolValue, sfxVolValue, ambienceVolValue, dialogueVolValue, uiVolValue;
+            Button masterVolLeft, masterVolRight, musicVolLeft, musicVolRight, sfxVolLeft, sfxVolRight;
+            Button ambienceVolLeft, ambienceVolRight, dialogueVolLeft, dialogueVolRight, uiVolLeft, uiVolRight;
+
+            masterVolValue = CreateRowValue("Row_MasterVol", audioPage.transform, font, 0.68f);
+            masterVolLeft = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.68f, "<");
+            masterVolRight = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.68f, ">");
+            SetNavigation(masterVolLeft, masterVolRight, masterVolLeft, masterVolRight);
+
+            musicVolValue = CreateRowValue("Row_MusicVol", audioPage.transform, font, 0.58f);
+            musicVolLeft = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.58f, "<");
+            musicVolRight = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.58f, ">");
+            SetNavigation(musicVolLeft, musicVolRight, musicVolLeft, musicVolRight);
+
+            sfxVolValue = CreateRowValue("Row_SfxVol", audioPage.transform, font, 0.48f);
+            sfxVolLeft = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.48f, "<");
+            sfxVolRight = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.48f, ">");
+            SetNavigation(sfxVolLeft, sfxVolRight, sfxVolLeft, sfxVolRight);
+
+            ambienceVolValue = CreateRowValue("Row_AmbienceVol", audioPage.transform, font, 0.38f);
+            ambienceVolLeft = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.38f, "<");
+            ambienceVolRight = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.38f, ">");
+            SetNavigation(ambienceVolLeft, ambienceVolRight, ambienceVolLeft, ambienceVolRight);
+
+            dialogueVolValue = CreateRowValue("Row_DialogueVol", audioPage.transform, font, 0.28f);
+            dialogueVolLeft = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.28f, "<");
+            dialogueVolRight = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.28f, ">");
+            SetNavigation(dialogueVolLeft, dialogueVolRight, dialogueVolLeft, dialogueVolRight);
+
+            uiVolValue = CreateRowValue("Row_UiVol", audioPage.transform, font, 0.18f);
+            uiVolLeft = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.18f, "<");
+            uiVolRight = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.18f, ">");
+            SetNavigation(uiVolLeft, uiVolRight, uiVolLeft, uiVolRight);
+
+            // Wire audio buttons to SettingsMenuUI methods
+            masterVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMasterVolume(-0.05f));
+            masterVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMasterVolume(0.05f));
+            musicVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMusicVolume(-0.05f));
+            musicVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMusicVolume(0.05f));
+            sfxVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustSfxVolume(-0.05f));
+            sfxVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustSfxVolume(0.05f));
+            ambienceVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustAmbienceVolume(-0.05f));
+            ambienceVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustAmbienceVolume(0.05f));
+            dialogueVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustDialogueVolume(-0.05f));
+            dialogueVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustDialogueVolume(0.05f));
+            uiVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustUiVolume(-0.05f));
+            uiVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustUiVolume(0.05f));
+
+            // Controls page
+            var controlsPage = CreatePage("Page_Controls", root.transform);
+            var cTitle = CreateText("Title", controlsPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+
+            Text mouseSensValue, invertYValue, invertXValue, cameraSmoothingValue, sprintModeValue, crouchModeValue;
+            Button mouseSensLeft, mouseSensRight, invertYToggle, invertXToggle, sprintToggle, crouchToggle, resetControlsBtn;
+
+            mouseSensValue = CreateRowValue("Row_MouseSens", controlsPage.transform, font, 0.70f);
+            mouseSensLeft = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.70f, "<");
+            mouseSensRight = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.70f, ">");
+            SetNavigation(mouseSensLeft, mouseSensRight, mouseSensLeft, mouseSensRight);
+
+            invertYValue = CreateRowValue("Row_InvertY", controlsPage.transform, font, 0.60f);
+            invertYToggle = CreateRowButton("Row_InvertY", controlsPage.transform, font, 0.60f, "Toggle");
+
+            invertXValue = CreateRowValue("Row_InvertX", controlsPage.transform, font, 0.50f);
+            invertXToggle = CreateRowButton("Row_InvertX", controlsPage.transform, font, 0.50f, "Toggle");
+
+            cameraSmoothingValue = CreateRowValue("Row_CameraSmooth", controlsPage.transform, font, 0.40f);
+
+            sprintModeValue = CreateRowValue("Row_SprintMode", controlsPage.transform, font, 0.30f);
+            sprintToggle = CreateRowButton("Row_SprintMode", controlsPage.transform, font, 0.30f, "Toggle");
+
+            crouchModeValue = CreateRowValue("Row_CrouchMode", controlsPage.transform, font, 0.20f);
+            crouchToggle = CreateRowButton("Row_CrouchMode", controlsPage.transform, font, 0.20f, "Toggle");
+
+            var resetControlsBtnObj = CreateButton("Btn_ResetControls", controlsPage.transform, font, "Reset Defaults", new Color(0.4f, 0.24f, 0.24f));
+            resetControlsBtn = resetControlsBtnObj.GetComponent<Button>();
+            var resetRect = resetControlsBtnObj.GetComponent<RectTransform>();
+            resetRect.anchorMin = new Vector2(0.5f, 0.08f);
+            resetRect.anchorMax = new Vector2(0.5f, 0.08f);
+            resetRect.pivot = new Vector2(0.5f, 0f);
+            resetRect.anchoredPosition = Vector2.zero;
+            resetRect.sizeDelta = new Vector2(240f, 40f);
+
+            // Wire controls buttons
+            mouseSensLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMouseSensitivity(-0.1f));
+            mouseSensRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMouseSensitivity(0.1f));
+            invertYToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleInvertY);
+            invertXToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleInvertX);
+            sprintToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleSprintMode);
+            crouchToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleCrouchMode);
+            resetControlsBtn.GetComponent<Button>().onClick.AddListener(ui.ResetControlsToDefault);
+
+            // Accessibility page
+            var accessibilityPage = CreatePage("Page_Accessibility", root.transform);
+            var acTitle = CreateText("Title", accessibilityPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+
+            Text subtitlesValue, subtitleBgValue, subtitleSizeValue, screenShakeValue, motionBlurValue, colorblindValue;
+            Button subtitlesToggle, subtitleBgToggle, subtitleSizeCycle, screenShakeToggle, motionBlurToggle, colorblindCycle;
+
+            subtitlesValue = CreateRowValue("Row_Subtitles", accessibilityPage.transform, font, 0.70f);
+            subtitlesToggle = CreateRowButton("Row_Subtitles", accessibilityPage.transform, font, 0.70f, "Toggle");
+
+            subtitleBgValue = CreateRowValue("Row_SubtitleBg", accessibilityPage.transform, font, 0.60f);
+            subtitleBgToggle = CreateRowButton("Row_SubtitleBg", accessibilityPage.transform, font, 0.60f, "Toggle");
+
+            subtitleSizeValue = CreateRowValue("Row_SubtitleSize", accessibilityPage.transform, font, 0.50f);
+            subtitleSizeCycle = CreateRowButton("Row_SubtitleSize", accessibilityPage.transform, font, 0.50f, "Cycle");
+
+            screenShakeValue = CreateRowValue("Row_ScreenShake", accessibilityPage.transform, font, 0.40f);
+            screenShakeToggle = CreateRowButton("Row_ScreenShake", accessibilityPage.transform, font, 0.40f, "Toggle");
+
+            motionBlurValue = CreateRowValue("Row_MotionBlur", accessibilityPage.transform, font, 0.30f);
+            motionBlurToggle = CreateRowButton("Row_MotionBlur", accessibilityPage.transform, font, 0.30f, "Toggle");
+
+            colorblindValue = CreateRowValue("Row_Colorblind", accessibilityPage.transform, font, 0.20f);
+            colorblindCycle = CreateRowButton("Row_Colorblind", accessibilityPage.transform, font, 0.20f, "Cycle");
+
+            // Wire accessibility buttons
+            subtitlesToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleSubtitles);
+            subtitleBgToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleSubtitleBg);
+            subtitleSizeCycle.GetComponent<Button>().onClick.AddListener(ui.CycleSubtitleSize);
+            screenShakeToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleScreenShake);
+            motionBlurToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleMotionBlur);
+            colorblindCycle.GetComponent<Button>().onClick.AddListener(ui.CycleColorblindMode);
+
             // Bind everything.
             var so = new SerializedObject(ui);
             so.FindProperty("panelRoot").objectReferenceValue = root;
             so.FindProperty("languageTabButton").objectReferenceValue = btnTabLang.GetComponent<Button>();
             so.FindProperty("displayTabButton").objectReferenceValue = btnTabDisplay.GetComponent<Button>();
             so.FindProperty("qualityTabButton").objectReferenceValue = btnTabQuality.GetComponent<Button>();
+            so.FindProperty("audioTabButton").objectReferenceValue = btnTabAudio.GetComponent<Button>();
+            so.FindProperty("controlsTabButton").objectReferenceValue = btnTabControls.GetComponent<Button>();
+            so.FindProperty("accessibilityTabButton").objectReferenceValue = btnTabAccessibility.GetComponent<Button>();
             so.FindProperty("closeButton").objectReferenceValue = btnClose.GetComponent<Button>();
 
             so.FindProperty("languagePage").objectReferenceValue = langPage;
@@ -567,12 +702,45 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             so.FindProperty("qualityLeftButton").objectReferenceValue = qLeft.GetComponent<Button>();
             so.FindProperty("qualityRightButton").objectReferenceValue = qRight.GetComponent<Button>();
             so.FindProperty("qualityHintText").objectReferenceValue = qHint.GetComponent<Text>();
+
+            // Audio page bindings
+            so.FindProperty("audioPage").objectReferenceValue = audioPage;
+            so.FindProperty("audioTitleText").objectReferenceValue = aTitle.GetComponent<Text>();
+            so.FindProperty("masterVolValueText").objectReferenceValue = masterVolValue;
+            so.FindProperty("musicVolValueText").objectReferenceValue = musicVolValue;
+            so.FindProperty("sfxVolValueText").objectReferenceValue = sfxVolValue;
+            so.FindProperty("ambienceVolValueText").objectReferenceValue = ambienceVolValue;
+            so.FindProperty("dialogueVolValueText").objectReferenceValue = dialogueVolValue;
+            so.FindProperty("uiVolValueText").objectReferenceValue = uiVolValue;
+
+            // Controls page bindings
+            so.FindProperty("controlsPage").objectReferenceValue = controlsPage;
+            so.FindProperty("controlsTitleText").objectReferenceValue = cTitle.GetComponent<Text>();
+            so.FindProperty("mouseSensValueText").objectReferenceValue = mouseSensValue;
+            so.FindProperty("invertYValueText").objectReferenceValue = invertYValue;
+            so.FindProperty("invertXValueText").objectReferenceValue = invertXValue;
+            so.FindProperty("cameraSmoothingValueText").objectReferenceValue = cameraSmoothingValue;
+            so.FindProperty("sprintModeValueText").objectReferenceValue = sprintModeValue;
+            so.FindProperty("crouchModeValueText").objectReferenceValue = crouchModeValue;
+
+            // Accessibility page bindings
+            so.FindProperty("accessibilityPage").objectReferenceValue = accessibilityPage;
+            so.FindProperty("accessibilityTitleText").objectReferenceValue = acTitle.GetComponent<Text>();
+            so.FindProperty("subtitlesValueText").objectReferenceValue = subtitlesValue;
+            so.FindProperty("subtitleBgValueText").objectReferenceValue = subtitleBgValue;
+            so.FindProperty("subtitleSizeValueText").objectReferenceValue = subtitleSizeValue;
+            so.FindProperty("screenShakeValueText").objectReferenceValue = screenShakeValue;
+            so.FindProperty("motionBlurValueText").objectReferenceValue = motionBlurValue;
+            so.FindProperty("colorblindValueText").objectReferenceValue = colorblindValue;
             so.ApplyModifiedProperties();
 
             // Selection navigation across pages, so a controller can reach Close from a row.
             SetNavigation(btnTabLang, btnTabDisplay, btnTabDisplay, btnTabLang);
             SetNavigation(btnTabDisplay, btnTabQuality, btnTabQuality, btnTabDisplay);
-            SetNavigation(btnTabQuality, btnClose, btnClose, btnTabQuality);
+            SetNavigation(btnTabQuality, btnTabAudio, btnTabAudio, btnTabQuality);
+            SetNavigation(btnTabAudio, btnTabControls, btnTabControls, btnTabAudio);
+            SetNavigation(btnTabControls, btnTabAccessibility, btnTabAccessibility, btnTabControls);
+            SetNavigation(btnTabAccessibility, btnClose, btnClose, btnTabAccessibility);
             SetNavigation(btnClose, btnTabLang, btnTabLang, btnClose);
 
             root.SetActive(false);

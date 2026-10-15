@@ -130,6 +130,27 @@ namespace WhisperingWilds.UI
 
         public void Toggle() => SetVisible(!_visible);
 
+        // Cached delegates for proper unsubscription
+        private UnityEngine.Events.UnityAction _onLanguageTab;
+        private UnityEngine.Events.UnityAction _onDisplayTab;
+        private UnityEngine.Events.UnityAction _onQualityTab;
+        private UnityEngine.Events.UnityAction _onAudioTab;
+        private UnityEngine.Events.UnityAction _onControlsTab;
+        private UnityEngine.Events.UnityAction _onAccessibilityTab;
+        private UnityEngine.Events.UnityAction _onClose;
+        private UnityEngine.Events.UnityAction _onUiScaleLeft;
+        private UnityEngine.Events.UnityAction _onUiScaleRight;
+        private UnityEngine.Events.UnityAction _onFullscreenToggle;
+        private UnityEngine.Events.UnityAction _onResolutionLeft;
+        private UnityEngine.Events.UnityAction _onResolutionRight;
+        private UnityEngine.Events.UnityAction _onVSyncToggle;
+        private UnityEngine.Events.UnityAction _onFrameLimitLeft;
+        private UnityEngine.Events.UnityAction _onFrameLimitRight;
+        private UnityEngine.Events.UnityAction _onQualityLeft;
+        private UnityEngine.Events.UnityAction _onQualityRight;
+
+        private bool _buttonsHooked;
+
         private void OnEnable()
         {
             if (LocalizationManager.Instance != null)
@@ -141,7 +162,11 @@ namespace WhisperingWilds.UI
                 DisplaySettingsManager.Instance.OnDisplaySettingsChanged += RefreshAll;
             }
 
-            HookButtons();
+            if (!_buttonsHooked)
+            {
+                HookButtons();
+                _buttonsHooked = true;
+            }
             ApplyFontsToAllLabels();
             RefreshAll();
         }
@@ -158,6 +183,11 @@ namespace WhisperingWilds.UI
             }
         }
 
+        private void OnDestroy()
+        {
+            UnhookButtons();
+        }
+
         private void OnLanguageChanged(Language language)
         {
             ApplyFontsToAllLabels();
@@ -166,24 +196,67 @@ namespace WhisperingWilds.UI
 
         private void HookButtons()
         {
-            if (languageTabButton != null) languageTabButton.onClick.AddListener(() => ShowPage(Page.Language));
-            if (displayTabButton != null) displayTabButton.onClick.AddListener(() => ShowPage(Page.Display));
-            if (qualityTabButton != null) qualityTabButton.onClick.AddListener(() => ShowPage(Page.Quality));
-            if (audioTabButton != null) audioTabButton.onClick.AddListener(() => ShowPage(Page.Audio));
-            if (controlsTabButton != null) controlsTabButton.onClick.AddListener(() => ShowPage(Page.Controls));
-            if (accessibilityTabButton != null) accessibilityTabButton.onClick.AddListener(() => ShowPage(Page.Accessibility));
-            if (closeButton != null) closeButton.onClick.AddListener(() => SetVisible(false));
+            _onLanguageTab = () => ShowPage(Page.Language);
+            _onDisplayTab = () => ShowPage(Page.Display);
+            _onQualityTab = () => ShowPage(Page.Quality);
+            _onAudioTab = () => ShowPage(Page.Audio);
+            _onControlsTab = () => ShowPage(Page.Controls);
+            _onAccessibilityTab = () => ShowPage(Page.Accessibility);
+            _onClose = () => SetVisible(false);
 
-            if (uiScaleLeftButton != null) uiScaleLeftButton.onClick.AddListener(() => CycleUiScale(-1));
-            if (uiScaleRightButton != null) uiScaleRightButton.onClick.AddListener(() => CycleUiScale(1));
-            if (fullscreenToggleButton != null) fullscreenToggleButton.onClick.AddListener(ToggleFullscreen);
-            if (resolutionLeftButton != null) resolutionLeftButton.onClick.AddListener(() => CycleResolution(-1));
-            if (resolutionRightButton != null) resolutionRightButton.onClick.AddListener(() => CycleResolution(1));
-            if (vsyncToggleButton != null) vsyncToggleButton.onClick.AddListener(ToggleVSync);
-            if (frameLimitLeftButton != null) frameLimitLeftButton.onClick.AddListener(() => CycleFrameLimit(-1));
-            if (frameLimitRightButton != null) frameLimitRightButton.onClick.AddListener(() => CycleFrameLimit(1));
-            if (qualityLeftButton != null) qualityLeftButton.onClick.AddListener(() => CycleQuality(-1));
-            if (qualityRightButton != null) qualityRightButton.onClick.AddListener(() => CycleQuality(1));
+            _onUiScaleLeft = () => CycleUiScale(-1);
+            _onUiScaleRight = () => CycleUiScale(1);
+            _onFullscreenToggle = ToggleFullscreen;
+            _onResolutionLeft = () => CycleResolution(-1);
+            _onResolutionRight = () => CycleResolution(1);
+            _onVSyncToggle = ToggleVSync;
+            _onFrameLimitLeft = () => CycleFrameLimit(-1);
+            _onFrameLimitRight = () => CycleFrameLimit(1);
+            _onQualityLeft = () => CycleQuality(-1);
+            _onQualityRight = () => CycleQuality(1);
+
+            if (languageTabButton != null) languageTabButton.onClick.AddListener(_onLanguageTab);
+            if (displayTabButton != null) displayTabButton.onClick.AddListener(_onDisplayTab);
+            if (qualityTabButton != null) qualityTabButton.onClick.AddListener(_onQualityTab);
+            if (audioTabButton != null) audioTabButton.onClick.AddListener(_onAudioTab);
+            if (controlsTabButton != null) controlsTabButton.onClick.AddListener(_onControlsTab);
+            if (accessibilityTabButton != null) accessibilityTabButton.onClick.AddListener(_onAccessibilityTab);
+            if (closeButton != null) closeButton.onClick.AddListener(_onClose);
+
+            if (uiScaleLeftButton != null) uiScaleLeftButton.onClick.AddListener(_onUiScaleLeft);
+            if (uiScaleRightButton != null) uiScaleRightButton.onClick.AddListener(_onUiScaleRight);
+            if (fullscreenToggleButton != null) fullscreenToggleButton.onClick.AddListener(_onFullscreenToggle);
+            if (resolutionLeftButton != null) resolutionLeftButton.onClick.AddListener(_onResolutionLeft);
+            if (resolutionRightButton != null) resolutionRightButton.onClick.AddListener(_onResolutionRight);
+            if (vsyncToggleButton != null) vsyncToggleButton.onClick.AddListener(_onVSyncToggle);
+            if (frameLimitLeftButton != null) frameLimitLeftButton.onClick.AddListener(_onFrameLimitLeft);
+            if (frameLimitRightButton != null) frameLimitRightButton.onClick.AddListener(_onFrameLimitRight);
+            if (qualityLeftButton != null) qualityLeftButton.onClick.AddListener(_onQualityLeft);
+            if (qualityRightButton != null) qualityRightButton.onClick.AddListener(_onQualityRight);
+        }
+
+        private void UnhookButtons()
+        {
+            if (languageTabButton != null) languageTabButton.onClick.RemoveListener(_onLanguageTab);
+            if (displayTabButton != null) displayTabButton.onClick.RemoveListener(_onDisplayTab);
+            if (qualityTabButton != null) qualityTabButton.onClick.RemoveListener(_onQualityTab);
+            if (audioTabButton != null) audioTabButton.onClick.RemoveListener(_onAudioTab);
+            if (controlsTabButton != null) controlsTabButton.onClick.RemoveListener(_onControlsTab);
+            if (accessibilityTabButton != null) accessibilityTabButton.onClick.RemoveListener(_onAccessibilityTab);
+            if (closeButton != null) closeButton.onClick.RemoveListener(_onClose);
+
+            if (uiScaleLeftButton != null) uiScaleLeftButton.onClick.RemoveListener(_onUiScaleLeft);
+            if (uiScaleRightButton != null) uiScaleRightButton.onClick.RemoveListener(_onUiScaleRight);
+            if (fullscreenToggleButton != null) fullscreenToggleButton.onClick.RemoveListener(_onFullscreenToggle);
+            if (resolutionLeftButton != null) resolutionLeftButton.onClick.RemoveListener(_onResolutionLeft);
+            if (resolutionRightButton != null) resolutionRightButton.onClick.RemoveListener(_onResolutionRight);
+            if (vsyncToggleButton != null) vsyncToggleButton.onClick.RemoveListener(_onVSyncToggle);
+            if (frameLimitLeftButton != null) frameLimitLeftButton.onClick.RemoveListener(_onFrameLimitLeft);
+            if (frameLimitRightButton != null) frameLimitRightButton.onClick.RemoveListener(_onFrameLimitRight);
+            if (qualityLeftButton != null) qualityLeftButton.onClick.RemoveListener(_onQualityLeft);
+            if (qualityRightButton != null) qualityRightButton.onClick.RemoveListener(_onQualityRight);
+
+            _buttonsHooked = false;
         }
 
         public void ShowPage(Page page)

@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Step 71 — finalize main menu, settings layout, performance)
+**Commit:** Pending push (Step 72 — settings regression fixes, menu-to-game integration, end-to-end QA)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -22,6 +22,8 @@
 | Main menu layout (Step 71) | **FIXED** | Centered title/subtitle, evenly spaced button column, consistent sizing |
 | Background raycast blocking (Step 71) | **FIXED** | raycastTarget=false on all 5 background layers so buttons are clickable |
 | Settings panel (Step 71) | **VERIFIED** | 6 tabs (Language, Display, Quality, Audio, Controls, Accessibility), all functional |
+| Settings duplicate listeners (Step 72) | **FIXED** | Cached UnityAction delegates, hooked once, unhooked in OnDestroy |
+| Audio/Controls/Accessibility pages (Step 72) | **FIXED** | All 3 missing pages added with interactive controls and proper wiring |
 | Windows x64 build | **PASS** | 139 MB, LZ4HC compression (`unity/Build/Windows/TheWhisperingWilds.exe`) |
 | Build size reduction (Step 67) | **PASS** | 170 MB → 140 MB, 30 MB reduction (17.6%) with LZ4HC compression |
 | Standalone runtime (first launch) | **PASS** | 0 errors, intro completes, reaches MainMenu, 60 FPS |
@@ -49,6 +51,8 @@
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
 
 ## Recent Changes (2026-10-15)
+
+- **Step 72 — Settings regression fixes, menu-to-game integration, end-to-end QA**: Fixed critical duplicate Settings event listeners bug in `SettingsMenuUI.cs` — `HookButtons()` added listeners in `OnEnable()` but never removed them in `OnDisable()`, so opening/closing Settings multiplied listeners. Fix: cached 17 `UnityAction` delegates, hooked once via `_buttonsHooked` guard, unhooked in `OnDestroy()`. Added 3 missing Settings pages (Audio, Controls, Accessibility) to `BuildBootScene.cs` with interactive controls: 6 volume sliders (Master, Music, SFX, Ambience, Dialogue, UI), mouse sensitivity, camera inversion, sprint/crouch modes, subtitles, subtitle background, subtitle size, screen shake, motion blur, colorblind mode. All buttons wired to `SettingsMenuUI` methods. Updated tab navigation for 6 tabs. Verification: standalone build 139 MB, 0 errors, SettingsMenuController applies settings correctly without duplication, all validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
 - **Step 71 — Finalize main menu, settings layout, and performance**: Disabled Unity splash screen in Player Settings (m_ShowUnitySplashScreen=0, m_ShowUnitySplashLogo=0). Improved main menu layout: title centered at 72% height with 56px font, subtitle at 62%, button container centered at screen center with pivot 0.5/0.5 and -40px offset. Buttons now have consistent 320x240 container with proper padding and 48px height each. Fixed raycastTarget=false on all 5 atmospheric background layers (MenuBackground, MenuMistLayer1, MenuMistLayer2, MenuFireflies, MenuVignette) so they don't block button clicks. Settings panel verified: 6 tabs (Language, Display, Quality, Audio, Controls, Accessibility) all functional with SettingsMenuController save/load. Verification: standalone build 139 MB, 0 errors, MainMenuAnimator entrance animation complete, all references OK, 60 FPS. All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 
