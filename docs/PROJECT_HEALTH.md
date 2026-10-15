@@ -12,6 +12,19 @@
 - **GitHub Pages:** Static landing page deployed via GitHub Actions from `docs/landing/`
 - **Desktop launcher:** Canonical PowerShell launcher targeting Unity executable (`unity/Build/Windows/TheWhisperingWilds.exe`)
 
+## Step 73 — Login / Account Page
+
+**Files created:**
+- `unity/Assets/_Project/Scripts/Online/AuthService.cs` — Unity HTTP client for login/logout/register. Session token in memory only.
+- `unity/Assets/_Project/Scripts/UI/LoginUI.cs` — Login panel with sign-in, register, signed-in states. Cached delegates prevent duplicate listeners.
+
+**Files changed:**
+- `LocalizationManager.cs` — 11 login localization keys (English/Tamil)
+- `TitleMenuController.cs` — Login button, OnLoginClicked, loginUI reference
+- `BuildBootScene.cs` — Login button in menu, LoginUI GameObject, AuthService persistent manager
+
+**Verification:** Unity build PASS, verify-game 15/15, test:backend 31/31, verify-production PASS, verify-runtime 7/7, standalone 0 errors.
+
 ## Build & Test Status
 
 | Component | Status | Details |

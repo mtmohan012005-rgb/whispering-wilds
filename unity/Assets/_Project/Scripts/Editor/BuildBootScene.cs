@@ -118,13 +118,14 @@ namespace WhisperingWilds.Editor
                 // Placeholder labels only. TitleMenuController.ApplyLocalizedLabels rewrites these from
                 // localization keys on Start, so the visible text always matches the active
                 // language instead of being frozen at build time.
+                var btnLogin = CreateButton("Btn_Login", menuContainer.transform, font, "Login", new Color(0.3f, 0.35f, 0.5f));
                 var btnNew = CreateButton("Btn_NewGame", menuContainer.transform, font, "New Game", new Color(0.15f, 0.45f, 0.35f));
                 var btnCont = CreateButton("Btn_Continue", menuContainer.transform, font, "Continue", new Color(0.2f, 0.35f, 0.5f));
                 var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "Settings", new Color(0.25f, 0.35f, 0.45f));
                 var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "Quit", new Color(0.45f, 0.2f, 0.2f));
 
                 // STEP 70: Add MenuButtonAnimator to each button for hover/press/focus feedback
-                foreach (var btnGo in new[] { btnNew, btnCont, btnSettings, btnQuit })
+                foreach (var btnGo in new[] { btnLogin, btnNew, btnCont, btnSettings, btnQuit })
                 {
                     btnGo.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
                 }
@@ -342,14 +343,22 @@ namespace WhisperingWilds.Editor
                 serializedMenuAnim.FindProperty("menuVignette").objectReferenceValue = menuVignetteImg;
                 serializedMenuAnim.ApplyModifiedProperties();
 
+                // STEP 73: Create LoginUI panel
+                var loginUIObj = new GameObject("LoginUI");
+                loginUIObj.transform.SetParent(canvasObj.transform, false);
+                var loginUI = loginUIObj.AddComponent<WhisperingWilds.UI.LoginUI>();
+                loginUIObj.SetActive(false);
+
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
+                serializedTitle.FindProperty("loginButton").objectReferenceValue = btnLogin.GetComponent<Button>();
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
                 serializedTitle.FindProperty("continueButton").objectReferenceValue = btnCont.GetComponent<Button>();
                 serializedTitle.FindProperty("settingsButton").objectReferenceValue = btnSettings.GetComponent<Button>();
                 serializedTitle.FindProperty("quitButton").objectReferenceValue = btnQuit.GetComponent<Button>();
                 serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
                 serializedTitle.FindProperty("settingsMenu").objectReferenceValue = settingsUi;
+                serializedTitle.FindProperty("loginUI").objectReferenceValue = loginUI;
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
                 serializedTitle.FindProperty("mainMenuAnimator").objectReferenceValue = menuAnimator;
@@ -934,6 +943,7 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
             if (managersObj.GetComponent<RealtimeManager>() == null) managersObj.AddComponent<RealtimeManager>();
             if (managersObj.GetComponent<CloudSaveManager>() == null) managersObj.AddComponent<CloudSaveManager>();
+            if (managersObj.GetComponent<WhisperingWilds.Online.AuthService>() == null) managersObj.AddComponent<WhisperingWilds.Online.AuthService>();
             if (managersObj.GetComponent<WorldTimeSystem>() == null) managersObj.AddComponent<WorldTimeSystem>();
             if (managersObj.GetComponent<TimeOfDayManager>() == null) managersObj.AddComponent<TimeOfDayManager>();
             if (managersObj.GetComponent<RegionalClimateSystem>() == null) managersObj.AddComponent<RegionalClimateSystem>();

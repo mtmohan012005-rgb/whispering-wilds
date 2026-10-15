@@ -16,6 +16,7 @@ namespace WhisperingWilds.UI
     public class TitleMenuController : MonoBehaviour
     {
         [Header("Menu Buttons")]
+        [SerializeField] private Button loginButton;
         [SerializeField] private Button newGameButton;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button settingsButton;
@@ -23,6 +24,7 @@ namespace WhisperingWilds.UI
 
         [Header("Panels")]
         [SerializeField] private SettingsMenuUI settingsMenu;
+        [SerializeField] private LoginUI loginUI;
         [SerializeField] private ConfirmationDialog confirmationDialog;
 
         [Header("Info Displays")]
@@ -48,6 +50,7 @@ namespace WhisperingWilds.UI
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
+            if (loginButton != null) loginButton.onClick.AddListener(OnLoginClicked);
             if (newGameButton != null) newGameButton.onClick.AddListener(OnNewGameClicked);
             if (continueButton != null)
             {
@@ -60,6 +63,7 @@ namespace WhisperingWilds.UI
             if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
 
             if (settingsMenu != null) settingsMenu.SetVisible(false);
+            if (loginUI != null) loginUI.SetVisible(false);
 
             ApplyLocalizedLabels();
 
@@ -125,6 +129,7 @@ namespace WhisperingWilds.UI
         /// </summary>
         public void ApplyLocalizedLabels()
         {
+            SetButtonLabel(loginButton, "menu.login");
             SetButtonLabel(newGameButton, "menu.new_game");
             SetButtonLabel(continueButton, "menu.continue");
             SetButtonLabel(settingsButton, "menu.settings");
@@ -187,6 +192,16 @@ namespace WhisperingWilds.UI
 
             // Never leak the internal "missing." identifier or the raw key to the player.
             label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
+        }
+
+        public void OnLoginClicked()
+        {
+            if (loginUI != null)
+            {
+                loginUI.SetVisible(true);
+                return;
+            }
+            Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> LoginUI is not assigned on the title screen.");
         }
 
         public void OnNewGameClicked()

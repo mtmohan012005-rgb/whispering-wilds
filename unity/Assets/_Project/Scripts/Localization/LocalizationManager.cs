@@ -44,6 +44,7 @@ namespace WhisperingWilds.Localization
         private static readonly List<LocalizationEntry> Entries = new List<LocalizationEntry>
         {
             // ---- Title menu -------------------------------------------------
+            new LocalizationEntry("menu.login",           "Login",                "உள்ந்நுழைவு"),
             new LocalizationEntry("menu.new_game",        "New Game",            "புதிய விளையாட்டு"),
             new LocalizationEntry("menu.continue",        "Continue",             "தொடரவும்"),
             new LocalizationEntry("menu.settings",        "Settings",             "அமைப்புகள்"),
@@ -364,6 +365,19 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             // ---- Discovery log -------------------------------------------------
             new LocalizationEntry("journal.discoveries",     "Important Discoveries",   "முக்கியக் கண்டுபிடிப்புகள்"),
             new LocalizationEntry("journal.no_discoveries",  "Nothing resolved yet.",   "இன்னும் எதுவும் தீர்மானிக்கப்படவில்லை."),
+
+            // ---- Login / Account -------------------------------------------
+            new LocalizationEntry("login.sign_in",          "Sign In",              "உள்ந்நுழைவு"),
+            new LocalizationEntry("login.sign_out",         "Sign Out",             "வெளியேறு"),
+            new LocalizationEntry("login.back",             "Back",                 "பின்செல்"),
+            new LocalizationEntry("login.no_account",       "Don't have an account? Sign up", "கணக்கு இல்லையா? பதிவிறுக்கு"),
+            new LocalizationEntry("login.have_account",     "Already have an account? Sign in", "கணக்கு உள்க்கா? உள்ந்நுழைவு"),
+            new LocalizationEntry("login.create_account",   "Create Account",       "கணக்கு உருவாக்கு"),
+            new LocalizationEntry("login.email_placeholder", "Email",                "மின்னஞ்சலு"),
+            new LocalizationEntry("login.password_placeholder", "Password",         "கடவச்சொல்"),
+            new LocalizationEntry("login.name_placeholder",  "Display Name",         "காட்சி பெயர்"),
+            new LocalizationEntry("login.confirm_password_placeholder", "Confirm Password", "கடவச்சொல் உறுதிப்படுத்து"),
+            new LocalizationEntry("login.signed_in_as",     "Signed in as",         "உள்ந்நுழைந்தவர்"),
 
             // ---- Vendor trade UI ---------------------------------------------
             new LocalizationEntry("vendor.sell_to_player",   "Buy from vendor",          "வணிகரிடமிருந்து வாங்கு"),
