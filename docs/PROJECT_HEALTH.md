@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Step 78 — Blank startup screen fix and resilient intro)
+**Commit:** Pending push (Step 78 — Canvas draw order fix for olive-brown startup screen)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture

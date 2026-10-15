@@ -60,6 +60,24 @@ namespace WhisperingWilds.Editor
                 // has no Tamil coverage and rendered every Tamil string as a blank box.
                 var font = LocalizedFontProvider.Font;
 
+                // ============================================================
+                // STEP 78: Canvas draw order fix.
+                // In a ScreenSpaceOverlay Canvas, later siblings render ON TOP of earlier siblings.
+                // The previous order created MenuRoot first, then full-screen backgrounds after it,
+                // so the opaque MenuBackground covered all menu buttons — producing the olive-brown
+                // blank screen the user reported.
+                //
+                // Correct order (bottom to top):
+                //   1. Background layers (MenuBackground, mist, fireflies, vignette)
+                //   2. Cinematic intro layers (IntroBackground, sky gradient, treeline, mist, vignette)
+                //   3. MenuRoot (title, subtitle, buttons, rule notice)
+                //   4. Intro title group (cinematic title/subtitle)
+                //   5. Skip hint text
+                //   6. Modal panels (LoginUI, Settings, ConfirmationDialog) — children of MenuRoot
+                // ============================================================
+
+                // --- 1. Background layers (rendered first = behind everything) ---
+
                 // Background gradient image / overlay
                 var bgPanel = new GameObject("BackgroundOverlay", typeof(RectTransform), typeof(Image));
                 bgPanel.transform.SetParent(canvasObj.transform, false);
@@ -69,7 +87,132 @@ namespace WhisperingWilds.Editor
                 bgRect.sizeDelta = Vector2.zero;
                 var bgImg = bgPanel.GetComponent<Image>();
                 bgImg.color = new Color(0.05f, 0.07f, 0.09f, 0.95f);
+                bgImg.raycastTarget = false;
 
+                // Menu background gradient — deep teal/blue dawn sky
+                var menuBgObj = new GameObject("MenuBackground", typeof(RectTransform), typeof(Image));
+                menuBgObj.transform.SetParent(canvasObj.transform, false);
+                var menuBgRect = menuBgObj.GetComponent<RectTransform>();
+                menuBgRect.anchorMin = Vector2.zero;
+                menuBgRect.anchorMax = Vector2.one;
+                menuBgRect.offsetMin = Vector2.zero;
+                menuBgRect.offsetMax = Vector2.zero;
+                var menuBgImg = menuBgObj.GetComponent<Image>();
+                menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
+                menuBgImg.raycastTarget = false;
+
+                // Mist layer 1 — slow horizontal drift
+                var menuMist1Obj = new GameObject("MenuMistLayer1", typeof(RectTransform), typeof(Image));
+                menuMist1Obj.transform.SetParent(canvasObj.transform, false);
+                var menuMist1Rect = menuMist1Obj.GetComponent<RectTransform>();
+                menuMist1Rect.anchorMin = Vector2.zero;
+                menuMist1Rect.anchorMax = Vector2.one;
+                menuMist1Rect.offsetMin = Vector2.zero;
+                menuMist1Rect.offsetMax = Vector2.zero;
+                var menuMist1Img = menuMist1Obj.GetComponent<Image>();
+                menuMist1Img.color = new Color(0.3f, 0.35f, 0.4f, 0.06f);
+                menuMist1Img.raycastTarget = false;
+                menuMist1Obj.SetActive(false);
+
+                // Mist layer 2 — different speed for parallax
+                var menuMist2Obj = new GameObject("MenuMistLayer2", typeof(RectTransform), typeof(Image));
+                menuMist2Obj.transform.SetParent(canvasObj.transform, false);
+                var menuMist2Rect = menuMist2Obj.GetComponent<RectTransform>();
+                menuMist2Rect.anchorMin = Vector2.zero;
+                menuMist2Rect.anchorMax = Vector2.one;
+                menuMist2Rect.offsetMin = Vector2.zero;
+                menuMist2Rect.offsetMax = Vector2.zero;
+                var menuMist2Img = menuMist2Obj.GetComponent<Image>();
+                menuMist2Img.color = new Color(0.25f, 0.3f, 0.35f, 0.04f);
+                menuMist2Img.raycastTarget = false;
+                menuMist2Obj.SetActive(false);
+
+                // Fireflies — subtle pulsing light particles
+                var menuFirefliesObj = new GameObject("MenuFireflies", typeof(RectTransform), typeof(Image));
+                menuFirefliesObj.transform.SetParent(canvasObj.transform, false);
+                var menuFirefliesRect = menuFirefliesObj.GetComponent<RectTransform>();
+                menuFirefliesRect.anchorMin = Vector2.zero;
+                menuFirefliesRect.anchorMax = Vector2.one;
+                menuFirefliesRect.offsetMin = Vector2.zero;
+                menuFirefliesRect.offsetMax = Vector2.zero;
+                var menuFirefliesImg = menuFirefliesObj.GetComponent<Image>();
+                menuFirefliesImg.color = new Color(1f, 0.9f, 0.5f, 0.3f);
+                menuFirefliesImg.raycastTarget = false;
+                menuFirefliesObj.SetActive(false);
+
+                // Menu vignette — subtle edge darkening to keep center readable
+                var menuVignetteObj = new GameObject("MenuVignette", typeof(RectTransform), typeof(Image));
+                menuVignetteObj.transform.SetParent(canvasObj.transform, false);
+                var menuVignetteRect = menuVignetteObj.GetComponent<RectTransform>();
+                menuVignetteRect.anchorMin = Vector2.zero;
+                menuVignetteRect.anchorMax = Vector2.one;
+                menuVignetteRect.offsetMin = Vector2.zero;
+                menuVignetteRect.offsetMax = Vector2.zero;
+                var menuVignetteImg = menuVignetteObj.GetComponent<Image>();
+                menuVignetteImg.color = new Color(0f, 0f, 0f, 0.35f);
+                menuVignetteImg.raycastTarget = false;
+
+                // --- 2. Cinematic intro layers ---
+
+                // Base background overlay for intro fade-in
+                var introBgObj = new GameObject("IntroBackground", typeof(RectTransform), typeof(Image));
+                introBgObj.transform.SetParent(canvasObj.transform, false);
+                var introBgRect = introBgObj.GetComponent<RectTransform>();
+                introBgRect.anchorMin = Vector2.zero;
+                introBgRect.anchorMax = Vector2.one;
+                introBgRect.offsetMin = Vector2.zero;
+                introBgRect.offsetMax = Vector2.zero;
+                introBgObj.GetComponent<Image>().color = new Color(0.01f, 0.02f, 0.03f, 0f);
+                introBgObj.SetActive(false);
+
+                // Dawn sky gradient overlay
+                var skyGradientObj = new GameObject("IntroSkyGradient", typeof(RectTransform), typeof(Image));
+                skyGradientObj.transform.SetParent(canvasObj.transform, false);
+                var skyGradientRect = skyGradientObj.GetComponent<RectTransform>();
+                skyGradientRect.anchorMin = Vector2.zero;
+                skyGradientRect.anchorMax = Vector2.one;
+                skyGradientRect.offsetMin = Vector2.zero;
+                skyGradientRect.offsetMax = Vector2.zero;
+                var skyGradientImg = skyGradientObj.GetComponent<Image>();
+                skyGradientImg.color = new Color(0.05f, 0.08f, 0.12f, 0.5f);
+                skyGradientObj.SetActive(false);
+
+                // Treeline silhouette at the bottom of the screen
+                var treelineObj = new GameObject("IntroTreeline", typeof(RectTransform), typeof(Image));
+                treelineObj.transform.SetParent(canvasObj.transform, false);
+                var treelineRect = treelineObj.GetComponent<RectTransform>();
+                treelineRect.anchorMin = new Vector2(0f, 0f);
+                treelineRect.anchorMax = new Vector2(1f, 0.15f);
+                treelineRect.offsetMin = Vector2.zero;
+                treelineRect.offsetMax = Vector2.zero;
+                var treelineImg = treelineObj.GetComponent<Image>();
+                treelineImg.color = new Color(0.02f, 0.03f, 0.04f, 0.85f);
+                treelineObj.SetActive(false);
+
+                // Atmospheric mist overlay for the cinematic intro.
+                var mistObj = new GameObject("IntroMist", typeof(RectTransform), typeof(Image));
+                mistObj.transform.SetParent(canvasObj.transform, false);
+                var mistRect = mistObj.GetComponent<RectTransform>();
+                mistRect.anchorMin = Vector2.zero;
+                mistRect.anchorMax = Vector2.one;
+                mistRect.offsetMin = Vector2.zero;
+                mistRect.offsetMax = Vector2.zero;
+                var mistImage = mistObj.GetComponent<Image>();
+                mistImage.color = new Color(0.5f, 0.55f, 0.6f, 0.08f);
+                mistObj.SetActive(false);
+
+                // Vignette overlay for atmospheric fade
+                var vignetteObj = new GameObject("IntroVignette", typeof(RectTransform), typeof(Image));
+                vignetteObj.transform.SetParent(canvasObj.transform, false);
+                var vignetteRect = vignetteObj.GetComponent<RectTransform>();
+                vignetteRect.anchorMin = Vector2.zero;
+                vignetteRect.anchorMax = Vector2.one;
+                vignetteRect.offsetMin = Vector2.zero;
+                vignetteRect.offsetMax = Vector2.zero;
+                vignetteObj.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
+                vignetteObj.SetActive(false);
+
+                // --- 3. MenuRoot (title, subtitle, buttons, rule notice) ---
                 // MenuRoot: a dedicated child that holds ONLY the main menu content (title,
                 // subtitle, buttons, rule notice, settings, confirmation dialog). The cinematic
                 // intro controller disables this group during the intro and re-enables it when
@@ -141,8 +284,7 @@ namespace WhisperingWilds.Editor
                 var confirmDialogObj = BuildConfirmationDialog(menuRoot.transform, font);
                 var confirmDialog = confirmDialogObj.GetComponent<ConfirmationDialog>();
 
-                // Cinematic intro visuals, created before the title menu so the intro sequence
-                // can fade them out and reveal the menu when it finishes or is skipped.
+                // --- 4. Intro title group (cinematic title/subtitle) ---
                 var introGroup = new GameObject("IntroTitleGroup", typeof(RectTransform));
                 introGroup.transform.SetParent(canvasObj.transform, false);
                 var introGroupRect = introGroup.GetComponent<RectTransform>();
@@ -164,143 +306,13 @@ namespace WhisperingWilds.Editor
                 introSubtitleObj.GetComponent<Text>().text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
                 introSubtitleObj.GetComponent<Text>().supportRichText = false;
 
-                // Vignette overlay for atmospheric fade
-                var vignetteObj = new GameObject("IntroVignette", typeof(RectTransform), typeof(Image));
-                vignetteObj.transform.SetParent(canvasObj.transform, false);
-                var vignetteRect = vignetteObj.GetComponent<RectTransform>();
-                vignetteRect.anchorMin = Vector2.zero;
-                vignetteRect.anchorMax = Vector2.one;
-                vignetteRect.offsetMin = Vector2.zero;
-                vignetteRect.offsetMax = Vector2.zero;
-                vignetteObj.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
-                vignetteObj.SetActive(false);
-
-                // Skip hint text
+                // --- 5. Skip hint text ---
                 var skipObj = CreateText("IntroSkipText", canvasObj.transform,
                     new Vector2(0.2f, 0.05f), new Vector2(0.8f, 0.05f), Vector2.zero, new Vector2(600, 30),
                     font, 14, TextAnchor.MiddleCenter, new Color(0.6f, 0.65f, 0.7f, 0f));
                 skipObj.GetComponent<Text>().text = "Press Any Key to Skip";
                 skipObj.GetComponent<Text>().supportRichText = false;
                 skipObj.SetActive(false);
-
-                // STEP 69: Intro background with layered dawn sky gradient and treeline silhouette.
-                // The IntroBackground is the base layer (animated by CinematicIntroController).
-                // Additional layers provide visual depth so the first frame is not a blank dark screen.
-
-                // Base background overlay for intro fade-in
-                var introBgObj = new GameObject("IntroBackground", typeof(RectTransform), typeof(Image));
-                introBgObj.transform.SetParent(canvasObj.transform, false);
-                var introBgRect = introBgObj.GetComponent<RectTransform>();
-                introBgRect.anchorMin = Vector2.zero;
-                introBgRect.anchorMax = Vector2.one;
-                introBgRect.offsetMin = Vector2.zero;
-                introBgRect.offsetMax = Vector2.zero;
-                introBgObj.GetComponent<Image>().color = new Color(0.01f, 0.02f, 0.03f, 0f);
-                introBgObj.SetActive(false);
-
-                // Dawn sky gradient overlay — visible immediately so the first frame is not blank.
-                // Top: deep night blue, bottom: warm horizon glow.
-                var skyGradientObj = new GameObject("IntroSkyGradient", typeof(RectTransform), typeof(Image));
-                skyGradientObj.transform.SetParent(canvasObj.transform, false);
-                var skyGradientRect = skyGradientObj.GetComponent<RectTransform>();
-                skyGradientRect.anchorMin = Vector2.zero;
-                skyGradientRect.anchorMax = Vector2.one;
-                skyGradientRect.offsetMin = Vector2.zero;
-                skyGradientRect.offsetMax = Vector2.zero;
-                var skyGradientImg = skyGradientObj.GetComponent<Image>();
-                skyGradientImg.color = new Color(0.05f, 0.08f, 0.12f, 0.5f);
-                skyGradientObj.SetActive(false);
-
-                // Treeline silhouette at the bottom of the screen — a dark band suggesting
-                // distant Tamil Nadu hills and forest canopy against the dawn sky.
-                var treelineObj = new GameObject("IntroTreeline", typeof(RectTransform), typeof(Image));
-                treelineObj.transform.SetParent(canvasObj.transform, false);
-                var treelineRect = treelineObj.GetComponent<RectTransform>();
-                treelineRect.anchorMin = new Vector2(0f, 0f);
-                treelineRect.anchorMax = new Vector2(1f, 0.15f);
-                treelineRect.offsetMin = Vector2.zero;
-                treelineRect.offsetMax = Vector2.zero;
-                var treelineImg = treelineObj.GetComponent<Image>();
-                treelineImg.color = new Color(0.02f, 0.03f, 0.04f, 0.85f);
-                treelineObj.SetActive(false);
-
-                // Atmospheric mist overlay for the cinematic intro.
-                var mistObj = new GameObject("IntroMist", typeof(RectTransform), typeof(Image));
-                mistObj.transform.SetParent(canvasObj.transform, false);
-                var mistRect = mistObj.GetComponent<RectTransform>();
-                mistRect.anchorMin = Vector2.zero;
-                mistRect.anchorMax = Vector2.one;
-                mistRect.offsetMin = Vector2.zero;
-                mistRect.offsetMax = Vector2.zero;
-                var mistImage = mistObj.GetComponent<Image>();
-                mistImage.color = new Color(0.5f, 0.55f, 0.6f, 0.08f);
-                mistObj.SetActive(false);
-
-                // STEP 70: Main menu atmospheric background layers.
-                // These sit behind the menu content and provide layered depth with slow parallax drift.
-
-                // Menu background gradient — deep teal/blue dawn sky
-                var menuBgObj = new GameObject("MenuBackground", typeof(RectTransform), typeof(Image));
-                menuBgObj.transform.SetParent(canvasObj.transform, false);
-                var menuBgRect = menuBgObj.GetComponent<RectTransform>();
-                menuBgRect.anchorMin = Vector2.zero;
-                menuBgRect.anchorMax = Vector2.one;
-                menuBgRect.offsetMin = Vector2.zero;
-                menuBgRect.offsetMax = Vector2.zero;
-                var menuBgImg = menuBgObj.GetComponent<Image>();
-                menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
-                menuBgImg.raycastTarget = false; // STEP 71: Don't block button clicks
-
-                // Mist layer 1 — slow horizontal drift
-                var menuMist1Obj = new GameObject("MenuMistLayer1", typeof(RectTransform), typeof(Image));
-                menuMist1Obj.transform.SetParent(canvasObj.transform, false);
-                var menuMist1Rect = menuMist1Obj.GetComponent<RectTransform>();
-                menuMist1Rect.anchorMin = Vector2.zero;
-                menuMist1Rect.anchorMax = Vector2.one;
-                menuMist1Rect.offsetMin = Vector2.zero;
-                menuMist1Rect.offsetMax = Vector2.zero;
-                var menuMist1Img = menuMist1Obj.GetComponent<Image>();
-                menuMist1Img.color = new Color(0.3f, 0.35f, 0.4f, 0.06f);
-                menuMist1Img.raycastTarget = false; // STEP 71: Don't block button clicks
-                menuMist1Obj.SetActive(false);
-
-                // Mist layer 2 — different speed for parallax
-                var menuMist2Obj = new GameObject("MenuMistLayer2", typeof(RectTransform), typeof(Image));
-                menuMist2Obj.transform.SetParent(canvasObj.transform, false);
-                var menuMist2Rect = menuMist2Obj.GetComponent<RectTransform>();
-                menuMist2Rect.anchorMin = Vector2.zero;
-                menuMist2Rect.anchorMax = Vector2.one;
-                menuMist2Rect.offsetMin = Vector2.zero;
-                menuMist2Rect.offsetMax = Vector2.zero;
-                var menuMist2Img = menuMist2Obj.GetComponent<Image>();
-                menuMist2Img.color = new Color(0.25f, 0.3f, 0.35f, 0.04f);
-                menuMist2Img.raycastTarget = false; // STEP 71: Don't block button clicks
-                menuMist2Obj.SetActive(false);
-
-                // Fireflies — subtle pulsing light particles
-                var menuFirefliesObj = new GameObject("MenuFireflies", typeof(RectTransform), typeof(Image));
-                menuFirefliesObj.transform.SetParent(canvasObj.transform, false);
-                var menuFirefliesRect = menuFirefliesObj.GetComponent<RectTransform>();
-                menuFirefliesRect.anchorMin = Vector2.zero;
-                menuFirefliesRect.anchorMax = Vector2.one;
-                menuFirefliesRect.offsetMin = Vector2.zero;
-                menuFirefliesRect.offsetMax = Vector2.zero;
-                var menuFirefliesImg = menuFirefliesObj.GetComponent<Image>();
-                menuFirefliesImg.color = new Color(1f, 0.9f, 0.5f, 0.3f);
-                menuFirefliesImg.raycastTarget = false; // STEP 71: Don't block button clicks
-                menuFirefliesObj.SetActive(false);
-
-                // Menu vignette — subtle edge darkening to keep center readable
-                var menuVignetteObj = new GameObject("MenuVignette", typeof(RectTransform), typeof(Image));
-                menuVignetteObj.transform.SetParent(canvasObj.transform, false);
-                var menuVignetteRect = menuVignetteObj.GetComponent<RectTransform>();
-                menuVignetteRect.anchorMin = Vector2.zero;
-                menuVignetteRect.anchorMax = Vector2.one;
-                menuVignetteRect.offsetMin = Vector2.zero;
-                menuVignetteRect.offsetMax = Vector2.zero;
-                var menuVignetteImg = menuVignetteObj.GetComponent<Image>();
-                menuVignetteImg.color = new Color(0f, 0f, 0f, 0.35f);
-                menuVignetteImg.raycastTarget = false; // STEP 71: Don't block button clicks
 
                 // STEP 70: MainMenuAnimator — orchestrates title, subtitle, button, and background animation.
                 // Parented to the canvas so it persists in the scene hierarchy and is discoverable by FindObjectOfType.
