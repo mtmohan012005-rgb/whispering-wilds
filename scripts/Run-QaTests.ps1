@@ -27,17 +27,19 @@ $ErrorActionPreference = "Stop"
 # --- Configuration ---
 $unityProjectDir = Join-Path $PSScriptRoot "unity"
 $unityExe = "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe"
-$logDir = Join-Path $PSScriptRoot "qa_test_logs"
-New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 
-# Create unique QA save directory for this test run
-$qaSaveDir = Join-Path $env:TEMP "ww_qa_saves_$(Get-Date -Format 'yyyyMMddHHmmss')_$((New-Guid).ToString('N').Substring(0, 8))"
+# All QA artifacts go into a unique temp directory — never into the repository
+$qaTempRoot = Join-Path $env:TEMP "ww_qa_$(Get-Date -Format 'yyyyMMddHHmmss')_$((New-Guid).ToString('N').Substring(0, 8))"
+New-Item -ItemType Directory -Force -Path $qaTempRoot | Out-Null
+
+# QA save directory is separate from log directory
+$qaSaveDir = Join-Path $qaTempRoot "saves"
 New-Item -ItemType Directory -Force -Path $qaSaveDir | Out-Null
 
 # Timestamp for log files
 $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-$unityLog = Join-Path $logDir "unity_${TestMode}_${timestamp}.log"
-$resultXml = Join-Path $logDir "test_results_${TestMode}_${timestamp}.xml"
+$unityLog = Join-Path $qaTempRoot "unity_${TestMode}_${timestamp}.log"
+$resultXml = Join-Path $qaTempRoot "test_results_${TestMode}_${timestamp}.xml"
 
 Write-Host "========================================"
 Write-Host "Whispering Wilds QA Test Runner"
@@ -45,6 +47,7 @@ Write-Host "========================================"
 Write-Host "Unity: $unityExe"
 Write-Host "Project: $unityProjectDir"
 Write-Host "Test mode: $TestMode"
+Write-Host "QA temp root: $qaTempRoot"
 Write-Host "QA save dir: $qaSaveDir"
 Write-Host "Unity log: $unityLog"
 Write-Host "Results: $resultXml"
@@ -64,18 +67,22 @@ if (-not (Test-Path $unityProjectDir)) {
 }
 
 # Build Unity command-line arguments
+# EditMode tests run in the Editor; PlayMode tests require a built player
 $unityArgs = @(
     "-batchMode",
     "-nographics",
     "-projectPath", $unityProjectDir,
     "-runTests",
-    "-testPlatform", "WindowsPlayer",
     "-testResults", $resultXml,
     "-logFile", $unityLog
 )
 
 if ($TestMode -eq "EditMode") {
-    $unityArgs += "-testCategory", "EditMode"
+    $unityArgs += "-testPlatform", "EditMode"
+}
+else {
+    # PlayMode tests run against the built player
+    $unityArgs += "-testPlatform", "WindowsPlayer"
 }
 
 if (-not [string]::IsNullOrWhiteSpace($TestFilter)) {
@@ -147,12 +154,12 @@ if (Test-Path $unityLog) {
     }
 }
 
-# Cleanup QA save directory
+# Cleanup ALL QA artifacts — saves, logs, and result XML
 Write-Host ""
-Write-Host "Cleaning up QA save directory: $qaSaveDir"
+Write-Host "Cleaning up ALL QA artifacts: $qaTempRoot"
 try {
-    Remove-Item -Recurse -Force $qaSaveDir -ErrorAction SilentlyContinue
-    Write-Host "OK: QA directory cleaned up."
+    Remove-Item -Recurse -Force $qaTempRoot -ErrorAction SilentlyContinue
+    Write-Host "OK: All QA artifacts cleaned up."
 }
 catch {
     Write-Warning "Could not clean up QA directory: $_"
