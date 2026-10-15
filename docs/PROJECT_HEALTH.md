@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
 **Last updated:** 2026-10-15
-**Commit:** Pending push (Step 72 — settings regression fixes, menu-to-game integration, end-to-end QA)
+**Commit:** Pending push (Flowchart audit fixes — QA runner path, stale browser scripts, missing npm script, GitHub Actions workflows)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -47,10 +47,17 @@
 | Unity project verification | **PASS** | 15/15 passed (`scripts/verify-game.js`) |
 | Production readiness | **PASS** | All checks passed (`scripts/verify-production.js`) |
 | Asset integrity & GLB checks | **PASS** | Verified (`scripts/verify-assets.js`) |
-| GitHub Actions workflows | **BLOCKED** | 3 workflow files committed locally; push rejected — PAT lacks `workflow` scope |
+| GitHub Actions workflows | **CREATED** | 3 workflow files created locally (backend-ci, unity-validation, pages); push may still be blocked by PAT scope |
 | GitHub Pages deployment | **BLOCKED** | Requires workflow files on GitHub; set Pages source to "GitHub Actions" after push |
+| QA runner path (flowchart audit) | **FIXED** | Run-QaTests.ps1 now uses repo root instead of scripts/unity |
+| Stale browser scripts (flowchart audit) | **FIXED** | verify-runtime.js, verify-performance.js, verify-compatibility.js replaced with Unity-appropriate versions |
+| Missing build-report npm script | **FIXED** | Added `npm run build-report` to package.json |
+| Runtime verification | **PASS** | 7/7 checks: executable, data dir, managed assemblies, asset archive, launcher |
+| Compatibility verification | **PASS** | 20/20 checks: Unity version, HDRP, Input System, asmdefs, scenes, Tamil font |
 
 ## Recent Changes (2026-10-15)
+
+- **Flowchart audit fixes**: Fixed `scripts/Run-QaTests.ps1` Unity project path (was `scripts/unity`, now uses repo root). Replaced 3 stale browser verification scripts (`verify-runtime.js`, `verify-performance.js`, `verify-compatibility.js`) with Unity-appropriate versions that check the Windows build. Added missing `npm run build-report` script to `package.json`. Created 3 GitHub Actions workflow files (`backend-ci.yml`, `unity-validation.yml`, `pages.yml`). All validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks, verify-runtime 7/7, verify-compatibility 20/20.
 
 - **Step 72 — Settings regression fixes, menu-to-game integration, end-to-end QA**: Fixed critical duplicate Settings event listeners bug in `SettingsMenuUI.cs` — `HookButtons()` added listeners in `OnEnable()` but never removed them in `OnDisable()`, so opening/closing Settings multiplied listeners. Fix: cached 17 `UnityAction` delegates, hooked once via `_buttonsHooked` guard, unhooked in `OnDestroy()`. Added 3 missing Settings pages (Audio, Controls, Accessibility) to `BuildBootScene.cs` with interactive controls: 6 volume sliders (Master, Music, SFX, Ambience, Dialogue, UI), mouse sensitivity, camera inversion, sprint/crouch modes, subtitles, subtitle background, subtitle size, screen shake, motion blur, colorblind mode. All buttons wired to `SettingsMenuUI` methods. Updated tab navigation for 6 tabs. Verification: standalone build 139 MB, 0 errors, SettingsMenuController applies settings correctly without duplication, all validation tests pass: verify-game 15/15, test:backend 31/31, verify-production all checks.
 

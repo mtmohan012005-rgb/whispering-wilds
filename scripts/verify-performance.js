@@ -1,103 +1,136 @@
-// Verifies the quality/tier fixes and measures REAL frame cost.
-const puppeteer = require('puppeteer-core');
-const EDGE = process.env.WW_EDGE || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const click = (page, id) => page.evaluate((i) => { const b = document.getElementById(i); if (b) b.click(); }, id);
+#!/usr/bin/env node
+/**
+ * The Whispering Wilds - Unity Build Performance Verification
+ *
+ * Checks the Unity Windows x64 build for performance-related concerns:
+ * - Build size and asset archive compression
+ * - Managed assembly stripping
+ * - Scene count and sizes
+ *
+ * Replaces the old browser-based performance test (puppeteer/Chrome).
+ *
+ * Usage:
+ *   node scripts/verify-performance.js
+ */
 
-(async () => {
-  const browser = await puppeteer.launch({ executablePath: EDGE, headless: 'new', args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 720 });
-  await page.goto('http://localhost:3000', { waitUntil: 'domcontentloaded', timeout: 120000 });
-  await page.waitForSelector('#ww-menu-new-game', { timeout: 180000 });
+const fs = require('fs');
+const path = require('path');
 
-  // --- 1. What did the detector decide, before entering the world? ---
-  const cap = await page.evaluate(() => {
-    const g = window.GPUCapability;
-    const p = window.GraphicsProfileManager;
-    return {
-      renderer: g.gpuRenderer, vendor: g.gpuVendor, tier: g.tier,
-      webgl2: g.supportsWebGL2, webgpuPresent: g.supportsWebGPU,
-      recDPR: g.getRecommendedPixelRatio(),
-      quality: p ? p.currentQuality : null,
-      profileDPR: p ? p.profile.renderPixelRatio : null,
-      shadowsEnabled: p ? p.profile.shadowsEnabled : null,
-    };
-  });
-  console.log('=== GPU / QUALITY SELECTION ===');
-  console.log('  renderer        :', cap.renderer);
-  console.log('  vendor          :', cap.vendor);
-  console.log('  detected tier   :', cap.tier, '   <-- was MEDIUM before the fix');
-  console.log('  recommended DPR :', cap.recDPR);
-  console.log('  quality preset  :', cap.quality, `(renderPixelRatio=${cap.profileDPR}, shadows=${cap.shadowsEnabled})`);
-  console.log('  webgpu in nav   :', cap.webgpuPresent, '(unused - game renders on WebGL)');
+const ROOT = path.resolve(__dirname, '..');
+const BUILD_DIR = path.join(ROOT, 'unity', 'Build', 'Windows');
 
-  // --- 2. Enter the world ---
-  await click(page, 'ww-menu-new-game');
-  await page.waitForSelector('#ww-setup-proceed', { timeout: 30000 });
-  await click(page, 'ww-setup-proceed');
-  await page.waitForSelector('#ww-prologue-begin', { timeout: 30000 });
-  await click(page, 'ww-prologue-begin');
-  for (let i = 0; i < 60; i++) {
-    const up = await page.evaluate(() => !!(window.threeWorld && window.threeWorld.isActive));
-    if (up) break; await sleep(2000);
-  }
+let passed = 0;
+let failed = 0;
+let warnings = 0;
 
-  // --- 3. Applied renderer state in the live world ---
-  const live = await page.evaluate(() => {
-    const r = window.threeWorld.renderer;
-    return {
-      pixelRatio: r.getPixelRatio(),
-      drawingBuffer: `${r.domElement.width}x${r.domElement.height}`,
-      cssSize: `${r.domElement.clientWidth}x${r.domElement.clientHeight}`,
-      shadowsOn: r.shadowMap.enabled,
-      calls: r.info.render.calls,
-      tris: r.info.render.triangles,
-      programs: r.info.programs ? r.info.programs.length : null,
-      geometries: r.info.memory.geometries,
-      textures: r.info.memory.textures,
-      degradeStep: window.GraphicsProfileManager ? window.GraphicsProfileManager._degradeStep : null,
-      dynRes: window.GraphicsProfileManager ? window.GraphicsProfileManager._dynResScale : null,
-    };
-  });
-  console.log('\n=== LIVE RENDERER STATE ===');
-  console.log('  pixel ratio     :', live.pixelRatio.toFixed(3));
-  console.log('  drawing buffer  :', live.drawingBuffer, ' from CSS', live.cssSize);
-  console.log('  shadows         :', live.shadowsOn ? 'ON' : 'OFF');
-  console.log('  draw calls      :', live.calls);
-  console.log('  triangles       :', live.tris);
-  console.log('  programs        :', live.programs, '| geometries', live.geometries, '| textures', live.textures);
-  console.log('  degradeStep     :', live.degradeStep, '| dynResScale', live.dynRes);
+const pass = (msg) => { process.stdout.write(`  PASS  ${msg}\n`); passed++; };
+const fail = (msg) => { process.stdout.write(`  FAIL  ${msg}\n`); failed++; };
+const warn = (msg) => { process.stdout.write(`  WARN  ${msg}\n`); warnings++; };
 
-  // --- 4. Measure real frame pacing ---
-  const perf = await page.evaluate(() => new Promise((resolve) => {
-    const times = [];
-    let last = performance.now();
-    const MAX = 150;
-    function tick(now) {
-      times.push(now - last); last = now;
-      if (times.length < MAX) requestAnimationFrame(tick);
-      else {
-        times.sort((a, b) => a - b);
-        const mean = times.reduce((a, b) => a + b, 0) / times.length;
-        resolve({
-          frames: times.length,
-          meanMs: +mean.toFixed(2),
-          medianMs: +times[Math.floor(times.length / 2)].toFixed(2),
-          p95Ms: +times[Math.floor(times.length * 0.95)].toFixed(2),
-          fpsMean: +(1000 / mean).toFixed(1),
-          fpsMedian: +(1000 / times[Math.floor(times.length / 2)]).toFixed(1),
-        });
-      }
+console.log('====================================================');
+console.log('Unity Build Performance Verification');
+console.log('====================================================\n');
+
+// 1. Check build directory exists
+if (!fs.existsSync(BUILD_DIR)) {
+  fail('Build directory not found: ' + BUILD_DIR);
+  console.log('\nBuild the game first.');
+  process.exit(1);
+}
+pass('Build directory exists');
+
+// 2. Check total build size
+let totalSize = 0;
+let fileCount = 0;
+try {
+  const entries = fs.readdirSync(BUILD_DIR);
+  for (const entry of entries) {
+    const entryPath = path.join(BUILD_DIR, entry);
+    const stat = fs.statSync(entryPath);
+    if (stat.isFile()) {
+      totalSize += stat.size;
+      fileCount++;
+    } else if (stat.isDirectory()) {
+      // Recursively sum directory sizes
+      const sumDir = (dir) => {
+        for (const child of fs.readdirSync(dir)) {
+          const childPath = path.join(dir, child);
+          const childStat = fs.statSync(childPath);
+          if (childStat.isFile()) {
+            totalSize += childStat.size;
+            fileCount++;
+          } else if (childStat.isDirectory()) {
+            sumDir(childPath);
+          }
+        }
+      };
+      sumDir(entryPath);
     }
-    requestAnimationFrame(tick);
-  }));
-  console.log('\n=== MEASURED FRAME PACING (150 frames) ===');
-  console.log('  mean   ', perf.meanMs + ' ms  ->', perf.fpsMean, 'FPS');
-  console.log('  median ', perf.medianMs + ' ms  ->', perf.fpsMedian, 'FPS');
-  console.log('  p95    ', perf.p95Ms + ' ms');
-  console.log('  NOTE: this VM has no GPU (software rasteriser). Treat these as a');
-  console.log('        relative signal only, NOT as your laptop\'s real FPS.');
+  }
+} catch (e) {
+  warn('Could not calculate total build size: ' + e.message);
+}
 
-  await browser.close();
-})().catch((e) => { console.error('FAILED:', e.message); process.exit(1); });
+const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(1);
+pass('Total build size: ' + totalSizeMB + ' MB (' + fileCount + ' files)');
+
+// 3. Check build size is reasonable (< 500 MB for this game)
+if (totalSize > 500 * 1024 * 1024) {
+  warn('Build size is large (' + totalSizeMB + ' MB). Consider LZ4HC compression.');
+} else if (totalSize > 200 * 1024 * 1024) {
+  warn('Build size is moderate (' + totalSizeMB + ' MB). Monitor asset growth.');
+} else {
+  pass('Build size is within acceptable range');
+}
+
+// 4. Check data.unity3d compression
+const dataArchive = path.join(BUILD_DIR, 'TheWhisperingWilds_Data', 'data.unity3d');
+if (fs.existsSync(dataArchive)) {
+  const dataSizeMB = (fs.statSync(dataArchive).size / (1024 * 1024)).toFixed(1);
+  pass('Asset archive: ' + dataSizeMB + ' MB');
+  
+  // LZ4HC compressed archives are typically much smaller
+  if (fs.statSync(dataArchive).size > 100 * 1024 * 1024) {
+    warn('Asset archive is large. Consider enabling LZ4HC compression.');
+  }
+} else {
+  fail('Asset archive not found');
+}
+
+// 5. Check managed assemblies
+const managedDir = path.join(BUILD_DIR, 'TheWhisperingWilds_Data', 'Managed');
+if (fs.existsSync(managedDir)) {
+  const dlls = fs.readdirSync(managedDir).filter(f => f.endsWith('.dll'));
+  let managedSize = 0;
+  for (const dll of dlls) {
+    managedSize += fs.statSync(path.join(managedDir, dll)).size;
+  }
+  const managedSizeMB = (managedSize / (1024 * 1024)).toFixed(1);
+  pass('Managed assemblies: ' + dlls.length + ' DLLs, ' + managedSizeMB + ' MB');
+  
+  if (dlls.length > 50) {
+    warn('Many managed assemblies (' + dlls.length + '). Consider code stripping.');
+  }
+} else {
+  skip('Managed directory not found (may be in data.unity3d archive)');
+}
+
+// 6. Check UnityPlayer.dll
+const unityPlayerDll = path.join(BUILD_DIR, 'UnityPlayer.dll');
+if (fs.existsSync(unityPlayerDll)) {
+  const playerSizeMB = (fs.statSync(unityPlayerDll).size / (1024 * 1024)).toFixed(1);
+  pass('UnityPlayer.dll: ' + playerSizeMB + ' MB');
+} else {
+  fail('UnityPlayer.dll not found');
+}
+
+console.log('\n====================================================');
+console.log('Results: ' + passed + ' passed, ' + failed + ' failed, ' + warnings + ' warnings');
+if (failed === 0) {
+  console.log('Performance verification: PASS');
+} else {
+  console.log('Performance verification: FAIL');
+}
+console.log('====================================================');
+
+process.exit(failed > 0 ? 1 : 0);

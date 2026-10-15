@@ -1,0 +1,80 @@
+name: Unity Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'unity/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'unity/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Unity project structure
+        run: |
+          echo "Checking Unity project structure..."
+          test -f unity/ProjectSettings/ProjectVersion.txt && echo "ProjectVersion.txt: OK" || (echo "ProjectVersion.txt: MISSING" && exit 1)
+          test -f unity/Packages/manifest.json && echo "manifest.json: OK" || (echo "manifest.json: MISSING" && exit 1)
+          test -f unity/Packages/packages-lock.json && echo "packages-lock.json: OK" || (echo "packages-lock.json: MISSING" && exit 1)
+          echo "Unity project structure: OK"
+
+      - name: Check Unity version
+        run: |
+          UNITY_VERSION=$(grep -oP 'm_EditorVersion:\s*\K.+' unity/ProjectSettings/ProjectVersion.txt | tr -d '\r')
+          echo "Unity version: $UNITY_VERSION"
+
+      - name: Validate assembly definitions
+        run: |
+          echo "Checking assembly definitions..."
+          for asmdef in $(find unity/Assets/_Project/Scripts -name '*.asmdef' 2>/dev/null); do
+            echo "Validating: $asmdef"
+            node -e "JSON.parse(require('fs').readFileSync('$asmdef', 'utf8'))" || (echo "Invalid JSON: $asmdef" && exit 1)
+          done
+          echo "Assembly definitions: OK"
+
+      - name: Check required scenes
+        run: |
+          echo "Checking required scenes..."
+          for scene in 00_Boot 01_StateMap_TamilNadu 02_Chennai_GeorgeTown 03_Pichavaram_Wetlands 04_Thanjavur_Delta 05_Chettinad_Mansion 06_Mamallapuram_Shore 07_Nilgiris_Sanctuary; do
+            found=$(find unity/Assets/_Project/Scenes -name "${scene}*.unity" 2>/dev/null | head -1)
+            if [ -n "$found" ]; then
+              echo "Scene $scene: OK"
+            else
+              echo "Scene $scene: MISSING"
+              exit 1
+            fi
+          done
+          echo "Required scenes: OK"
+
+      - name: Check build settings
+        run: |
+          echo "Checking build settings..."
+          grep -q "00_Boot" unity/ProjectSettings/EditorBuildSettings.asset && echo "Boot scene in build settings: OK" || (echo "Boot scene in build settings: MISSING" && exit 1)
+          echo "Build settings: OK"
+
+      - name: Verify game structure
+        run: |
+          npm ci
+          npm run verify-game
+
+      - name: Verify assets
+        run: npm run verify-assets
+
+      - name: Note about Unity Editor tests
+        run: |
+          echo "NOTE: Unity EditMode/PlayMode tests require a licensed Unity Editor."
+          echo "These tests cannot run in this CI environment."
+          echo "Run them locally with: scripts/Run-QaTests.ps1"

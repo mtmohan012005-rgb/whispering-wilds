@@ -25,7 +25,9 @@ param(
 $ErrorActionPreference = "Stop"
 
 # --- Configuration ---
-$unityProjectDir = Join-Path $PSScriptRoot "unity"
+# Repo root is one level above scripts/
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$unityProjectDir = Join-Path $repoRoot "unity"
 $unityExe = "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe"
 
 # All QA artifacts go into a unique temp directory — never into the repository
