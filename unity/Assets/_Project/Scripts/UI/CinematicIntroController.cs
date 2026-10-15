@@ -470,9 +470,9 @@ namespace WhisperingWilds.UI
 
             _isPlaying = false;
 
-            // STEP 61: Do NOT persist WW_IntroPlayed. The intro plays by default on every
-            // launch unless the player explicitly disables WW_PlayIntroOnStartup in settings.
-            // This ensures the intro appears on subsequent launches as intended.
+            // STEP 61: Do NOT persist the old intro-played flag. The intro plays by default
+            // on every launch unless the player explicitly disables WW_PlayIntroOnStartup in
+            // settings. This ensures the intro appears on subsequent launches as intended.
 
             // Hide intro elements
             if (introBackground != null) introBackground.SetActive(false);

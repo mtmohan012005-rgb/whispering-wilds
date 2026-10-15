@@ -185,6 +185,15 @@ namespace WhisperingWilds.Campaign
 
         public int MilestoneCount => explorationMilestones.Count;
 
+        /// <summary>Public accessor for heritage council affinity (used by tests).</summary>
+        public int HeritageCouncilAffinity => heritageCouncilAffinity;
+
+        /// <summary>Public accessor for whether ending has been evaluated (used by tests).</summary>
+        public bool EndingEvaluated => endingEvaluated;
+
+        /// <summary>Public accessor for exploration milestones (used by tests).</summary>
+        public HashSet<string> ExplorationMilestones => explorationMilestones;
+
         // ------------------------------------------------------------------
         // Ending evaluation
         // ------------------------------------------------------------------

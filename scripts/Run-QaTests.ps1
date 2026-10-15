@@ -83,8 +83,9 @@ if ($TestMode -eq "EditMode") {
     $unityArgs += "-testPlatform", "EditMode"
 }
 else {
-    # PlayMode tests run against the built player
-    $unityArgs += "-testPlatform", "WindowsPlayer"
+    # PlayMode tests run in the Editor (not on a built player)
+    # Unity 6 Test Framework uses "PlayMode" for in-editor PlayMode tests
+    $unityArgs += "-testPlatform", "PlayMode"
 }
 
 if (-not [string]::IsNullOrWhiteSpace($TestFilter)) {
