@@ -87,6 +87,40 @@ namespace WhisperingWilds.Online
         }
 
         /// <summary>
+        /// Configures CloudSaveManager with the persistence backend after successful sign-in.
+        /// The token provider returns the current session token per-request.
+        /// </summary>
+        private void ConfigureCloudSaves()
+        {
+            if (CloudSaveManager.Instance == null)
+            {
+                Debug.LogWarning("[AuthService] CloudSaveManager not found. Cloud saves will not be configured.");
+                return;
+            }
+
+            // Build the persistence endpoint URL from the auth base URL
+            string persistenceUrl = $"{baseUrl.TrimEnd('/')}/api/v1/persistence";
+
+            // Token provider returns the current session token per-request
+            IdTokenProvider tokenProvider = () => _sessionToken;
+
+            CloudSaveManager.Instance.Configure(persistenceUrl, tokenProvider);
+            Debug.Log($"[AuthService] CloudSaveManager configured with endpoint: {persistenceUrl}");
+        }
+
+        /// <summary>
+        /// Clears CloudSaveManager configuration when signing out.
+        /// </summary>
+        private void ClearCloudSaves()
+        {
+            if (CloudSaveManager.Instance != null)
+            {
+                CloudSaveManager.Instance.Configure("", null);
+                Debug.Log("[AuthService] CloudSaveManager cleared on sign-out.");
+            }
+        }
+
+        /// <summary>
         /// Signs in with email and password. The game remains responsive while the
         /// request is pending. On success the session token is kept in memory only.
         /// </summary>
@@ -155,6 +189,8 @@ namespace WhisperingWilds.Online
                     {
                         _sessionToken = result.token;
                         CurrentUser = result.data;
+                        // Configure cloud saves with the persistence backend
+                        ConfigureCloudSaves();
                         callback?.Invoke(true, "Signed in successfully.");
                         OnSignInComplete?.Invoke(true, "Signed in successfully.");
                     }
@@ -254,6 +290,7 @@ namespace WhisperingWilds.Online
         {
             if (!IsSignedIn)
             {
+                ClearCloudSaves();
                 _sessionToken = null;
                 CurrentUser = null;
                 OnSignOutComplete?.Invoke();
@@ -282,6 +319,7 @@ namespace WhisperingWilds.Online
                 yield return uwr.SendWebRequest();
 
                 // Always clear locally, even if the server call fails
+                ClearCloudSaves();
                 _sessionToken = null;
                 CurrentUser = null;
                 OnSignOutComplete?.Invoke();

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -472,8 +473,9 @@ namespace WhisperingWilds.Tests.PlayMode
         [Test]
         public void SaveSystem_CorruptSave_ReturnsNull()
         {
-            // Suppress expected SaveSystem error log from this test
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error, "Primary save is corrupt");
+            // The actual error includes the primary error and backup status, so match by regex.
+            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error,
+                new Regex(@"Primary save is corrupt .* and (no usable backup exists|backup is unreadable)"));
 
             // Ensure save directory exists
             string saveDir = SaveSystem.SaveDirectory;
@@ -497,8 +499,12 @@ namespace WhisperingWilds.Tests.PlayMode
         [Test]
         public void SaveSystem_CorruptPrimaryWithValidBackup_RecoverFromBackup()
         {
-            // Suppress expected SaveSystem error log from this test
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error, "Primary save is corrupt");
+            // Recovery path logs a warning for the corrupt primary then a warning for the
+            // successful backup recovery — no error is logged when recovery succeeds.
+            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning,
+                new Regex(@"Primary save is invalid"));
+            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning,
+                new Regex(@"Primary save is corrupt .* Recovered campaign from backup"));
 
             // Ensure save directory exists
             string saveDir = SaveSystem.SaveDirectory;
@@ -553,7 +559,8 @@ namespace WhisperingWilds.Tests.PlayMode
         public void SaveSystem_LoadGame_NoSave_ReturnsNull()
         {
             // Suppress expected SaveSystem log from this test
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning, "No save");
+            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning,
+                new Regex(@"\[SaveSystem\] No save file found"));
 
             // Ensure save directory exists
             string saveDir = SaveSystem.SaveDirectory;
@@ -577,10 +584,6 @@ namespace WhisperingWilds.Tests.PlayMode
         [Test]
         public void CampaignFlow_ResetCampaign_ResetsAllSystems()
         {
-            // Suppress expected SaveSystem log from CampaignFlow reset
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error, "Primary save is corrupt");
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning, "No save");
-
             // Unlock a gated region and discover a clue to simulate progress
             RegionUnlocks.Unlock("chettinad");
 
@@ -612,15 +615,16 @@ namespace WhisperingWilds.Tests.PlayMode
         #region Ending Controller
 
         [Test]
-        public void EndingController_EvaluateEnding_ReturnsNone_WhenNoProgress()
+        public void EndingController_EvaluateEnding_ReturnsFallbackC_WhenNoProgress()
         {
             // EndingController is a MonoBehaviour singleton — create it if not present
             var endingCtrl = GetOrCreateEndingController();
             endingCtrl.ResetForNewGame();
 
             var ending = endingCtrl.EvaluateEnding();
-            Assert.AreEqual(EndingController.EndingType.None, ending,
-                "Ending should be None when no campaign progress exists");
+            Assert.AreEqual(EndingController.EndingType.EndingC_ShadowedSanctuary, ending,
+                "With no campaign progress, evaluation should fall through to the documented " +
+                "Ending C fallback (low trust / sealed vault).");
         }
 
         [Test]
@@ -643,8 +647,9 @@ namespace WhisperingWilds.Tests.PlayMode
             var endingCtrl = GetOrCreateEndingController();
             endingCtrl.ResetForNewGame();
 
-            // Modify state
-            endingCtrl.AdjustAffinity("heritage_council", 5);
+            // Modify state (AdjustAffinity matches the faction ids "heritage"/
+            // "archaeological"/"agrarian", case-insensitively)
+            endingCtrl.AdjustAffinity("heritage", 5);
             endingCtrl.RecordMilestone("chennai");
 
             // Snapshot
@@ -760,10 +765,6 @@ namespace WhisperingWilds.Tests.PlayMode
         [Test]
         public void PlayerDataProtection_PlayerPrefs_RestoredAfterTests()
         {
-            // Suppress expected SaveSystem log from this test
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Error, "Primary save is corrupt");
-            UnityEngine.TestTools.LogAssert.Expect(UnityEngine.LogType.Warning, "No save");
-
             // Verify that the QaIsolation backup/restore mechanism works correctly.
             // OneTimeSetUp already backed up PlayerPrefs, so the current value is the backed-up value.
             // We change it and then restore to prove the mechanism works.

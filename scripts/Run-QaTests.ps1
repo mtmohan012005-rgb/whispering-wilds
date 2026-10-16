@@ -69,10 +69,12 @@ if (-not (Test-Path $unityProjectDir)) {
 }
 
 # Build Unity command-line arguments
-# EditMode tests run in the Editor; PlayMode tests require a built player
+# -force-d3d11 is required: this machine's D3D12 path freezes the editor during
+# PlayMode graphics setup, and -nographics prevents the TestRunner from starting
+# at all in batch mode on this Unity version (editor exits -1 after domain reload).
 $unityArgs = @(
     "-batchMode",
-    "-nographics",
+    "-force-d3d11",
     "-projectPath", $unityProjectDir,
     "-runTests",
     "-testResults", $resultXml,
@@ -134,7 +136,7 @@ if (Test-Path $resultXml) {
     
     # Parse test results from XML - support both legacy and modern Unity Test Framework schemas
     try {
-        $xml = [xml](Get-Content $resultXml)
+        $xml = [xml](Get-Content $resultXml -Raw)
         
         # Modern Unity Test Framework uses <test-run> root element
         $testRun = $xml.SelectSingleNode("//test-run")
