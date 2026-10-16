@@ -1,7 +1,7 @@
 # Project Health — The Whispering Wilds
 
-**Last updated:** 2026-10-15
-**Commit:** Pending push (Step 78 — Canvas draw order fix for olive-brown startup screen)
+**Last updated:** 2026-10-16
+**Commit:** cee34a3 (Step 78 — Canvas draw order fix for olive-brown startup screen)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
 ## Architecture
@@ -11,6 +11,35 @@
 - **Browser game:** COMPLETELY REMOVED (obsolete Three.js/PWA assets purged)
 - **GitHub Pages:** Static landing page deployed via GitHub Actions from `docs/landing/`
 - **Desktop launcher:** Canonical PowerShell launcher targeting Unity executable (`unity/Build/Windows/TheWhisperingWilds.exe`)
+
+## Step 78 — Canvas Draw Order Fix for Olive-Brown Startup Screen
+
+**Root cause:** In Unity's ScreenSpaceOverlay Canvas, later children render on top of earlier children. `BuildBootScene.cs` created `MenuRoot` (title, buttons) first, then created full-screen background images (`MenuBackground`, mist layers, fireflies, vignette) after it. Since `MenuBackground` has `alpha=1` (fully opaque, dark teal color), it rendered on top of all menu buttons, showing only the solid dark color that appears olive-brown on screen.
+
+**Fix:** Reorganized `BuildBootScene.cs` creation order: backgrounds created first (sibling index 0-7), then MenuRoot with buttons (sibling index 8), then intro title group and skip hint (sibling index 9-10). Added `raycastTarget = false` on all decorative background layers.
+
+**Files changed:**
+- **`unity/Assets/_Project/Scripts/Editor/BuildBootScene.cs`** — Reorganized Canvas child creation order with detailed comment explaining correct draw order
+- **`unity/Assets/_Project/Scenes/00_Boot.unity`** — Regenerated with corrected hierarchy (608,573 bytes)
+
+**Verification:**
+| Test | Result |
+|------|--------|
+| `npm run verify-game` | **PASS** (15/15) |
+| `npm run test:backend` | **PASS** (31/31) |
+| `npm run verify-production` | **PASS** (all checks) |
+| `node scripts/verify-runtime.js` | **PASS** (7/7) |
+| C# compilation | **PASS** — Tundra build success, 0 errors |
+| Boot scene regeneration | **PASS** (exit code 0) |
+| GitHub push | **VERIFIED** — `main` at `cee34a3` |
+
+**Windows player build:** **BLOCKED** — Unity batchmode cannot run `BuildPipelineAutomation` because the Editor asmdef isn't loaded in headless mode (licensing Code 404). The source fix and regenerated scene are correct; only the player build needs updating.
+
+**How to get the fix into your executable:**
+1. Open Unity Hub → Open the `unity/` folder
+2. Wait for Unity to open the project
+3. File → Build Settings → Build (or press Ctrl+Shift+B)
+4. Launch `unity\Build\Windows\TheWhisperingWilds.exe`
 
 ## Step 77 — Login/Account Authentication Fix and UI Completion
 
