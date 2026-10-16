@@ -1,0 +1,101 @@
+# Game Flowchart — The Whispering Wilds
+
+```mermaid
+flowchart TD
+    Start([Launch Game]) --> Boot[00_Boot Scene]
+    Boot --> Intro{Cinematic Intro?}
+    
+    Intro -->|Yes| IntroPlay[Play 7s Intro<br/>Title + Subtitle + Skip]
+    Intro -->|No/Disabled| MainMenu[Main Menu]
+    
+    IntroPlay --> Skip{Skip?}
+    Skip -->|Any Key| MainMenu
+    Skip -->|7s Complete| MainMenu
+    
+    MainMenu --> Login[Login/Account]
+    MainMenu --> NewGame[New Game]
+    MainMenu --> Continue{Continue?}
+    MainMenu --> Settings[Settings - 6 Tabs]
+    MainMenu --> Quit([Quit])
+    
+    Login --> LoginPanel[Login Panel]
+    LoginPanel -->|Sign In| AuthService[AuthService → /api/auth/login]
+    LoginPanel -->|Register| AuthRegister[AuthService → /api/auth/register]
+    LoginPanel -->|Back| MainMenu
+    
+    AuthService -->|Success| SignedIn[Show Signed In]
+    AuthService -->|Fail| LoginError[Show Error]
+    SignedIn --> MainMenu
+    
+    Continue -->|Save Exists| LoadSave[Load Saved Game]
+    Continue -->|No Save| ContinueDisabled[Button Disabled]
+    
+    NewGame --> ResetCampaign[CampaignFlow.ResetCampaign]
+    ResetCampaign --> LoadChennai[Load 02_Chennai_GeorgeTown]
+    LoadChennai --> SpawnPlayer[Spawn Player]
+    
+    SpawnPlayer --> PlayerControls[Player Movement + Camera]
+    PlayerControls --> Interact{Interact?}
+    
+    Interact -->|NPC| NPCDialogue[NPCCharacter → DialogueUI]
+    Interact -->|Clue| ClueDiscovery[GameplayEventInteractable<br/>→ InvestigationManager]
+    Interact -->|Vendor| VendorTrade[NPCCharacter → VendorUI]
+    Interact -->|Item| PickupItem[InventoryManager.Add]
+    
+    NPCDialogue -->|Choice → Clue| ClueDiscovery
+    ClueDiscovery --> UpdateQuest[QuestManager Advance]
+    UpdateQuest --> CheckUnlock{Region Unlock?}
+    
+    CheckUnlock -->|Yes| UnlockRegion[RegionUnlockManager.Unlock]
+    CheckUnlock -->|No| ContinuePlay[Continue Playing]
+    
+    UnlockRegion --> TravelMap[01_StateMap_TamilNadu]
+    TravelMap --> SelectRegion{Select Region}
+    
+    SelectRegion -->|Pichavaram| Pichavaram[03_Pichavaram_Wetlands]
+    SelectRegion -->|Thanjavur| Thanjavur[04_Thanjavur_Delta]
+    SelectRegion -->|Chettinad| Chettinad[05_Chettinad_Mansion]
+    SelectRegion -->|Mamallapuram| Mamallapuram[06_Mamallapuram_Shore]
+    SelectRegion -->|Nilgiris| Nilgiris[07_Nilgiris_Sanctuary]
+    
+    Pichavaram --> CluePichavaram[Discover Clues]
+    Thanjavur --> ClueThanjavur[Discover Clues]
+    Chettinad --> ClueChettinad[Discover Clues]
+    Mamallapuram --> ClueMamallapuram[Discover Clues]
+    Nilgiris --> ClueNilgiris[Discover Final Clues]
+    
+    CluePichavaram --> SaveGame{Save?}
+    ClueThanjavur --> SaveGame
+    ClueChettinad --> SaveGame
+    ClueMamallapuram --> SaveGame
+    ClueNilgiris --> EndingCheck{All Clues?}
+    
+    SaveGame -->|Yes| SaveSystem[SaveSystem.SaveGame]
+    SaveGame -->|No| ContinuePlay
+    
+    SaveSystem --> LocalSave[(Local Save File)]
+    SaveSystem -->|If Configured| CloudSave[CloudSaveManager → /api/v1/persistence]
+    CloudSave -->|No Config| LocalSave
+    CloudSave -->|Success| CloudSaved[(Cloud Save)]
+    
+    EndingCheck -->|Yes| EndingController[EndingController.Evaluate]
+    EndingCheck -->|No| ContinuePlay
+    
+    EndingController --> EndingDisplay[Show Ending]
+    EndingDisplay --> ReturnMenu[Return to Main Menu]
+    
+    ReturnMenu --> MainMenu
+    ContinuePlay --> Interact
+    
+    classDef green fill:#90EE90,stroke:#228B22,stroke-width:2px
+    classDef yellow fill:#FFFF90,stroke:#DAA520,stroke-width:2px
+    classDef red fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
+    
+    class Boot,IntroPlay,Skip,MainMenu,LoginPanel,NewGame,ResetCampaign,LoadChennai,SpawnPlayer,PlayerControls,NPCDialogue,ClueDiscovery,VendorTrade,PickupItem,UpdateQuest,UnlockRegion,TravelMap,SelectRegion,Pichavaram,Thanjavur,Chettinad,Mamallapuram,Nilgiris,CluePichavaram,ClueThanjavur,ClueChettinad,ClueMamallapuram,ClueNilgiris,SaveSystem,LocalSave,EndingController,EndingDisplay,ReturnMenu,ContinuePlay,Interact,CheckUnlock,SaveGame,Settings,Quit,AuthService,AuthRegister,SignedIn,LoginError,LoadSave,ContinueDisabled green
+    class CloudSave,CloudSaved yellow
+```
+
+**Legend:**
+- 🟢 Green = Working and verified
+- 🟡 Yellow = Code exists but not fully integrated (cloud saves need Configure() call)
+- 🔴 Red = Missing implementation (multiplayer client)

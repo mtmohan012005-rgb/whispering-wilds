@@ -1,0 +1,82 @@
+# Backend Data Flow — The Whispering Wilds
+
+```mermaid
+flowchart TD
+    subgraph UnityClient["Unity Client"]
+        AuthService[AuthService.cs]
+        LoginUI[LoginUI.cs]
+        CloudSaveMgr[CloudSaveManager.cs]
+        SaveSystem[SaveSystem.cs]
+        RealtimeMgr[RealtimeManager.cs]
+    end
+    
+    subgraph Backend["Node.js Backend"]
+        Express[Express Server]
+        AuthRoutes[/api/auth]
+        PersistenceRoutes[/api/v1/persistence]
+        SocketIO[Socket.IO Server]
+        RoomMgr[RoomManager]
+        PlayerMgr[PlayerManager]
+        AuthMiddleware[Auth Middleware<br/>CSRF + Session]
+        FirebaseAdmin[Firebase Admin SDK]
+        AuthDB[Auth Database<br/>PostgreSQL/JSON]
+    end
+    
+    subgraph Databases["Databases"]
+        Firestore[(Firestore)]
+        PostgreSQL[(PostgreSQL)]
+        LocalJSON[(Local JSON)]
+    end
+    
+    LoginUI --> AuthService
+    AuthService -->|POST /api/auth/login<br/>X-WW-CSRF: 1| AuthRoutes
+    AuthService -->|POST /api/auth/register| AuthRoutes
+    AuthService -->|POST /api/auth/logout| AuthRoutes
+    
+    AuthRoutes --> AuthMiddleware
+    AuthMiddleware -->|Valid| AuthDB
+    AuthMiddleware -->|Invalid| AuthError[401/403 Error]
+    
+    AuthDB -->|Production| PostgreSQL
+    AuthDB -->|Dev Mode| LocalJSON
+    
+    SaveSystem --> LocalSave[(Local Save File)]
+    SaveSystem -->|On Save| CloudSaveMgr
+    
+    CloudSaveMgr -->|Configure NOT called| NoConfig[Cloud Sync Skipped]
+    CloudSaveMgr -->|If Configured| PersistenceRoutes
+    
+    PersistenceRoutes --> FirebaseAdmin
+    FirebaseAdmin -->|ID Token Valid| Firestore
+    FirebaseAdmin -->|No Credentials| FirebaseError[503 Not Ready]
+    
+    RealtimeMgr -->|Placeholder - No Socket.IO Client| NoMultiplayer[Multiplayer Not Connected]
+    
+    SocketIO --> RoomMgr
+    SocketIO --> PlayerMgr
+    RoomMgr -->|Room Full| RoomFull[Reject Connection]
+    PlayerMgr -->|Movement Update| Broadcast[Broadcast to Room]
+    
+    Express -->|Health| HealthEP[/health]
+    Express -->|Readiness| ReadyEP[/ready]
+    ReadyEP --> AuthDB
+    ReadyEP --> FirebaseAdmin
+    
+    classDef green fill:#90EE90,stroke:#228B22,stroke-width:2px
+    classDef yellow fill:#FFFF90,stroke:#DAA520,stroke-width:2px
+    classDef red fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
+    
+    class AuthService,LoginUI,SaveSystem,LocalSave,AuthRoutes,AuthMiddleware,AuthDB,PostgreSQL,LocalJSON,Express,HealthEP,ReadyEP,SocketIO,RoomMgr,PlayerMgr,RoomFull,Broadcast green
+    class CloudSaveMgr,PersistenceRoutes,FirebaseAdmin,Firestore,NoConfig,FirebaseError yellow
+    class RealtimeMgr,NoMultiplayer red
+```
+
+**Legend:**
+- 🟢 Green = Working and verified
+- 🟡 Yellow = Code exists but not fully integrated
+- 🔴 Red = Missing implementation
+
+**Key Issues:**
+1. CloudSaveManager.Configure() is never called, so cloud sync always falls back to local saves
+2. RealtimeManager has no Socket.IO client — multiplayer cannot connect
+3. Firebase requires credentials (service account JSON) for cloud saves

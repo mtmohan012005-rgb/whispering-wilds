@@ -1,0 +1,87 @@
+# Run and Release Flow — The Whispering Wilds
+
+```mermaid
+flowchart TD
+    subgraph Dev["Development"]
+        Code[Source Code]
+        UnityEditor[Unity Editor 6000.6.3f1]
+        NodeJS[Node.js Backend]
+    end
+    
+    subgraph Validation["Validation"]
+        VerifyGame[npm run verify-game]
+        TestBackend[npm run test:backend]
+        VerifyProd[npm run verify-production]
+        VerifyRuntime[node scripts/verify-runtime.js]
+        VerifyCompat[node scripts/verify-compatibility.js]
+        UnityTests[Unity EditMode + PlayMode Tests]
+    end
+    
+    subgraph Build["Build"]
+        Compile[C# Compilation]
+        SceneGen[Scene Regeneration]
+        WindowsBuild[Windows x64 Build<br/>LZ4HC Compression]
+        Executable[TheWhisperingWilds.exe<br/>~140 MB]
+    end
+    
+    subgraph Deploy["Deployment"]
+        GitHubActions[GitHub Actions]
+        BackendCI[Backend CI]
+        UnityValidation[Unity Validation]
+        PagesDeploy[GitHub Pages Landing]
+        RenderDeploy[Render Backend]
+    end
+    
+    subgraph Release["Release"]
+        GitHubRelease[GitHub Release]
+        WindowsPlayer[Windows Player Package]
+        BackendDeploy[Backend on Render]
+    end
+    
+    Code --> UnityEditor
+    Code --> NodeJS
+    
+    UnityEditor --> Compile
+    Compile --> SceneGen
+    SceneGen --> WindowsBuild
+    WindowsBuild --> Executable
+    
+    Code --> VerifyGame
+    Code --> TestBackend
+    Code --> VerifyProd
+    Code --> VerifyRuntime
+    Code --> VerifyCompat
+    UnityEditor --> UnityTests
+    
+    Executable -->|Test| SmokeTest[Standalone Smoke Test]
+    
+    GitHubActions --> BackendCI
+    GitHubActions --> UnityValidation
+    GitHubActions --> PagesDeploy
+    
+    BackendCI --> TestBackend
+    UnityValidation --> VerifyGame
+    UnityValidation --> UnityTests
+    
+    Executable --> WindowsPlayer
+    NodeJS --> BackendDeploy
+    
+    classDef green fill:#90EE90,stroke:#228B22,stroke-width:2px
+    classDef yellow fill:#FFFF90,stroke:#DAA520,stroke-width:2px
+    classDef red fill:#FFB6C1,stroke:#DC143C,stroke-width:2px
+    
+    class Code,UnityEditor,NodeJS,VerifyGame,TestBackend,VerifyProd,VerifyRuntime,VerifyCompat,Compile,SceneGen,WindowsBuild,Executable,SmokeTest green
+    class UnityTests,GitHubActions,BackendCI,UnityValidation,PagesDeploy,RenderDeploy,GitHubRelease,WindowsPlayer,BackendDeploy yellow
+```
+
+**Legend:**
+- 🟢 Green = Working and verified
+- 🟡 Yellow = Exists but not fully operational (GitHub Actions workflows not pushed, Unity tests need interactive Editor)
+
+**Release Steps:**
+1. Run all validation tests (verify-game, test:backend, verify-production, verify-runtime, verify-compatibility)
+2. Open Unity Hub → Open `unity/` folder → File → Build Settings → Build
+3. Test the standalone executable
+4. Package for GitHub Release
+5. Deploy backend to Render (requires render.yaml or dashboard config)
+6. Deploy landing page to GitHub Pages (set source to GitHub Actions)
