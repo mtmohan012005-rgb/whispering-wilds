@@ -1,0 +1,433 @@
+# Authoritative Asset Audit
+
+Generated `2026-10-18T17:29:41.669Z` by `scripts/authoritative-asset-audit.js` from the working tree at `C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds`.
+
+> This report **supersedes** ASSET_AUDIT_REPORT.json, BUILD_REPORT.json, PRODUCTION_ASSET_STATUS.json, PRODUCTION_3D_ASSET_REPORT.json, DATA_AUDIT_REPORT.json.
+> No figure below is hardcoded; every number is recomputed from the current repository.
+
+## Method
+- **note**: No count in this document is hardcoded. Existence is decided by fs.statSync on the working tree.
+- **referenceExtraction**: Regex over asset/... literals in js, css, index.html, server, desktop, scripts, tools, config, content
+- **templatedReferences**: References containing ${...} are flagged dynamicTemplate=true and are NOT resolved as literal paths
+- **externalReferences**: Absolute http(s), data: and blob: references are excluded from the repo inventory
+- **glbInspection**: 12-byte GLB header + JSON chunk parsed directly; meshes/skins/animations/materials/images counted
+
+## Totals
+| Metric | Value |
+| --- | --- |
+| Physical asset files | 167 |
+| Physical asset bytes | 3,03,38,404 |
+| Source files scanned | 76 |
+| Distinct referenced paths | 18 |
+| Total reference occurrences | 22 |
+| **PRESENT** | **18** |
+| **MISSING** | **0** |
+| Case-mismatched paths | 0 |
+| Templated / dynamic references | 0 |
+| Unused physical assets | 148 |
+| Duplicate groups | 27 |
+| GLB files on disk | 124 |
+
+## By category
+| Category | Referenced | Present | Missing |
+| --- | --- | --- | --- |
+| ARCHITECTURE | 8 | 8 | 0 |
+| AUDIO_OTHER | 1 | 1 | 0 |
+| CHARACTER | 3 | 3 | 0 |
+| OTHER | 1 | 1 | 0 |
+| VEGETATION | 3 | 3 | 0 |
+| VEHICLE | 2 | 2 | 0 |
+
+## By region
+| Region | Referenced | Present | Missing |
+| --- | --- | --- | --- |
+| CHENNAI | 3 | 3 | 0 |
+| CHETTINAD | 1 | 1 | 0 |
+| DELTA | 1 | 1 | 0 |
+| NILGIRI | 3 | 3 | 0 |
+| MAMALLAPURAM | 1 | 1 | 0 |
+| PICHAVARAM | 1 | 1 | 0 |
+
+## GLB inventory (physically parsed)
+| Path | Bytes | Valid | Meshes | Nodes | Skins | Anim | Mats | Imgs | Embedded | Errors |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `assets/architecture/chennai/electrical_pole.glb` | 7036 | yes | 4 | 4 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/chennai/market_building.glb` | 13012 | yes | 8 | 8 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/architecture/chennai/old_tamil_house.glb` | 7296 | yes | 4 | 4 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/architecture/chennai/street_row.glb` | 19256 | yes | 11 | 11 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/architecture/chennai/tea_kadai_stall.glb` | 12796 | yes | 8 | 8 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/architecture/chettinad/athangudi_floor.glb` | 2040 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/architecture/chettinad/carved_door.glb` | 3616 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/chettinad/courtyard_mansion.glb` | 15196 | yes | 9 | 9 | 0 | 0 | 4 | 0 | 0 | - |
+| `assets/architecture/chettinad/wooden_column.glb` | 3800 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/delta/irrigation_sluice.glb` | 7180 | yes | 4 | 4 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/mamallapuram/heritage_structure.glb` | 3776 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/mamallapuram/stone_workshop.glb` | 3776 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/nilgiris/forest_station.glb` | 3784 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/nilgiris/hill_house.glb` | 3784 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/nilgiris/toda_mund_hut.glb` | 7416 | yes | 4 | 4 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/sanctuary/botanical_portal.glb` | 3784 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/thanjavur_gopuram.glb` | 10244 | yes | 6 | 6 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/thanjavur/artisan_workshop.glb` | 3776 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/thanjavur/heritage_temple_area.glb` | 10244 | yes | 6 | 6 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/village/cattle_shed.glb` | 7668 | yes | 5 | 5 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/village/granary.glb` | 3840 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/architecture/village/village_house.glb` | 3812 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/characters/npcs/artisan.glb` | 7196 | yes | 4 | 4 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/characters/npcs/farmer.glb` | 7644 | yes | 4 | 4 | 0 | 0 | 4 | 0 | 0 | - |
+| `assets/characters/npcs/fisher.glb` | 7508 | yes | 4 | 4 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/characters/npcs/forest-guide.glb` | 9012 | yes | 5 | 5 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/characters/npcs/meenakshi.glb` | 10904 | yes | 6 | 6 | 0 | 0 | 5 | 0 | 0 | - |
+| `assets/characters/npcs/murugan.glb` | 12568 | yes | 7 | 7 | 0 | 0 | 5 | 0 | 0 | - |
+| `assets/characters/npcs/selvam.glb` | 10228 | yes | 6 | 6 | 0 | 0 | 4 | 0 | 0 | - |
+| `assets/characters/npcs/velu.glb` | 9044 | yes | 5 | 5 | 0 | 0 | 4 | 0 | 0 | - |
+| `assets/characters/player/player.glb` | 43952 | yes | 13 | 22 | 1 | 24 | 7 | 0 | 0 | - |
+| `assets/characters/wildlife/cattle.glb` | 13560 | yes | 9 | 9 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/characters/wildlife/egret.glb` | 7620 | yes | 5 | 5 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/characters/wildlife/elephant.glb` | 17660 | yes | 11 | 11 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/characters/wildlife/gaur.glb` | 19620 | yes | 13 | 13 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/characters/wildlife/goat.glb` | 12232 | yes | 8 | 8 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/characters/wildlife/kingfisher.glb` | 5504 | yes | 3 | 3 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/characters/wildlife/nilgiri-langur.glb` | 9764 | yes | 6 | 6 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/characters/wildlife/nilgiri-tahr.glb` | 12232 | yes | 8 | 8 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/characters/wildlife/peafowl.glb` | 6868 | yes | 4 | 4 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/environment/mamallapuram/coastal_rock.glb` | 1936 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/environment/mamallapuram/granite_boulder.glb` | 1936 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/environment/nilgiris/forest_path.glb` | 2180 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/environment/nilgiris/grassland.glb` | 2180 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/environment/nilgiris/waterfall.glb` | 2180 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/environment/pichavaram/canal.glb` | 3648 | yes | 2 | 2 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/environment/pichavaram/mud_bank.glb` | 3648 | yes | 2 | 2 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/landmarks/chennai/madras_high_court.glb` | 19560 | yes | 12 | 12 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/landmarks/mamallapuram/shore_temple.glb` | 18488 | yes | 11 | 11 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/landmarks/nilgiris/tea_factory_heritage.glb` | 5496 | yes | 3 | 3 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/landmarks/pichavaram/mangrove_dock.glb` | 13308 | yes | 9 | 9 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/agriculture/farm_tools.glb` | 3576 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/agriculture/forest_sign.glb` | 2068 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/irrigation_sluice.glb` | 2104 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/paddy_bundle.glb` | 1768 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/palm_leaf_basket.glb` | 1768 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/stone_wall.glb` | 2068 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/tea_basket.glb` | 1768 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/water_pump.glb` | 2104 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/agriculture/wooden_fence.glb` | 2068 | yes | 1 | 1 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/chola_waterwheel.glb` | 3780 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/craft/artisan_tools.glb` | 3576 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/craft/bronze_art_object.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/craft/stone_carving_tools.glb` | 3576 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/craft/stone_sculpture.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/cultural/agal_lamp.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/ammi_kallu.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/brass_kudam.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/cast_net.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/clay_pot.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/coffee_dabarah.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/korai_mat.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/kuthu_vilakku.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/cultural/manai_stool.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/palm_kottan.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/sickle.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/cultural/ural_ulakkai.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/fishing/boat_dock.glb` | 2240 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/fishing/fish_crate.glb` | 2240 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/fishing/fishing_net.glb` | 2240 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/fishing/paddle.glb` | 2240 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/fishing/rope.glb` | 2240 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/food/banana_leaf_feast.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/brass_vessels.glb` | 5036 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/food/curd_rice_plate.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/dosa_plate.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/filter_coffee_tumbler.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/idli_plate.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/pongal_pot.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/sugarcane_bundle.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/sweet_pongal_earthen.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/tea_glass.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/tea_stall.glb` | 5460 | yes | 3 | 3 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/food/tender_coconut.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/food/vadai_plate.glb` | 2116 | yes | 1 | 1 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/household/brass_vessel.glb` | 5036 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/household/clay_pot.glb` | 3480 | yes | 2 | 2 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/household/heritage_furniture.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/household/water_pot.glb` | 3480 | yes | 2 | 2 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/household/wooden_bench.glb` | 6532 | yes | 4 | 4 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/household/wooden_stool.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/market/flower_cart.glb` | 8812 | yes | 5 | 5 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/props/market/street_sign.glb` | 5324 | yes | 3 | 3 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/temple/brass_lamp.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/temple/granite_column.glb` | 3800 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/props/temple/kuthu_vilakku.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/temple/stone_inscription.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/props/temple/temple_bell.glb` | 4844 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/vegetation/bushes/tea_hedge.glb` | 5260 | yes | 3 | 3 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vegetation/mangroves/mangrove_cluster.glb` | 2180 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vegetation/shola/shola_tree.glb` | 2180 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vegetation/tea/tea_rows.glb` | 2180 | yes | 1 | 1 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vegetation/trees/palmyra_palm.glb` | 7100 | yes | 4 | 4 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vegetation/trees/rhizophora_mangrove.glb` | 10612 | yes | 6 | 6 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vehicles/auto_rickshaw/chennai_auto.glb` | 8592 | yes | 5 | 5 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/vehicles/bicycle/old_bicycle.glb` | 8712 | yes | 5 | 5 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vehicles/boat/fishing_boat.glb` | 3940 | yes | 2 | 2 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vehicles/boat/wooden_boat.glb` | 5464 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/vehicles/boats/mangrove_rowboat.glb` | 11812 | yes | 7 | 7 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vehicles/bullock_cart/bullock_cart.glb` | 8852 | yes | 5 | 5 | 0 | 0 | 2 | 0 | 0 | - |
+| `assets/vehicles/bus/city_bus.glb` | 10124 | yes | 6 | 6 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/vehicles/mangrove_boat.glb` | 5464 | yes | 3 | 3 | 0 | 0 | 1 | 0 | 0 | - |
+| `assets/vehicles/motorcycle/old_motorcycle.glb` | 8900 | yes | 5 | 5 | 0 | 0 | 3 | 0 | 0 | - |
+| `assets/wildlife/nilgiri_tahr.glb` | 12260 | yes | 8 | 8 | 0 | 0 | 2 | 0 | 0 | - |
+
+## Missing references (full reverse map)
+Total missing: **0**
+
+### Classification of every missing path
+A missing literal is only a live defect if a module that `index.html` actually loads references it.
+
+| Class | Count | Meaning |
+| --- | --- | --- |
+| `A_RUNTIME_REQUIRED_MISSING` | 0 | Loaded by a shipped module, no fallback in that module. Live gameplay gap. |
+| `B_RUNTIME_FALLBACK` | 0 | Loaded by a shipped module, but the module builds a procedural stand-in on failure. |
+| `C_DEVTOOL_DECLARED_ONLY` | 0 | Declared only by scripts/tools/validators the page never loads. No runtime impact. |
+| `D_PATH_DRIFT_EXISTS_ELSEWHERE` | 0 | The same model exists on disk at another path. Fix the reference. |
+| `E_WIRED_BUT_UNCONFIRMED` | 0 | Referenced by a non-dev file that index.html does not load. |
+| `F_NO_TRACEABLE_SOURCE` | 0 | No traceable source reference. |
+
+### Class A - runtime-required, no fallback (the real defects)
+_none_
+
+### Class D - path drift (asset already exists)
+_none_
+
+## `assets/manifest.json` cross-check
+Declared **36**, physically present **36**, missing **0**.
+_The manifest does not claim any file that is absent. It is honest about what it lists._
+## Player model deep inspection (`assets/characters/player/player.glb`)
+| Property | Value |
+| --- | --- |
+| Bytes | 43952 |
+| Valid glTF 2.0 binary | yes |
+| Version | 2 |
+| Meshes | 13 |
+| Nodes | 22 |
+| Skins (skeletal rig) | 1 |
+| Animations | 24 |
+| Materials | 7 |
+| Texture maps | 0 |
+| Images (embedded) | 0 |
+| Embedded image bytes | 0 |
+| External image URIs | 0 |
+| Demo/Xbot base mesh | no |
+
+Materials: `M_Skin_Tamil`, `M_Veshti_Kasavu`, `M_Shirt_Indigo`, `M_Hair_Black`, `M_Eyes_DarkBrown`, `M_Sandals_Leather`, `M_Angavastram_Gold`
+
+Animations: `Player_Idle`, `Player_Walk`, `Player_Run`, `Player_Sprint`, `Player_Jump_Start`, `Player_Jump`, `Player_Fall`, `Player_Land`, `Player_Interact`, `Player_Pickup`, `Player_Inspect`, `Player_Use_Item`, `Player_Crouch_Idle`, `Player_Crouch_Walk`, `Player_Climb`, `Player_Climb_Start`, `Player_Climb_Loop`, `Player_Climb_End`, `Player_Swim`, `Player_Sit`, `Player_Stand`, `Player_Eat`, `Player_Drink`, `Player_Photo`
+
+> PBR is present as metallic-roughness factors on 7 materials, but the file carries **zero texture maps** (`textures[]=0, images[]=0, samplers[]=0`). Every material uses a flat `baseColorFactor` only. This is flat-shaded PBR, not textured PBR.
+## Reconciliation with the superseded `ASSET_AUDIT_REPORT.json`
+Old report generated `2026-10-17T16:46:02.628Z`.
+
+| Metric | Old | New |
+| --- | --- | --- |
+| Referenced paths | 306 | 18 |
+| Found / present | 163 | 18 |
+| Missing | 143 | 0 |
+
+| Set comparison | Count |
+| --- | --- |
+| Old-missing still missing | 0 |
+| Old-missing now present | 0 |
+| Old-missing no longer statically referenced | 143 |
+| Old-found still present and referenced | 18 |
+| Old-found no longer referenced | 145 |
+| New-missing not in the old missing list | 0 |
+
+> Both scans are literal-string based. A difference in totals reflects which literals each scanner matched, not a change in what the game loads. The intersection (still-missing) is the stable figure.
+
+## All missing references
+_none_
+
+## Duplicate groups (identical content)
+| SHA1 | Copies | Wasted bytes | Paths |
+| --- | --- | --- | --- |
+| `16ea70b32b52` | 3 | 2075910 | `assets/heist.jpg`<br>`assets/title_bg.jpg`<br>`assets/ui/menu/menu-chennai-court-incident.jpg` |
+| `38f0517ab539` | 2 | 1041752 | `assets/characters/npcs/reference/turnaround_fisherman.png`<br>`assets/ui/characters/turnaround_fisherman.png` |
+| `c8577de4ca0d` | 2 | 1021011 | `assets/tea_kadai.jpg`<br>`assets/ui/menu/menu-delta.jpg` |
+| `37a03c0c0342` | 2 | 988379 | `assets/characters/npcs/reference/turnaround_village_elder.png`<br>`assets/ui/characters/turnaround_village_elder.png` |
+| `154db3bb10ec` | 2 | 976384 | `assets/characters/npcs/reference/turnaround_female_villager.png`<br>`assets/ui/characters/turnaround_female_villager.png` |
+| `fa8602d86867` | 2 | 840528 | `assets/characters/npcs/reference/tn_npc_lineup_12_characters.png`<br>`assets/ui/characters/tn_npc_lineup_12_characters.png` |
+| `e896359e5fff` | 2 | 252263 | `assets/characters/npcs/reference/turnaround_tea_estate_worker.jpg`<br>`assets/ui/characters/turnaround_tea_estate_worker.jpg` |
+| `45d6b074c419` | 2 | 196304 | `assets/ui/icons/whispering-wilds-icon.png`<br>`assets/ui/logo/whispering-wilds-icon.png` |
+| `3458986efcca` | 22 | 44436 | `assets/props/cultural/agal_lamp.glb`<br>`assets/props/cultural/ammi_kallu.glb`<br>`assets/props/cultural/brass_kudam.glb`<br>`assets/props/cultural/cast_net.glb`<br>`assets/props/cultural/clay_pot.glb`<br>`assets/props/cultural/coffee_dabarah.glb`<br>`assets/props/cultural/korai_mat.glb`<br>`assets/props/cultural/manai_stool.glb`<br>`assets/props/cultural/palm_kottan.glb`<br>`assets/props/cultural/sickle.glb`<br>`assets/props/cultural/ural_ulakkai.glb`<br>`assets/props/food/banana_leaf_feast.glb`<br>`assets/props/food/curd_rice_plate.glb`<br>`assets/props/food/dosa_plate.glb`<br>`assets/props/food/filter_coffee_tumbler.glb`<br>`assets/props/food/idli_plate.glb`<br>`assets/props/food/pongal_pot.glb`<br>`assets/props/food/sugarcane_bundle.glb`<br>`assets/props/food/sweet_pongal_earthen.glb`<br>`assets/props/food/tea_glass.glb`<br>`assets/props/food/tender_coconut.glb`<br>`assets/props/food/vadai_plate.glb` |
+| `9c34350e96a1` | 9 | 38752 | `assets/props/craft/bronze_art_object.glb`<br>`assets/props/craft/stone_sculpture.glb`<br>`assets/props/cultural/kuthu_vilakku.glb`<br>`assets/props/household/heritage_furniture.glb`<br>`assets/props/household/wooden_stool.glb`<br>`assets/props/temple/brass_lamp.glb`<br>`assets/props/temple/kuthu_vilakku.glb`<br>`assets/props/temple/stone_inscription.glb`<br>`assets/props/temple/temple_bell.glb` |
+| `d4e39a290acf` | 2 | 12232 | `assets/characters/wildlife/goat.glb`<br>`assets/characters/wildlife/nilgiri-tahr.glb` |
+| `0fc2125743f4` | 6 | 10900 | `assets/environment/nilgiris/forest_path.glb`<br>`assets/environment/nilgiris/grassland.glb`<br>`assets/environment/nilgiris/waterfall.glb`<br>`assets/vegetation/mangroves/mangrove_cluster.glb`<br>`assets/vegetation/shola/shola_tree.glb`<br>`assets/vegetation/tea/tea_rows.glb` |
+| `d369ab119111` | 2 | 10244 | `assets/architecture/thanjavur/heritage_temple_area.glb`<br>`assets/architecture/thanjavur_gopuram.glb` |
+| `bf6d194b8454` | 5 | 8960 | `assets/props/fishing/boat_dock.glb`<br>`assets/props/fishing/fish_crate.glb`<br>`assets/props/fishing/fishing_net.glb`<br>`assets/props/fishing/paddle.glb`<br>`assets/props/fishing/rope.glb` |
+| `1fa686246c38` | 3 | 7568 | `assets/architecture/nilgiris/forest_station.glb`<br>`assets/architecture/nilgiris/hill_house.glb`<br>`assets/architecture/sanctuary/botanical_portal.glb` |
+| `e14fbe4d0200` | 3 | 7552 | `assets/architecture/mamallapuram/heritage_structure.glb`<br>`assets/architecture/mamallapuram/stone_workshop.glb`<br>`assets/architecture/thanjavur/artisan_workshop.glb` |
+| `ed71719efde6` | 3 | 7152 | `assets/props/agriculture/farm_tools.glb`<br>`assets/props/craft/artisan_tools.glb`<br>`assets/props/craft/stone_carving_tools.glb` |
+| `09574dbe826a` | 2 | 5464 | `assets/vehicles/boat/wooden_boat.glb`<br>`assets/vehicles/mangrove_boat.glb` |
+| `676811e2b218` | 2 | 5036 | `assets/props/food/brass_vessels.glb`<br>`assets/props/household/brass_vessel.glb` |
+| `7c5dc7a75066` | 2 | 5031 | `assets/ui/icons/whispering-wilds-icon.svg`<br>`assets/ui/logo/whispering-wilds-icon.svg` |
+| `347b18632df2` | 3 | 4136 | `assets/props/agriculture/forest_sign.glb`<br>`assets/props/agriculture/stone_wall.glb`<br>`assets/props/agriculture/wooden_fence.glb` |
+| `eca60305f518` | 2 | 3800 | `assets/architecture/chettinad/wooden_column.glb`<br>`assets/props/temple/granite_column.glb` |
+| `f1052a6dbb22` | 2 | 3648 | `assets/environment/pichavaram/canal.glb`<br>`assets/environment/pichavaram/mud_bank.glb` |
+| `2c3367bc10e9` | 3 | 3536 | `assets/props/agriculture/paddy_bundle.glb`<br>`assets/props/agriculture/palm_leaf_basket.glb`<br>`assets/props/agriculture/tea_basket.glb` |
+| `2eae82daed2c` | 2 | 3480 | `assets/props/household/clay_pot.glb`<br>`assets/props/household/water_pot.glb` |
+| `7bd666bf23fa` | 2 | 2104 | `assets/props/agriculture/irrigation_sluice.glb`<br>`assets/props/agriculture/water_pump.glb` |
+| `69822e4ba23a` | 2 | 1936 | `assets/environment/mamallapuram/coastal_rock.glb`<br>`assets/environment/mamallapuram/granite_boulder.glb` |
+
+## Case mismatches
+_none_
+
+## Unused physical assets
+| Path | Bytes |
+| --- | --- |
+| `assets/screenshots/test_step1_main_menu.png` | 1715925 |
+| `assets/screenshots/test_step4_loading_screen.png` | 1674151 |
+| `assets/ui/menu/menu-pichavaram.jpg` | 1149476 |
+| `assets/screenshots/gameplay_delta.png` | 1094576 |
+| `assets/ui/menu/menu-chennai.jpg` | 1094270 |
+| `assets/screenshots/test_step5_3d_gameplay.png` | 1084437 |
+| `assets/screenshots/gameplay_chennai.png` | 1071160 |
+| `assets/characters/npcs/reference/turnaround_fisherman.png` | 1041752 |
+| `assets/ui/characters/turnaround_fisherman.png` | 1041752 |
+| `assets/heist.jpg` | 1037955 |
+| `assets/title_bg.jpg` | 1037955 |
+| `assets/ui/menu/menu-chennai-court-incident.jpg` | 1037955 |
+| `assets/tea_kadai.jpg` | 1021011 |
+| `assets/ui/menu/menu-delta.jpg` | 1021011 |
+| `assets/ui/menu/menu-chettinad.jpg` | 1019986 |
+| `assets/characters/npcs/reference/turnaround_village_elder.png` | 988379 |
+| `assets/ui/characters/turnaround_village_elder.png` | 988379 |
+| `assets/characters/npcs/reference/turnaround_female_villager.png` | 976384 |
+| `assets/ui/characters/turnaround_female_villager.png` | 976384 |
+| `assets/screenshots/gameplay_mamallapuram.png` | 913355 |
+| `assets/screenshots/gameplay_nilgiris.png` | 903908 |
+| `assets/ui/menu/menu-mamallapuram.jpg` | 892253 |
+| `assets/characters/npcs/reference/tn_npc_lineup_12_characters.png` | 840528 |
+| `assets/ui/characters/tn_npc_lineup_12_characters.png` | 840528 |
+| `assets/ui/menu/menu-nilgiris.jpg` | 828140 |
+| `assets/screenshots/gameplay_chettinad.png` | 582755 |
+| `assets/screenshots/gameplay_pichavaram.png` | 531143 |
+| `assets/ui/logo/whispering-wilds-logo.png` | 402923 |
+| `assets/screenshots/test_step2_character_setup.png` | 298813 |
+| `assets/ui/characters/player_3d_screenshot.png` | 291467 |
+| `assets/characters/npcs/reference/turnaround_tea_estate_worker.jpg` | 252263 |
+| `assets/ui/characters/turnaround_tea_estate_worker.jpg` | 252263 |
+| `assets/screenshots/test_step3_prologue_modal.png` | 223764 |
+| `assets/ui/icons/whispering-wilds-icon.png` | 196304 |
+| `assets/ui/logo/whispering-wilds-icon.png` | 196304 |
+| `assets/characters/wildlife/gaur.glb` | 19620 |
+| `assets/architecture/chennai/street_row.glb` | 19256 |
+| `assets/characters/wildlife/elephant.glb` | 17660 |
+| `assets/ui/logo/whispering-wilds-logo.svg` | 15511 |
+| `assets/characters/wildlife/cattle.glb` | 13560 |
+| `assets/architecture/chennai/market_building.glb` | 13012 |
+| `assets/characters/npcs/murugan.glb` | 12568 |
+| `assets/characters/wildlife/goat.glb` | 12232 |
+| `assets/characters/wildlife/nilgiri-tahr.glb` | 12232 |
+| `assets/characters/npcs/meenakshi.glb` | 10904 |
+| `assets/architecture/thanjavur/heritage_temple_area.glb` | 10244 |
+| `assets/architecture/thanjavur_gopuram.glb` | 10244 |
+| `assets/characters/npcs/selvam.glb` | 10228 |
+| `assets/vehicles/bus/city_bus.glb` | 10124 |
+| `assets/characters/wildlife/nilgiri-langur.glb` | 9764 |
+| `assets/characters/npcs/forest-guide.glb` | 9012 |
+| `assets/vehicles/motorcycle/old_motorcycle.glb` | 8900 |
+| `assets/vehicles/bullock_cart/bullock_cart.glb` | 8852 |
+| `assets/props/market/flower_cart.glb` | 8812 |
+| `assets/vehicles/bicycle/old_bicycle.glb` | 8712 |
+| `assets/architecture/village/cattle_shed.glb` | 7668 |
+| `assets/characters/npcs/farmer.glb` | 7644 |
+| `assets/characters/wildlife/egret.glb` | 7620 |
+| `assets/characters/npcs/fisher.glb` | 7508 |
+| `assets/architecture/chennai/old_tamil_house.glb` | 7296 |
+| `assets/characters/npcs/artisan.glb` | 7196 |
+| `assets/architecture/chennai/electrical_pole.glb` | 7036 |
+| `assets/characters/wildlife/peafowl.glb` | 6868 |
+| `assets/props/household/wooden_bench.glb` | 6532 |
+| `assets/characters/player/CHARACTER_MANIFEST.json` | 6320 |
+| `assets/audio/AUDIO_LICENSE_MANIFEST.json` | 6206 |
+| `assets/characters/wildlife/kingfisher.glb` | 5504 |
+| `assets/vehicles/boat/wooden_boat.glb` | 5464 |
+| `assets/vehicles/mangrove_boat.glb` | 5464 |
+| `assets/props/food/tea_stall.glb` | 5460 |
+| `assets/props/market/street_sign.glb` | 5324 |
+| `assets/props/food/brass_vessels.glb` | 5036 |
+| `assets/props/household/brass_vessel.glb` | 5036 |
+| `assets/ui/icons/whispering-wilds-icon.svg` | 5031 |
+| `assets/ui/logo/whispering-wilds-icon.svg` | 5031 |
+| `assets/props/craft/bronze_art_object.glb` | 4844 |
+| `assets/props/craft/stone_sculpture.glb` | 4844 |
+| `assets/props/cultural/kuthu_vilakku.glb` | 4844 |
+| `assets/props/household/heritage_furniture.glb` | 4844 |
+| `assets/props/household/wooden_stool.glb` | 4844 |
+| `assets/props/temple/brass_lamp.glb` | 4844 |
+| `assets/props/temple/kuthu_vilakku.glb` | 4844 |
+| `assets/props/temple/stone_inscription.glb` | 4844 |
+| `assets/props/temple/temple_bell.glb` | 4844 |
+| `assets/vehicles/boat/fishing_boat.glb` | 3940 |
+| `assets/architecture/village/granary.glb` | 3840 |
+| `assets/architecture/village/village_house.glb` | 3812 |
+| `assets/architecture/chettinad/wooden_column.glb` | 3800 |
+| `assets/props/temple/granite_column.glb` | 3800 |
+| `assets/architecture/nilgiris/forest_station.glb` | 3784 |
+| `assets/architecture/nilgiris/hill_house.glb` | 3784 |
+| `assets/architecture/sanctuary/botanical_portal.glb` | 3784 |
+| `assets/props/chola_waterwheel.glb` | 3780 |
+| `assets/architecture/mamallapuram/heritage_structure.glb` | 3776 |
+| `assets/architecture/mamallapuram/stone_workshop.glb` | 3776 |
+| `assets/architecture/thanjavur/artisan_workshop.glb` | 3776 |
+| `assets/environment/pichavaram/canal.glb` | 3648 |
+| `assets/environment/pichavaram/mud_bank.glb` | 3648 |
+| `assets/architecture/chettinad/carved_door.glb` | 3616 |
+| `assets/props/agriculture/farm_tools.glb` | 3576 |
+| `assets/props/craft/artisan_tools.glb` | 3576 |
+| `assets/props/craft/stone_carving_tools.glb` | 3576 |
+| `assets/props/household/clay_pot.glb` | 3480 |
+| `assets/props/household/water_pot.glb` | 3480 |
+| `assets/icons/app-icon.svg` | 3250 |
+| `assets/props/fishing/boat_dock.glb` | 2240 |
+| `assets/props/fishing/fishing_net.glb` | 2240 |
+| `assets/props/fishing/fish_crate.glb` | 2240 |
+| `assets/props/fishing/paddle.glb` | 2240 |
+| `assets/props/fishing/rope.glb` | 2240 |
+| `assets/environment/nilgiris/forest_path.glb` | 2180 |
+| `assets/environment/nilgiris/grassland.glb` | 2180 |
+| `assets/environment/nilgiris/waterfall.glb` | 2180 |
+| `assets/vegetation/mangroves/mangrove_cluster.glb` | 2180 |
+| `assets/vegetation/shola/shola_tree.glb` | 2180 |
+| `assets/vegetation/tea/tea_rows.glb` | 2180 |
+| `assets/props/cultural/agal_lamp.glb` | 2116 |
+| `assets/props/cultural/ammi_kallu.glb` | 2116 |
+| `assets/props/cultural/brass_kudam.glb` | 2116 |
+| `assets/props/cultural/cast_net.glb` | 2116 |
+| `assets/props/cultural/clay_pot.glb` | 2116 |
+| `assets/props/cultural/coffee_dabarah.glb` | 2116 |
+| `assets/props/cultural/korai_mat.glb` | 2116 |
+| `assets/props/cultural/manai_stool.glb` | 2116 |
+| `assets/props/cultural/palm_kottan.glb` | 2116 |
+| `assets/props/cultural/sickle.glb` | 2116 |
+| `assets/props/cultural/ural_ulakkai.glb` | 2116 |
+| `assets/props/food/banana_leaf_feast.glb` | 2116 |
+| `assets/props/food/curd_rice_plate.glb` | 2116 |
+| `assets/props/food/dosa_plate.glb` | 2116 |
+| `assets/props/food/filter_coffee_tumbler.glb` | 2116 |
+| `assets/props/food/idli_plate.glb` | 2116 |
+| `assets/props/food/pongal_pot.glb` | 2116 |
+| `assets/props/food/sugarcane_bundle.glb` | 2116 |
+| `assets/props/food/sweet_pongal_earthen.glb` | 2116 |
+| `assets/props/food/tea_glass.glb` | 2116 |
+| `assets/props/food/tender_coconut.glb` | 2116 |
+| `assets/props/food/vadai_plate.glb` | 2116 |
+| `assets/props/agriculture/water_pump.glb` | 2104 |
+| `assets/props/agriculture/forest_sign.glb` | 2068 |
+| `assets/props/agriculture/stone_wall.glb` | 2068 |
+| `assets/props/agriculture/wooden_fence.glb` | 2068 |
+| `assets/architecture/chettinad/athangudi_floor.glb` | 2040 |
+| `assets/environment/mamallapuram/coastal_rock.glb` | 1936 |
+| `assets/environment/mamallapuram/granite_boulder.glb` | 1936 |
+| `assets/props/agriculture/paddy_bundle.glb` | 1768 |
+| `assets/props/agriculture/palm_leaf_basket.glb` | 1768 |
+| `assets/props/agriculture/tea_basket.glb` | 1768 |
+

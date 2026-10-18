@@ -1,6 +1,6 @@
 {
   "schema": "whispering-wilds/authoritative-asset-audit@1",
-  "generatedAt": "2026-10-18T06:35:30.214Z",
+  "generatedAt": "2026-10-18T17:29:41.669Z",
   "generatedFrom": "scripts/authoritative-asset-audit.js",
   "supersedes": [
     "ASSET_AUDIT_REPORT.json",
@@ -19,14 +19,14 @@
   "totals": {
     "physicalAssetFiles": 167,
     "physicalAssetBytes": 30338404,
-    "distinctReferencedPaths": 17,
-    "present": 17,
+    "distinctReferencedPaths": 18,
+    "present": 18,
     "missing": 0,
     "caseMismatched": 0,
     "templatedReferences": 0,
-    "totalReferenceOccurrences": 21,
-    "sourceFilesScanned": 71,
-    "unusedPhysicalAssets": 149,
+    "totalReferenceOccurrences": 22,
+    "sourceFilesScanned": 76,
+    "unusedPhysicalAssets": 148,
     "duplicateGroups": 27,
     "glbFiles": 124,
     "runtimeLoadedModules": 0
@@ -35,6 +35,11 @@
     "ARCHITECTURE": {
       "referenced": 8,
       "present": 8,
+      "missing": 0
+    },
+    "AUDIO_OTHER": {
+      "referenced": 1,
+      "present": 1,
       "missing": 0
     },
     "CHARACTER": {
@@ -106,8 +111,8 @@
     "oldMissingStillMissing": 0,
     "oldMissingNowPresent": 0,
     "oldMissingNoLongerStaticallyReferenced": 143,
-    "oldFoundStillPresentAndReferenced": 17,
-    "oldFoundNoLongerReferenced": 146,
+    "oldFoundStillPresentAndReferenced": 18,
+    "oldFoundNoLongerReferenced": 145,
     "newMissingNotInOldMissing": 0,
     "note": "Both scans are literal-string based. A difference in totals reflects which literals each scanner matched, not a change in what the game loads. The intersection (still-missing) is the stable figure."
   },
@@ -4450,10 +4455,6 @@
       "size": 13560
     },
     {
-      "path": "assets/audio/audio-manifest.json",
-      "size": 13453
-    },
-    {
       "path": "assets/architecture/chennai/market_building.glb",
       "size": 13012
     },
@@ -5114,6 +5115,32 @@
         "hasXbot": false,
         "errors": []
       }
+    },
+    {
+      "path": "assets/audio/audio-manifest.json",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/audio/audio-manifest.json",
+      "category": "AUDIO_OTHER",
+      "region": null,
+      "extensions": [
+        ".json"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "scripts/unity-asset-audit.js",
+          "line": 141,
+          "system": "UNKNOWN",
+          "registryKey": "manifestPath",
+          "inlineFallbackHint": false,
+          "lineText": "const manifestPath = path.join(ROOT, 'assets/audio/audio-manifest.json');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": null
     },
     {
       "path": "assets/characters/npcs/velu.glb",
