@@ -97,7 +97,7 @@ namespace WhisperingWilds.Player
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<InputBindingManager>();
+                    _instance = FindAnyObjectByType<InputBindingManager>();
 if (_instance == null)
                 {
                     var go = new GameObject("--- InputBindingManager ---");

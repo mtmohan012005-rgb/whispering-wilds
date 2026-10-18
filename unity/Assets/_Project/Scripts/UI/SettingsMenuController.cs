@@ -29,7 +29,7 @@ namespace WhisperingWilds.UI
             {
                 if (_instance == null)
                 {
-                    _instance = FindObjectOfType<SettingsMenuController>();
+                    _instance = FindAnyObjectByType<SettingsMenuController>();
 if (_instance == null)
                 {
                     var go = new GameObject("--- SettingsMenuController ---");

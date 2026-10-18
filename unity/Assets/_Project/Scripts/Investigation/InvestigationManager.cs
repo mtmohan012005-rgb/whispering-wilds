@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using WhisperingWilds.Data;
 using WhisperingWilds.Gameplay;
-using WhisperingWilds.Gameplay;
 
 namespace WhisperingWilds.Investigation
 {

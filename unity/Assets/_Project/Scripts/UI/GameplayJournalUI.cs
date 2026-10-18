@@ -55,7 +55,7 @@ namespace WhisperingWilds.UI
         private void Start()
         {
             GameplayContentRegistry.EnsureAllInitialized();
-            input = FindObjectOfType<PlayerInputHandler>();
+            input = FindAnyObjectByType<PlayerInputHandler>();
         }
 
         private void Update()
