@@ -9,8 +9,11 @@ namespace WhisperingWilds.Online
 {
     /// <summary>
     /// Lightweight Socket.IO v4 client for Unity.
-    /// Uses WebSocket transport after Engine.IO handshake.
+    /// Uses WebSocket transport after Engine.IO v4 handshake.
     /// Supports emit, on, disconnect, and rooms.
+    /// 
+    /// Protocol: Engine.IO v4 with JSON handshake response.
+    /// Server path: /socket.io/ (default Socket.IO path).
     /// </summary>
     public class SocketIOClient : MonoBehaviour
     {
@@ -36,8 +39,9 @@ namespace WhisperingWilds.Online
         private WebSocket _webSocket;
         private int _packetId;
         private float _pingTimer;
-        private float _pingInterval = 25f; // 25 seconds default
-        private float _pongTimeout = 20f;
+        private float _pongTimer; // Separate timer for pong timeout
+        private float _pingInterval = 10f; // 10 seconds default (matches server config)
+        private float _pongTimeout = 5f; // 5 seconds default (matches server config)
         private bool _pongExpected;
         private Dictionary<string, List<Action<object[]>>> _eventHandlers = new Dictionary<string, List<Action<object[]>>>();
         private Coroutine _connectCoroutine;
@@ -73,6 +77,9 @@ namespace WhisperingWilds.Online
 
         /// <summary>
         /// Emits an event to the server.
+        /// Supports two formats:
+        /// 1. Emit("eventName", arg1, arg2, ...) — positional arguments
+        /// 2. Emit("eventName", "key1", val1, "key2", val2, ...) — key-value pairs (converted to JSON object)
         /// </summary>
         public void Emit(string eventName, params object[] data)
         {
@@ -82,12 +89,39 @@ namespace WhisperingWilds.Online
                 return;
             }
 
-            var eventData = new object[data.Length];
-            for (int i = 0; i < data.Length; i++)
+            // Detect key-value pair pattern: alternating string keys and values
+            if (data.Length >= 2 && data.Length % 2 == 0 && data[0] is string)
             {
-                eventData[i] = data[i];
+                bool allKeysAreStrings = true;
+                for (int i = 0; i < data.Length; i += 2)
+                {
+                    if (data[i] is string == false)
+                    {
+                        allKeysAreStrings = false;
+                        break;
+                    }
+                }
+                if (allKeysAreStrings)
+                {
+                    // Build JSON object from key-value pairs
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append("{");
+                    for (int i = 0; i < data.Length; i += 2)
+                    {
+                        if (i > 0) sb.Append(",");
+                        sb.Append("\"");
+                        sb.Append(((string)data[i]).Replace("\\", "\\\\").Replace("\"", "\\\""));
+                        sb.Append("\":");
+                        sb.Append(ToJson(data[i + 1]));
+                    }
+                    sb.Append("}");
+                    SendSocketIOPacket(SocketIOPacketType.Event, _namespace, eventName, sb.ToString());
+                    return;
+                }
             }
-            SendSocketIOPacket(SocketIOPacketType.Event, _namespace, eventData);
+
+            // Positional arguments — wrap in array
+            SendSocketIOPacket(SocketIOPacketType.Event, _namespace, eventName, data);
         }
 
         /// <summary>
@@ -127,14 +161,19 @@ namespace WhisperingWilds.Online
             if (_pingTimer >= _pingInterval)
             {
                 _pingTimer = 0f;
-                SendEngineIOPacket("2");
+                SendEngineIOPacket("2"); // Engine.IO Ping
                 _pongExpected = true;
+                _pongTimer = 0f; // Start pong timeout timer
             }
 
-            if (_pongExpected && _pingTimer >= _pongTimeout)
+            if (_pongExpected)
             {
-                Debug.LogWarning("[SocketIO] Pong timeout — server may be unreachable");
-                _pongExpected = false;
+                _pongTimer += Time.unscaledDeltaTime;
+                if (_pongTimer >= _pongTimeout)
+                {
+                    Debug.LogWarning("[SocketIO] Pong timeout — server may be unreachable");
+                    _pongExpected = false;
+                }
             }
         }
 
@@ -148,8 +187,9 @@ namespace WhisperingWilds.Online
             State = ConnectionState.Connecting;
             Debug.Log($"[SocketIO] Connecting to {_baseUrl}");
 
-            // Step 1: Engine.IO handshake via HTTP polling
-            string handshakeUrl = $"{_baseUrl}/engine.io/?EIO=4&transport=polling";
+            // Step 1: Engine.IO v4 handshake via HTTP polling
+            // Socket.IO default path is /socket.io/, not /engine.io/
+            string handshakeUrl = $"{_baseUrl}/socket.io/?EIO=4&transport=polling";
 
             using (var uwr = new UnityWebRequest(handshakeUrl, "GET"))
             {
@@ -168,12 +208,22 @@ namespace WhisperingWilds.Online
                 }
 
                 string response = uwr.downloadHandler.text;
-                // Parse handshake: sid=<sid>;pingInterval=<ms>;pingTimeout=<ms>
+                // Engine.IO v4 returns JSON: {"sid":"...","upgrades":["websocket"],"pingInterval":10000,"pingTimeout":5000}
                 ParseHandshake(response);
+
+                if (string.IsNullOrEmpty(SocketId))
+                {
+                    Debug.LogError($"[SocketIO] Handshake did not return sid. Response: {response}");
+                    OnError?.Invoke("Invalid handshake response");
+                    State = ConnectionState.Disconnected;
+                    yield break;
+                }
+
+                Debug.Log($"[SocketIO] Engine.IO handshake successful, sid={SocketId}");
             }
 
-            // Step 2: Upgrade to WebSocket
-            string wsUrl = $"{_baseUrl.Replace("http://", "ws://").Replace("https://", "wss://")}/engine.io/?EIO=4&transport=websocket&sid={SocketId}";
+            // Step 2: Upgrade to WebSocket transport
+            string wsUrl = $"{_baseUrl.Replace("http://", "ws://").Replace("https://", "wss://")}/socket.io/?EIO=4&transport=websocket&sid={SocketId}";
 
             _webSocket = new WebSocket();
             _webSocket.OnMessage += HandleWebSocketMessage;
@@ -184,12 +234,12 @@ namespace WhisperingWilds.Online
 
             if (_webSocket.State == WebSocketState.Open)
             {
-                // Send Socket.IO connect packet
+                // Send Socket.IO connect packet (type 0)
                 SendSocketIOPacket(SocketIOPacketType.Connect, _namespace);
 
-                // Socket.IO connection confirmed by 'connect' event packet (type 2)
+                // Socket.IO connection confirmed by '0' connect packet from server
                 // We'll handle this in the message handler
-                Debug.Log($"[SocketIO] WebSocket connected, awaiting Socket.IO handshake");
+                Debug.Log($"[SocketIO] WebSocket connected, awaiting Socket.IO connect confirmation");
             }
             else
             {
@@ -201,30 +251,68 @@ namespace WhisperingWilds.Online
 
         private void ParseHandshake(string response)
         {
-            var parts = response.Split(';');
-            foreach (var part in parts)
+            // Engine.IO v4 returns JSON:
+            // {"sid":"abc123","upgrades":["websocket"],"pingInterval":10000,"pingTimeout":5000}
+            // Parse manually to avoid dependency on UnityEngine.JsonUtility for simple objects
+            
+            if (string.IsNullOrEmpty(response) || response[0] != '{')
             {
-                if (part.StartsWith("sid="))
+                Debug.LogWarning($"[SocketIO] Invalid handshake response (not JSON): {response}");
+                return;
+            }
+
+            // Extract sid
+            int sidIdx = response.IndexOf("\"sid\"");
+            if (sidIdx >= 0)
+            {
+                int colonIdx = response.IndexOf(':', sidIdx);
+                int quoteStart = response.IndexOf('"', colonIdx + 1);
+                int quoteEnd = response.IndexOf('"', quoteStart + 1);
+                if (quoteStart >= 0 && quoteEnd > quoteStart)
                 {
-                    SocketId = part.Substring(4);
+                    SocketId = response.Substring(quoteStart + 1, quoteEnd - quoteStart - 1);
                 }
-                else if (part.StartsWith("pingInterval="))
+            }
+
+            // Extract pingInterval (milliseconds)
+            int pingIdx = response.IndexOf("\"pingInterval\"");
+            if (pingIdx >= 0)
+            {
+                int colonIdx = response.IndexOf(':', pingIdx);
+                int numStart = colonIdx + 1;
+                while (numStart < response.Length && char.IsWhiteSpace(response[numStart])) numStart++;
+                int numEnd = numStart;
+                while (numEnd < response.Length && char.IsDigit(response[numEnd])) numEnd++;
+                if (numEnd > numStart)
                 {
                     int ms;
-                    if (int.TryParse(part.Substring(15), out ms))
+                    if (int.TryParse(response.Substring(numStart, numEnd - numStart), out ms))
                     {
                         _pingInterval = ms / 1000f;
                     }
                 }
-                else if (part.StartsWith("pingTimeout="))
+            }
+
+            // Extract pingTimeout (milliseconds)
+            int timeoutIdx = response.IndexOf("\"pingTimeout\"");
+            if (timeoutIdx >= 0)
+            {
+                int colonIdx = response.IndexOf(':', timeoutIdx);
+                int numStart = colonIdx + 1;
+                while (numStart < response.Length && char.IsWhiteSpace(response[numStart])) numStart++;
+                int numEnd = numStart;
+                while (numEnd < response.Length && char.IsDigit(response[numEnd])) numEnd++;
+                if (numEnd > numStart)
                 {
                     int ms;
-                    if (int.TryParse(part.Substring(12), out ms))
+                    if (int.TryParse(response.Substring(numStart, numEnd - numStart), out ms))
                     {
                         _pongTimeout = ms / 1000f;
                     }
                 }
             }
+
+            Debug.Log($"[SocketIO] Handshake parsed: sid={SocketId}, pingInterval={_pingInterval}s, pongTimeout={_pongTimeout}s");
         }
 
         private enum SocketIOPacketType
@@ -268,29 +356,82 @@ namespace WhisperingWilds.Online
                     socketPacket = "1" + (string.IsNullOrEmpty(ns) ? "" : ns); // Socket.IO disconnect
                     break;
                 case SocketIOPacketType.Event:
-                    // Build Socket.IO event packet: 2["eventName",data...]
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("2");
-                    if (!string.IsNullOrEmpty(ns)) sb.Append(ns);
-                    sb.Append("[\"");
-                    sb.Append(data.Length > 0 ? ((string)data[0]) : "");
-                    sb.Append("\"");
-                    if (data.Length > 1)
-                    {
-                        for (int i = 1; i < data.Length; i++)
-                        {
-                            sb.Append(',');
-                            sb.Append(ToJson(data[i]));
-                        }
-                    }
-                    sb.Append("]");
-                    socketPacket = sb.ToString();
+                    socketPacket = BuildEventPacket(ns, data);
                     break;
                 default:
                     return;
             }
 
             _webSocket.Send("4" + socketPacket);
+        }
+
+        /// <summary>
+        /// Overload for Emit with eventName as separate parameter.
+        /// </summary>
+        private void SendSocketIOPacket(SocketIOPacketType type, string ns, string eventName, params object[] data)
+        {
+            if (_webSocket == null || _webSocket.State != WebSocketState.Open) return;
+
+            string socketPacket;
+            switch (type)
+            {
+                case SocketIOPacketType.Event:
+                    socketPacket = BuildEventPacket(ns, eventName, data);
+                    break;
+                default:
+                    return;
+            }
+
+            _webSocket.Send("4" + socketPacket);
+        }
+
+        /// <summary>
+        /// Builds a Socket.IO event packet from legacy data array format.
+        /// Format: 2["eventName",arg1,arg2,...]
+        /// </summary>
+        private string BuildEventPacket(string ns, object[] data)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("2");
+            if (!string.IsNullOrEmpty(ns)) sb.Append(ns);
+            sb.Append("[\"");
+            sb.Append(data.Length > 0 ? ((string)data[0]) : "");
+            sb.Append("\"");
+            if (data.Length > 1)
+            {
+                for (int i = 1; i < data.Length; i++)
+                {
+                    sb.Append(',');
+                    sb.Append(ToJson(data[i]));
+                }
+            }
+            sb.Append("]");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Builds a Socket.IO event packet with explicit eventName.
+        /// Format: 2["eventName",data] or 2["eventName"]
+        /// </summary>
+        private string BuildEventPacket(string ns, string eventName, params object[] data)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("2");
+            if (!string.IsNullOrEmpty(ns)) sb.Append(ns);
+            sb.Append("[\"");
+            sb.Append(eventName.Replace("\\", "\\\\").Replace("\"", "\\\""));
+            sb.Append("\"");
+            if (data != null && data.Length > 0)
+            {
+                sb.Append(',');
+                for (int i = 0; i < data.Length; i++)
+                {
+                    if (i > 0) sb.Append(',');
+                    sb.Append(ToJson(data[i]));
+                }
+            }
+            sb.Append("]");
+            return sb.ToString();
         }
 
         private void HandleWebSocketMessage(string message)
