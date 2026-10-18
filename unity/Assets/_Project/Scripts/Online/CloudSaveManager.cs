@@ -144,6 +144,11 @@ namespace WhisperingWilds.Online
             return true;
         }
 
+        /// <summary>
+        /// Callback invoked when a cloud download completes.
+        /// </summary>
+        public event Action<bool, GameSaveData, string> OnCloudDownloadComplete;
+
         public void SynchronizeSaveToCloud(GameSaveData data)
         {
             if (!syncEnabled || data == null) return;
@@ -161,6 +166,31 @@ namespace WhisperingWilds.Online
             }
 
             StartCoroutine(UploadRoutine(JsonUtility.ToJson(data), "Game save"));
+        }
+
+        /// <summary>
+        /// Downloads a save from the cloud backend and attempts to restore it.
+        /// If the download fails or the save data is corrupted, the callback reports
+        /// failure and the local save remains untouched.
+        /// </summary>
+        /// <param name="saveId">The save slot identifier, e.g. "slot_0"</param>
+        public void DownloadSaveFromCloud(string saveId)
+        {
+            if (!syncEnabled) return;
+
+            if (!CanSync())
+            {
+                OnCloudDownloadComplete?.Invoke(false, null, "Cloud sync not configured.");
+                return;
+            }
+
+            if (IsSyncing)
+            {
+                Debug.LogWarning("[CloudSaveManager] Cloud sync already in progress; skipping this download.");
+                return;
+            }
+
+            StartCoroutine(DownloadRoutine(saveId));
         }
 
         public void SynchronizeWorldStateToFirebase(WorldStateData worldData)
@@ -206,7 +236,7 @@ namespace WhisperingWilds.Online
 
             if (string.IsNullOrEmpty(token))
             {
-                Debug.LogWarning("[CloudSaveManager] No Firebase ID token available (user not signed in). Falling back to local persistence.");
+                Debug.LogWarning("[CloudSaveManager] No auth token available (user not signed in). Falling back to local persistence.");
                 message = "No auth token available.";
             }
             else
@@ -241,6 +271,99 @@ namespace WhisperingWilds.Online
 
             IsSyncing = false;
             OnCloudSyncComplete?.Invoke(succeeded, message);
+        }
+
+        /// <summary>
+        /// Downloads a save from the cloud backend. The endpoint expects a GET request
+        /// to {baseUrl}/saves/{saveId} with a valid Bearer token.
+        /// On success, the JSON response is deserialized and returned via the callback.
+        /// On failure, the callback reports the error and the local save is untouched.
+        /// </summary>
+        private IEnumerator DownloadRoutine(string saveId)
+        {
+            IsSyncing = true;
+            bool succeeded = false;
+            GameSaveData downloadedData = null;
+            string message = "Unknown error.";
+
+            // Fetch the token per request
+            string token = null;
+            try
+            {
+                token = idTokenProvider != null ? idTokenProvider() : null;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[CloudSaveManager] ID token provider threw: {ex.Message}");
+            }
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Debug.LogWarning("[CloudSaveManager] No auth token available. Cloud download failed.");
+                message = "No auth token available.";
+            }
+            else
+            {
+                string endpoint = $"{persistenceBaseUrl}/saves/{saveId}";
+                using (UnityWebRequest request = new UnityWebRequest(endpoint, "GET"))
+                {
+                    request.downloadHandler = new DownloadHandlerBuffer();
+                    request.SetRequestHeader("Authorization", $"Bearer {token}");
+                    request.SetRequestHeader("Accept", "application/json");
+                    request.timeout = Mathf.Max(1, requestTimeoutSeconds);
+
+                    yield return request.SendWebRequest();
+
+                    if (request.result == UnityWebRequest.Result.Success && request.responseCode == 200)
+                    {
+                        string json = request.downloadHandler.text;
+                        try
+                        {
+                            downloadedData = JsonUtility.FromJson<GameSaveData>(json);
+                            if (downloadedData != null)
+                            {
+                                // Basic integrity check: verify the save has a valid schema version
+                                if (downloadedData.schemaVersion > 0)
+                                {
+                                    succeeded = true;
+                                    message = "Cloud save downloaded successfully.";
+                                    Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> Cloud save downloaded (schema v{downloadedData.schemaVersion}).");
+                                }
+                                else
+                                {
+                                    downloadedData = null;
+                                    message = "Downloaded save has invalid schema version.";
+                                    Debug.LogWarning($"[CloudSaveManager] Corrupted cloud save rejected (schema version: {downloadedData.schemaVersion}).");
+                                }
+                            }
+                            else
+                            {
+                                message = "Failed to deserialize cloud save data.";
+                                Debug.LogWarning("[CloudSaveManager] Cloud save JSON deserialization returned null.");
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            downloadedData = null;
+                            message = $"Deserialization error: {ex.Message}";
+                            Debug.LogError($"[CloudSaveManager] Failed to parse cloud save JSON: {ex.Message}");
+                        }
+                    }
+                    else if (request.responseCode == 404)
+                    {
+                        message = "No cloud save found for this slot.";
+                        Debug.Log("[CloudSaveManager] No cloud save exists for this slot (HTTP 404).");
+                    }
+                    else
+                    {
+                        message = string.IsNullOrEmpty(request.error) ? $"HTTP {request.responseCode}" : request.error;
+                        Debug.LogWarning($"<color=#FFAA00><b>[CloudSaveManager]</b></color> Cloud download failed ({message}).");
+                    }
+                }
+            }
+
+            IsSyncing = false;
+            OnCloudDownloadComplete?.Invoke(succeeded, downloadedData, message);
         }
     }
 }
