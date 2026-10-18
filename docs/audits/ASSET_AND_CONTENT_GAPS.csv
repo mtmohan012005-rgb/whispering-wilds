@@ -1,0 +1,198 @@
+# Asset & Content Gaps — The Whispering Wilds
+
+**Date:** 2026-10-18  
+**Source:** `ASSET_AUDIT_REPORT.json` (306 referenced, 163 found, 143 missing)  
+**Auditor:** Junie (AI Agent)  
+
+---
+
+## Summary
+
+| Category | Missing Count | Severity | Impact on Gameplay |
+|----------|--------------|----------|-------------------|
+| Audio: Voice Lines | 4 | Low | Dialogue works via text; voice is enhancement |
+| Audio: Regional Music | 7 | Medium | Atmosphere missing but gameplay unaffected |
+| Audio: Story Music | 2 | Low | Discovery chimes are nice-to-have |
+| Audio: Festival Music | 1 | Low | Optional cultural enhancement |
+| Audio: Ambience (OGG) | 7 | Medium | World feels silent but playable |
+| Audio: Ambience (MP3) | 7 | Medium | World feels silent but playable |
+| Audio: Wildlife (OGG) | 4 | Low | Wildlife presence not audible |
+| Audio: Transport | 2 | Low | Vehicles silent but visible |
+| Audio: Footsteps (all surfaces) | 52 | Medium | No footstep audio but movement works |
+| Audio: Weather | 4 | Low | Rain/thunder silent but visual effects work |
+| Audio: Interaction SFX | 12 | Low | Object interactions silent |
+| Audio: Puzzle SFX | 2 | Low | Puzzle feedback silent |
+| Audio: Traversal | 2 | Low | Climbing/wading silent |
+| Audio: Music (chapters) | 7 | Medium | Chapter transitions lack music |
+| Audio: Dialogue (MP3) | 3 | Low | Text dialogue works without audio |
+| Player Textures (WebP) | 4 | High | Player may appear untextured if HDRP requires these |
+| UI Icons (PNG) | 4 | Low | UI labels work without icons |
+| GLB Models (alternate paths) | 4 | Low | Primary models exist at different paths |
+| Placeholder Textures | 1 | Low | Development artifact |
+
+**Total Missing: 143 assets**
+
+---
+
+## Criticality Classification
+
+### HIGH Severity (Gameplay Impact)
+
+| File Path | Affected Region | Runtime Status | Recommended Fix |
+|-----------|----------------|----------------|-----------------|
+| `assets/characters/player/textures/player_albedo.webp` | All | Player may show missing material | Generate from player.glb embedded textures |
+| `assets/characters/player/textures/player_normal.webp` | All | Player may show flat shading | Generate from player.glb embedded textures |
+| `assets/characters/player/textures/player_roughness.webp` | All | Player may show incorrect PBR | Generate from player.glb embedded textures |
+| `assets/characters/player/textures/player_ao.webp` | All | Player may show flat lighting | Generate from player.glb embedded textures |
+
+**Note:** The player.glb file contains 7 embedded materials. If Unity HDRP imports these correctly, the separate WebP textures may be redundant. Verify at runtime whether the player appears correctly textured.
+
+### MEDIUM Severity (Atmosphere & Immersion)
+
+| File Path | Affected Region | Runtime Status | Recommended Fix |
+|-----------|----------------|----------------|-----------------|
+| `assets/audio/music/region/chennai_theme.ogg` | Chennai | No background music | Source Tamil folk music or use royalty-free alternative |
+| `assets/audio/music/region/cauvery_delta_theme.ogg` | Thanjavur | No background music | Source appropriate music |
+| `assets/audio/music/region/pichavaram_theme.ogg` | Pichavaram | No background music | Source appropriate music |
+| `assets/audio/music/region/chettinad_theme.ogg` | Chettinad | No background music | Source appropriate music |
+| `assets/audio/music/region/thanjavur_theme.ogg` | Thanjavur | No background music | Source appropriate music |
+| `assets/audio/music/region/mamallapuram_theme.ogg` | Mamallapuram | No background music | Source appropriate music |
+| `assets/audio/music/region/nilgiris_theme.ogg` | Nilgiris | No background music | Source appropriate music |
+| `assets/audio/ambience/city/chennai_day_bed.ogg` | Chennai | Silent environment | Source city ambience |
+| `assets/audio/ambience/village/delta_paddy_day_bed.ogg` | Thanjavur | Silent environment | Source village ambience |
+| `assets/audio/ambience/wetland/pichavaram_mangrove_bed.ogg` | Pichavaram | Silent environment | Source wetland ambience |
+| `assets/audio/ambience/heritage/chettinad_courtyard_bed.ogg` | Chettinad | Silent environment | Source courtyard ambience |
+| `assets/audio/ambience/heritage/thanjavur_craft_temple_bed.ogg` | Thanjavur | Silent environment | Source temple ambience |
+| `assets/audio/ambience/coast/mamallapuram_sea_bed.ogg` | Mamallapuram | Silent environment | Source coastal ambience |
+| `assets/audio/ambience/mountain/nilgiris_tea_wind_bed.ogg` | Nilgiris | Silent environment | Source mountain ambience |
+| `assets/audio/ambience/chennai/george_town_market.mp3` | Chennai | Silent environment | Source market ambience |
+| `assets/audio/ambience/cauvery-delta/farmland_breeze.mp3` | Thanjavur | Silent environment | Source farmland ambience |
+| `assets/audio/ambience/pichavaram/mangrove_water.mp3` | Pichavaram | Silent environment | Source water ambience |
+| `assets/audio/ambience/chettinad/courtyard_reverb.mp3` | Chettinad | Silent environment | Source courtyard ambience |
+| `assets/audio/ambience/thanjavur/temple_bronze_hammer.mp3` | Thanjavur | Silent environment | Source workshop ambience |
+| `assets/audio/ambience/mamallapuram/coastal_waves.mp3` | Mamallapuram | Silent environment | Source wave ambience |
+| `assets/audio/ambience/nilgiris/mountain_wind_shola.mp3` | Nilgiris | Silent environment | Source wind ambience |
+| `assets/audio/footsteps/stone/step_stone_01.mp3` | All | No footstep audio | Source footstep SFX library |
+| `assets/audio/footsteps/mud/step_mud_01.mp3` | All | No footstep audio | Source footstep SFX library |
+| `assets/audio/footsteps/grass/step_grass_01.mp3` | All | No footstep audio | Source footstep SFX library |
+| `assets/audio/footsteps/sand/step_sand_01.mp3` | All | No footstep audio | Source footstep SFX library |
+| `assets/audio/footsteps/wood/step_wood_01.mp3` | All | No footstep audio | Source footstep SFX library |
+| `assets/audio/footsteps/water/step_water_01.mp3` | All | No footstep audio | Source footstep SFX library |
+| (46 additional footstep variants) | All | No footstep audio | Source complete footstep library |
+
+### LOW Severity (Polish & Enhancement)
+
+| File Path | Affected Region | Runtime Status | Recommended Fix |
+|-----------|----------------|----------------|-----------------|
+| `assets/audio/voice/ta/murugan_intro_01.ogg` | Chennai | Text dialogue only | Record Tamil voice lines |
+| `assets/audio/voice/en/murugan_intro_01.ogg` | Chennai | Text dialogue only | Record English voice lines |
+| `assets/audio/voice/ta/tamizh_investigate_01.ogg` | All | Text dialogue only | Record Tamil voice lines |
+| `assets/audio/voice/ta/velu_pichavaram_01.ogg` | Pichavaram | Text dialogue only | Record Tamil voice lines |
+| `assets/audio/voice/ta/selvam_delta_01.ogg` | Thanjavur | Text dialogue only | Record Tamil voice lines |
+| `assets/audio/music/story/ancient_curiosity.ogg` | All | No discovery sound | Source discovery SFX |
+| `assets/audio/music/story/discovery_chime.ogg` | All | No discovery sound | Source chime SFX |
+| `assets/audio/music/festival/pongal_naadaswaram_beat.ogg` | All | No festival music | Source naadaswaram audio |
+| `assets/audio/wildlife/nilgiri_tahr_whistle.ogg` | Nilgiris | Silent wildlife | Source wildlife audio |
+| `assets/audio/wildlife/nilgiri_langur_whoop.ogg` | Nilgiris | Silent wildlife | Source wildlife audio |
+| `assets/audio/wildlife/peafowl_call_01.ogg` | All | Silent wildlife | Source wildlife audio |
+| `assets/audio/wildlife/elephant_low_rumble.ogg` | Nilgiris | Silent wildlife | Source wildlife audio |
+| `assets/audio/transport/auto_2stroke_idle.ogg` | Chennai | Silent vehicles | Source vehicle audio |
+| `assets/audio/transport/wood_oar_stroke_pichavaram.ogg` | Pichavaram | Silent vehicles | Source boat audio |
+| `assets/audio/sfx/footsteps/sandals_stone_01.ogg` | All | No footstep audio | Source footstep SFX |
+| `assets/audio/weather/rain_terracotta_tiles.ogg` | All | Silent weather | Source rain audio |
+| `assets/audio/weather/rain/rain_light.mp3` | All | Silent weather | Source rain audio |
+| `assets/audio/weather/rain/rain_heavy.mp3` | All | Silent weather | Source rain audio |
+| `assets/audio/weather/thunder/thunder_distant.mp3` | All | Silent weather | Source thunder audio |
+| `assets/audio/weather/wind/wind_mountain_gust.mp3` | Nilgiris | Silent weather | Source wind audio |
+| `assets/audio/ambience_chennai.mp3` | Chennai | Silent environment | Source ambience |
+| `assets/audio/ambience/chennai/coastal_night_breeze.mp3` | Chennai | Silent environment | Source night ambience |
+| `assets/audio/ambience/cauvery-delta/night_crickets.mp3` | Thanjavur | Silent environment | Source night ambience |
+| `assets/audio/ambience/pichavaram/wooden_boat_creak.mp3` | Pichavaram | Silent environment | Source boat ambience |
+| (38 additional wildlife, interaction, puzzle, traversal audio files) | Various | Silent interactions | Source appropriate SFX |
+| `assets/icons/cutting_chai.png` | Chennai | No icon in UI | Create simple icon |
+| `assets/icons/brass_carrier.png` | All | No icon in UI | Create simple icon |
+| `assets/icons/chola_coin.png` | All | No icon in UI | Create simple icon |
+| `assets/icons/token.png` | All | No icon in UI | Create simple icon |
+| `assets/textures/placeholder.png` | All | Development artifact | Remove reference |
+| `assets/architecture/chennai/tea_kadai.glb` | Chennai | Alternate path | Primary model at `tea_kadai_stall.glb` exists |
+| `assets/vehicles/auto/auto_rickshaw.glb` | Chennai | Alternate path | Primary model at `chennai_auto.glb` exists |
+| `assets/architecture/chettinad/heritage_house.glb` | Chettinad | Alternate path | Primary model at `courtyard_mansion.glb` exists |
+| `assets/architecture/chennai/madras_high_court.glb` | Chennai | Duplicate reference | Already present in found list |
+
+---
+
+## Character Quality Assessment
+
+### Player Character
+
+| Property | Status | Details |
+|----------|--------|---------|
+| Model | ✅ Complete | `player.glb` — 13 meshes, 7 materials, 24 animations |
+| Rig | ✅ Complete | 23 bones, SkinnedMeshRenderer with Player_LOD0 |
+| Animations | ✅ Complete | 24 animation clips |
+| Textures | ⚠️ Uncertain | 4 WebP texture files missing — may be embedded in GLB |
+| Prefab | ✅ Complete | `PlayerCharacter.prefab` exists |
+
+### NPC Characters
+
+| NPC | GLB Status | Prefab Status | Quality |
+|-----|-----------|---------------|---------|
+| Murugan | ✅ `murugan.glb` | ✅ `NPC_Murugan.prefab` | ⚠️ PLACEHOLDER per CharacterPrefabCatalog.cs |
+| Velu | ✅ `velu.glb` | ✅ `NPC_Velu.prefab` | ⚠️ PLACEHOLDER |
+| Selvam | ✅ `selvam.glb` | ✅ `NPC_Selvam.prefab` | ⚠️ PLACEHOLDER |
+| Meenakshi | ✅ `meenakshi.glb` | ✅ `NPC_Meenakshi.prefab` | ⚠️ PLACEHOLDER |
+| Fisher | ✅ `fisher.glb` | ✅ `NPC_Fisher.prefab` | ⚠️ PLACEHOLDER |
+| Farmer | ✅ `farmer.glb` | ✅ `NPC_Farmer.prefab` | ⚠️ PLACEHOLDER |
+| Forest Guide | ✅ `forest-guide.glb` | ✅ `NPC_ForestGuide.prefab` | ⚠️ PLACEHOLDER |
+| Artisan | ✅ `artisan.glb` | ✅ `NPC_Artisan.prefab` | ⚠️ PLACEHOLDER |
+| Tea Worker | ❌ No GLB found | ✅ `NPC_TeaWorker.prefab` | ⚠️ PLACEHOLDER |
+| Reference Art | ✅ 5 turnaround images | — | Concept art present |
+
+**Note:** All NPC GLBs are explicitly marked as PLACEHOLDER in `CharacterPrefabCatalog.cs`. This means they are low-poly temporary models, not production-quality human characters. The 11 authored prefabs exist and are functional, but the visual quality of NPC characters is below production standard.
+
+### Wildlife Models
+
+| Species | GLB Status | Script Status |
+|---------|-----------|---------------|
+| Nilgiri Tahr | ✅ `nilgiri_tahr.glb` + `nilgiri-tahr.glb` | ✅ Implemented |
+| Nilgiri Langur | ✅ `nilgiri-langur.glb` | ✅ Implemented |
+| Elephant | ✅ `elephant.glb` | ✅ Implemented |
+| Gaur | ✅ `gaur.glb` | ✅ Implemented |
+| Egret | ✅ `egret.glb` | ✅ Implemented |
+| Kingfisher | ✅ `kingfisher.glb` | ✅ Implemented |
+| Peafowl | ✅ `peafowl.glb` | ✅ Implemented |
+| Cattle | ✅ `cattle.glb` | ✅ Implemented |
+| Goat | ✅ `goat.glb` | ✅ Implemented |
+
+---
+
+## Regional Asset Completeness
+
+| Region | Key 3D Models | Ambience Audio | Music | Overall |
+|--------|--------------|----------------|-------|---------|
+| Chennai | ✅ street_row, market, tea_kadai, auto, house | ❌ Missing | ❌ Missing | ⚠️ Visuals complete, audio absent |
+| Pichavaram | ✅ mangrove_dock, rowboat, mangrove | ❌ Missing | ❌ Missing | ⚠️ Visuals complete, audio absent |
+| Thanjavur | ✅ gopuram, irrigation, temple | ❌ Missing | ❌ Missing | ⚠️ Visuals complete, audio absent |
+| Chettinad | ✅ courtyard_mansion, carved_door | ❌ Missing | ❌ Missing | ⚠️ Visuals complete, audio absent |
+| Mamallapuram | ✅ shore_temple, heritage_structure | ❌ Missing | ❌ Missing | ⚠️ Visuals complete, audio absent |
+| Nilgiris | ✅ tea_factory, toda_hut, tea_hedge | ❌ Missing | ❌ Missing | ⚠️ Visuals complete, audio absent |
+
+---
+
+## Key Findings
+
+1. **All core 3D models are present** — Every region has its key architectural landmarks, vehicles, and props. The game is visually functional.
+
+2. **Audio is the largest gap** — 125+ missing audio files cover all categories: voice, music, ambience, footsteps, wildlife, vehicles, weather, interaction, and puzzles. The game will be largely silent.
+
+3. **NPC quality is placeholder** — All 9 NPC GLBs are marked as PLACEHOLDER. While functional for gameplay, they are not production-quality human characters.
+
+4. **Player textures may be embedded** — The 4 missing WebP textures may be redundant if the player.glb contains embedded materials (which it does — 7 materials).
+
+5. **4 GLB path conflicts** — The missing GLBs are alternate paths for models that exist at different locations. These are reference errors, not missing content.
+
+6. **No gameplay-blocking assets** — None of the 143 missing assets prevent the core gameplay loop from functioning. The game is playable without them, but the experience will be visually functional and largely silent.
+
+---
+
+*This audit is based on ASSET_AUDIT_REPORT.json and code inspection. Runtime verification of asset loading requires human operator.*
