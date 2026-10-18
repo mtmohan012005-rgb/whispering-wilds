@@ -81,7 +81,7 @@ namespace WhisperingWilds.UI
             MainMenuAnimator animator = mainMenuAnimator;
             if (animator == null)
             {
-                animator = FindObjectOfType<MainMenuAnimator>();
+                animator = FindAnyObjectByType<MainMenuAnimator>();
             }
             if (animator != null)
             {
@@ -111,7 +111,7 @@ namespace WhisperingWilds.UI
 
             // STEP 70: Stop menu animations when leaving the title screen
             MainMenuAnimator anim = mainMenuAnimator;
-            if (anim == null) anim = FindObjectOfType<MainMenuAnimator>();
+            if (anim == null) anim = FindAnyObjectByType<MainMenuAnimator>();
             if (anim != null)
             {
                 anim.StopAnimations();

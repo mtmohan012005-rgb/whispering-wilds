@@ -119,7 +119,7 @@ namespace WhisperingWilds.Gameplay
 
         private static void EnsureManager<T>() where T : MonoBehaviour
         {
-            if (FindObjectOfType<T>(true) != null) return;
+            if (FindAnyObjectByType<T>() != null) return;
 
             var go = new GameObject(typeof(T).Name);
             go.AddComponent<T>();

@@ -250,10 +250,15 @@ async function downloadSave(userId, saveId) {
     }
 
     try {
-        // Find the user's folder
-        const userFolderName = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
-        const userFolder = storage.root.find(userFolderName);
+        // Find the user's folder inside WhisperingWildsSaves/
+        const userFolderPath = getUserFolder(userId);
+        const savesFolder = storage.root.find(SAVES_FOLDER);
         
+        if (!savesFolder || savesFolder.length === 0) {
+            return { success: false, error: 'No saves found for this user' };
+        }
+
+        const userFolder = savesFolder[0].find(userId.replace(/[^a-zA-Z0-9_-]/g, '_'));
         if (!userFolder || userFolder.length === 0) {
             return { success: false, error: 'No saves found for this user' };
         }
@@ -298,8 +303,15 @@ async function listSaves(userId) {
     }
 
     try {
+        // Find the saves root folder first
+        const savesFolder = storage.root.find(SAVES_FOLDER);
+        if (!savesFolder || savesFolder.length === 0) {
+            return { success: true, saves: [] };
+        }
+
+        // Find the user's folder inside WhisperingWildsSaves/
         const userFolderName = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
-        const userFolder = storage.root.find(userFolderName);
+        const userFolder = savesFolder[0].find(userFolderName);
         
         if (!userFolder || userFolder.length === 0) {
             return { success: true, saves: [] };
@@ -332,8 +344,15 @@ async function deleteSave(userId, saveId) {
     }
 
     try {
+        // Find the saves root folder first
+        const savesFolder = storage.root.find(SAVES_FOLDER);
+        if (!savesFolder || savesFolder.length === 0) {
+            return { success: true }; // Already doesn't exist
+        }
+
+        // Find the user's folder inside WhisperingWildsSaves/
         const userFolderName = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
-        const userFolder = storage.root.find(userFolderName);
+        const userFolder = savesFolder[0].find(userFolderName);
         
         if (!userFolder || userFolder.length === 0) {
             return { success: true }; // Already doesn't exist

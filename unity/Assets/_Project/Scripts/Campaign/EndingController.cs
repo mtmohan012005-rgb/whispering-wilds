@@ -192,7 +192,7 @@ namespace WhisperingWilds.Campaign
         public bool EndingEvaluated => endingEvaluated;
 
         /// <summary>Public accessor for exploration milestones (used by tests).</summary>
-        public HashSet<string> ExplorationMilestones => explorationMilestones;
+        public List<string> ExplorationMilestones => new List<string>(explorationMilestones);
 
         // ------------------------------------------------------------------
         // Ending evaluation
@@ -332,7 +332,7 @@ namespace WhisperingWilds.Campaign
                 agrarianGuildAffinity = agrarianGuildAffinity,
                 npcTrustScores = new Dictionary<string, int>(npcTrustScores),
                 sanctuaryVerdict = sanctuaryVerdict,
-                explorationMilestones = new HashSet<string>(explorationMilestones),
+                explorationMilestones = new List<string>(explorationMilestones),
                 endingEvaluated = endingEvaluated,
                 cachedEnding = cachedEnding
             };
@@ -388,9 +388,9 @@ namespace WhisperingWilds.Campaign
         public int heritageCouncilAffinity;
         public int archaeologicalSocietyAffinity;
         public int agrarianGuildAffinity;
-        public Dictionary<string, int> npcTrustScores = new Dictionary<string, int>();
+        [SerializeField] public Dictionary<string, int> npcTrustScores = new Dictionary<string, int>();
         public string sanctuaryVerdict;
-        public HashSet<string> explorationMilestones = new HashSet<string>();
+        [SerializeField] public List<string> explorationMilestones = new List<string>();
         public bool endingEvaluated;
         public EndingController.EndingType cachedEnding;
     }

@@ -609,8 +609,9 @@ namespace WhisperingWilds.UI
             SetText(uiScaleValueText, UiScaleKey(mgr.UiScale));
             SetText(fullscreenValueText, mgr.IsFullscreen ? "settings.on" : "settings.off");
             SetText(vsyncValueText, mgr.VSyncEnabled ? "settings.on" : "settings.off");
-            SetText(frameLimitValueText, mgr.FrameLimit < 0 ? "settings.unlimited" : mgr.FrameLimit.ToString());
-            SetText(resolutionValueText, $"{mgr.CurrentMode.width} x {mgr.CurrentMode.height}");
+            // Dynamic numeric values are displayed directly, not looked up as localization keys
+            if (frameLimitValueText != null) frameLimitValueText.text = mgr.FrameLimit < 0 ? "Unlimited" : mgr.FrameLimit.ToString();
+            if (resolutionValueText != null) resolutionValueText.text = $"{mgr.CurrentMode.width} x {mgr.CurrentMode.height}";
 
             bool modesAvailable = mgr.SupportedModes.Count > 0;
             if (resolutionLeftButton != null) resolutionLeftButton.interactable = modesAvailable;

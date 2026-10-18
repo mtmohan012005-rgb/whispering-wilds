@@ -70,7 +70,7 @@ namespace WhisperingWilds.Campaign
             // The permanent appearance allowance belongs to the player, so it is restored too.
             // Both counters exist and must agree: PlayerAppearanceManager owns the applied
             // profile, PlayerManager mirrors the remaining budget.
-            var appearance = UnityEngine.Object.FindObjectOfType<Player.PlayerAppearanceManager>();
+            var appearance = UnityEngine.Object.FindAnyObjectByType<Player.PlayerAppearanceManager>();
             if (appearance != null) appearance.ResetToNewGameDefaults();
             if (Player.PlayerManager.Instance != null) Player.PlayerManager.Instance.ResetAppearanceAllowance();
 
