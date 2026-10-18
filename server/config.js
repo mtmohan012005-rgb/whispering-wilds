@@ -114,7 +114,19 @@ const config = {
             return true;
         }
         return false;
-    })()
+    })(),
+
+    // ------------------------------------------------------------------------
+    // MEGA CLOUD DRIVE (alternative persistence backend)
+    // ------------------------------------------------------------------------
+    // MEGA is an alternative to Firebase/Firestore for cloud saves. It uses
+    // the unofficial megajs SDK. Credentials are server-side secrets and are
+    // never exposed to Unity clients.
+    //
+    // When both Firebase and MEGA are configured, Firebase takes precedence
+    // as the canonical store. MEGA is used as a fallback or standalone option.
+    MEGA_EMAIL: process.env.MEGA_EMAIL || '',
+    MEGA_PASSWORD: process.env.MEGA_PASSWORD || ''
 };
 
 // ============================================================================

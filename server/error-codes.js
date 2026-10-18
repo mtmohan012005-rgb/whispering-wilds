@@ -40,6 +40,8 @@ const ERROR_CODES = {
 
     // --- Backend state (503) ----------------------------------------------
     FIREBASE_NOT_CONFIGURED: 'FIREBASE_NOT_CONFIGURED',
+    MEGA_NOT_CONFIGURED: 'MEGA_NOT_CONFIGURED',
+    STORAGE_ERROR: 'STORAGE_ERROR',
     DEPENDENCY_UNAVAILABLE: 'DEPENDENCY_UNAVAILABLE',
     NOT_READY: 'NOT_READY',
 
@@ -67,6 +69,8 @@ const STATUS_BY_CODE = {
     [ERROR_CODES.RATE_LIMITED]: 429,
     [ERROR_CODES.RETRY_AFTER_REQUIRED]: 429,
     [ERROR_CODES.FIREBASE_NOT_CONFIGURED]: 503,
+    [ERROR_CODES.MEGA_NOT_CONFIGURED]: 503,
+    [ERROR_CODES.STORAGE_ERROR]: 503,
     [ERROR_CODES.DEPENDENCY_UNAVAILABLE]: 503,
     [ERROR_CODES.NOT_READY]: 503,
     [ERROR_CODES.INTERNAL_ERROR]: 500
@@ -92,6 +96,8 @@ const DEFAULT_MESSAGES = {
     [ERROR_CODES.RATE_LIMITED]: 'Too many requests. Retry later.',
     [ERROR_CODES.RETRY_AFTER_REQUIRED]: 'Retry after the indicated delay.',
     [ERROR_CODES.FIREBASE_NOT_CONFIGURED]: 'Persistence backend is not configured.',
+    [ERROR_CODES.MEGA_NOT_CONFIGURED]: 'MEGA cloud storage is not configured.',
+    [ERROR_CODES.STORAGE_ERROR]: 'Cloud storage operation failed.',
     [ERROR_CODES.DEPENDENCY_UNAVAILABLE]: 'A required dependency is unavailable.',
     [ERROR_CODES.NOT_READY]: 'Service is not ready.',
     [ERROR_CODES.INTERNAL_ERROR]: 'Internal server error.'

@@ -1,0 +1,5898 @@
+{
+  "schema": "whispering-wilds/authoritative-asset-audit@1",
+  "generatedAt": "2026-10-18T06:35:30.214Z",
+  "generatedFrom": "scripts/authoritative-asset-audit.js",
+  "supersedes": [
+    "ASSET_AUDIT_REPORT.json",
+    "BUILD_REPORT.json",
+    "PRODUCTION_ASSET_STATUS.json",
+    "PRODUCTION_3D_ASSET_REPORT.json",
+    "DATA_AUDIT_REPORT.json"
+  ],
+  "methodology": {
+    "note": "No count in this document is hardcoded. Existence is decided by fs.statSync on the working tree.",
+    "referenceExtraction": "Regex over asset/... literals in js, css, index.html, server, desktop, scripts, tools, config, content",
+    "templatedReferences": "References containing ${...} are flagged dynamicTemplate=true and are NOT resolved as literal paths",
+    "externalReferences": "Absolute http(s), data: and blob: references are excluded from the repo inventory",
+    "glbInspection": "12-byte GLB header + JSON chunk parsed directly; meshes/skins/animations/materials/images counted"
+  },
+  "totals": {
+    "physicalAssetFiles": 167,
+    "physicalAssetBytes": 30338404,
+    "distinctReferencedPaths": 17,
+    "present": 17,
+    "missing": 0,
+    "caseMismatched": 0,
+    "templatedReferences": 0,
+    "totalReferenceOccurrences": 21,
+    "sourceFilesScanned": 71,
+    "unusedPhysicalAssets": 149,
+    "duplicateGroups": 27,
+    "glbFiles": 124,
+    "runtimeLoadedModules": 0
+  },
+  "byCategory": {
+    "ARCHITECTURE": {
+      "referenced": 8,
+      "present": 8,
+      "missing": 0
+    },
+    "CHARACTER": {
+      "referenced": 3,
+      "present": 3,
+      "missing": 0
+    },
+    "OTHER": {
+      "referenced": 1,
+      "present": 1,
+      "missing": 0
+    },
+    "VEGETATION": {
+      "referenced": 3,
+      "present": 3,
+      "missing": 0
+    },
+    "VEHICLE": {
+      "referenced": 2,
+      "present": 2,
+      "missing": 0
+    }
+  },
+  "byRegion": {
+    "CHENNAI": {
+      "referenced": 3,
+      "present": 3,
+      "missing": 0
+    },
+    "CHETTINAD": {
+      "referenced": 1,
+      "present": 1,
+      "missing": 0
+    },
+    "DELTA": {
+      "referenced": 1,
+      "present": 1,
+      "missing": 0
+    },
+    "NILGIRI": {
+      "referenced": 3,
+      "present": 3,
+      "missing": 0
+    },
+    "MAMALLAPURAM": {
+      "referenced": 1,
+      "present": 1,
+      "missing": 0
+    },
+    "PICHAVARAM": {
+      "referenced": 1,
+      "present": 1,
+      "missing": 0
+    }
+  },
+  "classification": {},
+  "manifestCrossCheck": {
+    "present": true,
+    "declared": 36,
+    "physicallyPresent": 36,
+    "missingEntries": []
+  },
+  "oldReportReconciliation": {
+    "oldReport": "ASSET_AUDIT_REPORT.json",
+    "oldTimestamp": "2026-10-17T16:46:02.628Z",
+    "oldReferenced": 306,
+    "oldFound": 163,
+    "oldMissing": 143,
+    "oldMissingStillMissing": 0,
+    "oldMissingNowPresent": 0,
+    "oldMissingNoLongerStaticallyReferenced": 143,
+    "oldFoundStillPresentAndReferenced": 17,
+    "oldFoundNoLongerReferenced": 146,
+    "newMissingNotInOldMissing": 0,
+    "note": "Both scans are literal-string based. A difference in totals reflects which literals each scanner matched, not a change in what the game loads. The intersection (still-missing) is the stable figure."
+  },
+  "playerGlb": {
+    "path": "assets/characters/player/player.glb",
+    "size": 43952,
+    "validContainer": true,
+    "version": 2,
+    "declaredLength": 43952,
+    "actualLength": 43952,
+    "meshes": 13,
+    "nodes": 22,
+    "skins": 1,
+    "animations": 24,
+    "materials": 7,
+    "textures": 0,
+    "images": 0,
+    "embeddedImages": 0,
+    "externalImageUris": [],
+    "animationNames": [
+      "Player_Idle",
+      "Player_Walk",
+      "Player_Run",
+      "Player_Sprint",
+      "Player_Jump_Start",
+      "Player_Jump",
+      "Player_Fall",
+      "Player_Land",
+      "Player_Interact",
+      "Player_Pickup",
+      "Player_Inspect",
+      "Player_Use_Item",
+      "Player_Crouch_Idle",
+      "Player_Crouch_Walk",
+      "Player_Climb",
+      "Player_Climb_Start",
+      "Player_Climb_Loop",
+      "Player_Climb_End",
+      "Player_Swim",
+      "Player_Sit",
+      "Player_Stand",
+      "Player_Eat",
+      "Player_Drink",
+      "Player_Photo"
+    ],
+    "meshNames": [
+      "Player_Torso_Shirt",
+      "Player_Angavastram",
+      "Player_Head",
+      "Player_Hair",
+      "Player_Eye_Left",
+      "Player_Veshti",
+      "Player_LeftArm",
+      "Player_RightArm",
+      "Player_LeftHand",
+      "Player_RightHand",
+      "Player_LeftSandals",
+      "Player_RightSandals",
+      "Player_CollisionProxy"
+    ],
+    "materialNames": [
+      "M_Skin_Tamil",
+      "M_Veshti_Kasavu",
+      "M_Shirt_Indigo",
+      "M_Hair_Black",
+      "M_Eyes_DarkBrown",
+      "M_Sandals_Leather",
+      "M_Angavastram_Gold"
+    ],
+    "skeletal": true,
+    "hasXbot": false,
+    "errors": []
+  },
+  "caseMismatches": [],
+  "glbInventory": [
+    {
+      "path": "assets/architecture/chennai/electrical_pole.glb",
+      "size": 7036,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7036,
+      "actualLength": 7036,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "PoleMast",
+        "CrossArmUpper",
+        "CrossArmLower",
+        "TransformerDrum"
+      ],
+      "materialNames": [
+        "M_Reinforced_Concrete",
+        "M_Galvanized_Steel"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chennai/market_building.glb",
+      "size": 13012,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 13012,
+      "actualLength": 13012,
+      "meshes": 8,
+      "nodes": 8,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MarketFloor",
+        "CanopyRoof",
+        "Pillar_-8_-5",
+        "Pillar_-8_5",
+        "Pillar_0_-5",
+        "Pillar_0_5",
+        "Pillar_8_-5",
+        "Pillar_8_5"
+      ],
+      "materialNames": [
+        "M_Cast_Iron_Pillar",
+        "M_Tin_Canopy",
+        "M_Vegetable_Benches"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chennai/old_tamil_house.glb",
+      "size": 7296,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7296,
+      "actualLength": 7296,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "HouseBlock",
+        "SlopedRoof",
+        "MainDoorway",
+        "ThinnaiVeranda"
+      ],
+      "materialNames": [
+        "M_Lime_Plaster",
+        "M_Carved_Teak",
+        "M_Terracotta_Sloped_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chennai/street_row.glb",
+      "size": 19256,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 19256,
+      "actualLength": 19256,
+      "meshes": 11,
+      "nodes": 11,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MainBlock",
+        "RoofGable",
+        "ShopArch_0",
+        "WindowL_0",
+        "WindowR_0",
+        "ShopArch_1",
+        "WindowL_1",
+        "WindowR_1",
+        "ShopArch_2",
+        "WindowL_2",
+        "WindowR_2"
+      ],
+      "materialNames": [
+        "M_Colonial_Yellow_Plaster",
+        "M_Teak_Shutters",
+        "M_Red_Roof_Tile"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chennai/tea_kadai_stall.glb",
+      "size": 12796,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 12796,
+      "actualLength": 12796,
+      "meshes": 8,
+      "nodes": 8,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Stall_Counter",
+        "Tin_Canopy",
+        "Post_0",
+        "Post_1",
+        "Post_2",
+        "Post_3",
+        "Brass_Samovar",
+        "Wooden_Bench"
+      ],
+      "materialNames": [
+        "M_Teak_Weathered",
+        "M_Corrugated_Roof",
+        "M_Brass_Samovar"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chettinad/athangudi_floor.glb",
+      "size": 2040,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2040,
+      "actualLength": 2040,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "FloorSlab"
+      ],
+      "materialNames": [
+        "M_Athangudi_Floral"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chettinad/carved_door.glb",
+      "size": 3616,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3616,
+      "actualLength": 3616,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "DoorFrame",
+        "BrassKnocker"
+      ],
+      "materialNames": [
+        "M_Teak_Carved",
+        "M_Brass_Bosses"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chettinad/courtyard_mansion.glb",
+      "size": 15196,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 15196,
+      "actualLength": 15196,
+      "meshes": 9,
+      "nodes": 9,
+      "skins": 0,
+      "animations": 0,
+      "materials": 4,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GroundFloor",
+        "UpperFloor",
+        "Terracotta_Roof",
+        "ThinnaiVeranda",
+        "TeakPillar_0",
+        "TeakPillar_1",
+        "TeakPillar_2",
+        "TeakPillar_3",
+        "CarvedDoorway"
+      ],
+      "materialNames": [
+        "M_EggWhite_Lime_Plaster",
+        "M_Burma_Teak_Pillar",
+        "M_Terracotta_Roof_Tile",
+        "M_Athangudi_Pattern_Tile"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/chettinad/wooden_column.glb",
+      "size": 3800,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3800,
+      "actualLength": 3800,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BaseStone",
+        "PillarShaft"
+      ],
+      "materialNames": [
+        "M_Burma_Teak",
+        "M_Granite_Plinth"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/delta/irrigation_sluice.glb",
+      "size": 7180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7180,
+      "actualLength": 7180,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Sluice_LeftWall",
+        "Sluice_RightWall",
+        "Sluice_TopCrankBeam",
+        "Iron_Gate"
+      ],
+      "materialNames": [
+        "M_Granite_Sluice",
+        "M_Sluice_IronGate"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/mamallapuram/heritage_structure.glb",
+      "size": 3776,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3776,
+      "actualLength": 3776,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WorkshopWalls",
+        "Roof"
+      ],
+      "materialNames": [
+        "M_Workshop_Stone",
+        "M_Terracotta_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/mamallapuram/stone_workshop.glb",
+      "size": 3776,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3776,
+      "actualLength": 3776,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WorkshopWalls",
+        "Roof"
+      ],
+      "materialNames": [
+        "M_Workshop_Stone",
+        "M_Terracotta_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/nilgiris/forest_station.glb",
+      "size": 3784,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3784,
+      "actualLength": 3784,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "HouseBlock",
+        "PitchedRoof"
+      ],
+      "materialNames": [
+        "M_Mountain_Stone",
+        "M_Green_Tin_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/nilgiris/hill_house.glb",
+      "size": 3784,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3784,
+      "actualLength": 3784,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "HouseBlock",
+        "PitchedRoof"
+      ],
+      "materialNames": [
+        "M_Mountain_Stone",
+        "M_Green_Tin_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/nilgiris/toda_mund_hut.glb",
+      "size": 7416,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7416,
+      "actualLength": 7416,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "VaultedRoof",
+        "FrontWall",
+        "RearWall",
+        "TinyEntrance"
+      ],
+      "materialNames": [
+        "M_Bamboo_Grass_Thatch",
+        "M_Dry_Stone_Wall"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/sanctuary/botanical_portal.glb",
+      "size": 3784,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3784,
+      "actualLength": 3784,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "HouseBlock",
+        "PitchedRoof"
+      ],
+      "materialNames": [
+        "M_Mountain_Stone",
+        "M_Green_Tin_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/thanjavur_gopuram.glb",
+      "size": 10244,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 10244,
+      "actualLength": 10244,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BaseGate",
+        "Tier_1",
+        "Tier_2",
+        "Tier_3",
+        "Tier_4",
+        "KalasaFinials"
+      ],
+      "materialNames": [
+        "M_Thanjavur_Granite",
+        "M_Kalasa_Gold"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/thanjavur/artisan_workshop.glb",
+      "size": 3776,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3776,
+      "actualLength": 3776,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WorkshopWalls",
+        "Roof"
+      ],
+      "materialNames": [
+        "M_Workshop_Stone",
+        "M_Terracotta_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/thanjavur/heritage_temple_area.glb",
+      "size": 10244,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 10244,
+      "actualLength": 10244,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BaseGate",
+        "Tier_1",
+        "Tier_2",
+        "Tier_3",
+        "Tier_4",
+        "KalasaFinials"
+      ],
+      "materialNames": [
+        "M_Thanjavur_Granite",
+        "M_Kalasa_Gold"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/village/cattle_shed.glb",
+      "size": 7668,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7668,
+      "actualLength": 7668,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "RoofShade",
+        "Post_-3_-2",
+        "Post_-3_2",
+        "Post_3_-2",
+        "Post_3_2"
+      ],
+      "materialNames": [
+        "M_Rough_Timber",
+        "M_Thatch_Shade"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/village/granary.glb",
+      "size": 3840,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3840,
+      "actualLength": 3840,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GraniteBase",
+        "GranaryBox"
+      ],
+      "materialNames": [
+        "M_Granary_Wood",
+        "M_Granite_Pillars"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/architecture/village/village_house.glb",
+      "size": 3812,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3812,
+      "actualLength": 3812,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Walls",
+        "ThatchRoof"
+      ],
+      "materialNames": [
+        "M_Mud_Plaster",
+        "M_Thatch_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/artisan.glb",
+      "size": 7196,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7196,
+      "actualLength": 7196,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "Dhoti",
+        "BronzePiece"
+      ],
+      "materialNames": [
+        "M_Artisan_Skin",
+        "M_Craft_Dhoti",
+        "M_Bronze_Sculpt"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/farmer.glb",
+      "size": 7644,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7644,
+      "actualLength": 7644,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 4,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "Dhoti",
+        "Sickle"
+      ],
+      "materialNames": [
+        "M_Farmer_Skin",
+        "M_Khadi_Shirt",
+        "M_White_Dhoti",
+        "M_Sickle_Iron"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/fisher.glb",
+      "size": 7508,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7508,
+      "actualLength": 7508,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "Lungi",
+        "ShoulderNet"
+      ],
+      "materialNames": [
+        "M_Fisher_Skin",
+        "M_Fisher_Lungi",
+        "M_Coir_Net"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/forest-guide.glb",
+      "size": 9012,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 9012,
+      "actualLength": 9012,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "SafariHat",
+        "Trousers",
+        "Boots"
+      ],
+      "materialNames": [
+        "M_Guide_Skin",
+        "M_Safari_Khaki",
+        "M_Trek_Boots"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/meenakshi.glb",
+      "size": 10904,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 10904,
+      "actualLength": 10904,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 5,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "TorsoSaree",
+        "PalluFold",
+        "LowerPleats",
+        "Head",
+        "HairBun",
+        "JasmineGarland"
+      ],
+      "materialNames": [
+        "M_Skin_Grace",
+        "M_Maroon_Sungudi_Saree",
+        "M_Gold_Zari",
+        "M_Black_Bun",
+        "M_Jasmine_Flowers"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/murugan.glb",
+      "size": 12568,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 12568,
+      "actualLength": 12568,
+      "meshes": 7,
+      "nodes": 7,
+      "skins": 0,
+      "animations": 0,
+      "materials": 5,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "Hair",
+        "Moustache",
+        "Thundu",
+        "Lungi",
+        "TeaGlass"
+      ],
+      "materialNames": [
+        "M_Tamil_Skin",
+        "M_White_Shirt",
+        "M_Blue_Lungi",
+        "M_Black_Hair",
+        "M_Brass_Davarah"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/selvam.glb",
+      "size": 10228,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 10228,
+      "actualLength": 10228,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 4,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "Turban",
+        "ShortDhoti",
+        "Leg_L",
+        "Leg_R"
+      ],
+      "materialNames": [
+        "M_Field_Skin",
+        "M_Cotton_Vest",
+        "M_Folded_Dhoti",
+        "M_Yellow_Turban"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/npcs/velu.glb",
+      "size": 9044,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 9044,
+      "actualLength": 9044,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 4,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "GreyHair",
+        "Veshti",
+        "WalkingStick"
+      ],
+      "materialNames": [
+        "M_Elder_Skin",
+        "M_White_Veshti",
+        "M_LightBrown_Shirt",
+        "M_Grey_Hair"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/player/player.glb",
+      "size": 43952,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 43952,
+      "actualLength": 43952,
+      "meshes": 13,
+      "nodes": 22,
+      "skins": 1,
+      "animations": 24,
+      "materials": 7,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [
+        "Player_Idle",
+        "Player_Walk",
+        "Player_Run",
+        "Player_Sprint",
+        "Player_Jump_Start",
+        "Player_Jump",
+        "Player_Fall",
+        "Player_Land",
+        "Player_Interact",
+        "Player_Pickup",
+        "Player_Inspect",
+        "Player_Use_Item",
+        "Player_Crouch_Idle",
+        "Player_Crouch_Walk",
+        "Player_Climb",
+        "Player_Climb_Start",
+        "Player_Climb_Loop",
+        "Player_Climb_End",
+        "Player_Swim",
+        "Player_Sit",
+        "Player_Stand",
+        "Player_Eat",
+        "Player_Drink",
+        "Player_Photo"
+      ],
+      "meshNames": [
+        "Player_Torso_Shirt",
+        "Player_Angavastram",
+        "Player_Head",
+        "Player_Hair",
+        "Player_Eye_Left",
+        "Player_Veshti",
+        "Player_LeftArm",
+        "Player_RightArm",
+        "Player_LeftHand",
+        "Player_RightHand",
+        "Player_LeftSandals",
+        "Player_RightSandals",
+        "Player_CollisionProxy"
+      ],
+      "materialNames": [
+        "M_Skin_Tamil",
+        "M_Veshti_Kasavu",
+        "M_Shirt_Indigo",
+        "M_Hair_Black",
+        "M_Eyes_DarkBrown",
+        "M_Sandals_Leather",
+        "M_Angavastram_Gold"
+      ],
+      "skeletal": true,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/cattle.glb",
+      "size": 13560,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 13560,
+      "actualLength": 13560,
+      "meshes": 9,
+      "nodes": 9,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Hump",
+        "Head",
+        "Horn_L",
+        "Horn_R",
+        "Leg_0",
+        "Leg_1",
+        "Leg_2",
+        "Leg_3"
+      ],
+      "materialNames": [
+        "M_Cattle_Grey",
+        "M_Cattle_Horns"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/egret.glb",
+      "size": 7620,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7620,
+      "actualLength": 7620,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Body",
+        "Neck",
+        "Beak",
+        "Leg_L",
+        "Leg_R"
+      ],
+      "materialNames": [
+        "M_White_Plumage",
+        "M_Yellow_Beak",
+        "M_Black_Stilt_Leg"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/elephant.glb",
+      "size": 17660,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 17660,
+      "actualLength": 17660,
+      "meshes": 11,
+      "nodes": 11,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MassiveBody",
+        "HeadBlock",
+        "Trunk",
+        "Ear_L",
+        "Ear_R",
+        "Tusk_L",
+        "Tusk_R",
+        "Leg_0",
+        "Leg_1",
+        "Leg_2",
+        "Leg_3"
+      ],
+      "materialNames": [
+        "M_Elephant_Hide",
+        "M_Elephant_Tusk"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/gaur.glb",
+      "size": 19620,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 19620,
+      "actualLength": 19620,
+      "meshes": 13,
+      "nodes": 13,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MuscularTorso",
+        "DorsalRidge",
+        "Head",
+        "Horn_L",
+        "Horn_R",
+        "LegUpper_0",
+        "LegLower_0",
+        "LegUpper_1",
+        "LegLower_1",
+        "LegUpper_2",
+        "LegLower_2",
+        "LegUpper_3",
+        "LegLower_3"
+      ],
+      "materialNames": [
+        "M_Gaur_Coat",
+        "M_Gaur_Stockings",
+        "M_Gaur_Horns"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/goat.glb",
+      "size": 12232,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 12232,
+      "actualLength": 12232,
+      "meshes": 8,
+      "nodes": 8,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Body",
+        "Head",
+        "Horn_L",
+        "Horn_R",
+        "Leg_0",
+        "Leg_1",
+        "Leg_2",
+        "Leg_3"
+      ],
+      "materialNames": [
+        "M_Goat_Coat",
+        "M_Goat_Horns"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/kingfisher.glb",
+      "size": 5504,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5504,
+      "actualLength": 5504,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Chest",
+        "Wings",
+        "LargeBeak"
+      ],
+      "materialNames": [
+        "M_Cerulean_Wing",
+        "M_Chestnut_Chest",
+        "M_Crimson_Beak"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/nilgiri-langur.glb",
+      "size": 9764,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 9764,
+      "actualLength": 9764,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "Head",
+        "ManeCrown",
+        "Tail",
+        "Arm_L",
+        "Arm_R"
+      ],
+      "materialNames": [
+        "M_Langur_Black_Fur",
+        "M_Golden_Mane"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/nilgiri-tahr.glb",
+      "size": 12232,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 12232,
+      "actualLength": 12232,
+      "meshes": 8,
+      "nodes": 8,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Body",
+        "Head",
+        "Horn_L",
+        "Horn_R",
+        "Leg_0",
+        "Leg_1",
+        "Leg_2",
+        "Leg_3"
+      ],
+      "materialNames": [
+        "M_Goat_Coat",
+        "M_Goat_Horns"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/characters/wildlife/peafowl.glb",
+      "size": 6868,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 6868,
+      "actualLength": 6868,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Body",
+        "Neck",
+        "HeadBeak",
+        "SweepingTrain"
+      ],
+      "materialNames": [
+        "M_Peacock_Blue",
+        "M_Emerald_Train",
+        "M_Peacock_Beak"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/mamallapuram/coastal_rock.glb",
+      "size": 1936,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 1936,
+      "actualLength": 1936,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BoulderMass"
+      ],
+      "materialNames": [
+        "M_Pallava_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/mamallapuram/granite_boulder.glb",
+      "size": 1936,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 1936,
+      "actualLength": 1936,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BoulderMass"
+      ],
+      "materialNames": [
+        "M_Pallava_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/nilgiris/forest_path.glb",
+      "size": 2180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2180,
+      "actualLength": 2180,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GrassPatch"
+      ],
+      "materialNames": [
+        "M_Shola_Grass",
+        "M_Red_Hill_Soil"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/nilgiris/grassland.glb",
+      "size": 2180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2180,
+      "actualLength": 2180,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GrassPatch"
+      ],
+      "materialNames": [
+        "M_Shola_Grass",
+        "M_Red_Hill_Soil"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/nilgiris/waterfall.glb",
+      "size": 2180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2180,
+      "actualLength": 2180,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GrassPatch"
+      ],
+      "materialNames": [
+        "M_Shola_Grass",
+        "M_Red_Hill_Soil"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/pichavaram/canal.glb",
+      "size": 3648,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3648,
+      "actualLength": 3648,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MudBankL",
+        "MudBankR"
+      ],
+      "materialNames": [
+        "M_Wet_Canal_Mud"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/environment/pichavaram/mud_bank.glb",
+      "size": 3648,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3648,
+      "actualLength": 3648,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MudBankL",
+        "MudBankR"
+      ],
+      "materialNames": [
+        "M_Wet_Canal_Mud"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/landmarks/chennai/madras_high_court.glb",
+      "size": 19560,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 19560,
+      "actualLength": 19560,
+      "meshes": 12,
+      "nodes": 12,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MainHall",
+        "CentralDomeDrum",
+        "CentralDomeHemisphere",
+        "Minaret_0",
+        "Minaret_Dome_0",
+        "Minaret_1",
+        "Minaret_Dome_1",
+        "Minaret_2",
+        "Minaret_Dome_2",
+        "Minaret_3",
+        "Minaret_Dome_3",
+        "ArchedPortico"
+      ],
+      "materialNames": [
+        "M_RedBrick_IndoSaracenic",
+        "M_White_Dome_Marble",
+        "M_Golden_Sandstone_Arch"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/landmarks/mamallapuram/shore_temple.glb",
+      "size": 18488,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 18488,
+      "actualLength": 18488,
+      "meshes": 11,
+      "nodes": 11,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BedrockBase",
+        "Tier_1",
+        "Tier_2",
+        "Tier_3",
+        "Tier_4",
+        "ShikharaCap",
+        "KalasaFinial",
+        "Nandi_0",
+        "Nandi_1",
+        "Nandi_2",
+        "Nandi_3"
+      ],
+      "materialNames": [
+        "M_Pallava_Weathered_Granite",
+        "M_Coastal_Bedrock"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/landmarks/nilgiris/tea_factory_heritage.glb",
+      "size": 5496,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5496,
+      "actualLength": 5496,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "MainFactoryBlock",
+        "GabledGreenRoof",
+        "FactoryChimney"
+      ],
+      "materialNames": [
+        "M_Colonial_Mountain_Stone",
+        "M_Green_Corrugated_Roof",
+        "M_Chimney_Brick"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/landmarks/pichavaram/mangrove_dock.glb",
+      "size": 13308,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 13308,
+      "actualLength": 13308,
+      "meshes": 9,
+      "nodes": 9,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Deck_Planks",
+        "Piling_0",
+        "Piling_1",
+        "Piling_2",
+        "Piling_3",
+        "Piling_4",
+        "Piling_5",
+        "MooringPost",
+        "CoirRopeWrap"
+      ],
+      "materialNames": [
+        "M_Weathered_Mangrove_Timber",
+        "M_Coir_Rope"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/farm_tools.glb",
+      "size": 3576,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3576,
+      "actualLength": 3576,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Handle",
+        "Blade"
+      ],
+      "materialNames": [
+        "M_Tool_Iron",
+        "M_Tool_Handle"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/forest_sign.glb",
+      "size": 2068,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2068,
+      "actualLength": 2068,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WallSegment"
+      ],
+      "materialNames": [
+        "M_Dry_Stone"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/irrigation_sluice.glb",
+      "size": 2104,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2104,
+      "actualLength": 2104,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "PumpBody"
+      ],
+      "materialNames": [
+        "M_Pump_Green_CastIron"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/paddy_bundle.glb",
+      "size": 1768,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 1768,
+      "actualLength": 1768,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Bundle"
+      ],
+      "materialNames": [
+        "M_Golden_Paddy"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/palm_leaf_basket.glb",
+      "size": 1768,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 1768,
+      "actualLength": 1768,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Bundle"
+      ],
+      "materialNames": [
+        "M_Golden_Paddy"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/stone_wall.glb",
+      "size": 2068,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2068,
+      "actualLength": 2068,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WallSegment"
+      ],
+      "materialNames": [
+        "M_Dry_Stone"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/tea_basket.glb",
+      "size": 1768,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 1768,
+      "actualLength": 1768,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Bundle"
+      ],
+      "materialNames": [
+        "M_Golden_Paddy"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/water_pump.glb",
+      "size": 2104,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2104,
+      "actualLength": 2104,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "PumpBody"
+      ],
+      "materialNames": [
+        "M_Pump_Green_CastIron"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/agriculture/wooden_fence.glb",
+      "size": 2068,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2068,
+      "actualLength": 2068,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WallSegment"
+      ],
+      "materialNames": [
+        "M_Dry_Stone"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/chola_waterwheel.glb",
+      "size": 3780,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3780,
+      "actualLength": 3780,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WheelRim",
+        "AxleShaft"
+      ],
+      "materialNames": [
+        "M_Weathered_Teak_Wheel",
+        "M_Iron_Axle"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/craft/artisan_tools.glb",
+      "size": 3576,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3576,
+      "actualLength": 3576,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Handle",
+        "Blade"
+      ],
+      "materialNames": [
+        "M_Tool_Iron",
+        "M_Tool_Handle"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/craft/bronze_art_object.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/craft/stone_carving_tools.glb",
+      "size": 3576,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3576,
+      "actualLength": 3576,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Handle",
+        "Blade"
+      ],
+      "materialNames": [
+        "M_Tool_Iron",
+        "M_Tool_Handle"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/craft/stone_sculpture.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/agal_lamp.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/ammi_kallu.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/brass_kudam.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/cast_net.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/clay_pot.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/coffee_dabarah.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/korai_mat.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/kuthu_vilakku.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/manai_stool.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/palm_kottan.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/sickle.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/cultural/ural_ulakkai.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/fishing/boat_dock.glb",
+      "size": 2240,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2240,
+      "actualLength": 2240,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "NetFold"
+      ],
+      "materialNames": [
+        "M_Coir_Fibre",
+        "M_Paddle_Wood"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/fishing/fish_crate.glb",
+      "size": 2240,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2240,
+      "actualLength": 2240,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "NetFold"
+      ],
+      "materialNames": [
+        "M_Coir_Fibre",
+        "M_Paddle_Wood"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/fishing/fishing_net.glb",
+      "size": 2240,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2240,
+      "actualLength": 2240,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "NetFold"
+      ],
+      "materialNames": [
+        "M_Coir_Fibre",
+        "M_Paddle_Wood"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/fishing/paddle.glb",
+      "size": 2240,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2240,
+      "actualLength": 2240,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "NetFold"
+      ],
+      "materialNames": [
+        "M_Coir_Fibre",
+        "M_Paddle_Wood"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/fishing/rope.glb",
+      "size": 2240,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2240,
+      "actualLength": 2240,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "NetFold"
+      ],
+      "materialNames": [
+        "M_Coir_Fibre",
+        "M_Paddle_Wood"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/banana_leaf_feast.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/brass_vessels.glb",
+      "size": 5036,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5036,
+      "actualLength": 5036,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Uruli_Wide",
+        "Chembu_Water",
+        "MilkCan_Gunda"
+      ],
+      "materialNames": [
+        "M_Polished_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/curd_rice_plate.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/dosa_plate.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/filter_coffee_tumbler.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/idli_plate.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/pongal_pot.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/sugarcane_bundle.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/sweet_pongal_earthen.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/tea_glass.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/tea_stall.glb",
+      "size": 5460,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5460,
+      "actualLength": 5460,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Counter",
+        "Samovar",
+        "GlassRack"
+      ],
+      "materialNames": [
+        "M_Stall_Wood",
+        "M_Brass_Samovar"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/tender_coconut.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/food/vadai_plate.glb",
+      "size": 2116,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2116,
+      "actualLength": 2116,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "AgalLamp"
+      ],
+      "materialNames": [
+        "M_Brass_Item",
+        "M_Clay_Terracotta",
+        "M_Grinding_Granite"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/household/brass_vessel.glb",
+      "size": 5036,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5036,
+      "actualLength": 5036,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Uruli_Wide",
+        "Chembu_Water",
+        "MilkCan_Gunda"
+      ],
+      "materialNames": [
+        "M_Polished_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/household/clay_pot.glb",
+      "size": 3480,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3480,
+      "actualLength": 3480,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "PotBelly",
+        "PotNeck"
+      ],
+      "materialNames": [
+        "M_Terracotta_Clay"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/household/heritage_furniture.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/household/water_pot.glb",
+      "size": 3480,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3480,
+      "actualLength": 3480,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "PotBelly",
+        "PotNeck"
+      ],
+      "materialNames": [
+        "M_Terracotta_Clay"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/household/wooden_bench.glb",
+      "size": 6532,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 6532,
+      "actualLength": 6532,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BenchSeat",
+        "BackRest",
+        "Leg_-1",
+        "Leg_1"
+      ],
+      "materialNames": [
+        "M_Polished_Teak"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/household/wooden_stool.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/market/flower_cart.glb",
+      "size": 8812,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 8812,
+      "actualLength": 8812,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "CartBed",
+        "Wheel_L",
+        "Wheel_R",
+        "MarigoldHeap",
+        "JasmineHeap"
+      ],
+      "materialNames": [
+        "M_Cart_Timber",
+        "M_Orange_Marigold",
+        "M_White_Malli"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/market/street_sign.glb",
+      "size": 5324,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5324,
+      "actualLength": 5324,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "SignPost",
+        "SignBoard1",
+        "SignBoard2"
+      ],
+      "materialNames": [
+        "M_Iron_Post",
+        "M_Blue_Enamel_Board"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/temple/brass_lamp.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/temple/granite_column.glb",
+      "size": 3800,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3800,
+      "actualLength": 3800,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BaseStone",
+        "PillarShaft"
+      ],
+      "materialNames": [
+        "M_Burma_Teak",
+        "M_Granite_Plinth"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/temple/kuthu_vilakku.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/temple/stone_inscription.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/props/temple/temple_bell.glb",
+      "size": 4844,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 4844,
+      "actualLength": 4844,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LampBase",
+        "Stem",
+        "OilBowl"
+      ],
+      "materialNames": [
+        "M_Sacred_Brass"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vegetation/bushes/tea_hedge.glb",
+      "size": 5260,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5260,
+      "actualLength": 5260,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "StemCluster",
+        "PrunedHedge_Tier0",
+        "PrunedHedge_Tier1"
+      ],
+      "materialNames": [
+        "M_Tea_Leaves_Camellia",
+        "M_Tea_Stem"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vegetation/mangroves/mangrove_cluster.glb",
+      "size": 2180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2180,
+      "actualLength": 2180,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GrassPatch"
+      ],
+      "materialNames": [
+        "M_Shola_Grass",
+        "M_Red_Hill_Soil"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vegetation/shola/shola_tree.glb",
+      "size": 2180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2180,
+      "actualLength": 2180,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GrassPatch"
+      ],
+      "materialNames": [
+        "M_Shola_Grass",
+        "M_Red_Hill_Soil"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vegetation/tea/tea_rows.glb",
+      "size": 2180,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 2180,
+      "actualLength": 2180,
+      "meshes": 1,
+      "nodes": 1,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "GrassPatch"
+      ],
+      "materialNames": [
+        "M_Shola_Grass",
+        "M_Red_Hill_Soil"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vegetation/trees/palmyra_palm.glb",
+      "size": 7100,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 7100,
+      "actualLength": 7100,
+      "meshes": 4,
+      "nodes": 4,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Trunk",
+        "FrondCrown_0",
+        "FrondCrown_1",
+        "FrondCrown_2"
+      ],
+      "materialNames": [
+        "M_Palmyra_Bark",
+        "M_Palmyra_Fronds"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vegetation/trees/rhizophora_mangrove.glb",
+      "size": 10612,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 10612,
+      "actualLength": 10612,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "RootCore",
+        "Stilt_0",
+        "Stilt_1",
+        "Stilt_2",
+        "Canopy_Low",
+        "Canopy_High"
+      ],
+      "materialNames": [
+        "M_Mangrove_Stilt_Root",
+        "M_Mangrove_Glossy_Leaves"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/auto_rickshaw/chennai_auto.glb",
+      "size": 8592,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 8592,
+      "actualLength": 8592,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LowerChassis",
+        "CanvasTop",
+        "FrontWheel",
+        "RearWheel_L",
+        "RearWheel_R"
+      ],
+      "materialNames": [
+        "M_Auto_Yellow_Roof",
+        "M_Auto_Black_Chassis",
+        "M_Rubber_Tire"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/bicycle/old_bicycle.glb",
+      "size": 8712,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 8712,
+      "actualLength": 8712,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "WheelFront",
+        "WheelRear",
+        "TopTube",
+        "DownTube",
+        "Handlebar"
+      ],
+      "materialNames": [
+        "M_Black_Steel_Frame",
+        "M_Bicycle_Rubber"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/boat/fishing_boat.glb",
+      "size": 3940,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 3940,
+      "actualLength": 3940,
+      "meshes": 2,
+      "nodes": 2,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Hull",
+        "Gunwale"
+      ],
+      "materialNames": [
+        "M_Boat_Fiberglass",
+        "M_Orange_Trim"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/boat/wooden_boat.glb",
+      "size": 5464,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5464,
+      "actualLength": 5464,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "HullBottom",
+        "HullSideL",
+        "HullSideR"
+      ],
+      "materialNames": [
+        "M_Boat_Timber"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/boats/mangrove_rowboat.glb",
+      "size": 11812,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 11812,
+      "actualLength": 11812,
+      "meshes": 7,
+      "nodes": 7,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "BoatHull_Bottom",
+        "BoatHull_SideL",
+        "BoatHull_SideR",
+        "BoatSeat_0",
+        "BoatSeat_1",
+        "Oar_Left",
+        "Oar_Right"
+      ],
+      "materialNames": [
+        "M_Teak_Boat_Hull",
+        "M_Oar_Bamboo"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/bullock_cart/bullock_cart.glb",
+      "size": 8852,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 8852,
+      "actualLength": 8852,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "CartBed",
+        "YokeShaft",
+        "WickerCanopy",
+        "Wheel_L",
+        "Wheel_R"
+      ],
+      "materialNames": [
+        "M_Bullock_Cart_Wood",
+        "M_Wicker_Roof"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/bus/city_bus.glb",
+      "size": 10124,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 10124,
+      "actualLength": 10124,
+      "meshes": 6,
+      "nodes": 6,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "LowerBody",
+        "WindowRoofBand",
+        "Wheel_0",
+        "Wheel_1",
+        "Wheel_2",
+        "Wheel_3"
+      ],
+      "materialNames": [
+        "M_Bus_Green_Body",
+        "M_Bus_Cream_Roof",
+        "M_Bus_Tire"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/mangrove_boat.glb",
+      "size": 5464,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 5464,
+      "actualLength": 5464,
+      "meshes": 3,
+      "nodes": 3,
+      "skins": 0,
+      "animations": 0,
+      "materials": 1,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "HullBottom",
+        "HullSideL",
+        "HullSideR"
+      ],
+      "materialNames": [
+        "M_Boat_Timber"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/vehicles/motorcycle/old_motorcycle.glb",
+      "size": 8900,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 8900,
+      "actualLength": 8900,
+      "meshes": 5,
+      "nodes": 5,
+      "skins": 0,
+      "animations": 0,
+      "materials": 3,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Chassis",
+        "FuelTank",
+        "EngineBlock",
+        "WheelFront",
+        "WheelRear"
+      ],
+      "materialNames": [
+        "M_Vintage_Black",
+        "M_Chrome_Engine",
+        "M_Motorcycle_Tire"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    },
+    {
+      "path": "assets/wildlife/nilgiri_tahr.glb",
+      "size": 12260,
+      "validContainer": true,
+      "version": 2,
+      "declaredLength": 12260,
+      "actualLength": 12260,
+      "meshes": 8,
+      "nodes": 8,
+      "skins": 0,
+      "animations": 0,
+      "materials": 2,
+      "textures": 0,
+      "images": 0,
+      "embeddedImages": 0,
+      "externalImageUris": [],
+      "animationNames": [],
+      "meshNames": [
+        "Torso",
+        "NeckHead",
+        "Horn_L",
+        "Horn_R",
+        "Leg_0",
+        "Leg_1",
+        "Leg_2",
+        "Leg_3"
+      ],
+      "materialNames": [
+        "M_Tahr_Coarse_Coat",
+        "M_Tahr_Curved_Horns"
+      ],
+      "skeletal": false,
+      "hasXbot": false,
+      "errors": []
+    }
+  ],
+  "duplicateGroups": [
+    {
+      "sha1": "16ea70b32b52e7ceffc9fab9a322e2eed19ef83d",
+      "count": 3,
+      "paths": [
+        "assets/heist.jpg",
+        "assets/title_bg.jpg",
+        "assets/ui/menu/menu-chennai-court-incident.jpg"
+      ],
+      "wastedBytes": 2075910
+    },
+    {
+      "sha1": "38f0517ab539f09b0edad64a4280e095da280232",
+      "count": 2,
+      "paths": [
+        "assets/characters/npcs/reference/turnaround_fisherman.png",
+        "assets/ui/characters/turnaround_fisherman.png"
+      ],
+      "wastedBytes": 1041752
+    },
+    {
+      "sha1": "c8577de4ca0d58d20bd2150b62b71cb1a5ed79e9",
+      "count": 2,
+      "paths": [
+        "assets/tea_kadai.jpg",
+        "assets/ui/menu/menu-delta.jpg"
+      ],
+      "wastedBytes": 1021011
+    },
+    {
+      "sha1": "37a03c0c034298f1dedd1f6cb712e12bc74a3ac0",
+      "count": 2,
+      "paths": [
+        "assets/characters/npcs/reference/turnaround_village_elder.png",
+        "assets/ui/characters/turnaround_village_elder.png"
+      ],
+      "wastedBytes": 988379
+    },
+    {
+      "sha1": "154db3bb10ec18dfe1782e0917428d1b6f8205f8",
+      "count": 2,
+      "paths": [
+        "assets/characters/npcs/reference/turnaround_female_villager.png",
+        "assets/ui/characters/turnaround_female_villager.png"
+      ],
+      "wastedBytes": 976384
+    },
+    {
+      "sha1": "fa8602d86867055f2ec4e8250b876167516d11ad",
+      "count": 2,
+      "paths": [
+        "assets/characters/npcs/reference/tn_npc_lineup_12_characters.png",
+        "assets/ui/characters/tn_npc_lineup_12_characters.png"
+      ],
+      "wastedBytes": 840528
+    },
+    {
+      "sha1": "e896359e5fffa4508a0d59c0295f904c0697684c",
+      "count": 2,
+      "paths": [
+        "assets/characters/npcs/reference/turnaround_tea_estate_worker.jpg",
+        "assets/ui/characters/turnaround_tea_estate_worker.jpg"
+      ],
+      "wastedBytes": 252263
+    },
+    {
+      "sha1": "45d6b074c419925489741905083b78e0d7afbaae",
+      "count": 2,
+      "paths": [
+        "assets/ui/icons/whispering-wilds-icon.png",
+        "assets/ui/logo/whispering-wilds-icon.png"
+      ],
+      "wastedBytes": 196304
+    },
+    {
+      "sha1": "3458986efcca7b38c1e9241ac5cb0e58039092a0",
+      "count": 22,
+      "paths": [
+        "assets/props/cultural/agal_lamp.glb",
+        "assets/props/cultural/ammi_kallu.glb",
+        "assets/props/cultural/brass_kudam.glb",
+        "assets/props/cultural/cast_net.glb",
+        "assets/props/cultural/clay_pot.glb",
+        "assets/props/cultural/coffee_dabarah.glb",
+        "assets/props/cultural/korai_mat.glb",
+        "assets/props/cultural/manai_stool.glb",
+        "assets/props/cultural/palm_kottan.glb",
+        "assets/props/cultural/sickle.glb",
+        "assets/props/cultural/ural_ulakkai.glb",
+        "assets/props/food/banana_leaf_feast.glb",
+        "assets/props/food/curd_rice_plate.glb",
+        "assets/props/food/dosa_plate.glb",
+        "assets/props/food/filter_coffee_tumbler.glb",
+        "assets/props/food/idli_plate.glb",
+        "assets/props/food/pongal_pot.glb",
+        "assets/props/food/sugarcane_bundle.glb",
+        "assets/props/food/sweet_pongal_earthen.glb",
+        "assets/props/food/tea_glass.glb",
+        "assets/props/food/tender_coconut.glb",
+        "assets/props/food/vadai_plate.glb"
+      ],
+      "wastedBytes": 44436
+    },
+    {
+      "sha1": "9c34350e96a1c9392da1b11455785b123c1e7442",
+      "count": 9,
+      "paths": [
+        "assets/props/craft/bronze_art_object.glb",
+        "assets/props/craft/stone_sculpture.glb",
+        "assets/props/cultural/kuthu_vilakku.glb",
+        "assets/props/household/heritage_furniture.glb",
+        "assets/props/household/wooden_stool.glb",
+        "assets/props/temple/brass_lamp.glb",
+        "assets/props/temple/kuthu_vilakku.glb",
+        "assets/props/temple/stone_inscription.glb",
+        "assets/props/temple/temple_bell.glb"
+      ],
+      "wastedBytes": 38752
+    },
+    {
+      "sha1": "d4e39a290acf1cf08e88610c9e2841d8e3a3915f",
+      "count": 2,
+      "paths": [
+        "assets/characters/wildlife/goat.glb",
+        "assets/characters/wildlife/nilgiri-tahr.glb"
+      ],
+      "wastedBytes": 12232
+    },
+    {
+      "sha1": "0fc2125743f4ff65ac4954f087b043726283e3b8",
+      "count": 6,
+      "paths": [
+        "assets/environment/nilgiris/forest_path.glb",
+        "assets/environment/nilgiris/grassland.glb",
+        "assets/environment/nilgiris/waterfall.glb",
+        "assets/vegetation/mangroves/mangrove_cluster.glb",
+        "assets/vegetation/shola/shola_tree.glb",
+        "assets/vegetation/tea/tea_rows.glb"
+      ],
+      "wastedBytes": 10900
+    },
+    {
+      "sha1": "d369ab1191118c4ee2b35d7f3998e5d9373045d3",
+      "count": 2,
+      "paths": [
+        "assets/architecture/thanjavur/heritage_temple_area.glb",
+        "assets/architecture/thanjavur_gopuram.glb"
+      ],
+      "wastedBytes": 10244
+    },
+    {
+      "sha1": "bf6d194b845454c95e97c8ba0d7b24779edb23b6",
+      "count": 5,
+      "paths": [
+        "assets/props/fishing/boat_dock.glb",
+        "assets/props/fishing/fish_crate.glb",
+        "assets/props/fishing/fishing_net.glb",
+        "assets/props/fishing/paddle.glb",
+        "assets/props/fishing/rope.glb"
+      ],
+      "wastedBytes": 8960
+    },
+    {
+      "sha1": "1fa686246c38c4f49f562013a419c7fe850c83dc",
+      "count": 3,
+      "paths": [
+        "assets/architecture/nilgiris/forest_station.glb",
+        "assets/architecture/nilgiris/hill_house.glb",
+        "assets/architecture/sanctuary/botanical_portal.glb"
+      ],
+      "wastedBytes": 7568
+    },
+    {
+      "sha1": "e14fbe4d020041f1d528592a9212be757b90bbd5",
+      "count": 3,
+      "paths": [
+        "assets/architecture/mamallapuram/heritage_structure.glb",
+        "assets/architecture/mamallapuram/stone_workshop.glb",
+        "assets/architecture/thanjavur/artisan_workshop.glb"
+      ],
+      "wastedBytes": 7552
+    },
+    {
+      "sha1": "ed71719efde6fe25890ad9f2c874fb6e10eb9f24",
+      "count": 3,
+      "paths": [
+        "assets/props/agriculture/farm_tools.glb",
+        "assets/props/craft/artisan_tools.glb",
+        "assets/props/craft/stone_carving_tools.glb"
+      ],
+      "wastedBytes": 7152
+    },
+    {
+      "sha1": "09574dbe826ad348ff177046072b75c8cc2f4758",
+      "count": 2,
+      "paths": [
+        "assets/vehicles/boat/wooden_boat.glb",
+        "assets/vehicles/mangrove_boat.glb"
+      ],
+      "wastedBytes": 5464
+    },
+    {
+      "sha1": "676811e2b21821e1adb00e794aa355d3a699162e",
+      "count": 2,
+      "paths": [
+        "assets/props/food/brass_vessels.glb",
+        "assets/props/household/brass_vessel.glb"
+      ],
+      "wastedBytes": 5036
+    },
+    {
+      "sha1": "7c5dc7a7506626f2d9f65af48e352bac3b111ef7",
+      "count": 2,
+      "paths": [
+        "assets/ui/icons/whispering-wilds-icon.svg",
+        "assets/ui/logo/whispering-wilds-icon.svg"
+      ],
+      "wastedBytes": 5031
+    },
+    {
+      "sha1": "347b18632df27e76b22104c4a458e81bf356241e",
+      "count": 3,
+      "paths": [
+        "assets/props/agriculture/forest_sign.glb",
+        "assets/props/agriculture/stone_wall.glb",
+        "assets/props/agriculture/wooden_fence.glb"
+      ],
+      "wastedBytes": 4136
+    },
+    {
+      "sha1": "eca60305f518c5f46e75beb0011f182830ba5eeb",
+      "count": 2,
+      "paths": [
+        "assets/architecture/chettinad/wooden_column.glb",
+        "assets/props/temple/granite_column.glb"
+      ],
+      "wastedBytes": 3800
+    },
+    {
+      "sha1": "f1052a6dbb226bc7a62a97b0e544d353391ee19f",
+      "count": 2,
+      "paths": [
+        "assets/environment/pichavaram/canal.glb",
+        "assets/environment/pichavaram/mud_bank.glb"
+      ],
+      "wastedBytes": 3648
+    },
+    {
+      "sha1": "2c3367bc10e96dd190323a6574fa3c822e79bfe9",
+      "count": 3,
+      "paths": [
+        "assets/props/agriculture/paddy_bundle.glb",
+        "assets/props/agriculture/palm_leaf_basket.glb",
+        "assets/props/agriculture/tea_basket.glb"
+      ],
+      "wastedBytes": 3536
+    },
+    {
+      "sha1": "2eae82daed2c988c94db397311965ebe89b2b992",
+      "count": 2,
+      "paths": [
+        "assets/props/household/clay_pot.glb",
+        "assets/props/household/water_pot.glb"
+      ],
+      "wastedBytes": 3480
+    },
+    {
+      "sha1": "7bd666bf23fa26feca88675bc514aa499b8ac028",
+      "count": 2,
+      "paths": [
+        "assets/props/agriculture/irrigation_sluice.glb",
+        "assets/props/agriculture/water_pump.glb"
+      ],
+      "wastedBytes": 2104
+    },
+    {
+      "sha1": "69822e4ba23a563a374a0128977f04e6702a2bed",
+      "count": 2,
+      "paths": [
+        "assets/environment/mamallapuram/coastal_rock.glb",
+        "assets/environment/mamallapuram/granite_boulder.glb"
+      ],
+      "wastedBytes": 1936
+    }
+  ],
+  "unusedPhysicalAssets": [
+    {
+      "path": "assets/screenshots/test_step1_main_menu.png",
+      "size": 1715925
+    },
+    {
+      "path": "assets/screenshots/test_step4_loading_screen.png",
+      "size": 1674151
+    },
+    {
+      "path": "assets/ui/menu/menu-pichavaram.jpg",
+      "size": 1149476
+    },
+    {
+      "path": "assets/screenshots/gameplay_delta.png",
+      "size": 1094576
+    },
+    {
+      "path": "assets/ui/menu/menu-chennai.jpg",
+      "size": 1094270
+    },
+    {
+      "path": "assets/screenshots/test_step5_3d_gameplay.png",
+      "size": 1084437
+    },
+    {
+      "path": "assets/screenshots/gameplay_chennai.png",
+      "size": 1071160
+    },
+    {
+      "path": "assets/characters/npcs/reference/turnaround_fisherman.png",
+      "size": 1041752
+    },
+    {
+      "path": "assets/ui/characters/turnaround_fisherman.png",
+      "size": 1041752
+    },
+    {
+      "path": "assets/heist.jpg",
+      "size": 1037955
+    },
+    {
+      "path": "assets/title_bg.jpg",
+      "size": 1037955
+    },
+    {
+      "path": "assets/ui/menu/menu-chennai-court-incident.jpg",
+      "size": 1037955
+    },
+    {
+      "path": "assets/tea_kadai.jpg",
+      "size": 1021011
+    },
+    {
+      "path": "assets/ui/menu/menu-delta.jpg",
+      "size": 1021011
+    },
+    {
+      "path": "assets/ui/menu/menu-chettinad.jpg",
+      "size": 1019986
+    },
+    {
+      "path": "assets/characters/npcs/reference/turnaround_village_elder.png",
+      "size": 988379
+    },
+    {
+      "path": "assets/ui/characters/turnaround_village_elder.png",
+      "size": 988379
+    },
+    {
+      "path": "assets/characters/npcs/reference/turnaround_female_villager.png",
+      "size": 976384
+    },
+    {
+      "path": "assets/ui/characters/turnaround_female_villager.png",
+      "size": 976384
+    },
+    {
+      "path": "assets/screenshots/gameplay_mamallapuram.png",
+      "size": 913355
+    },
+    {
+      "path": "assets/screenshots/gameplay_nilgiris.png",
+      "size": 903908
+    },
+    {
+      "path": "assets/ui/menu/menu-mamallapuram.jpg",
+      "size": 892253
+    },
+    {
+      "path": "assets/characters/npcs/reference/tn_npc_lineup_12_characters.png",
+      "size": 840528
+    },
+    {
+      "path": "assets/ui/characters/tn_npc_lineup_12_characters.png",
+      "size": 840528
+    },
+    {
+      "path": "assets/ui/menu/menu-nilgiris.jpg",
+      "size": 828140
+    },
+    {
+      "path": "assets/screenshots/gameplay_chettinad.png",
+      "size": 582755
+    },
+    {
+      "path": "assets/screenshots/gameplay_pichavaram.png",
+      "size": 531143
+    },
+    {
+      "path": "assets/ui/logo/whispering-wilds-logo.png",
+      "size": 402923
+    },
+    {
+      "path": "assets/screenshots/test_step2_character_setup.png",
+      "size": 298813
+    },
+    {
+      "path": "assets/ui/characters/player_3d_screenshot.png",
+      "size": 291467
+    },
+    {
+      "path": "assets/characters/npcs/reference/turnaround_tea_estate_worker.jpg",
+      "size": 252263
+    },
+    {
+      "path": "assets/ui/characters/turnaround_tea_estate_worker.jpg",
+      "size": 252263
+    },
+    {
+      "path": "assets/screenshots/test_step3_prologue_modal.png",
+      "size": 223764
+    },
+    {
+      "path": "assets/ui/icons/whispering-wilds-icon.png",
+      "size": 196304
+    },
+    {
+      "path": "assets/ui/logo/whispering-wilds-icon.png",
+      "size": 196304
+    },
+    {
+      "path": "assets/characters/wildlife/gaur.glb",
+      "size": 19620
+    },
+    {
+      "path": "assets/architecture/chennai/street_row.glb",
+      "size": 19256
+    },
+    {
+      "path": "assets/characters/wildlife/elephant.glb",
+      "size": 17660
+    },
+    {
+      "path": "assets/ui/logo/whispering-wilds-logo.svg",
+      "size": 15511
+    },
+    {
+      "path": "assets/characters/wildlife/cattle.glb",
+      "size": 13560
+    },
+    {
+      "path": "assets/audio/audio-manifest.json",
+      "size": 13453
+    },
+    {
+      "path": "assets/architecture/chennai/market_building.glb",
+      "size": 13012
+    },
+    {
+      "path": "assets/characters/npcs/murugan.glb",
+      "size": 12568
+    },
+    {
+      "path": "assets/characters/wildlife/goat.glb",
+      "size": 12232
+    },
+    {
+      "path": "assets/characters/wildlife/nilgiri-tahr.glb",
+      "size": 12232
+    },
+    {
+      "path": "assets/characters/npcs/meenakshi.glb",
+      "size": 10904
+    },
+    {
+      "path": "assets/architecture/thanjavur/heritage_temple_area.glb",
+      "size": 10244
+    },
+    {
+      "path": "assets/architecture/thanjavur_gopuram.glb",
+      "size": 10244
+    },
+    {
+      "path": "assets/characters/npcs/selvam.glb",
+      "size": 10228
+    },
+    {
+      "path": "assets/vehicles/bus/city_bus.glb",
+      "size": 10124
+    },
+    {
+      "path": "assets/characters/wildlife/nilgiri-langur.glb",
+      "size": 9764
+    },
+    {
+      "path": "assets/characters/npcs/forest-guide.glb",
+      "size": 9012
+    },
+    {
+      "path": "assets/vehicles/motorcycle/old_motorcycle.glb",
+      "size": 8900
+    },
+    {
+      "path": "assets/vehicles/bullock_cart/bullock_cart.glb",
+      "size": 8852
+    },
+    {
+      "path": "assets/props/market/flower_cart.glb",
+      "size": 8812
+    },
+    {
+      "path": "assets/vehicles/bicycle/old_bicycle.glb",
+      "size": 8712
+    },
+    {
+      "path": "assets/architecture/village/cattle_shed.glb",
+      "size": 7668
+    },
+    {
+      "path": "assets/characters/npcs/farmer.glb",
+      "size": 7644
+    },
+    {
+      "path": "assets/characters/wildlife/egret.glb",
+      "size": 7620
+    },
+    {
+      "path": "assets/characters/npcs/fisher.glb",
+      "size": 7508
+    },
+    {
+      "path": "assets/architecture/chennai/old_tamil_house.glb",
+      "size": 7296
+    },
+    {
+      "path": "assets/characters/npcs/artisan.glb",
+      "size": 7196
+    },
+    {
+      "path": "assets/architecture/chennai/electrical_pole.glb",
+      "size": 7036
+    },
+    {
+      "path": "assets/characters/wildlife/peafowl.glb",
+      "size": 6868
+    },
+    {
+      "path": "assets/props/household/wooden_bench.glb",
+      "size": 6532
+    },
+    {
+      "path": "assets/characters/player/CHARACTER_MANIFEST.json",
+      "size": 6320
+    },
+    {
+      "path": "assets/audio/AUDIO_LICENSE_MANIFEST.json",
+      "size": 6206
+    },
+    {
+      "path": "assets/characters/wildlife/kingfisher.glb",
+      "size": 5504
+    },
+    {
+      "path": "assets/vehicles/boat/wooden_boat.glb",
+      "size": 5464
+    },
+    {
+      "path": "assets/vehicles/mangrove_boat.glb",
+      "size": 5464
+    },
+    {
+      "path": "assets/props/food/tea_stall.glb",
+      "size": 5460
+    },
+    {
+      "path": "assets/props/market/street_sign.glb",
+      "size": 5324
+    },
+    {
+      "path": "assets/props/food/brass_vessels.glb",
+      "size": 5036
+    },
+    {
+      "path": "assets/props/household/brass_vessel.glb",
+      "size": 5036
+    },
+    {
+      "path": "assets/ui/icons/whispering-wilds-icon.svg",
+      "size": 5031
+    },
+    {
+      "path": "assets/ui/logo/whispering-wilds-icon.svg",
+      "size": 5031
+    },
+    {
+      "path": "assets/props/craft/bronze_art_object.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/craft/stone_sculpture.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/cultural/kuthu_vilakku.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/household/heritage_furniture.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/household/wooden_stool.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/temple/brass_lamp.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/temple/kuthu_vilakku.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/temple/stone_inscription.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/props/temple/temple_bell.glb",
+      "size": 4844
+    },
+    {
+      "path": "assets/vehicles/boat/fishing_boat.glb",
+      "size": 3940
+    },
+    {
+      "path": "assets/architecture/village/granary.glb",
+      "size": 3840
+    },
+    {
+      "path": "assets/architecture/village/village_house.glb",
+      "size": 3812
+    },
+    {
+      "path": "assets/architecture/chettinad/wooden_column.glb",
+      "size": 3800
+    },
+    {
+      "path": "assets/props/temple/granite_column.glb",
+      "size": 3800
+    },
+    {
+      "path": "assets/architecture/nilgiris/forest_station.glb",
+      "size": 3784
+    },
+    {
+      "path": "assets/architecture/nilgiris/hill_house.glb",
+      "size": 3784
+    },
+    {
+      "path": "assets/architecture/sanctuary/botanical_portal.glb",
+      "size": 3784
+    },
+    {
+      "path": "assets/props/chola_waterwheel.glb",
+      "size": 3780
+    },
+    {
+      "path": "assets/architecture/mamallapuram/heritage_structure.glb",
+      "size": 3776
+    },
+    {
+      "path": "assets/architecture/mamallapuram/stone_workshop.glb",
+      "size": 3776
+    },
+    {
+      "path": "assets/architecture/thanjavur/artisan_workshop.glb",
+      "size": 3776
+    },
+    {
+      "path": "assets/environment/pichavaram/canal.glb",
+      "size": 3648
+    },
+    {
+      "path": "assets/environment/pichavaram/mud_bank.glb",
+      "size": 3648
+    },
+    {
+      "path": "assets/architecture/chettinad/carved_door.glb",
+      "size": 3616
+    },
+    {
+      "path": "assets/props/agriculture/farm_tools.glb",
+      "size": 3576
+    },
+    {
+      "path": "assets/props/craft/artisan_tools.glb",
+      "size": 3576
+    },
+    {
+      "path": "assets/props/craft/stone_carving_tools.glb",
+      "size": 3576
+    },
+    {
+      "path": "assets/props/household/clay_pot.glb",
+      "size": 3480
+    },
+    {
+      "path": "assets/props/household/water_pot.glb",
+      "size": 3480
+    },
+    {
+      "path": "assets/icons/app-icon.svg",
+      "size": 3250
+    },
+    {
+      "path": "assets/props/fishing/boat_dock.glb",
+      "size": 2240
+    },
+    {
+      "path": "assets/props/fishing/fishing_net.glb",
+      "size": 2240
+    },
+    {
+      "path": "assets/props/fishing/fish_crate.glb",
+      "size": 2240
+    },
+    {
+      "path": "assets/props/fishing/paddle.glb",
+      "size": 2240
+    },
+    {
+      "path": "assets/props/fishing/rope.glb",
+      "size": 2240
+    },
+    {
+      "path": "assets/environment/nilgiris/forest_path.glb",
+      "size": 2180
+    },
+    {
+      "path": "assets/environment/nilgiris/grassland.glb",
+      "size": 2180
+    },
+    {
+      "path": "assets/environment/nilgiris/waterfall.glb",
+      "size": 2180
+    },
+    {
+      "path": "assets/vegetation/mangroves/mangrove_cluster.glb",
+      "size": 2180
+    },
+    {
+      "path": "assets/vegetation/shola/shola_tree.glb",
+      "size": 2180
+    },
+    {
+      "path": "assets/vegetation/tea/tea_rows.glb",
+      "size": 2180
+    },
+    {
+      "path": "assets/props/cultural/agal_lamp.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/ammi_kallu.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/brass_kudam.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/cast_net.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/clay_pot.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/coffee_dabarah.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/korai_mat.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/manai_stool.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/palm_kottan.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/sickle.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/cultural/ural_ulakkai.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/banana_leaf_feast.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/curd_rice_plate.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/dosa_plate.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/filter_coffee_tumbler.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/idli_plate.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/pongal_pot.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/sugarcane_bundle.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/sweet_pongal_earthen.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/tea_glass.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/tender_coconut.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/food/vadai_plate.glb",
+      "size": 2116
+    },
+    {
+      "path": "assets/props/agriculture/water_pump.glb",
+      "size": 2104
+    },
+    {
+      "path": "assets/props/agriculture/forest_sign.glb",
+      "size": 2068
+    },
+    {
+      "path": "assets/props/agriculture/stone_wall.glb",
+      "size": 2068
+    },
+    {
+      "path": "assets/props/agriculture/wooden_fence.glb",
+      "size": 2068
+    },
+    {
+      "path": "assets/architecture/chettinad/athangudi_floor.glb",
+      "size": 2040
+    },
+    {
+      "path": "assets/environment/mamallapuram/coastal_rock.glb",
+      "size": 1936
+    },
+    {
+      "path": "assets/environment/mamallapuram/granite_boulder.glb",
+      "size": 1936
+    },
+    {
+      "path": "assets/props/agriculture/paddy_bundle.glb",
+      "size": 1768
+    },
+    {
+      "path": "assets/props/agriculture/palm_leaf_basket.glb",
+      "size": 1768
+    },
+    {
+      "path": "assets/props/agriculture/tea_basket.glb",
+      "size": 1768
+    }
+  ],
+  "records": [
+    {
+      "path": "assets/architecture/chennai/tea_kadai_stall.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/architecture/chennai/tea_kadai_stall.glb",
+      "category": "ARCHITECTURE",
+      "region": "CHENNAI",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 272,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/architecture/chennai/tea_kadai_stall.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 12796,
+        "actualLength": 12796,
+        "meshes": 8,
+        "nodes": 8,
+        "skins": 0,
+        "animations": 0,
+        "materials": 3,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "Stall_Counter",
+          "Tin_Canopy",
+          "Post_0",
+          "Post_1",
+          "Post_2",
+          "Post_3",
+          "Brass_Samovar",
+          "Wooden_Bench"
+        ],
+        "materialNames": [
+          "M_Teak_Weathered",
+          "M_Corrugated_Roof",
+          "M_Brass_Samovar"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/architecture/chettinad/courtyard_mansion.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/architecture/chettinad/courtyard_mansion.glb",
+      "category": "ARCHITECTURE",
+      "region": "CHETTINAD",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 386,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/architecture/chettinad/courtyard_mansion.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 15196,
+        "actualLength": 15196,
+        "meshes": 9,
+        "nodes": 9,
+        "skins": 0,
+        "animations": 0,
+        "materials": 4,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "GroundFloor",
+          "UpperFloor",
+          "Terracotta_Roof",
+          "ThinnaiVeranda",
+          "TeakPillar_0",
+          "TeakPillar_1",
+          "TeakPillar_2",
+          "TeakPillar_3",
+          "CarvedDoorway"
+        ],
+        "materialNames": [
+          "M_EggWhite_Lime_Plaster",
+          "M_Burma_Teak_Pillar",
+          "M_Terracotta_Roof_Tile",
+          "M_Athangudi_Pattern_Tile"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/architecture/delta/irrigation_sluice.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/architecture/delta/irrigation_sluice.glb",
+      "category": "ARCHITECTURE",
+      "region": "DELTA",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 314,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/architecture/delta/irrigation_sluice.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 7180,
+        "actualLength": 7180,
+        "meshes": 4,
+        "nodes": 4,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "Sluice_LeftWall",
+          "Sluice_RightWall",
+          "Sluice_TopCrankBeam",
+          "Iron_Gate"
+        ],
+        "materialNames": [
+          "M_Granite_Sluice",
+          "M_Sluice_IronGate"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/architecture/nilgiris/toda_mund_hut.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/architecture/nilgiris/toda_mund_hut.glb",
+      "category": "ARCHITECTURE",
+      "region": "NILGIRI",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 436,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/architecture/nilgiris/toda_mund_hut.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 7416,
+        "actualLength": 7416,
+        "meshes": 4,
+        "nodes": 4,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "VaultedRoof",
+          "FrontWall",
+          "RearWall",
+          "TinyEntrance"
+        ],
+        "materialNames": [
+          "M_Bamboo_Grass_Thatch",
+          "M_Dry_Stone_Wall"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/characters/npcs/velu.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/characters/npcs/velu.glb",
+      "category": "CHARACTER",
+      "region": null,
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 480,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/characters/npcs/velu.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 9044,
+        "actualLength": 9044,
+        "meshes": 5,
+        "nodes": 5,
+        "skins": 0,
+        "animations": 0,
+        "materials": 4,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "Torso",
+          "Head",
+          "GreyHair",
+          "Veshti",
+          "WalkingStick"
+        ],
+        "materialNames": [
+          "M_Elder_Skin",
+          "M_White_Veshti",
+          "M_LightBrown_Shirt",
+          "M_Grey_Hair"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/characters/player/player.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/characters/player/player.glb",
+      "category": "CHARACTER",
+      "region": null,
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 3,
+      "referenceSourceCount": 3,
+      "referenceSources": [
+        {
+          "source": "scripts/release-verify.js",
+          "line": 29,
+          "system": "UNKNOWN",
+          "registryKey": "playerGlbPath",
+          "inlineFallbackHint": false,
+          "lineText": "const playerGlbPath = path.join(__dirname, '..', 'assets/characters/player/player.glb');"
+        },
+        {
+          "source": "scripts/validate-assets.js",
+          "line": 113,
+          "system": "UNKNOWN",
+          "registryKey": "isPlayerMissing",
+          "inlineFallbackHint": false,
+          "lineText": "const isPlayerMissing = !relativePhysical.has('assets/characters/player/player.glb');"
+        },
+        {
+          "source": "tools/audit-baseline.js",
+          "line": 175,
+          "system": "UNKNOWN",
+          "registryKey": "playerGLBPath",
+          "inlineFallbackHint": false,
+          "lineText": "const playerGLBPath = path.join(ROOT_DIR, 'assets/characters/player/player.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": true,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 43952,
+        "actualLength": 43952,
+        "meshes": 13,
+        "nodes": 22,
+        "skins": 1,
+        "animations": 24,
+        "materials": 7,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [
+          "Player_Idle",
+          "Player_Walk",
+          "Player_Run",
+          "Player_Sprint",
+          "Player_Jump_Start",
+          "Player_Jump",
+          "Player_Fall",
+          "Player_Land",
+          "Player_Interact",
+          "Player_Pickup",
+          "Player_Inspect",
+          "Player_Use_Item",
+          "Player_Crouch_Idle",
+          "Player_Crouch_Walk",
+          "Player_Climb",
+          "Player_Climb_Start",
+          "Player_Climb_Loop",
+          "Player_Climb_End",
+          "Player_Swim",
+          "Player_Sit",
+          "Player_Stand",
+          "Player_Eat",
+          "Player_Drink",
+          "Player_Photo"
+        ],
+        "meshNames": [
+          "Player_Torso_Shirt",
+          "Player_Angavastram",
+          "Player_Head",
+          "Player_Hair",
+          "Player_Eye_Left",
+          "Player_Veshti",
+          "Player_LeftArm",
+          "Player_RightArm",
+          "Player_LeftHand",
+          "Player_RightHand",
+          "Player_LeftSandals",
+          "Player_RightSandals",
+          "Player_CollisionProxy"
+        ],
+        "materialNames": [
+          "M_Skin_Tamil",
+          "M_Veshti_Kasavu",
+          "M_Shirt_Indigo",
+          "M_Hair_Black",
+          "M_Eyes_DarkBrown",
+          "M_Sandals_Leather",
+          "M_Angavastram_Gold"
+        ],
+        "skeletal": true,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/landmarks/chennai/madras_high_court.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/landmarks/chennai/madras_high_court.glb",
+      "category": "ARCHITECTURE",
+      "region": "CHENNAI",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 252,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/landmarks/chennai/madras_high_court.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 19560,
+        "actualLength": 19560,
+        "meshes": 12,
+        "nodes": 12,
+        "skins": 0,
+        "animations": 0,
+        "materials": 3,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "MainHall",
+          "CentralDomeDrum",
+          "CentralDomeHemisphere",
+          "Minaret_0",
+          "Minaret_Dome_0",
+          "Minaret_1",
+          "Minaret_Dome_1",
+          "Minaret_2",
+          "Minaret_Dome_2",
+          "Minaret_3",
+          "Minaret_Dome_3",
+          "ArchedPortico"
+        ],
+        "materialNames": [
+          "M_RedBrick_IndoSaracenic",
+          "M_White_Dome_Marble",
+          "M_Golden_Sandstone_Arch"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/landmarks/mamallapuram/shore_temple.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/landmarks/mamallapuram/shore_temple.glb",
+      "category": "ARCHITECTURE",
+      "region": "MAMALLAPURAM",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 408,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/landmarks/mamallapuram/shore_temple.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 18488,
+        "actualLength": 18488,
+        "meshes": 11,
+        "nodes": 11,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "BedrockBase",
+          "Tier_1",
+          "Tier_2",
+          "Tier_3",
+          "Tier_4",
+          "ShikharaCap",
+          "KalasaFinial",
+          "Nandi_0",
+          "Nandi_1",
+          "Nandi_2",
+          "Nandi_3"
+        ],
+        "materialNames": [
+          "M_Pallava_Weathered_Granite",
+          "M_Coastal_Bedrock"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/landmarks/nilgiris/tea_factory_heritage.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/landmarks/nilgiris/tea_factory_heritage.glb",
+      "category": "ARCHITECTURE",
+      "region": "NILGIRI",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 422,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/landmarks/nilgiris/tea_factory_heritage.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 5496,
+        "actualLength": 5496,
+        "meshes": 3,
+        "nodes": 3,
+        "skins": 0,
+        "animations": 0,
+        "materials": 3,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "MainFactoryBlock",
+          "GabledGreenRoof",
+          "FactoryChimney"
+        ],
+        "materialNames": [
+          "M_Colonial_Mountain_Stone",
+          "M_Green_Corrugated_Roof",
+          "M_Chimney_Brick"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/landmarks/pichavaram/mangrove_dock.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/landmarks/pichavaram/mangrove_dock.glb",
+      "category": "ARCHITECTURE",
+      "region": "PICHAVARAM",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 331,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/landmarks/pichavaram/mangrove_dock.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 13308,
+        "actualLength": 13308,
+        "meshes": 9,
+        "nodes": 9,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "Deck_Planks",
+          "Piling_0",
+          "Piling_1",
+          "Piling_2",
+          "Piling_3",
+          "Piling_4",
+          "Piling_5",
+          "MooringPost",
+          "CoirRopeWrap"
+        ],
+        "materialNames": [
+          "M_Weathered_Mangrove_Timber",
+          "M_Coir_Rope"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/manifest.json",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/manifest.json",
+      "category": "OTHER",
+      "region": null,
+      "extensions": [
+        ".json"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 3,
+      "referenceSourceCount": 2,
+      "referenceSources": [
+        {
+          "source": "scripts/authoritative-asset-audit.js",
+          "line": 540,
+          "system": "UNKNOWN",
+          "registryKey": "man",
+          "inlineFallbackHint": false,
+          "lineText": "const man = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/manifest.json'), 'utf8'));"
+        },
+        {
+          "source": "scripts/authoritative-asset-audit.js",
+          "line": 742,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "L.push('## `assets/manifest.json` cross-check');"
+        },
+        {
+          "source": "tools/audit-baseline.js",
+          "line": 197,
+          "system": "UNKNOWN",
+          "registryKey": "hasAssetManifest",
+          "inlineFallbackHint": false,
+          "lineText": "const hasAssetManifest = fs.existsSync(path.join(ROOT_DIR, 'assets/manifest.json'));"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": true,
+      "glb": null
+    },
+    {
+      "path": "assets/vegetation/bushes/tea_hedge.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/vegetation/bushes/tea_hedge.glb",
+      "category": "VEGETATION",
+      "region": null,
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 447,
+          "system": "UNKNOWN",
+          "registryKey": "matWood",
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/vegetation/bushes/tea_hedge.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 5260,
+        "actualLength": 5260,
+        "meshes": 3,
+        "nodes": 3,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "StemCluster",
+          "PrunedHedge_Tier0",
+          "PrunedHedge_Tier1"
+        ],
+        "materialNames": [
+          "M_Tea_Leaves_Camellia",
+          "M_Tea_Stem"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/vegetation/trees/palmyra_palm.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/vegetation/trees/palmyra_palm.glb",
+      "category": "VEGETATION",
+      "region": null,
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 302,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/vegetation/trees/palmyra_palm.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 7100,
+        "actualLength": 7100,
+        "meshes": 4,
+        "nodes": 4,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "Trunk",
+          "FrondCrown_0",
+          "FrondCrown_1",
+          "FrondCrown_2"
+        ],
+        "materialNames": [
+          "M_Palmyra_Bark",
+          "M_Palmyra_Fronds"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/vegetation/trees/rhizophora_mangrove.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/vegetation/trees/rhizophora_mangrove.glb",
+      "category": "VEGETATION",
+      "region": null,
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 347,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/vegetation/trees/rhizophora_mangrove.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 10612,
+        "actualLength": 10612,
+        "meshes": 6,
+        "nodes": 6,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "RootCore",
+          "Stilt_0",
+          "Stilt_1",
+          "Stilt_2",
+          "Canopy_Low",
+          "Canopy_High"
+        ],
+        "materialNames": [
+          "M_Mangrove_Stilt_Root",
+          "M_Mangrove_Glossy_Leaves"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/vehicles/auto_rickshaw/chennai_auto.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/vehicles/auto_rickshaw/chennai_auto.glb",
+      "category": "VEHICLE",
+      "region": "CHENNAI",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 288,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/vehicles/auto_rickshaw/chennai_auto.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 8592,
+        "actualLength": 8592,
+        "meshes": 5,
+        "nodes": 5,
+        "skins": 0,
+        "animations": 0,
+        "materials": 3,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "LowerChassis",
+          "CanvasTop",
+          "FrontWheel",
+          "RearWheel_L",
+          "RearWheel_R"
+        ],
+        "materialNames": [
+          "M_Auto_Yellow_Roof",
+          "M_Auto_Black_Chassis",
+          "M_Rubber_Tire"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/vehicles/boats/mangrove_rowboat.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/vehicles/boats/mangrove_rowboat.glb",
+      "category": "VEHICLE",
+      "region": null,
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 364,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/vehicles/boats/mangrove_rowboat.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 11812,
+        "actualLength": 11812,
+        "meshes": 7,
+        "nodes": 7,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "BoatHull_Bottom",
+          "BoatHull_SideL",
+          "BoatHull_SideR",
+          "BoatSeat_0",
+          "BoatSeat_1",
+          "Oar_Left",
+          "Oar_Right"
+        ],
+        "materialNames": [
+          "M_Teak_Boat_Hull",
+          "M_Oar_Bamboo"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    },
+    {
+      "path": "assets/wildlife/nilgiri_tahr.glb",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/wildlife/nilgiri_tahr.glb",
+      "category": "CHARACTER",
+      "region": "NILGIRI",
+      "extensions": [
+        ".glb"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "tools/build-production-regional-glbs.js",
+          "line": 465,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "m.saveGLB('assets/wildlife/nilgiri_tahr.glb');"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": false,
+      "glb": {
+        "validContainer": true,
+        "version": 2,
+        "declaredLength": 12260,
+        "actualLength": 12260,
+        "meshes": 8,
+        "nodes": 8,
+        "skins": 0,
+        "animations": 0,
+        "materials": 2,
+        "textures": 0,
+        "images": 0,
+        "embeddedImages": 0,
+        "externalImageUris": [],
+        "animationNames": [],
+        "meshNames": [
+          "Torso",
+          "NeckHead",
+          "Horn_L",
+          "Horn_R",
+          "Leg_0",
+          "Leg_1",
+          "Leg_2",
+          "Leg_3"
+        ],
+        "materialNames": [
+          "M_Tahr_Coarse_Coat",
+          "M_Tahr_Curved_Horns"
+        ],
+        "skeletal": false,
+        "hasXbot": false,
+        "errors": []
+      }
+    }
+  ]
+}

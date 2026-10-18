@@ -1,0 +1,70 @@
+# Module Status CSV — The Whispering Wilds
+
+**Date:** 2026-10-18  
+**Branch:** `scene-regen-review`  
+**Commit:** `b2e8658`  
+
+```csv
+Module,Files,Status,Description,Connected,Tested,Notes
+Boot Scene,"BuildBootScene.cs, 00_Boot.unity",IMPLEMENTED,"Creates Canvas, intro, menu, login UI at runtime",Yes,"Runtime Verified","Scene exists and loads correctly"
+Cinematic Intro,CinematicIntroController.cs (24KB),IMPLEMENTED,"7s intro with unscaled time, skip, safety timeout",Yes,"Runtime Verified","Player.log confirms intro plays and skips"
+Main Menu,"TitleMenuController.cs (11KB), MainMenuAnimator.cs (15KB), MenuButtonAnimator.cs (4.8KB)",IMPLEMENTED,"Login, New Game, Continue, Settings, Quit buttons",Yes,"Runtime Verified","Menu visible in Player.log"
+Settings,"SettingsMenuUI.cs (29KB), SettingsMenuController.cs (13KB)",IMPLEMENTED,"6 tabs: Language, Display, Quality, Audio, Controls, Accessibility",Yes,Code Audit,"Complete implementation with all tabs"
+Login/Account,"LoginUI.cs (13KB), AuthService.cs (19KB)",INTEGRATED,"Sign-in, register, sign-out with CSRF header. Wires CloudSaveManager on login.",Yes,Code Audit,"CloudSaveManager.Configure() called at line 107"
+Game Manager,GameManager.cs (11KB),IMPLEMENTED,"Singleton state machine: Boot → MainMenu → Gameplay → Settings → Pause",Yes,Code Audit,"Core state machine for all game flow"
+Player Movement,"PlayerMovement.cs (16KB), PlayerInputHandler.cs (18KB)",IMPLEMENTED,"Walk, run, sprint, crouch, jump, camera orbit",Yes,Code Audit,"Character controller with animation blending"
+Player Interaction,"PlayerInteractor.cs (3.8KB), IInteractable.cs (0.6KB)",IMPLEMENTED,"E-key interact, range check, prompt display",Yes,Code Audit,"Raycast-based with IInteractable interface"
+Player Appearance,PlayerAppearanceManager.cs (4.7KB),IMPLEMENTED,"5 permanent appearance changes enforced, cultural outfit swaps unrestricted",Yes,Code Audit,"Save system enforces 5-change limit"
+Input Management,"InputManager.cs (6.4KB), InputBindingManager.cs (16KB)",IMPLEMENTED,"Keyboard/mouse and gamepad support, rebinding",Yes,Code Audit,"Full input system integration"
+NPC System,"NPCCharacter.cs, NPCNavigationController.cs, NPCScheduleManager.cs (12 files)",IMPLEMENTED,"11-state FSM, NavMesh integration, daily schedules",Yes,Code Audit,"States: Idle, Patrol, Wander, Interact, Dialogue, Flee, Sleep, Eat, Work, React, Dead"
+Dialogue,DialogueUI.cs (19KB),IMPLEMENTED,"Bilingual dialogue, choices, clue triggers",Yes,Code Audit,"English/Tamil with LocalizationManager"
+NPC Prefabs,"11 prefabs in _Project/Prefabs/Characters/",PARTIAL,"Prefabs exist but NPC GLBs marked as PLACEHOLDER quality",Yes,Code Audit,"CharacterPrefabCatalog.cs marks all as placeholder"
+Campaign Flow,CampaignFlow.cs (9.5KB),IMPLEMENTED,"New Game reset, Continue flow, quest advancement",Yes,Code Audit,"Wired to QuestManager and SaveSystem"
+Quest Management,QuestManager.cs (22KB),IMPLEMENTED,"Quest tracking, objectives, completion logic",Yes,Code Audit,"Full quest system with objectives"
+Investigation,"InvestigationManager.cs (12KB), PuzzleStateStore.cs (3.4KB)",IMPLEMENTED,"Clue discovery, puzzle state tracking",Yes,Code Audit,"Integrated with QuestManager"
+Region Unlocks,"RegionUnlocks.cs (20KB), RegionUnlockManager.cs",IMPLEMENTED,"Clue-gated progression chain across 6 regions",Yes,Code Audit,"Chennai → Pichavaram → Thanjavur → Chettinad → Mamallapuram → Nilgiris"
+Ending,"EndingController.cs (18KB), QuestEndingBridge.cs (4.2KB)",IMPLEMENTED,"4 endings evaluated on final quest completion",Yes,Code Audit,"Multiple outcomes based on player choices"
+Discovery Log,DiscoveryLog.cs (5.9KB),IMPLEMENTED,"Tracks discovered clues and locations",Yes,Code Audit,"Integrated with InvestigationManager"
+Save System,"SaveSystem.cs (32KB), SaveManager.cs (8.6KB), SaveMigrator.cs (5.8KB)",IMPLEMENTED,"v4 schema with migration and corruption recovery",Yes,Code Audit,"Full game state persistence"
+Cloud Saves,CloudSaveManager.cs (247 lines),INTEGRATED,"Configure() called from AuthService.cs:107. BLOCKED for cloud sync — requires Firebase credentials.",Yes,BLOCKED,"Graceful fallback to local-only"
+Firebase Backend,"server/firebase/admin.js, persistence-service.js",PARTIAL,"Routes exist, requires credentials for actual operation",Yes,BLOCKED,"No Firebase service account JSON"
+Multiplayer Client,"RealtimeManager.cs (237 lines), SocketIOClient.cs (535 lines)",IMPLEMENTED,"Full Socket.IO v4 client with WebSocket transport. BLOCKED for runtime testing.",Yes,BLOCKED,"Requires two client instances"
+Multiplayer Server,"server/connection-handler.js, room-manager.js, player-manager.js",IMPLEMENTED,"Socket.IO server, rooms, players, validation",Yes,"Runtime Verified (31/31)","Backend security tests pass"
+Backend Auth,server/auth/ (14 files),IMPLEMENTED,"Login, register, logout, CSRF, session management",Yes,"Runtime Verified (31/31)","All auth endpoints secure"
+Scene Management,RegionalSceneManager.cs (17KB),IMPLEMENTED,"Scene loading and transitions between regions",Yes,Code Audit,"Proper transition effects"
+World Streaming,WorldStreamingManager.cs (14KB),IMPLEMENTED,"Asset streaming on regional transitions",Yes,Code Audit,"Prevents memory spikes"
+Weather/Climate,"WeatherSystem.cs (20KB), RegionalClimateSystem.cs, TimeOfDayManager.cs, WorldTimeSystem.cs",IMPLEMENTED,"Day/night cycle, regional climate per area",Yes,Code Audit,"Weather effects and time system"
+Wildlife,12 scripts in Wildlife/,IMPLEMENTED,"8 species: Nilgiri Tahr, Langur, Elephant, Gaur, Egret, Kingfisher, Peafowl, Cattle, Goat",Yes,Code Audit,"All wildlife models present"
+Vegetation,6 scripts in Vegetation/,IMPLEMENTED,"Dynamic vegetation rendering",Yes,Code Audit,"Vegetation system complete"
+Localization,"LocalizationManager.cs, LocalizedFontProvider.cs",IMPLEMENTED,"265+ keys, English/Tamil bilingual, Noto Sans Tamil font",Yes,"Runtime Verified","Player.log confirms 265 keys loaded"
+Graphics,"GraphicsPerformanceManager.cs, QualityPresetManager.cs, AdaptiveQualityManager.cs",IMPLEMENTED,"HDRP, auto-detection, 5 quality presets, dynamic resolution",Yes,"Runtime Verified","Player.log confirms High tier applied"
+HUD,HUDManager.cs (15KB),IMPLEMENTED,"Health, appearance changes, interaction prompts",Yes,Code Audit,"Complete HUD system"
+Journal,GameplayJournalUI.cs (23KB),IMPLEMENTED,"Discovery log, photo journal, clue history",Yes,Code Audit,"Full journal system"
+State Map,StateMapUI.cs (3KB),IMPLEMENTED,"Tamil Nadu state map with regional travel",Yes,Code Audit,"Shows locked/unlocked regions"
+Vendor UI,VendorUI.cs (13KB),IMPLEMENTED,"Buy/sell interface with stock and currency",Yes,Code Audit,"Integrated with VendorInteraction"
+Economy,"VendorInteraction.cs, VendorUI.cs, NPCWallet.cs",IMPLEMENTED,"Buy/sell, stock management, currency system",Yes,Code Audit,"Complete economy system"
+Inventory,InventoryManager.cs (3 files),IMPLEMENTED,"Item collection, storage, limits",Yes,Code Audit,"Full inventory system"
+Photography,2 files in Photography/,IMPLEMENTED,"Screenshot capture and photo journal",Yes,Code Audit,"Photo system complete"
+Scene Generation,"AssembleAllRegions.cs, AssembleWhisperingWilds.cs, BuildChennaiPopulation.cs",IMPLEMENTED,"Generates all 8 production scenes",Yes,"Runtime Verified","Build pipeline works"
+Build Pipeline,BuildPipelineAutomation.cs,IMPLEMENTED,"LZ4HC compression, 140 MB build output",Yes,"Runtime Verified","Build exists and runs"
+QA Runner,scripts/Run-QaTests.ps1,IMPLEMENTED,"Environment variables, XML parsing, cleanup",Yes,Code Audit,"QA automation complete"
+Unity Tests,"Step50VerticalSliceTests.cs, CampaignProgressionTests.cs",BLOCKED,"112 tests compile but cannot execute — Unity Editor licensing Code 404",Yes,BLOCKED,"Requires interactive Unity Editor"
+GitHub Actions,.github/workflows/*.yml,PARTIAL,"3 workflows exist locally, not pushed (PAT lacks workflow scope)",No,Not Applicable,"Requires PAT with workflow scope"
+GitHub Pages,docs/landing/index.html,PARTIAL,"Landing page exists, deployment not configured",No,Not Applicable,"Requires GitHub Pages configuration"
+```
+
+## Summary
+
+| Status | Count | Modules |
+|--------|-------|---------|
+| ✅ IMPLEMENTED | 35 | Boot, Intro, Menu, Settings, Login, GameManager, Player Movement, Interaction, Appearance, Input, NPC, Dialogue, Campaign, Quest, Investigation, Region Unlocks, Ending, Discovery, Save, Multiplayer Client, Multiplayer Server, Backend Auth, Scene Management, World Streaming, Weather, Wildlife, Vegetation, Localization, Graphics, HUD, Journal, State Map, Vendor UI, Economy, Inventory, Photography, Scene Gen, Build Pipeline, QA Runner |
+| ✅ INTEGRATED | 2 | Login/Account (wires CloudSaveManager), Cloud Saves (configured from AuthService) |
+| ⚠️ PARTIAL | 4 | NPC Prefabs (placeholder quality), Firebase (needs credentials), GitHub Actions (not pushed), GitHub Pages (not configured) |
+| ❌ BLOCKED | 2 | Unity Tests (licensing Code 404), Multiplayer Client runtime (needs two instances) |
+| ❌ MISSING | 0 | — |
+
+## Corrections from Previous Audit (MODULE_STATUS.md, 2026-10-16)
+
+1. **Multiplayer Client** — Changed from ❌ MISSING to ✅ IMPLEMENTED. `SocketIOClient.cs` (535 lines) is a real Socket.IO v4 client.
+2. **Cloud Saves** — Changed from ⚠️ PARTIAL to ✅ INTEGRATED. `Configure()` is called from `AuthService.cs:107`.
+3. **Firebase** — Changed from ⚠️ PARTIAL to ⚠️ PARTIAL (confirmed). Routes exist but credentials missing.
