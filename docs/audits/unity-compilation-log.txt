@@ -1,0 +1,954 @@
+VBCSCompilerPreWarmer: watching VBCSCompiler (PID 8380)
+VBCSCompilerPreWarmer: pre-warm launched (dotnet PID 6560)
+VBCSCompiler prewarm took 185.60 ms
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.6/staging' branch; Version is '6000.6.3f1 (45d8eee7de74) revision 4577518'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Channel LicenseClient-mohan doesn't exist
+OS: 'Windows 11  (10.0.26200) Core' Language: 'en' Physical Memory: 7931 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+System  architecture: x64
+Process architecture: x64
+Date: 2026-10-18T15:36:24Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 25920)
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe
+-projectPath
+C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity
+-batchMode
+-quit
+-logFile
+.\docs\audits\unity-compilation-log.txt
+-executeMethod
+UnityEditor.CompilationPipeline.ScriptCompiler.Compile
+Successfully changed project path to: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity
+C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-remapper-allocator-initial-capacity=32768"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-main-allocator-mimalloc-enabled=1"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+Logging is directed to a specific file, skipping project log.
+Player connection [12944]  Target information:
+
+Player connection [12944]  * "[IP] 10.117.55.197 [Port] 55504 [Flags] 2 [Guid] 567682014 [EditorId] 567682014 [Version] 1048832 [Id] WindowsEditor(7,MTMOHAN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12944] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [12944] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-22048" after 0.5 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+Starting IPC server.
+Waiting for clients to connect on \\.\pipe\Unity-LicenseClient-mohan, press Ctrl-C to exit.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-mohan" at "2026-10-18T15:36:31.3366932Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 25920, path: "C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.3+d7ffd15
+  Session Id:              feabfcae03a74ac28329ae8672bf84ad
+  Correlation Id:          3fdf28611095d8aec491236fc7246872
+  External correlation Id: 6885268836243275061
+  Machine Id:              r8Baj456OclkPBnQzehVz6LSj8k=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-mohan" (connect: 6.56s, validation: 0.62s, handshake: 0.55s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-mohan-notifications" at "2026-10-18T15:36:32.5077761Z"
+[Licensing::Module] Connected to LicensingClient (PId: 25920, launch time: 0.09, total connection time: 7.73s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 13469956654421-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.03
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 7.92s
+[Licensing::Module] Licensing is initialized (took 4.22s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+Initialising UDS system complete:
+  - System type: Client
+  - Resource namespace: 72f986e6b4e9f6af9719a57e840b9c6f
+  - Shared memory size: 1073741824
+  - Command buffer id: 1052576
+  - Command buffer size: 8192
+  - Hashmap size: 4194304
+  - Service connected: false
+Launching Unity Data Store - C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Tools/Unity.DataStore.exe 
+Unity Data Store artifact dir = Library/DataStore, working dir = C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unityActive build profile path: `Assets/Settings/Build Profiles/Windows.asset`
+Unity Data Store running and initialised
+Got setting from build profile YAML, name `m_BuildTarget`, value `19`
+Got setting from build profile YAML, name `m_Subtarget`, value `2`
+Refreshing native plugins compatible for Editor in 9.47 ms, found 0 plugins.
+[Physics::Module] Selected backend (deferred post-plugins).
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Initialize engine version: 6000.6.3f1 (45d8eee7de74)
+[EntityIdStore] init: VM path (explicit commit), pageSize=4096, blockCount=1048576, entitiesPerBlock=256, slots reserved=4294967296 bytes
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: Intel(R) UHD Graphics (ID=0x46d0)
+    Vendor:   Intel
+    VRAM:     3965 MB
+    Driver:   32.0.101.7088
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/BCLExtensions/runtime/netstandard2.1'
+Mono path[2] = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56048
+CodeReloadManager initialized
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.008193 seconds.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:True
+Scripting: successfully reloaded assembly
+- Finished resetting the current domain, in  5.531 seconds
+Domain Reload Profiling: 7270ms
+	BeginReloadAssembly (429ms)
+		CreateAndSetChildDomain (11ms)
+	RebuildCommonClasses (12ms)
+	RebuildNativeTypeToScriptingClass (44ms)
+	initialDomainReloadingComplete (222ms)
+	LoadAllAssembliesAndSetupDomain (1029ms)
+		LoadAssemblies (410ms)
+		TypeCache.Refresh (668ms)
+			TypeCache.ScanAssembly (614ms)
+		AnalyzeDomain (2ms)
+	FinalizeReload (5535ms)
+		SetupLoadedEditorAssemblies (0ms)
+			LogAssemblyErrors (4ms)
+			InitializePlatformSupportModulesInManaged (8ms)
+			BeforeProcessingInitializeOnLoad (360ms)
+			ProcessInitializeOnLoadAttributes (387ms)
+			ProcessInitializeOnLoadMethodAttributes (4004ms)
+			EditorAssembliesLoaded (7ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 79 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.ai.assistant@2.20.0-pre.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ai.assistant@ceb45b7b3ebd)
+    com.unity.ai.inference@2.6.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ai.inference@9a123aee5df7)
+    com.unity.cloud.gltfast@6.20.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.cloud.gltfast@11ddc2436f97)
+    com.unity.collab-proxy@2.13.6 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.collab-proxy@4628d2ba6ea4)
+    com.unity.ide.rider@3.0.38 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ide.rider@1f60b3138684)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.inputsystem@1.20.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.inputsystem@7a4e1a2a8194)
+    com.unity.pipeline@0.8.0-exp.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.pipeline@62c08c808737)
+    com.unity.visualscripting@1.9.12 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.visualscripting@4edfcc09512f)
+    com.unity.xr.management@4.7.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.xr.management@2ad85c7dd480)
+    com.unity.xr.core-utils@2.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.xr.core-utils@a8b900321199)
+    com.unity.xr.legacyinputhelpers@3.0.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.xr.legacyinputhelpers@3f62d634f63b)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.nuget.newtonsoft-json@3.2.2 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.nuget.newtonsoft-json@4dfd81071c64)
+    com.unity.performance.profile-analyzer@1.4.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.performance.profile-analyzer@2bb26871883c)
+    com.unity.testtools.codecoverage@1.3.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.testtools.codecoverage@19a841221620)
+    com.unity.splines@2.9.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.splines@edbe9aefec91)
+    com.unity.dt.app-ui@2.1.11 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.dt.app-ui@cd5609b130ce)
+    com.unity.searcher@4.9.5 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.searcher@a463122f2c00)
+    com.unity.profiling.core@1.0.3 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.profiling.core@8a49f7027d06)
+    com.unity.settings-manager@2.1.1 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.settings-manager@0b8638c5ce86)
+  Built-in packages:
+    com.unity.cinemachine@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.cinemachine@f53aa49b3acc)
+    com.unity.feature.development@1.0.2 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.feature.development@767aadbc6eb7)
+    com.unity.render-pipelines.high-definition@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.render-pipelines.high-definition@8aadf824e504)
+    com.unity.timeline@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.timeline@c56d56b0070b)
+    com.unity.test-framework@1.8.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.test-framework@80f691d4262b)
+    com.unity.ugui@2.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ugui@0727b404f3a0)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.physicscore2d@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.physicscore2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tetgen@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.tetgen)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.timelinefoundation@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.timelinefoundation)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.1.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.ext.nunit@0198eae3b53e)
+    com.unity.render-pipelines.core@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.render-pipelines.core@02d75770e4b3)
+    com.unity.shadergraph@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.shadergraph@1dd0fd24b57e)
+    com.unity.visualeffectgraph@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.visualeffectgraph@3c55eb193cdb)
+    com.unity.render-pipelines.high-definition-config@17.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.render-pipelines.high-definition-config@399121e4b3f1)
+    com.unity.editorcoroutines@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.editorcoroutines@8cd72baa102a)
+    com.unity.burst@2.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.burst@626e66ab421b)
+    com.unity.collections@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.collections@10fff0607388)
+    com.unity.mathematics@1.4.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.mathematics@8306a64d0cd6)
+    com.unity.2d.sprite@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.2d.sprite@26bcb5e737a2)
+    com.unity.graph-authoring@1.0.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.graph-authoring@cfd2588851ee)
+    com.unity.test-framework.performance@6.6.0 (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.unity.test-framework.performance@b6023decb532)
+  Git packages:
+    com.community.antigravity-unity@https://github.com/usmanbutt-dev/antigravity-unity.git (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.community.antigravity-unity@9d13ba48c1e2)
+    com.coplaydev.unity-mcp@https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main (location: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\unity\Library\PackageCache\com.coplaydev.unity-mcp@045e809812a8)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.08 seconds
+Asset Packages/com.community.antigravity-unity/images has no meta file, but it's in an immutable folder. The asset will be ignored.
+Asset Packages/com.community.antigravity-unity/images/hero_banner_2to1.png has no meta file, but it's in an immutable folder. The asset will be ignored.
+[ScriptCompilation] Requested script compilation because: AssetDatabase observed changes in script compilation related files
+Refreshing native plugins compatible for Editor in 41.02 ms, found 5 plugins.
+Starting: C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+DisplayProgressbar: Compiling Scripts
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.runtime.interopservices.windowsruntime has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\NetStandard\Extensions\2.0.0\System.Runtime.InteropServices.WindowsRuntime.dll" in favor of "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\Facades\System.Runtime.InteropServices.WindowsRuntime.dll"
+warn: Unity.ILPP.Runner.PostProcessingAssemblyLoadContext[0]
+      Assembly system.componentmodel.composition has duplicate hint path. Ignoring "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\NetStandard\compat\2.1.0\shims\netfx\System.ComponentModel.Composition.dll" in favor of "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\UnityReferenceAssemblies\unity-4.8-api\System.ComponentModel.Composition.dll"
+ExitCode: 4 Duration: 1s695ms
+Rebuilding DAG because FileSignature timestamp changed: Library/Bee/1900b0aE-inputdata.json
+[1235/1936  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra requires additional run (1.53 seconds), 1 items updated, 1229 evaluated
+Starting: C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\DotNetSdk\dotnet.exe "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\Tools\BuildPipeline\ScriptCompilationBuildProgram.exe" "Library/Bee/1900b0aE.dag.json" "Library/Bee/1900b0aE-inputdata.json" "Library\Bee\buildprogram0.traceevents"
+WorkingDir: C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+ExitCode: 0 Duration: 9s105ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aE.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity
+ExitCode: 0 Duration: 18s
+Finished compiling graph: 1940 nodes, 44918 flattened edges (36614 ToBuild, 326 ToUse), maximum node priority 2291
+[1335/1936  0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+[1912/1936  5s] Csc Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.dll (+2 others)
+Assets\_Project\Scripts\Investigation\InvestigationManager.cs(6,7): warning CS0105: The using directive for 'WhisperingWilds.Gameplay' appeared previously in this namespace
+
+Assets\_Project\Scripts\Core\CampaignFlow.cs(73,30): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\Gameplay\GameplayRegionBootstrap.cs(122,17): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(172,17): warning CS0618: 'Screen.SetResolution(int, int, FullScreenMode, int)' is obsolete: 'SetResolution(int, int, FullScreenMode, int) is obsolete. Use SetResolution(int, int, FullScreenMode, RefreshRate) instead.'
+
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(221,25): warning CS0618: 'Screen.SetResolution(int, int, FullScreenMode, int)' is obsolete: 'SetResolution(int, int, FullScreenMode, int) is obsolete. Use SetResolution(int, int, FullScreenMode, RefreshRate) instead.'
+
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(345,93): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(345,17): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(379,21): warning CS0618: 'Screen.SetResolution(int, int, FullScreenMode, int)' is obsolete: 'SetResolution(int, int, FullScreenMode, int) is obsolete. Use SetResolution(int, int, FullScreenMode, RefreshRate) instead.'
+
+Assets\_Project\Scripts\Physics\AntigravityBodyState.cs(102,46): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\Physics\AntigravityBodyState.cs(101,25): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Physics\AntigravityZoneManager.cs(136,34): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+
+Assets\_Project\Scripts\QA\CharacterRuntimeSmokeTest.cs(424,95): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\CharacterRuntimeSmokeTest.cs(424,23): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAStateMapCapture.cs(405,35): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(175,21): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(175,43): warning CS0618: 'UnityWebRequest.isHttpError' is obsolete: 'UnityWebRequest.isHttpError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ProtocolError) instead.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(177,34): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(389,22): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+
+Assets\_Project\Scripts\QA\QAStateMapCapture.cs(468,34): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(267,21): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(267,43): warning CS0618: 'UnityWebRequest.isHttpError' is obsolete: 'UnityWebRequest.isHttpError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ProtocolError) instead.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(269,34): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(446,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(446,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(456,51): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(456,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(464,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(464,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(358,21): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+
+Assets\_Project\Scripts\Online\AuthService.cs(358,43): warning CS0618: 'UnityWebRequest.isHttpError' is obsolete: 'UnityWebRequest.isHttpError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ProtocolError) instead.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(482,60): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(482,28): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(519,56): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(519,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(229,112): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(229,25): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Player\InputBindingManager.cs(100,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(330,98): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(330,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(363,99): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(363,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\UI\TitleMenuController.cs(84,28): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\UI\TitleMenuController.cs(114,38): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(401,98): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(401,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(492,109): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(492,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1180,24): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1181,24): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(521,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(521,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1267,68): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1267,27): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(533,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(533,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(551,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(551,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(561,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(561,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\UI\GameplayJournalUI.cs(58,21): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(248,104): warning CS0618: 'RenderPipelineSettings.supportMSAA' is obsolete: '#from(2021.2)'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(288,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(288,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\UI\SettingsMenuController.cs(32,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(354,51): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(354,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(401,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(401,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\UI\SettingsMenuController.cs(300,77): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\UI\SettingsMenuController.cs(300,32): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(464,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(464,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(690,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(690,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(713,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(713,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(756,92): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(756,30): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(790,102): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(790,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(806,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(806,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(920,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(920,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(983,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(983,22): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(984,58): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(984,23): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Profiling\PerformanceTelemetryOverlay.cs(20,42): warning CS0414: The field 'PerformanceTelemetryOverlay.toggleKey' is assigned but its value is never used
+
+Assets\_Project\Scripts\NPC\NPCCharacter.cs(81,41): warning CS0414: The field 'NPCCharacter.profession' is assigned but its value is never used
+
+Assets\_Project\Scripts\World\WorldSimulationDebugOverlay.cs(22,42): warning CS0414: The field 'WorldSimulationDebugOverlay.toggleKey' is assigned but its value is never used
+
+Assets\_Project\Scripts\NPC\NPCNavigationController.cs(46,22): warning CS0414: The field 'NPCNavigationController.isRecoveringFromStuck' is assigned but its value is never used
+
+Assets\_Project\Scripts\NPC\NPCActivityAnchor.cs(30,41): warning CS0414: The field 'NPCActivityAnchor.activityPromptTa' is assigned but its value is never used
+
+Assets\_Project\Scripts\Wildlife\WildlifeGroup.cs(13,50): warning CS0414: The field 'WildlifeGroup.species' is assigned but its value is never used
+
+Assets\_Project\Scripts\Wildlife\WildlifeManager.cs(35,38): warning CS0414: The field 'WildlifeManager.poolCapacityPerSpecies' is assigned but its value is never used
+
+Assets\_Project\Scripts\Wildlife\WildlifeNavigationController.cs(33,40): warning CS0414: The field 'WildlifeNavigationController.climbDescentRate' is assigned but its value is never used
+
+Assets\_Project\Scripts\NPC\NPCActivityAnchor.cs(34,39): warning CS0414: The field 'NPCActivityAnchor.lockRotation' is assigned but its value is never used
+
+Assets\_Project\Scripts\Campaign\EndingController.cs(391,40): warning UAC1015: Field 'npcTrustScores' is a dictionary type 'System.Collections.Generic.Dictionary<string, int>' but is missing [SerializeField]. Unity's dictionary serialization backend skips dictionary fields without [SerializeField], even when the field is public. Add [SerializeField] to serialize this field, or [NonSerialized] to make the intent explicit. Refer to the Serialization rules analyzer reference. (https://docs.unity3d.com/Manual/script-serialization-analyzer.html#uac1015)
+
+Assets\_Project\Scripts\Campaign\EndingController.cs(393,32): warning UAC1009: Field 'explorationMilestones' uses an unsupported type 'System.Collections.Generic.HashSet<string>'. Refer to the Serialization rules analyzer reference. (https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization-analyzer.html#uac1009)
+[1913/1936  0s] Csc Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Tests.PlayMode.dll (+2 others)
+Assets\_Project\Tests\PlayMode\CampaignProgressionTests.cs(242,41): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\_Project\Tests\PlayMode\CampaignProgressionTests.cs(1002,28): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+[1914/1936  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/WhisperingWilds.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.dll, with 151 defines and 317 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+1 processor(s) skipped this assembly
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor
+[1915/1936  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/WhisperingWilds.Tests.PlayMode.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Tests.PlayMode.dll, with 151 defines and 292 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+1 processor(s) skipped this assembly
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor
+[1916/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.pdb
+[1917/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.dll
+[1918/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.Tests.PlayMode.dll
+[1919/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.Tests.PlayMode.pdb
+[BUSY       6s] Csc Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Tests.Editor.dll (+2 others)
+[1920/1936  6s] Csc Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Tests.Editor.dll (+2 others)
+[1921/1936  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/WhisperingWilds.Tests.Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Tests.Editor.dll, with 149 defines and 301 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+1 processor(s) skipped this assembly
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor
+[1922/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.Tests.Editor.pdb
+[1923/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.Tests.Editor.dll
+[1924/1936  6s] Csc Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Editor.dll (+2 others)
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(56,75): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(56,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(172,76): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(172,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Editor\World\BuildMamallapuramShore.cs(809,24): warning CS0618: 'StaticEditorFlags.NavigationStatic' is obsolete: 'Enum member StaticEditorFlags.NavigationStatic has been deprecated. The precise selection of the objects is now done using NavMeshBuilder.CollectSources() and NavMeshBuildMarkup.'
+
+Assets\_Project\Scripts\Editor\World\BuildChennaiStreet.cs(95,72): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+
+Assets\_Project\Scripts\Editor\World\BuildChennaiStreet.cs(95,23): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+
+Assets\_Project\Scripts\Editor\World\BuildChennaiPopulation.cs(357,38): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+
+Assets\_Project\Scripts\Editor\World\BuildChettinadMansion.cs(1038,24): warning CS0618: 'StaticEditorFlags.NavigationStatic' is obsolete: 'Enum member StaticEditorFlags.NavigationStatic has been deprecated. The precise selection of the objects is now done using NavMeshBuilder.CollectSources() and NavMeshBuildMarkup.'
+[1925/1936  0s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/WhisperingWilds.Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/WhisperingWilds.Editor.dll, with 149 defines and 326 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+1 processor(s) skipped this assembly
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor
+[1926/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.Editor.dll
+[1927/1936  0s] CopyFiles Library/ScriptAssemblies/WhisperingWilds.Editor.pdb
+[1928/1936  1s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll (+2 others)
+[1929/1936  0s] Csc Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll (+2 others)
+[1930/1936  2s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp-Editor.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp-Editor.dll, with 149 defines and 433 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+1 processor(s) skipped this assembly
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor
+[1931/1936  3s] ILPostProcess Library/Bee/artifacts/1900b0aE.dag/post-processed/Assembly-CSharp.dll (+pdb)
+Processing assembly Library/Bee/artifacts/1900b0aE.dag/Assembly-CSharp.dll, with 151 defines and 409 references
+
+processors: Unity.Jobs.CodeGen.JobsILPostProcessor, Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor, zzzUnity.Burst.CodeGen.BurstILPostProcessor
+
+1 processor(s) skipped this assembly
+
+running Unity.Jobs.CodeGen.JobsILPostProcessor
+
+running Unity.Pipeline.CodeGen.CodeReloadInPlaceILPostProcessor
+[1932/1936  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.dll
+[1933/1936  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp-Editor.pdb
+[1934/1936  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.pdb
+[1935/1936  0s] CopyFiles Library/ScriptAssemblies/Assembly-CSharp.dll
+*** Tundra build success (18.88 seconds), 25 items updated, 1936 evaluated
+Assets\_Project\Scripts\Investigation\InvestigationManager.cs(6,7): warning CS0105: The using directive for 'WhisperingWilds.Gameplay' appeared previously in this namespace
+Assets\_Project\Scripts\Core\CampaignFlow.cs(73,30): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\Gameplay\GameplayRegionBootstrap.cs(122,17): warning CS0618: 'Object.FindObjectOfType<T>(bool)' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(172,17): warning CS0618: 'Screen.SetResolution(int, int, FullScreenMode, int)' is obsolete: 'SetResolution(int, int, FullScreenMode, int) is obsolete. Use SetResolution(int, int, FullScreenMode, RefreshRate) instead.'
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(221,25): warning CS0618: 'Screen.SetResolution(int, int, FullScreenMode, int)' is obsolete: 'SetResolution(int, int, FullScreenMode, int) is obsolete. Use SetResolution(int, int, FullScreenMode, RefreshRate) instead.'
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(345,93): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(345,17): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Display\DisplaySettingsManager.cs(379,21): warning CS0618: 'Screen.SetResolution(int, int, FullScreenMode, int)' is obsolete: 'SetResolution(int, int, FullScreenMode, int) is obsolete. Use SetResolution(int, int, FullScreenMode, RefreshRate) instead.'
+Assets\_Project\Scripts\Physics\AntigravityBodyState.cs(102,46): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\Physics\AntigravityBodyState.cs(101,25): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Physics\AntigravityZoneManager.cs(136,34): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+Assets\_Project\Scripts\QA\CharacterRuntimeSmokeTest.cs(424,95): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\CharacterRuntimeSmokeTest.cs(424,23): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAStateMapCapture.cs(405,35): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\_Project\Scripts\Online\AuthService.cs(175,21): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+Assets\_Project\Scripts\Online\AuthService.cs(175,43): warning CS0618: 'UnityWebRequest.isHttpError' is obsolete: 'UnityWebRequest.isHttpError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ProtocolError) instead.'
+Assets\_Project\Scripts\Online\AuthService.cs(177,34): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(389,22): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+Assets\_Project\Scripts\QA\QAStateMapCapture.cs(468,34): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\_Project\Scripts\Online\AuthService.cs(267,21): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+Assets\_Project\Scripts\Online\AuthService.cs(267,43): warning CS0618: 'UnityWebRequest.isHttpError' is obsolete: 'UnityWebRequest.isHttpError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ProtocolError) instead.'
+Assets\_Project\Scripts\Online\AuthService.cs(269,34): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(446,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(446,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(456,51): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(456,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(464,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(464,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Online\AuthService.cs(358,21): warning CS0618: 'UnityWebRequest.isNetworkError' is obsolete: 'UnityWebRequest.isNetworkError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ConnectionError) instead.'
+Assets\_Project\Scripts\Online\AuthService.cs(358,43): warning CS0618: 'UnityWebRequest.isHttpError' is obsolete: 'UnityWebRequest.isHttpError is deprecated. Use (UnityWebRequest.result == UnityWebRequest.Result.ProtocolError) instead.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(482,60): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(482,28): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(519,56): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(519,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(229,112): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(229,25): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Player\InputBindingManager.cs(100,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(330,98): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(330,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(363,99): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(363,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\UI\TitleMenuController.cs(84,28): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\UI\TitleMenuController.cs(114,38): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(401,98): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(401,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(492,109): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(492,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1180,24): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1181,24): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(521,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(521,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1267,68): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\StandaloneSmokeTest.cs(1267,27): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(533,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(533,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(551,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(551,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(561,105): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\QAVisualDiagnostics.cs(561,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\UI\GameplayJournalUI.cs(58,21): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(248,104): warning CS0618: 'RenderPipelineSettings.supportMSAA' is obsolete: '#from(2021.2)'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(288,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(288,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\UI\SettingsMenuController.cs(32,33): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(354,51): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(354,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(401,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(401,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\UI\SettingsMenuController.cs(300,77): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\UI\SettingsMenuController.cs(300,32): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(464,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(464,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(690,50): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(690,24): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(713,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(713,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(756,92): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(756,30): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(790,102): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(790,26): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsInactive, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(806,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(806,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(920,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(920,29): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(983,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(983,22): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(984,58): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\QA\RuntimeVisualDiagnostics.cs(984,23): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Profiling\PerformanceTelemetryOverlay.cs(20,42): warning CS0414: The field 'PerformanceTelemetryOverlay.toggleKey' is assigned but its value is never used
+Assets\_Project\Scripts\NPC\NPCCharacter.cs(81,41): warning CS0414: The field 'NPCCharacter.profession' is assigned but its value is never used
+Assets\_Project\Scripts\World\WorldSimulationDebugOverlay.cs(22,42): warning CS0414: The field 'WorldSimulationDebugOverlay.toggleKey' is assigned but its value is never used
+Assets\_Project\Scripts\NPC\NPCNavigationController.cs(46,22): warning CS0414: The field 'NPCNavigationController.isRecoveringFromStuck' is assigned but its value is never used
+Assets\_Project\Scripts\NPC\NPCActivityAnchor.cs(30,41): warning CS0414: The field 'NPCActivityAnchor.activityPromptTa' is assigned but its value is never used
+Assets\_Project\Scripts\Wildlife\WildlifeGroup.cs(13,50): warning CS0414: The field 'WildlifeGroup.species' is assigned but its value is never used
+Assets\_Project\Scripts\Wildlife\WildlifeManager.cs(35,38): warning CS0414: The field 'WildlifeManager.poolCapacityPerSpecies' is assigned but its value is never used
+Assets\_Project\Scripts\Wildlife\WildlifeNavigationController.cs(33,40): warning CS0414: The field 'WildlifeNavigationController.climbDescentRate' is assigned but its value is never used
+Assets\_Project\Scripts\NPC\NPCActivityAnchor.cs(34,39): warning CS0414: The field 'NPCActivityAnchor.lockRotation' is assigned but its value is never used
+Assets\_Project\Scripts\Campaign\EndingController.cs(391,40): warning UAC1015: Field 'npcTrustScores' is a dictionary type 'System.Collections.Generic.Dictionary<string, int>' but is missing [SerializeField]. Unity's dictionary serialization backend skips dictionary fields without [SerializeField], even when the field is public. Add [SerializeField] to serialize this field, or [NonSerialized] to make the intent explicit. Refer to the Serialization rules analyzer reference. (https://docs.unity3d.com/Manual/script-serialization-analyzer.html#uac1015)
+Assets\_Project\Scripts\Campaign\EndingController.cs(393,32): warning UAC1009: Field 'explorationMilestones' uses an unsupported type 'System.Collections.Generic.HashSet<string>'. Refer to the Serialization rules analyzer reference. (https://docs.unity3d.com/6000.6/Documentation/Manual/script-serialization-analyzer.html#uac1009)
+Assets\_Project\Tests\PlayMode\CampaignProgressionTests.cs(242,41): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\_Project\Tests\PlayMode\CampaignProgressionTests.cs(1002,28): warning CS0618: 'Object.FindObjectOfType<T>()' is obsolete: 'Object.FindObjectOfType has been deprecated. Use Object.FindAnyObjectByType instead.'
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(56,75): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(56,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(172,76): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\Editor\World\WWLightingSetup.cs(172,31): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Editor\World\BuildMamallapuramShore.cs(809,24): warning CS0618: 'StaticEditorFlags.NavigationStatic' is obsolete: 'Enum member StaticEditorFlags.NavigationStatic has been deprecated. The precise selection of the objects is now done using NavMeshBuilder.CollectSources() and NavMeshBuildMarkup.'
+Assets\_Project\Scripts\Editor\World\BuildChennaiStreet.cs(95,72): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'
+Assets\_Project\Scripts\Editor\World\BuildChennaiStreet.cs(95,23): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'
+Assets\_Project\Scripts\Editor\World\BuildChennaiPopulation.cs(357,38): warning CS0618: 'Object.FindObjectsOfType<T>()' is obsolete: 'Object.FindObjectsOfType has been deprecated. Use Object.FindObjectsByType instead which lets you decide whether you need the results sorted or not.  FindObjectsOfType sorts the results by InstanceID but if you do not need this using FindObjectSortMode.None is considerably faster.'
+Assets\_Project\Scripts\Editor\World\BuildChettinadMansion.cs(1038,24): warning CS0618: 'StaticEditorFlags.NavigationStatic' is obsolete: 'Enum member StaticEditorFlags.NavigationStatic has been deprecated. The precise selection of the objects is now done using NavMeshBuilder.CollectSources() and NavMeshBuildMarkup.'
+AssetDatabase: script compilation time: 33.115519s
+Begin MonoManager ReloadAssembly
+Total cache size 267876876
+Symbol file LoadedFromMemory is not a mono symbol file
+Symbol file LoadedFromMemory is not a mono symbol file
+'Packages/com.unity.render-pipelines.core/Editor/Deprecated.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.render-pipelines.core/Editor/Deprecated.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Editors/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+'Packages/com.unity.cinemachine/Editor/Obsolete/CinemachineVirtualCameraBaseEditor.cs' contains partial class of Unity.Object, exactly 1 of the partial classes needs to be in a file with the same filename. This is to know the one that can be referenced from ie. GameObjects
+Refreshing native plugins compatible for Editor in 37.85 ms, found 5 plugins.
+Native extension for WindowsStandalone target not found
+Native extension for WebGL target not found
+Refreshing native plugins compatible for Editor in 28.78 ms, found 5 plugins.
+Start HTTP server: port:7800
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+[Licensing::Client] Error: Code 404 while processing request (status: Found 0 entitlement groups and 0 free entitlements matching requested entitlement ids)
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Scripting: successfully reloaded assembly
+- Finished resetting the current domain, in 14.544 seconds
+Domain Reload Profiling: 22092ms
+	BeginReloadAssembly (1162ms)
+		DisableScriptedObjects (109ms)
+		CreateAndSetChildDomain (380ms)
+	RebuildCommonClasses (27ms)
+	RebuildNativeTypeToScriptingClass (42ms)
+	initialDomainReloadingComplete (509ms)
+	LoadAllAssembliesAndSetupDomain (5804ms)
+		LoadAssemblies (2578ms)
+		TypeCache.Refresh (2322ms)
+			TypeCache.ScanAssembly (2204ms)
+		AnalyzeDomain (622ms)
+			BuildScriptInfoCaches (569ms)
+			ResolveRequiredComponents (37ms)
+	FinalizeReload (14549ms)
+		SetupLoadedEditorAssemblies (0ms)
+			LogAssemblyErrors (8ms)
+			InitializePlatformSupportModulesInManaged (13ms)
+			BeforeProcessingInitializeOnLoad (1138ms)
+			ProcessInitializeOnLoadAttributes (7033ms)
+			ProcessInitializeOnLoadMethodAttributes (4915ms)
+			AfterProcessingInitializeOnLoad (47ms)
+			EditorAssembliesLoaded (14ms)
+		AwakeInstancesAfterBackupRestoration (131ms)
+Starting new worker id: 0 with log in C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Logs/AssetImportWorkerHW0.log
+Importing 'GUID: 34097da7f6ac607499f539db7608b594 - Path: Assets/_Project/Scenes/02_Chennai_GeorgeTown.unity' with importer (DefaultImporter)
+Imported 'GUID: 34097da7f6ac607499f539db7608b594' -> (Import Result ID: '86407129565467414628533961aba0ef') in 0.151 seconds [static dependencies only]. Details - ImportResultOutputID=409f893b7180b398cd3a257f75959b7c DependenciesID=36b1a6454c8987d81575fa4eb3e02adb StaticDependenciesID=70d164849fba9a7fc09ce676dc6ae401 
+Importing 'GUID: 51f2666730e715144a9bf8cdfa32b25d - Path: Assets/_Project/Art/Materials/Chennai/Road_Asphalt.mat' with importer (NativeFormatImporter)
+Imported 'GUID: 51f2666730e715144a9bf8cdfa32b25d' -> (Import Result ID: '906004b68985b614d3e15d687bc64fda') in 0.040 seconds [static dependencies only]. Details - ImportResultOutputID=6d4b90cb5b5723cdfbbb1fa7dfa167a8 DependenciesID=afe168823be8c63a1c63ee6a776d4011 StaticDependenciesID=883850fd4864b07e510abf6a26311daf 
+Importing 'GUID: a1278203535359a4f86ccbf7a2bc57f4 - Path: Assets/_Project/Art/Materials/Chennai/Sidewalk_Concrete.mat' with importer (NativeFormatImporter)
+Imported 'GUID: a1278203535359a4f86ccbf7a2bc57f4' -> (Import Result ID: 'fd0693536e4174b341b41321b99f7239') in 0.009 seconds [static dependencies only]. Details - ImportResultOutputID=2fbdd45f22faa7d717db886b5734ace1 DependenciesID=caea8b8a00131716c338e8bb12c02291 StaticDependenciesID=addaad188ef3b5e7d552c0cbf3e46ce3 
+Importing 'GUID: 5455e285f530da147a3bc058b2dd0f55 - Path: Assets/_Project/Art/Materials/Chennai/LampHead_Emissive.mat' with importer (NativeFormatImporter)
+Imported 'GUID: 5455e285f530da147a3bc058b2dd0f55' -> (Import Result ID: '88a9429f63c5580c9c0836f13ff595d0') in 0.007 seconds [static dependencies only]. Details - ImportResultOutputID=a8a927d0301b7df250e712695143cc60 DependenciesID=95a3088c314a685d054b046a54693af7 StaticDependenciesID=74a06fce1bafa69f758a0ff1a9d8c081 
+Importing 'GUID: a6d37e1df9ad6a140a4a5a15c8841fea - Path: Assets/_Project/Art/Materials/Chennai/LampPole_Metal.mat' with importer (NativeFormatImporter)
+Imported 'GUID: a6d37e1df9ad6a140a4a5a15c8841fea' -> (Import Result ID: 'e1932853ea3d3b4dca80af4f709d6936') in 0.018 seconds [static dependencies only]. Details - ImportResultOutputID=9343d2613c5f79b1f1e9de84f453579d DependenciesID=0a1134769e358be410572542cd1a3d35 StaticDependenciesID=213e0886fdcaedba9ed445136167542b 
+Importing 'GUID: e7afe0af0a7f603478593b8aa3506498 - Path: Assets/_Project/Art/Materials/Chennai/Drain_Concrete.mat' with importer (NativeFormatImporter)
+Imported 'GUID: e7afe0af0a7f603478593b8aa3506498' -> (Import Result ID: '71229aee5e6db0d10d04d1363a8d9f6d') in 0.006 seconds [static dependencies only]. Details - ImportResultOutputID=770763ea2f831706dea33b1e9e7a1f41 DependenciesID=cb4b7dca00ed6a82739fe67cd0603937 StaticDependenciesID=309171cb0777a83dbeb134f8fdcd34ca 
+Importing 'GUID: 0ad123937b72b884fa738a1111c2ddc7 - Path: Assets/_Project/Art/Characters/Procedural/Materials/M_pallu_red.mat' with importer (NativeFormatImporter)
+Imported 'GUID: 0ad123937b72b884fa738a1111c2ddc7' -> (Import Result ID: 'd1848f18db81ebaacbfa2d0476a550e2') in 0.008 seconds [static dependencies only]. Details - ImportResultOutputID=4b45d3b52f0b7d77242118857b981f30 DependenciesID=1db1eef7efd825a4091f7e4b74036d5c StaticDependenciesID=ccf91b1ed444e95a8f0da4aa225d7511 
+Importing 'GUID: 5bce3594a9a0200498eb9e36e8019426 - Path: Assets/_Project/Art/Characters/Procedural/Materials/M_sari_crimson.mat' with importer (NativeFormatImporter)
+Imported 'GUID: 5bce3594a9a0200498eb9e36e8019426' -> (Import Result ID: '03d05721363bd9d584738f939d5d0996') in 0.008 seconds [static dependencies only]. Details - ImportResultOutputID=8f328a6330fa22028031dd738c1919e7 DependenciesID=1483d061714e9028788c5ea949588121 StaticDependenciesID=bdd0152cc7655018de5fad45b021d3b9 
+Importing 'GUID: 5e88dd0e8a515c840af33338a057fad6 - Path: Assets/_Project/Art/Materials/Chennai/RoadMarking_Paint.mat' with importer (NativeFormatImporter)
+Imported 'GUID: 5e88dd0e8a515c840af33338a057fad6' -> (Import Result ID: '9cde8fac0ea36be9b42092f91b1ae6fc') in 0.008 seconds [static dependencies only]. Details - ImportResultOutputID=77dca9cc28fbac619ab17b7517ce2793 DependenciesID=553a22c770b0bc38965c164857c693dd StaticDependenciesID=971f21c7fc42cfbd4ca96e7ad050ee9a 
+Importing 'GUID: 4ff14961f6862db4f929b62c8e5099c6 - Path: Assets/_Project/Art/Materials/Chennai/Signage_Board.mat' with importer (NativeFormatImporter)
+Imported 'GUID: 4ff14961f6862db4f929b62c8e5099c6' -> (Import Result ID: '6646ff6219fdba0efee4417574e5612c') in 0.006 seconds [static dependencies only]. Details - ImportResultOutputID=76419e83abffbb60ba5642f6d1d5389e DependenciesID=811a44b3d5a040e0b808f37992ec04de StaticDependenciesID=382169b48cc7da0ba46cb56a2303ede1 
+[Antigravity] Project files synchronized.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Community.Antigravity.AntigravityEditor:SyncAll () (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:148)
+Community.Antigravity.AntigravityEditor:SyncIfNeeded (string[],string[],string[],string[],string[]) (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:158)
+UnityEditor.CodeEditorProjectSync:PostprocessSyncProject (string[],string[],string[],string[],string[])
+UnityEditor.AssetPostprocessingInternal:PostprocessAllAssets (string[],string[],string[],string[],string[],bool)
+
+(Filename: ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs Line: 148)
+
+Refreshing native plugins compatible for Editor in 11.21 ms, found 5 plugins.
+
+Asset Pipeline Refresh (id=3e94bbe122527a9428e71937d66da1a2): Total: 68.458 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	(Values over 0.05ms)
+	Summary:
+		Imports: total=10 (actual=10, local cache=0, cache server=0)
+		Asset DB Process Time: managed=15 ms, native=22400 ms
+		Asset DB Callback time: managed=4427 ms, native=148 ms
+		Scripting: domain reloads=1, domain reload time=8041 ms, compile time=33125 ms, other=298 ms
+		Project Asset Count: scripts=2848, non-scripts=6855
+		Asset File Changes: new=0, changed=12, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.285ms
+	InvokePackagesCallback: 104.619ms
+	ApplyChangesToAssetFolders: 4.239ms
+	Scan: 824.014ms
+	Collect global state as custom dependencies: 105.172ms
+	OnSourceAssetsModified: 3.180ms
+	CategorizeScriptCompilationAssets: 653.146ms
+	ProcessAssetsWithTransientArtifactChanges: 673.771ms
+	CategorizeAssets: 3126.059ms
+	CompileScripts: 33124.786ms
+	ImportOutOfDateAssets: 15120.421ms (14667.802ms without children)
+		ImportManagerImport: 307.178ms (16.628ms without children)
+			UpdateCategorizedAssets: 0.362ms
+		ReloadNativeAssets: 0.598ms
+		UnloadImportedAssets: 51.126ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 15.820ms
+		InitializingProgressBar: 1.604ms
+		ImportSchedulerStart: 76.246ms
+	PostProcessAllAssets: 4847.679ms
+		VCAutoAddAssetPostprocess 8.079ms
+		XRBuildSystem.XRAssetImported 6.607ms
+		PostProcessCallbackCreateDeferredMaterials 0.911ms
+		ShaderAssetModifiedCallback 0.175ms
+		RaytracingShaderImportPostprocess 0.141ms
+		SpeedTreeImporter.PostprocessAllAssets 0.107ms
+		LocalizationDatabase.AssetDatabasePostprocessCallback 0.071ms
+		AssemblyValidation.PostprocessAllAssets 0.060ms
+		MonoPostProcessAllAssets: 4818.298ms
+			AssetPostprocessor.OnPostprocessAllAssets 2177.637ms
+			SyncVS.PostprocessSyncProject 404.498ms
+			AssetReferenceReimportMonitor.OnPostprocessAllAssets 192.877ms
+			MaterialPostprocessor.OnPostprocessAllAssets 145.416ms
+			StyleCatalogPostProcessor.OnPostprocessAllAssets 128.384ms
+			AssetCallbacks.OnPostprocessAllAssets 98.877ms
+			HDRenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 89.129ms
+			BuilderAssetPostprocessor.OnPostprocessAllAssets 31.675ms
+			VFXGraphPreprocessor.OnPostprocessAllAssets 16.973ms
+			SpeedTree9Postprocessor.OnPostprocessAllAssets 12.206ms
+			ShaderGraphAssetPostProcessor.OnPostprocessAllAssets 11.823ms
+			AssetChangedListener.OnPostprocessAllAssets 10.740ms
+			GraphRefreshPostprocessor.OnPostprocessAllAssets 10.308ms
+			SpriteSlicePostprocessor.OnPostprocessAllAssets 10.132ms
+			RetainedModeAssetPostprocessor.OnPostprocessAllAssets 9.448ms
+			AssetChangeDetector.OnPostprocessAllAssets 7.630ms
+			WindowAssetPostprocessingWatcher.OnPostprocessAllAssets 6.492ms
+			EditModeScopePostprocessor.OnPostprocessAllAssets 5.855ms
+			UVCSAssetPostprocessor.OnPostprocessAllAssets 3.494ms
+			SpriteEditorTexturePostprocessor.OnPostprocessAllAssets 3.458ms
+			SkillsProjectAssetPostprocessor.OnPostprocessAllAssets 3.391ms
+			RenderPipelineGlobalSettingsPostprocessor.OnPostprocessAllAssets 3.121ms
+			ShaderReflectionAssetPostProcessor.OnPostprocessAllAssets 2.968ms
+			CinemachineSettings.OnPostprocessAllAssets 2.888ms
+			ArtifactBrowserPostProcessor.OnPostprocessAllAssets 2.654ms
+			PostProcessor.OnPostprocessAllAssets 2.540ms
+			InputActionAssetPostprocessor.OnPostprocessAllAssets 2.280ms
+			TextAssetPostProcessor.OnPostprocessAllAssets 1.926ms
+			AudioMixerPostprocessor.OnPostprocessAllAssets 1.872ms
+			DomainReloadProcessor.OnPostprocessAllAssets 1.612ms
+			SamplePostprocessor.OnPostprocessAllAssets 1.561ms
+			TMPro_TexturePostProcessor.OnPostprocessAllAssets 1.512ms
+			ModelAssetProcessor.OnPostprocessAllAssets 1.448ms
+			ReferencedClipsPostProcessor.OnPostprocessAllAssets 1.194ms
+			InputActionJsonNameModifierAssetProcessor.OnPostprocessAllAssets 1.105ms
+			ProjectSettingsPostprocessor.OnPostprocessAllAssets 1.085ms
+			AssetEvents.OnPostprocessAllAssets 1.076ms
+			SpeedTreePostProcessor.OnPostprocessAllAssets 1.073ms
+			TerrainToolbarOverlayPostProcessor.OnPostprocessAllAssets 1.064ms
+			AssetReloadNotifier.OnPostprocessAllAssets 0.951ms
+			ScenarioDriftAssetsTracker.OnPostprocessAllAssets 0.894ms
+			AssetDatabaseCallbacks.OnPostprocessAllAssets 0.704ms
+			ConfigAssetsTracker.OnPostprocessAllAssets 0.655ms
+			AudioContainerPostProcessor.OnPostprocessAllAssets 0.602ms
+			ThemePostprocessor.OnPostprocessAllAssets 0.503ms
+			TrackSelectedAssetsProcessor.OnPostprocessAllAssets 0.495ms
+	PostAssetChangesProfiler: 25.903ms
+	GatherAllCurrentPrimaryImportResultRevisions: 0.960ms
+	UnloadStreamsBegin: 5.456ms
+	PersistCurrentRevisions: 8.026ms
+	GenerateScriptTypeHashes: 13.587ms
+	GenerateScriptTypeSerializationHashes: 20.239ms
+	Untracked: 10111.915ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.06 seconds
+Scanning for USB devices : 20.077ms
+Initializing Unity extensions:
+Asset Pipeline Refresh (id=842932cdc47ad314d9cb6a9fd3d41e98): Total: 0.038 seconds - Initiated by RefreshV2(NoUpdateAssetOptions)
+[Antigravity] Project files synchronized.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Community.Antigravity.AntigravityEditor:SyncAll () (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:148)
+UnityEditor.CodeEditorProjectSync:SyncEditorProject ()
+
+(Filename: ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs Line: 148)
+
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-The Whispering Wilds
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 13223 unused Assets / (35.2 MB). Loaded Objects now: 14231.
+Memory consumption went from 0.79 GB to 0.76 GB.
+Total: 252.955900 ms (FindLiveObjects: 2.995300 ms CreateObjectMapping: 2.869300 ms MarkObjects: 182.466000 ms  DeleteObjects: 62.632100 ms)
+
+executeMethod class 'ScriptCompiler' could not be found.
+Argument was -executeMethod UnityEditor.CompilationPipeline.ScriptCompiler.Compile
+Shut down.
+nchBugReporter] Exiting without the bug reporter. Application will exit with return code 1
+MonoPathRemapper: Attempts to remap: 25427; Successful remaps: 16
+[Licensing::Client] Successfully resolved entitlement details
+Serialized file version minimum: 23, current 23
+Pipeline Server stopped
+Importing 'GUID: 0000000000000000b000000000000000 - Path: ProjectSettings/EditorBuildSettings.asset' with importer (LibraryAssetImporter)
+Imported 'GUID: 0000000000000000b000000000000000' -> (Import Result ID: 'fc82a5d8aa632dfcf2844bd275b3af48') in 0.011 seconds [static dependencies only]. Details - ImportResultOutputID=0a89a5c5f492143e0fa186859e17ba6f DependenciesID=c17da5b91932961bb00d4f8ce92200a0 StaticDependenciesID=37819f8d3d1e0c51919d4ad061d24da1 
+[Antigravity] Project files synchronized.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+Community.Antigravity.AntigravityEditor:SyncAll () (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:148)
+Community.Antigravity.AntigravityEditor:SyncIfNeeded (string[],string[],string[],string[],string[]) (at ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs:158)
+UnityEditor.CodeEditorProjectSync:PostprocessSyncProject (string[],string[],string[],string[],string[])
+UnityEditor.AssetPostprocessingInternal:PostprocessAllAssets (string[],string[],string[],string[],string[],bool)
+
+(Filename: ./Library/PackageCache/com.community.antigravity-unity@9d13ba48c1e2/Editor/AntigravityEditor.cs Line: 148)
+
+Refreshing native plugins compatible for Editor in 23.69 ms, found 5 plugins.
+Asset Pipeline Refresh (id=be8b11632c86a624a9e3ebca7fac9c1d): Total: 0.272 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Worker ready: AssetImportWorkerHW0 0
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-mohan-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-mohan channel disconnected successfully.
+Worker process still running after shutdown timeout - Worker ID: 0, Name: AssetImportWorkerHW0
+Waited for 1 workers to exit gracefully, force killed 1 workers
+WorkerManagerASIO did not receive session closed signal from shut down worker (0/1 closed)
+Lingering sessions upon destruction of worker manager
+Unity Data Store service was successfully shut down
+UDS shutting down local client system
+Shut down UDS service system complete
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+CodeReloadManager destroyed
+abort_threads: Failed aborting id: 00000000000041AC, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 000000000000563C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 000000000000663C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000001DC4, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 00000000000041AC, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 000000000000563C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 000000000000663C, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000001DC4, mono_thread_manage will ignore it
+
+debugger-agent: Unable to listen on 3460
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1792337897443,"processId":22048,"allocatedMemory":21612318,"memoryLabels":[{"Default":228789},{"Permanent":15516},{"NewDelete":94031},{"Thread":4198808},{"Manager":35677},{"VertexData":104},{"Geometry":816},{"Texture":24},{"Shader":854023},{"Material":68},{"GfxDevice":404796},{"Animation":952},{"Audio":1272},{"FreeType":8},{"FontEngine":736},{"Physics":1970},{"Physics2D":16},{"Serialization":16384},{"Input":42840},{"JobScheduler":256},{"TextLib":336},{"Mono":48},{"MonoCode":320},{"ScriptingNativeRuntime":1329800},{"BaseObject":48848},{"Resource":1252},{"Renderer":2408},{"Transform":4685},{"File":4416},{"WebCam":616},{"Culling":32},{"Terrain":11442},{"Wind":24},{"STL":40},{"String":1094440},{"StaticString":3808},{"Utility":2673718},{"Curl":2579},{"PoolAlloc":2984},{"AI":80},{"TypeTree":17269},{"ScriptManager":12656},{"CodeReload":448},{"RuntimeInitializeOnLoadManager":64},{"Sprites":102},{"SpriteAtlas":120},{"GI":7816},{"Director":8296},{"CloudService":7296},{"WebRequest":12148},{"VR":49650},{"SceneManager":608},{"Video":64},{"LazyScriptCache":32},{"Camera":729},{"Secure":2377},{"SerializationCache":9256},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":592},{"Hierarchy":1188},{"UIElements":40},{"CoreStats":14456},{"Identifiers":7152},{"Gui":128},{"EditorUtility":133772},{"VersionControl":8},{"Undo":931},{"AssetDatabase":9840848},{"AssetImporter":40},{"EditorGi":328},{"UnityConnect":40441},{"Upm":1912},{"UpmDiagnostics":8},{"AssetCompliance":96},{"DrivenProperties":72},{"LocalIPC":211},{"ProfilerEditor":9746},{"CoreBusinessMetrics":3600},{"Windowing":456},{"Licensing":1264},{"AssetReference":32},{"IPCStream":32}]}
+~StackAllocator(ALLOC_TEMP_MAIN) m_LastAlloc not NULL. Did you forget to call FreeAllStackAllocations()? To get more information, run app with -diag-temp-memory-leak-validation cmd line argument
