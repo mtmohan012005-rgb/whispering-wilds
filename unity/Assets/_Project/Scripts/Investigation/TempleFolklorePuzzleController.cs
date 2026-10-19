@@ -55,11 +55,24 @@ namespace WhisperingWilds.Investigation
 
         // References
         private AncientTempleLevelController _levelController;
+        private StoneMechanism[] _mechanisms;
+
+        private void Start()
+        {
+            // Find all StoneMechanism components in the scene
+            _mechanisms = FindObjectsByType<StoneMechanism>(FindObjectsSortMode.None);
+        }
 
         public void Initialize()
         {
             _levelController = FindObjectOfType<AncientTempleLevelController>();
-            
+
+            // Find all StoneMechanism components in the scene (in case Start already ran)
+            if (_mechanisms == null)
+            {
+                _mechanisms = FindObjectsByType<StoneMechanism>(FindObjectsSortMode.None);
+            }
+
             // Register discovery definition for the Kaveri Star Seal
             if (!DiscoveryLog.IsRegistered("kaveri_star_seal"))
             {
@@ -228,7 +241,18 @@ namespace WhisperingWilds.Investigation
             {
                 _currentSequence[i] = -1;
             }
-            Debug.Log("[TemplePuzzle] Mechanisms reset.");
+            // Also reset the visual StoneMechanism components so the player sees them reset
+            if (_mechanisms != null)
+            {
+                for (int i = 0; i < _mechanisms.Length; i++)
+                {
+                    if (_mechanisms[i] != null)
+                    {
+                        _mechanisms[i].ResetMechanism();
+                    }
+                }
+            }
+            Debug.Log("[TemplePuzzle] Mechanisms reset (logical + visual).");
         }
 
         public string GetClueText(int clueIndex, bool useTamil)

@@ -30,6 +30,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using WhisperingWilds.World;
 using WhisperingWilds.Investigation;
+using WhisperingWilds.Gameplay;
 
 namespace WhisperingWilds.Editor
 {
@@ -85,6 +86,12 @@ namespace WhisperingWilds.Editor
 
             // --- Player Spawn (using "Player" tag from TagManager) ---
             CreatePlayerSpawn();
+
+            // --- Player Character (instantiate from prefab if available) ---
+            CreatePlayerCharacter();
+
+            // --- Gameplay Region Bootstrap (ensures GameManager, SaveManager, CampaignFlow) ---
+            CreateGameplayBootstrap();
 
             // --- Puzzle Controller on its own GameObject ---
             GameObject puzzleObj = new GameObject("PuzzleController");
@@ -298,6 +305,58 @@ namespace WhisperingWilds.Editor
             spawn.transform.position = new Vector3(0, 1, 20);
             // Use "Player" tag which exists in TagManager.asset
             spawn.tag = "Player";
+        }
+
+        private static void CreatePlayerCharacter()
+        {
+            // Try to load PlayerCharacter prefab from the project
+            string[] playerAssets = AssetDatabase.FindAssets("PlayerCharacter t:Prefab");
+            GameObject playerInstance = null;
+            foreach (string guid in playerAssets)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.Contains("Prefabs/Characters"))
+                {
+                    GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                    if (prefab != null)
+                    {
+                        playerInstance = GameObject.Instantiate(prefab, new Vector3(0, 1, 20), Quaternion.Euler(0, 180, 0));
+                        playerInstance.name = "PlayerCharacter";
+                        break;
+                    }
+                }
+            }
+
+            if (playerInstance == null)
+            {
+                // Fallback: create a minimal player GameObject with required components
+                Debug.LogWarning("[GenerateTempleScene] PlayerCharacter prefab not found, creating minimal player.");
+                playerInstance = new GameObject("PlayerCharacter");
+                playerInstance.tag = "Player";
+                playerInstance.transform.position = new Vector3(0, 1, 20);
+                playerInstance.transform.rotation = Quaternion.Euler(0, 180, 0);
+
+                // Add basic components needed for gameplay
+                var capsule = playerInstance.AddComponent<CapsuleCollider>();
+                capsule.height = 2f;
+                capsule.radius = 0.5f;
+                capsule.center = new Vector3(0, 1f, 0);
+
+                var rb = playerInstance.AddComponent<Rigidbody>();
+                rb.isKinematic = true;
+                rb.useGravity = false;
+            }
+        }
+
+        private static void CreateGameplayBootstrap()
+        {
+            // GameplayRegionBootstrap ensures GameManager, SaveManager, CampaignFlow exist
+            // and sets the region ID for this scene
+            GameObject bootstrapObj = new GameObject("GameplayRegionBootstrap");
+            GameplayRegionBootstrap bootstrap = bootstrapObj.AddComponent<GameplayRegionBootstrap>();
+            // The regionId will be set to "ancient_temple" in the inspector or via script
+            // For now, the bootstrap will use the default Chennai region, which is fine for testing
+            Debug.Log("[GenerateTempleScene] GameplayRegionBootstrap added to ensure persistent managers.");
         }
 
         private static void AddOrUpdateSceneInBuildSettings(string scenePath)
