@@ -1,0 +1,51 @@
+{
+  "report": {
+    "generated": "2026-10-19T15:41:00+05:30",
+    "commit": "59a2800a2065a116817e6bee22623f3e932c247c",
+    "branch": "qa/live-unity-repair-20261019-1537",
+    "unity_version": "6000.6.3f1",
+    "verdict": "PLAYABLE GAME WITH KNOWN GAPS"
+  },
+  "environment": {
+    "os": "Windows 11 Home",
+    "node_version": "v24.19.0",
+    "npm_version": "11.17.0",
+    "unity_editor": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.3f1\\Editor\\Unity.exe",
+    "unity_license": "Active (Unity Personal)"
+  },
+  "tests": {
+    "backend_security": { "result": "PASS", "pass": 30, "skip": 2 },
+    "cloud_save_regression": { "result": "PASS", "pass": 15, "skip": 6 },
+    "game_verification": { "result": "PASS", "pass": 16 },
+    "production_verification": { "result": "PASS", "pass": 6 },
+    "asset_verification": { "result": "PASS", "pass": 36 },
+    "total": { "pass": 5, "fail": 0, "suites": 5 }
+  },
+  "unity": {
+    "compilation": { "errors": 0, "warnings": 229, "compile_time_seconds": 4.54 },
+    "scenes_in_build": 9,
+    "navmesh_assets": 6,
+    "navmesh_verified": false
+  },
+  "blockers": [
+    { "id": 1, "name": "CI Workflows", "type": "USER_ACTION", "detail": "Add workflow scope to GitHub PAT" },
+    { "id": 2, "name": "NPC Quality", "type": "EXTERNAL_ASSET", "detail": "Purchase/create rigged 3D humanoid models" },
+    { "id": 3, "name": "Firebase", "type": "USER_ACTION", "detail": "Create Firebase project, set credentials" },
+    { "id": 4, "name": "NavMesh", "type": "UNITY_EDITOR", "detail": "Bake NavMesh for all regions" },
+    { "id": 5, "name": "Temple 3D", "type": "UNITY_EDITOR", "detail": "Place temple GLB models in Unity Editor" },
+    { "id": 6, "name": "Campaign Test", "type": "HUMAN_OPERATOR", "detail": "Play through all 6 regions manually" }
+  ],
+  "reports": [
+    "EXECUTIVE_SUMMARY.md",
+    "ENVIRONMENT_AND_BASELINE.md",
+    "AUTOMATED_TEST_RESULTS.md",
+    "UNITY_COMPILATION_AND_EDITOR_TESTS.md",
+    "SCENE_NAVMESH_AND_BUILD_RESULTS.md",
+    "GAMEPLAY_FEATURE_MATRIX.md",
+    "ASSET_NPC_AUDIO_LICENSE_GAPS.md",
+    "BACKEND_FIREBASE_MULTIPLAYER_RESULTS.md",
+    "HUMAN_CAMPAIGN_PLAYTHROUGH_RESULTS.md",
+    "FINAL_BLOCKERS_AND_NEXT_ACTIONS.md",
+    "report.json"
+  ]
+}
