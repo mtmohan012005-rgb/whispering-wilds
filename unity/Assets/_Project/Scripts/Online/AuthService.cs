@@ -88,7 +88,9 @@ namespace WhisperingWilds.Online
 
         /// <summary>
         /// Configures CloudSaveManager with the persistence backend after successful sign-in.
-        /// The token provider returns the current session token per-request.
+        /// The token provider returns the current session token per-request. The persistence
+        /// routes use session-based auth (matching /api/auth/login), so the session token
+        /// is the correct credential — no Firebase Auth SDK is required in Unity.
         /// </summary>
         private void ConfigureCloudSaves()
         {
@@ -101,7 +103,8 @@ namespace WhisperingWilds.Online
             // Build the persistence endpoint URL from the auth base URL
             string persistenceUrl = $"{baseUrl.TrimEnd('/')}/api/v1/persistence";
 
-            // Token provider returns the current session token per-request
+            // Token provider returns the current session token per-request.
+            // The persistence routes use session-based auth, so this is the correct token type.
             IdTokenProvider tokenProvider = () => _sessionToken;
 
             CloudSaveManager.Instance.Configure(persistenceUrl, tokenProvider);

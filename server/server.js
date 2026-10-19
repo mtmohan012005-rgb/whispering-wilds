@@ -17,8 +17,6 @@ const authRoutes = require('./auth/auth-routes');
 const profileRoutes = require('./profile/profile-routes');
 const saveRoutes = require('./saves/save-routes');
 const persistenceRoutes = require('./routes/persistence-routes');
-const megaPersistenceRoutes = require('./routes/mega-persistence-routes');
-const megaAdapter = require('./mega/mega-adapter');
 const { socketAuthMiddleware } = require('./auth/auth-middleware');
 const FirebaseAdmin = require('./firebase/admin');
 const authDb = require('./auth/db');
@@ -43,13 +41,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/saves', saveRoutes);
 
-// CANONICAL: Firebase-backed persistence. Requires a verified ID token.
+// CANONICAL: Firebase-backed persistence. Uses session-based auth matching
+// the game login flow (/api/auth/login). The userId is derived server-side
+// from the verified session, never from the client request body.
 app.use('/api/v1/persistence', persistenceRoutes);
-
-// ALTERNATIVE: MEGA Cloud Drive persistence. Uses session-based auth.
-// Mounted alongside Firebase routes; if Firebase is not configured, clients
-// can use this endpoint instead. If MEGA is not configured, it fails closed.
-app.use('/api/v1/mega-persistence', megaPersistenceRoutes);
 
 
 // Health & Readiness Endpoints
@@ -111,13 +106,6 @@ app.get('/ready', async (req, res) => {
     const firebaseProbe = await FirebaseAdmin.probe();
     checks.firebase = firebaseProbe;
     if (!firebaseProbe.ok) ready = false;
-
-    // MEGA Cloud Drive persistence. Reported honestly: when credentials are
-    // absent the service is NOT ready to serve MEGA-based cloud saves.
-    const megaProbe = await megaAdapter.probe();
-    checks.mega = megaProbe;
-    // MEGA is optional — it does not block readiness if Firebase is available
-    // but is reported for transparency.
 
     const authDbReady = authDb.isReady();
     checks.authDb = {
@@ -222,11 +210,6 @@ process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 if (require.main === module) {
-    // Initialize MEGA adapter in the background — non-blocking.
-    // If MEGA is not configured, this silently logs a warning and continues.
-    megaAdapter.initialize().catch((err) => {
-        Logger.warn('[Server] MEGA initialization failed (non-fatal).', { error: err.message });
-    });
     start();
 }
 

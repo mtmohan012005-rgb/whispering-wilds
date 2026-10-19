@@ -9,9 +9,9 @@ using WhisperingWilds.Persistence;
 namespace WhisperingWilds.Online
 {
     /// <summary>
-    /// Supplies a valid Firebase ID token for the signed-in player. ID tokens expire
-    /// (typically hourly), so the token MUST be fetched per request rather than cached
-    /// as a serialized string.
+    /// Returns the current session token for the signed-in player. The persistence
+    /// backend uses session-based auth (matching /api/auth/login), so the session
+    /// token is the correct credential.
     /// </summary>
     public delegate string IdTokenProvider();
 
@@ -71,9 +71,11 @@ namespace WhisperingWilds.Online
         }
 
         /// <summary>
-        /// Supplies the runtime endpoint and ID-token source. Call this once the auth
-        /// layer is ready. In the Editor the endpoint may be a localhost development
-        /// server; in a player build it must be HTTPS and non-loopback.
+        /// Supplies the runtime endpoint and token source. Call this once the auth
+        /// layer is ready. The persistence backend uses session-based auth, so the
+        /// token provider returns the session token from AuthService. In the Editor
+        /// the endpoint may be a localhost development server; in a player build it
+        /// must be HTTPS and non-loopback.
         /// </summary>
         public void Configure(string baseUrl, IdTokenProvider provider)
         {
@@ -103,10 +105,10 @@ namespace WhisperingWilds.Online
                 }
             }
 
-            IsConfigured = idTokenProvider != null;
+            IsConfigured = provider != null;
             if (!IsConfigured)
             {
-                Debug.LogError("[CloudSaveManager] No ID token provider supplied. A signed-in Firebase user is required before cloud sync can authenticate; cloud sync stays disabled.");
+                Debug.LogError("[CloudSaveManager] No token provider supplied. A signed-in user is required before cloud sync can authenticate; cloud sync stays disabled.");
             }
         }
 
@@ -165,6 +167,9 @@ namespace WhisperingWilds.Online
                 return;
             }
 
+            // Send raw GameSaveData — the server wraps it automatically for backwards compatibility.
+            // The server-side persistence-service.js validates checksum, schema version, and
+            // strips privileged fields (currency, achievements, etc.) before persisting.
             StartCoroutine(UploadRoutine(JsonUtility.ToJson(data), "Game save"));
         }
 
@@ -212,7 +217,7 @@ namespace WhisperingWilds.Online
             if (!configurationErrorLogged)
             {
                 configurationErrorLogged = true;
-                Debug.LogWarning("[CloudSaveManager] Cloud sync unavailable (no backend endpoint / no signed-in Firebase user). Continuing with local persistence only.");
+                Debug.LogWarning("[CloudSaveManager] Cloud sync unavailable (no backend endpoint / no signed-in user). Continuing with local persistence only.");
             }
             return false;
         }
@@ -223,7 +228,7 @@ namespace WhisperingWilds.Online
             bool succeeded = false;
             string message = "Unknown error.";
 
-            // Fetch the token per request: Firebase ID tokens are short-lived.
+            // Fetch the session token per request
             string token = null;
             try
             {
@@ -231,7 +236,7 @@ namespace WhisperingWilds.Online
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[CloudSaveManager] ID token provider threw: {ex.Message}");
+                Debug.LogError($"[CloudSaveManager] Token provider threw: {ex.Message}");
             }
 
             if (string.IsNullOrEmpty(token))
@@ -248,6 +253,7 @@ namespace WhisperingWilds.Online
                     request.downloadHandler = new DownloadHandlerBuffer();
                     request.SetRequestHeader("Content-Type", "application/json");
                     request.SetRequestHeader("Authorization", $"Bearer {token}");
+                    request.SetRequestHeader("X-WW-CSRF", "1");
                     request.timeout = Mathf.Max(1, requestTimeoutSeconds);
 
                     yield return request.SendWebRequest();
@@ -319,27 +325,39 @@ namespace WhisperingWilds.Online
                         string json = request.downloadHandler.text;
                         try
                         {
-                            downloadedData = JsonUtility.FromJson<GameSaveData>(json);
-                            if (downloadedData != null)
+                            // The server returns { success: true, save: { ... GameSaveData ... } }
+                            // We need to extract the nested "save" field before deserializing.
+                            string saveJson = ExtractSaveField(json);
+                            if (string.IsNullOrEmpty(saveJson))
                             {
-                                // Basic integrity check: verify the save has a valid schema version
-                                if (downloadedData.schemaVersion > 0)
-                                {
-                                    succeeded = true;
-                                    message = "Cloud save downloaded successfully.";
-                                    Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> Cloud save downloaded (schema v{downloadedData.schemaVersion}).");
-                                }
-                                else
-                                {
-                                    downloadedData = null;
-                                    message = "Downloaded save has invalid schema version.";
-                                    Debug.LogWarning($"[CloudSaveManager] Corrupted cloud save rejected (schema version: {downloadedData.schemaVersion}).");
-                                }
+                                downloadedData = null;
+                                message = "Server response missing 'save' field.";
+                                Debug.LogWarning("[CloudSaveManager] Cloud save response has no 'save' field.");
                             }
                             else
                             {
-                                message = "Failed to deserialize cloud save data.";
-                                Debug.LogWarning("[CloudSaveManager] Cloud save JSON deserialization returned null.");
+                                downloadedData = JsonUtility.FromJson<GameSaveData>(saveJson);
+                                if (downloadedData != null)
+                                {
+                                    // Basic integrity check: verify the save has a valid schema version
+                                    if (downloadedData.schemaVersion > 0)
+                                    {
+                                        succeeded = true;
+                                        message = "Cloud save downloaded successfully.";
+                                        Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> Cloud save downloaded (schema v{downloadedData.schemaVersion}).");
+                                    }
+                                    else
+                                    {
+                                        downloadedData = null;
+                                        message = "Downloaded save has invalid schema version.";
+                                        Debug.LogWarning($"[CloudSaveManager] Corrupted cloud save rejected (schema version: {downloadedData.schemaVersion}).");
+                                    }
+                                }
+                                else
+                                {
+                                    message = "Failed to deserialize cloud save data.";
+                                    Debug.LogWarning("[CloudSaveManager] Cloud save JSON deserialization returned null.");
+                                }
                             }
                         }
                         catch (System.Exception ex)
@@ -364,6 +382,58 @@ namespace WhisperingWilds.Online
 
             IsSyncing = false;
             OnCloudDownloadComplete?.Invoke(succeeded, downloadedData, message);
+        }
+
+        /// <summary>
+        /// Extracts the nested "save" field from the server response wrapper.
+        /// The server returns { success: true, save: { ... }, requestId: "..." }.
+        /// This method finds the JSON object value of the "save" key and returns it.
+        /// </summary>
+        private static string ExtractSaveField(string jsonResponse)
+        {
+            if (string.IsNullOrEmpty(jsonResponse)) return null;
+
+            // Find "save":{...} in the JSON response
+            int saveIndex = jsonResponse.IndexOf("\"save\"");
+            if (saveIndex < 0) return null;
+
+            // Find the colon after "save"
+            int colonIndex = jsonResponse.IndexOf(':', saveIndex + 6);
+            if (colonIndex < 0) return null;
+
+            // Find the opening brace of the save object
+            int braceStart = jsonResponse.IndexOf('{', colonIndex + 1);
+            if (braceStart < 0) return null;
+
+            // Find the matching closing brace by counting nesting
+            int depth = 0;
+            int i = braceStart;
+            while (i < jsonResponse.Length)
+            {
+                char c = jsonResponse[i];
+                if (c == '{') depth++;
+                else if (c == '}')
+                {
+                    depth--;
+                    if (depth == 0)
+                    {
+                        return jsonResponse.Substring(braceStart, i - braceStart + 1);
+                    }
+                }
+                else if (c == '"')
+                {
+                    // Skip string contents to avoid counting braces inside strings
+                    i++;
+                    while (i < jsonResponse.Length && jsonResponse[i] != '"')
+                    {
+                        if (jsonResponse[i] == '\\') i++; // skip escaped char
+                        i++;
+                    }
+                }
+                i++;
+            }
+
+            return null;
         }
     }
 }
