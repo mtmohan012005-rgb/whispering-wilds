@@ -1,0 +1,60 @@
+{
+  "report": "The Whispering Wilds — Full Game Testing Report",
+  "generated": "2026-10-19T15:12:00Z",
+  "commit": "3927489",
+  "branch": "main",
+  "unityVersion": "6000.6.3f1",
+  "verdict": "PLAYABLE GAME WITH KNOWN GAPS",
+  "environment": {
+    "os": "Windows 11 Home 10.0.26200",
+    "nodeJs": "v24.19.0",
+    "npm": "11.17.0",
+    "unityEditor": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.3f1\\Editor\\Unity.exe",
+    "unityLicense": "Active (Unity Personal)"
+  },
+  "build": {
+    "executable": "unity/Build/Windows/TheWhisperingWilds.exe",
+    "exeSize": "0.64 MB",
+    "dataSize": "71.85 MB",
+    "totalSize": "72.49 MB",
+    "scenes": 9,
+    "launchTest": "PASS"
+  },
+  "tests": {
+    "backendSecurity": {"pass": 30, "fail": 0, "skip": 2, "total": 32},
+    "cloudSaveRegression": {"pass": 15, "fail": 0, "skip": 6, "total": 21},
+    "gameVerification": {"pass": 16, "fail": 0, "skip": 0, "total": 16},
+    "productionVerification": {"pass": 6, "fail": 0, "skip": 0, "total": 6},
+    "assetVerification": {"pass": 36, "fail": 0, "skip": 0, "total": 36},
+    "socketIoIntegration": {"pass": 17, "fail": 0, "skip": 0, "total": 17},
+    "totalPass": 132,
+    "totalFail": 0,
+    "totalSkip": 14
+  },
+  "unityCompilation": {
+    "errors": 0,
+    "warnings": 229,
+    "compileTime": "3.69s",
+    "logFile": "docs/audits/unity-compilation-fresh.log"
+  },
+  "blockers": [
+    {"id": 1, "name": "CI Workflows", "severity": "Medium", "canCodeFix": false, "needed": "GitHub PAT workflow scope"},
+    {"id": 2, "name": "NPC Quality", "severity": "High", "canCodeFix": false, "needed": "3D artist models"},
+    {"id": 3, "name": "Firebase Credentials", "severity": "High", "canCodeFix": false, "needed": "Firebase project setup"},
+    {"id": 4, "name": "NavMesh Baking", "severity": "Medium", "canCodeFix": false, "needed": "Unity Editor session"},
+    {"id": 5, "name": "Temple 3D Models", "severity": "Medium", "canCodeFix": false, "needed": "Unity Editor placement"},
+    {"id": 6, "name": "Campaign Playthrough", "severity": "High", "canCodeFix": false, "needed": "Human player"}
+  ],
+  "reports": [
+    "docs/reports/qa/EXECUTIVE_SUMMARY.md",
+    "docs/reports/qa/ENVIRONMENT_AND_BUILD.md",
+    "docs/reports/qa/AUTOMATED_TEST_RESULTS.md",
+    "docs/reports/qa/UNITY_EDITOR_AND_SCENE_RESULTS.md",
+    "docs/reports/qa/GAMEPLAY_FEATURE_MATRIX.md",
+    "docs/reports/qa/ASSET_AND_LICENSE_GAPS.md",
+    "docs/reports/qa/BACKEND_AND_CLOUD_RESULTS.md",
+    "docs/reports/qa/HUMAN_PLAYTHROUGH_RESULTS.md",
+    "docs/reports/qa/FINAL_RELEASE_BLOCKERS.md",
+    "docs/reports/qa/report.json"
+  ]
+}
