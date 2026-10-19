@@ -83,7 +83,14 @@ the local workspace without deleting files or modifying main directly:
 ----------------------------------------------------------------------
 3. BLOCKERS & NEXT STEPS FOR OWNER
 ----------------------------------------------------------------------
-1. Sourcing authentic Tamil Nadu field audio (30 blocked items in manifest).
-2. Provisioning non-production Google Cloud / Firebase service account credentials
+1. GitHub Personal Access Token 'workflow' scope:
+   - Push was rejected because active PAT lacks the 'workflow' scope required
+     to create/update .github/workflows/ files.
+   - Go to: https://github.com/settings/tokens
+   - Check 'workflow' scope and update token.
+   - Run: git push -u origin fix/temple-realism-assets-ci
+2. Sourcing authentic Tamil Nadu field audio (30 blocked items in manifest).
+3. Provisioning non-production Google Cloud / Firebase service account credentials
    in GOOGLE_APPLICATION_CREDENTIALS for live Firestore round-trip tests.
 ======================================================================
+

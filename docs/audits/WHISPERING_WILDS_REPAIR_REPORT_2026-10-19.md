@@ -184,9 +184,21 @@ All deliverables are generated and tracked under `docs/audits/`:
 
 ## 11. Remaining Blockers & Owner Action Items
 
-1. **Production Audio Field Recordings:**
+1. **GitHub Personal Access Token `workflow` Scope:**
+   - The remote rejected pushing `.github/workflows/backend-ci.yml` with: `refusing to allow a Personal Access Token to create or update workflow without 'workflow' scope`.
+   - *Owner Action:*
+     1. Open **[https://github.com/settings/tokens](https://github.com/settings/tokens)**.
+     2. Under **Personal access tokens (classic)**, select the active token for this repository.
+     3. Check the **`workflow`** permission box ("Update GitHub Action workflows").
+     4. Click **Update token** at the bottom.
+     5. Push the repaired branch to GitHub:
+        ```powershell
+        git push -u origin fix/temple-realism-assets-ci
+        ```
+2. **Production Audio Field Recordings:**
    - 30 audio entries in `assets/audio/audio-manifest.json` are marked `BLOCKED`.
    - *Owner Action:* Arrange authentic Tamil Nadu field audio recording (Western Ghats wildlife, traditional Nadaswaram/Veena acoustic sessions, and Tamil voice talent) with verifiable CC0 / CC-BY licensing.
-2. **Live Firebase Firestore Credentials:**
+3. **Live Firebase Firestore Credentials:**
    - Live round-trip cloud save tests are currently skipped.
    - *Owner Action:* Set `GOOGLE_APPLICATION_CREDENTIALS` pointing to a dedicated non-production Firebase service account JSON key to enable live end-to-end cloud save verification in CI or local staging.
+
