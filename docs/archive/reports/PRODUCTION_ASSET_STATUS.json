@@ -1,0 +1,193 @@
+{
+  "manifestVersion": "2.0.0-UNITY6",
+  "generatedAt": "2026-09-29T21:15:00.000Z",
+  "game": "The Whispering Wilds (காட்டு வழி • தடம்)",
+  "engine": "Unity 6000.6.3f1",
+  "renderPipeline": "HDRP 17.7.0",
+  "targetPlatform": "Standalone Windows x64",
+  "totalAuthoredGlbModels": 104,
+  "assets": [
+    {
+      "id": "player_character_glb",
+      "path": "Assets/_Project/Art/Models/Characters/Player/player.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "boneCount": 23,
+      "animationClipCount": 24,
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "PlayerLocomotion / PlayerManager",
+      "status": "READY",
+      "notes": "Full humanoid skeletal rig with 24 authored animation tracks and 5-change permanent ceiling constraint."
+    },
+    {
+      "id": "murugan_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/murugan.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Chennai / Tea Kadai Quest Hub",
+      "status": "READY",
+      "notes": "Tea stall owner with authentic checked lungi and apron."
+    },
+    {
+      "id": "velu_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/velu.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Chennai / Auto Stand Hub",
+      "status": "READY",
+      "notes": "Auto driver in regulation khaki uniform."
+    },
+    {
+      "id": "meenakshi_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/meenakshi.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Chettinad Mansion Hub",
+      "status": "READY",
+      "notes": "Chettinad elder wearing traditional cotton saree."
+    },
+    {
+      "id": "selvam_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/selvam.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Cauvery Delta Hub",
+      "status": "READY",
+      "notes": "Delta paddy farmer with field dhoti and straw hat."
+    },
+    {
+      "id": "artisan_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/artisan.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Thanjavur Bronze & Granite Hub",
+      "status": "READY",
+      "notes": "Thanjavur heritage sculptor."
+    },
+    {
+      "id": "fisher_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/fisher.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Pichavaram Mangrove Hub",
+      "status": "READY",
+      "notes": "Estuary fisherman with cast net and turban."
+    },
+    {
+      "id": "forest_guide_npc_glb",
+      "path": "Assets/_Project/Art/Models/Characters/NPCs/forest-guide.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Nilgiris Sanctuary Hub",
+      "status": "READY",
+      "notes": "Mountain forest ranger and tribal guide."
+    },
+    {
+      "id": "chennai_auto_glb",
+      "path": "Assets/_Project/Art/Models/Vehicles/auto_rickshaw/chennai_auto.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "TrafficSystem / Chennai George Town",
+      "status": "READY",
+      "notes": "Black & yellow Chennai autorickshaw with Fare meter."
+    },
+    {
+      "id": "mtc_city_bus_glb",
+      "path": "Assets/_Project/Art/Models/Vehicles/bus/city_bus.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "TrafficSystem / Chennai George Town",
+      "status": "READY",
+      "notes": "Chennai transit bus."
+    },
+    {
+      "id": "fishing_boat_glb",
+      "path": "Assets/_Project/Art/Models/Vehicles/boat/fishing_boat.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Pichavaram / Mamallapuram",
+      "status": "READY",
+      "notes": "Traditional wooden coastal boat."
+    },
+    {
+      "id": "palmyra_palm_glb",
+      "path": "Assets/_Project/Art/Models/Vegetation/trees/palmyra_palm.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Cauvery Delta / State Map",
+      "status": "READY",
+      "notes": "Tamil Nadu State Tree with fan-shaped foliage."
+    },
+    {
+      "id": "rhizophora_mangrove_glb",
+      "path": "Assets/_Project/Art/Models/Vegetation/trees/rhizophora_mangrove.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Pichavaram Wetlands",
+      "status": "READY",
+      "notes": "Stilt-root tidal mangrove tree."
+    },
+    {
+      "id": "shola_tree_glb",
+      "path": "Assets/_Project/Art/Models/Vegetation/shola/shola_tree.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Nilgiris Sanctuary",
+      "status": "READY",
+      "notes": "Montane cloud forest evergreen tree."
+    },
+    {
+      "id": "tea_rows_glb",
+      "path": "Assets/_Project/Art/Models/Vegetation/tea/tea_rows.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Nilgiris Sanctuary",
+      "status": "READY",
+      "notes": "Contoured tea plantation hedges."
+    },
+    {
+      "id": "nilgiri_tahr_glb",
+      "path": "Assets/_Project/Art/Models/Wildlife/nilgiri_tahr.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "WildlifeManager / Nilgiris",
+      "status": "READY",
+      "notes": "Endangered ungulate native to the Nilgiris."
+    },
+    {
+      "id": "chola_waterwheel_glb",
+      "path": "Assets/_Project/Art/Models/Props/chola_waterwheel.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Cauvery Delta Irrigation",
+      "status": "READY",
+      "notes": "Historic Chola irrigation mechanism."
+    },
+    {
+      "id": "tea_stall_glb",
+      "path": "Assets/_Project/Art/Models/Props/food/tea_stall.glb",
+      "exists": true,
+      "type": "model/gltf-binary",
+      "licenseStatus": "PROPRIETARY_AUTHORED",
+      "usedBy": "Chennai George Town / Murugan Kadai",
+      "status": "READY",
+      "notes": "Authentic roadside wooden tea stall counter."
+    }
+  ]
+}

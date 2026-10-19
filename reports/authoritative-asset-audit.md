@@ -1,6 +1,6 @@
 # Authoritative Asset Audit
 
-Generated `2026-10-18T17:29:41.669Z` by `scripts/authoritative-asset-audit.js` from the working tree at `C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds`.
+Generated `2026-10-18T17:41:22.858Z` by `scripts/authoritative-asset-audit.js` from the working tree at `C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds`.
 
 > This report **supersedes** ASSET_AUDIT_REPORT.json, BUILD_REPORT.json, PRODUCTION_ASSET_STATUS.json, PRODUCTION_3D_ASSET_REPORT.json, DATA_AUDIT_REPORT.json.
 > No figure below is hardcoded; every number is recomputed from the current repository.
