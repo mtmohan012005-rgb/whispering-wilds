@@ -262,9 +262,16 @@ namespace WhisperingWilds.Online
             else
             {
                 string endpoint = $"{persistenceBaseUrl}/saves";
+                
+                // Build the request envelope so the server receives revision and idempotencyKey.
+                // The server wraps raw GameSaveData automatically, but it reads baseRevision
+                // and idempotencyKey from the request body. If we send raw JSON, those fields
+                // are missing and baseRevision defaults to 0, causing stale-revision conflicts.
+                string requestBody = BuildUploadEnvelope(jsonPayload, baseRevision, idempotencyKey);
+                
                 using (UnityWebRequest request = new UnityWebRequest(endpoint, "POST"))
                 {
-                    request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
+                    request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(requestBody));
                     request.downloadHandler = new DownloadHandlerBuffer();
                     request.SetRequestHeader("Content-Type", "application/json");
                     request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -279,9 +286,10 @@ namespace WhisperingWilds.Online
 
                     if (succeeded)
                     {
-                        // Parse the response to extract the revision
+                        // The server returns { success: true, revision: N, savedAt, region, replayed, requestId }
+                        // Parse the top-level "revision" field from the upload response.
                         string response = request.downloadHandler.text;
-                        int newRevision = ParseRevisionFromResponse(response);
+                        int newRevision = ParseRevisionFromUploadResponse(response);
                         if (newRevision > 0)
                         {
                             CurrentCloudRevision = newRevision;
@@ -308,10 +316,11 @@ namespace WhisperingWilds.Online
         }
 
         /// <summary>
-        /// Extracts the "revision" field from the server's JSON response.
+        /// Extracts the "revision" field from the upload response.
+        /// The upload response is { success: true, revision: N, savedAt, region, replayed, requestId }.
         /// Returns 0 if the field is not found or the response is malformed.
         /// </summary>
-        private static int ParseRevisionFromResponse(string jsonResponse)
+        private static int ParseRevisionFromUploadResponse(string jsonResponse)
         {
             if (string.IsNullOrEmpty(jsonResponse)) return 0;
             int index = jsonResponse.IndexOf("\"revision\"");
@@ -376,26 +385,33 @@ namespace WhisperingWilds.Online
                         string json = request.downloadHandler.text;
                         try
                         {
-                            // The server returns { success: true, save: { ... GameSaveData ... } }
-                            // We need to extract the nested "save" field before deserializing.
-                            string saveJson = ExtractSaveField(json);
-                            if (string.IsNullOrEmpty(saveJson))
+                            // The server returns { success: true, save: { data: {...}, revision: N, ... }, requestId: "..." }
+                            // The actual GameSaveData is nested in save.data, not in save itself.
+                            // We extract save.data and update CurrentCloudRevision from save.revision.
+                            string dataJson = ExtractSaveDataField(json);
+                            if (string.IsNullOrEmpty(dataJson))
                             {
                                 downloadedData = null;
-                                message = "Server response missing 'save' field.";
-                                Debug.LogWarning("[CloudSaveManager] Cloud save response has no 'save' field.");
+                                message = "Server response missing 'save.data' field.";
+                                Debug.LogWarning("[CloudSaveManager] Cloud save response has no 'save.data' field.");
                             }
                             else
                             {
-                                downloadedData = JsonUtility.FromJson<GameSaveData>(saveJson);
+                                downloadedData = JsonUtility.FromJson<GameSaveData>(dataJson);
                                 if (downloadedData != null)
                                 {
                                     // Basic integrity check: verify the save has a valid schema version
                                     if (downloadedData.schemaVersion > 0)
                                     {
+                                        // Update CurrentCloudRevision from the downloaded save's revision
+                                        int downloadedRevision = ExtractRevisionFromSave(json);
+                                        if (downloadedRevision > 0)
+                                        {
+                                            CurrentCloudRevision = downloadedRevision;
+                                        }
                                         succeeded = true;
                                         message = "Cloud save downloaded successfully.";
-                                        Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> Cloud save downloaded (schema v{downloadedData.schemaVersion}).");
+                                        Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> Cloud save downloaded (schema v{downloadedData.schemaVersion}, revision {CurrentCloudRevision}).");
                                     }
                                     else
                                     {
@@ -436,11 +452,48 @@ namespace WhisperingWilds.Online
         }
 
         /// <summary>
-        /// Extracts the nested "save" field from the server response wrapper.
-        /// The server returns { success: true, save: { ... }, requestId: "..." }.
-        /// This method finds the JSON object value of the "save" key and returns it.
+        /// Builds the upload request envelope that includes revision and idempotencyKey.
+        /// The server wraps raw GameSaveData automatically, but it reads baseRevision
+        /// and idempotencyKey from the request body. Without this envelope, baseRevision
+        /// defaults to 0, causing stale-revision conflicts on every upload.
         /// </summary>
-        private static string ExtractSaveField(string jsonResponse)
+        private static string BuildUploadEnvelope(string gameSaveJson, int baseRevision, string idempotencyKey)
+        {
+            // The gameSaveJson is the raw GameSaveData. We need to wrap it so the server
+            // receives: { saveId, saveVersion, data: {...}, checksum, baseRevision, idempotencyKey }
+            // But since the server auto-wraps raw GameSaveData (detecting schemaVersion without data),
+            // we need to include baseRevision and idempotencyKey in the raw payload itself so the
+            // server's wrapper picks them up.
+            //
+            // Strategy: inject baseRevision and idempotencyKey into the raw GameSaveData JSON.
+            // The server's wrapper reads body.revision and body.idempotencyKey from the raw body.
+            // GameSaveData doesn't have these fields, so we add them as extra JSON properties.
+            
+            if (string.IsNullOrEmpty(gameSaveJson)) return "{}";
+            
+            // Remove the closing brace, add our extra fields, then close
+            string json = gameSaveJson.Trim();
+            if (!json.EndsWith("}")) return json; // malformed, send as-is
+            
+            string withoutClosingBrace = json.Substring(0, json.Length - 1);
+            
+            // Add baseRevision and idempotencyKey as extra fields
+            string extraFields = $",\"revision\":{baseRevision}";
+            if (!string.IsNullOrEmpty(idempotencyKey))
+            {
+                extraFields += $",\"idempotencyKey\":\"{idempotencyKey}\"";
+            }
+            
+            return withoutClosingBrace + extraFields + "}";
+        }
+        
+        /// <summary>
+        /// Extracts the nested "data" field from the server's save envelope.
+        /// The server returns { success: true, save: { data: {...}, revision: N, ... }, requestId: "..." }.
+        /// The actual GameSaveData is in save.data, not in save itself.
+        /// This method finds save.data and returns it as JSON.
+        /// </summary>
+        private static string ExtractSaveDataField(string jsonResponse)
         {
             if (string.IsNullOrEmpty(jsonResponse)) return null;
 
@@ -453,38 +506,100 @@ namespace WhisperingWilds.Online
             if (colonIndex < 0) return null;
 
             // Find the opening brace of the save object
-            int braceStart = jsonResponse.IndexOf('{', colonIndex + 1);
-            if (braceStart < 0) return null;
+            int saveBraceStart = jsonResponse.IndexOf('{', colonIndex + 1);
+            if (saveBraceStart < 0) return null;
 
-            // Find the matching closing brace by counting nesting
+            // Find the matching closing brace of the save object
+            int saveBraceEnd = FindMatchingBrace(jsonResponse, saveBraceStart);
+            if (saveBraceEnd < 0) return null;
+            
+            // Now find "data":{...} inside the save object
+            string saveObject = jsonResponse.Substring(saveBraceStart, saveBraceEnd - saveBraceStart + 1);
+            int dataIndex = saveObject.IndexOf("\"data\"");
+            if (dataIndex < 0) return null;
+            
+            int dataColonIndex = saveObject.IndexOf(':', dataIndex + 6);
+            if (dataColonIndex < 0) return null;
+            
+            int dataBraceStart = saveObject.IndexOf('{', dataColonIndex + 1);
+            if (dataBraceStart < 0) return null;
+            
+            int dataBraceEnd = FindMatchingBrace(saveObject, dataBraceStart);
+            if (dataBraceEnd < 0) return null;
+            
+            return saveObject.Substring(dataBraceStart, dataBraceEnd - dataBraceStart + 1);
+        }
+        
+        /// <summary>
+        /// Extracts the "revision" field from the server's save envelope.
+        /// The server returns { success: true, save: { revision: N, ... }, ... }.
+        /// </summary>
+        private static int ExtractRevisionFromSave(string jsonResponse)
+        {
+            if (string.IsNullOrEmpty(jsonResponse)) return 0;
+            
+            // Find "save":{...} first
+            int saveIndex = jsonResponse.IndexOf("\"save\"");
+            if (saveIndex < 0) return 0;
+            
+            int colonIndex = jsonResponse.IndexOf(':', saveIndex + 6);
+            if (colonIndex < 0) return 0;
+            
+            int saveBraceStart = jsonResponse.IndexOf('{', colonIndex + 1);
+            if (saveBraceStart < 0) return 0;
+            
+            int saveBraceEnd = FindMatchingBrace(jsonResponse, saveBraceStart);
+            if (saveBraceEnd < 0) return 0;
+            
+            string saveObject = jsonResponse.Substring(saveBraceStart, saveBraceEnd - saveBraceStart + 1);
+            
+            // Find "revision":N inside the save object
+            int revIndex = saveObject.IndexOf("\"revision\"");
+            if (revIndex < 0) return 0;
+            
+            int revColonIndex = saveObject.IndexOf(':', revIndex + 10);
+            if (revColonIndex < 0) return 0;
+            
+            int numStart = revColonIndex + 1;
+            while (numStart < saveObject.Length && char.IsWhiteSpace(saveObject[numStart]))
+                numStart++;
+            int numEnd = numStart;
+            while (numEnd < saveObject.Length && char.IsDigit(saveObject[numEnd]))
+                numEnd++;
+            if (numEnd <= numStart) return 0;
+            
+            if (int.TryParse(saveObject.Substring(numStart, numEnd - numStart), out int revision))
+                return revision;
+            return 0;
+        }
+        
+        /// <summary>
+        /// Finds the matching closing brace for an opening brace at the given index,
+        /// properly handling nested braces and string literals.
+        /// </summary>
+        private static int FindMatchingBrace(string json, int braceStart)
+        {
             int depth = 0;
-            int i = braceStart;
-            while (i < jsonResponse.Length)
+            for (int i = braceStart; i < json.Length; i++)
             {
-                char c = jsonResponse[i];
+                char c = json[i];
                 if (c == '{') depth++;
                 else if (c == '}')
                 {
                     depth--;
-                    if (depth == 0)
-                    {
-                        return jsonResponse.Substring(braceStart, i - braceStart + 1);
-                    }
+                    if (depth == 0) return i;
                 }
                 else if (c == '"')
                 {
-                    // Skip string contents to avoid counting braces inside strings
                     i++;
-                    while (i < jsonResponse.Length && jsonResponse[i] != '"')
+                    while (i < json.Length && json[i] != '"')
                     {
-                        if (jsonResponse[i] == '\\') i++; // skip escaped char
+                        if (json[i] == '\\') i++;
                         i++;
                     }
                 }
-                i++;
             }
-
-            return null;
+            return -1;
         }
     }
 }

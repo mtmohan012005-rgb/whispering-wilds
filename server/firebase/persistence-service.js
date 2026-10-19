@@ -102,16 +102,6 @@ function validateSave(body) {
         throw toAppError(ERROR_CODES.MISSING_CHECKSUM);
     }
 
-    // Validate checksum over the exact data we are about to persist.
-    const expected = computeChecksum(body.data);
-    if (body.checksum !== expected) {
-        throw toAppError(
-            ERROR_CODES.VALIDATION_FAILED,
-            'Checksum does not match payload.',
-            { expected }
-        );
-    }
-
     if (estimateBytes(body.data) > MAX_SAVE_BYTES) {
         throw toAppError(ERROR_CODES.PAYLOAD_TOO_LARGE, 'Save data exceeds the size limit.', {
             maxBytes: MAX_SAVE_BYTES
@@ -131,6 +121,24 @@ function validateSave(body) {
         uid: _u,
         ...safeData
     } = body.data;
+
+    // IMPORTANT: Compute the checksum over the SANITIZED data, not the raw client payload.
+    // The stored checksum must describe exactly the data being stored. If we computed the
+    // checksum before stripping privileged fields, the stored checksum would not match the
+    // stored payload, causing false corruption detection on download.
+    const expected = computeChecksum(safeData);
+    
+    // Validate the client-supplied checksum against the raw data to detect transit corruption.
+    // The client computes checksum over the full payload; we recompute over sanitized data.
+    // If the client checksum doesn't match the raw data, the payload was corrupted in transit.
+    const rawChecksum = computeChecksum(body.data);
+    if (body.checksum !== rawChecksum) {
+        throw toAppError(
+            ERROR_CODES.VALIDATION_FAILED,
+            'Checksum does not match payload.',
+            { expected: rawChecksum }
+        );
+    }
 
     return {
         saveVersion,
