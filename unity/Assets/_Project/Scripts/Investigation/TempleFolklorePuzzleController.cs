@@ -13,6 +13,8 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using WhisperingWilds.World;
+using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.Investigation
 {
@@ -24,6 +26,9 @@ namespace WhisperingWilds.Investigation
 
         [Tooltip("Number of failed attempts before showing a hint.")]
         public int hintThreshold = 3;
+
+        [Tooltip("Stable puzzle ID for PuzzleStateStore persistence.")]
+        public string puzzleId = "temple_folklore_puzzle";
 
         [Header("Clue Text (English)")]
         public string clue1English = "The first stone bears the symbol of the rising sun.";
@@ -53,7 +58,31 @@ namespace WhisperingWilds.Investigation
         public void Initialize()
         {
             _levelController = FindObjectOfType<AncientTempleLevelController>();
-            ResetPuzzle();
+            
+            // Register discovery definition for the Kaveri Star Seal
+            if (!DiscoveryLog.IsRegistered("kaveri_star_seal"))
+            {
+                DiscoveryLog.Register(new DiscoveryDefinition
+                {
+                    discoveryId = "kaveri_star_seal",
+                    regionId = "ancient_temple",
+                    titleEn = "Kaveri Star Seal",
+                    titleTa = "காவிரி நட்சத்திர முத்திரை",
+                    bodyEn = "An ancient stone seal bearing the constellation of the Kaveri river, said to grant wisdom to those who find it.",
+                    bodyTa = "காவிரி நதியின் நட்சத்திர வடிவம் பொறிக்கப்பட்ட பழமையான கல் முத்திரை, அதனைக் கண்டுபிடிப்பவருக்கு ஞானம் தரும் என்று நம்பப்படுகிறது."
+                });
+            }
+            
+            // Restore solved state from PuzzleStateStore
+            if (PuzzleStateStore.IsSolved(puzzleId))
+            {
+                _puzzleCompleted = true;
+                Debug.Log($"[TemplePuzzle] Puzzle {puzzleId} restored as solved from save.");
+            }
+            else
+            {
+                ResetPuzzle();
+            }
         }
 
         private void ResetPuzzle()
@@ -121,6 +150,9 @@ namespace WhisperingWilds.Investigation
             _puzzleCompleted = true;
             Debug.Log("[TemplePuzzle] Puzzle solved! Hidden chamber unlocked.");
 
+            // Record in PuzzleStateStore for save persistence
+            PuzzleStateStore.MarkSolved(puzzleId);
+
             // Notify level controller
             if (_levelController != null)
             {
@@ -150,8 +182,14 @@ namespace WhisperingWilds.Investigation
         private void ShowHint()
         {
             _hintShown = true;
-            // TODO: Display hint in UI using LocalizationManager
-            Debug.Log($"[TemplePuzzle] Hint shown: {hintEnglish}");
+            bool useTamil = LocalizationManager.Instance != null &&
+                LocalizationManager.Instance.CurrentLanguage == Language.Tamil;
+            string hint = useTamil ? hintTamil : hintEnglish;
+            
+            // Display hint — InvestigationManager tracks clues but doesn't have a
+            // dedicated hint UI. The hint is logged and can be displayed by the
+            // GameplayJournalUI or a custom hint panel when one is authored.
+            Debug.Log($"<color=#FFD700><b>[TemplePuzzle]</b></color> HINT: {hint}");
         }
 
         private IEnumerator ResetMechanismsAfterDelay(float delay)

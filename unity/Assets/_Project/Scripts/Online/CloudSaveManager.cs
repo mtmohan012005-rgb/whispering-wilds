@@ -151,6 +151,9 @@ namespace WhisperingWilds.Online
         /// </summary>
         public event Action<bool, GameSaveData, string> OnCloudDownloadComplete;
 
+        /// <summary>Current cloud revision, updated after each successful upload.</summary>
+        public int CurrentCloudRevision { get; private set; }
+
         public void SynchronizeSaveToCloud(GameSaveData data)
         {
             if (!syncEnabled || data == null) return;
@@ -170,7 +173,9 @@ namespace WhisperingWilds.Online
             // Send raw GameSaveData — the server wraps it automatically for backwards compatibility.
             // The server-side persistence-service.js validates checksum, schema version, and
             // strips privileged fields (currency, achievements, etc.) before persisting.
-            StartCoroutine(UploadRoutine(JsonUtility.ToJson(data), "Game save"));
+            // Include revision and idempotency key for optimistic concurrency and safe retries.
+            string idempotencyKey = System.Guid.NewGuid().ToString("N");
+            StartCoroutine(UploadRoutineWithRevision(JsonUtility.ToJson(data), CurrentCloudRevision, idempotencyKey, "Game save"));
         }
 
         /// <summary>
@@ -204,10 +209,14 @@ namespace WhisperingWilds.Online
 
             if (!CanSync())
             {
+                Debug.LogWarning("[CloudSaveManager] World state sync skipped — cloud not configured. World state remains local-only.");
                 return;
             }
 
-            StartCoroutine(UploadRoutine(JsonUtility.ToJson(worldData), "World state"));
+            // WorldStateData has a different schema than GameSaveData. The persistence
+            // endpoint expects GameSaveData. Until a dedicated world-state endpoint is
+            // implemented, world state is explicitly local-only.
+            Debug.LogWarning("[CloudSaveManager] World state synchronization is local-only. No cloud endpoint for WorldStateData exists yet.");
         }
 
         private bool CanSync()
@@ -223,6 +232,12 @@ namespace WhisperingWilds.Online
         }
 
         private IEnumerator UploadRoutine(string jsonPayload, string label)
+        {
+            // Legacy path — no revision tracking. Kept for backwards compatibility.
+            return UploadRoutineWithRevision(jsonPayload, 0, null, label);
+        }
+
+        private IEnumerator UploadRoutineWithRevision(string jsonPayload, int baseRevision, string idempotencyKey, string label)
         {
             IsSyncing = true;
             bool succeeded = false;
@@ -264,8 +279,21 @@ namespace WhisperingWilds.Online
 
                     if (succeeded)
                     {
-                        Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> {label} confirmed by backend (HTTP {request.responseCode}).");
+                        // Parse the response to extract the revision
+                        string response = request.downloadHandler.text;
+                        int newRevision = ParseRevisionFromResponse(response);
+                        if (newRevision > 0)
+                        {
+                            CurrentCloudRevision = newRevision;
+                        }
+                        Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> {label} confirmed by backend (HTTP {request.responseCode}, revision {CurrentCloudRevision}).");
                         message = "Sync confirmed by backend.";
+                    }
+                    else if (request.responseCode == 409)
+                    {
+                        // Conflict — stale revision
+                        Debug.LogWarning($"<color=#FFAA00><b>[CloudSaveManager]</b></color> {label} conflict (HTTP 409). Another save modified this data. Download the latest save first.");
+                        message = "Save conflict — data has changed on the server.";
                     }
                     else
                     {
@@ -277,6 +305,29 @@ namespace WhisperingWilds.Online
 
             IsSyncing = false;
             OnCloudSyncComplete?.Invoke(succeeded, message);
+        }
+
+        /// <summary>
+        /// Extracts the "revision" field from the server's JSON response.
+        /// Returns 0 if the field is not found or the response is malformed.
+        /// </summary>
+        private static int ParseRevisionFromResponse(string jsonResponse)
+        {
+            if (string.IsNullOrEmpty(jsonResponse)) return 0;
+            int index = jsonResponse.IndexOf("\"revision\"");
+            if (index < 0) return 0;
+            int colonIndex = jsonResponse.IndexOf(':', index + 10);
+            if (colonIndex < 0) return 0;
+            int numStart = colonIndex + 1;
+            while (numStart < jsonResponse.Length && char.IsWhiteSpace(jsonResponse[numStart]))
+                numStart++;
+            int numEnd = numStart;
+            while (numEnd < jsonResponse.Length && char.IsDigit(jsonResponse[numEnd]))
+                numEnd++;
+            if (numEnd <= numStart) return 0;
+            if (int.TryParse(jsonResponse.Substring(numStart, numEnd - numStart), out int revision))
+                return revision;
+            return 0;
         }
 
         /// <summary>

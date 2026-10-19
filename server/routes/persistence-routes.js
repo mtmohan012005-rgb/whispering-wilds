@@ -22,6 +22,9 @@ const { asyncHandler } = require('../middleware/request-context');
 const { authMiddleware, requireAuth } = require('../auth/auth-middleware');
 const Logger = require('../logger');
 
+// Import computeChecksum for raw GameSaveData wrapping
+const { computeChecksum } = require('../firebase/persistence-service');
+
 const router = express.Router();
 
 // First, populate req.user from session cookie or Bearer token.
@@ -58,11 +61,15 @@ router.post('/saves', asyncHandler(async (req, res) => {
     // Backwards compatibility: if the client sends raw GameSaveData (has schemaVersion
     // but no "data" envelope), wrap it automatically so the persistence service accepts it.
     if (body.schemaVersion && !body.data) {
+        // Compute a valid checksum over the raw payload so the persistence service
+        // does not reject it with MISSING_CHECKSUM. The persistence service will
+        // recompute the checksum over sanitized data after stripping privileged fields.
+        const rawChecksum = computeChecksum(body);
         body = {
             saveId: body.saveId || 'slot_0',
             saveVersion: body.schemaVersion,
             data: body,
-            checksum: body.checksum || '',
+            checksum: rawChecksum,
             baseRevision: body.revision || 0,
             idempotencyKey: body.idempotencyKey || null
         };

@@ -11,6 +11,7 @@
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WhisperingWilds.Investigation;
 
 namespace WhisperingWilds.World
 {
@@ -66,18 +67,15 @@ namespace WhisperingWilds.World
 
         private void LoadPuzzleState()
         {
-            // TODO: Load from SaveSystem when integrated
-            // For now, use PlayerPrefs as a temporary fallback
-            _puzzleCompleted = PlayerPrefs.GetInt($"{regionId}_puzzle_completed", 0) == 1;
-            _artifactCollected = PlayerPrefs.GetInt($"{regionId}_artifact_collected", 0) == 1;
+            // Use PuzzleStateStore for puzzle state and DiscoveryLog for artifact
+            _puzzleCompleted = PuzzleStateStore.IsSolved("temple_folklore_puzzle");
+            _artifactCollected = DiscoveryLog.Has("kaveri_star_seal");
         }
 
         public void SavePuzzleState()
         {
-            // TODO: Save to SaveSystem when integrated
-            PlayerPrefs.SetInt($"{regionId}_puzzle_completed", _puzzleCompleted ? 1 : 0);
-            PlayerPrefs.SetInt($"{regionId}_artifact_collected", _artifactCollected ? 1 : 0);
-            PlayerPrefs.Save();
+            // PuzzleStateStore and DiscoveryLog are static — they persist through
+            // SaveSystem's InvestigationRuntimeState automatically. No extra save needed here.
         }
 
         public void OnPuzzleCompleted()
@@ -110,10 +108,16 @@ namespace WhisperingWilds.World
 
         private void UpdateQuestProgress()
         {
-            // TODO: Integrate with QuestManager and InvestigationManager
-            // QuestManager.Instance?.AdvanceQuest("temple_exploration");
-            // InvestigationManager.Instance?.AddDiscovery("kaveri_star_seal");
-            Debug.Log("[AncientTemple] Quest progress updated: Kaveri Star Seal discovered.");
+            // Record the discovery in DiscoveryLog (prevents duplicate rewards)
+            bool recorded = DiscoveryLog.Record("kaveri_star_seal");
+            if (recorded)
+            {
+                Debug.Log("[AncientTemple] Discovery recorded: Kaveri Star Seal");
+            }
+            else
+            {
+                Debug.LogWarning("[AncientTemple] Kaveri Star Seal was already recorded — duplicate reward prevented.");
+            }
         }
 
         public bool IsPuzzleCompleted() => _puzzleCompleted;
