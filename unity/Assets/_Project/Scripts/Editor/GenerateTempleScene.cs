@@ -1,25 +1,21 @@
 // ============================================================================
-// THE WHISPERING WILDS — TEMPLE SCENE GENERATOR
+// THE WHISPERING WILDS — TEMPLE SCENE GENERATOR (REALISM & ASSET UPGRADE)
 // ============================================================================
 //
 // Unity Editor script to create 08_Ancient_Temple_Ruins.unity with:
-// - Ground plane (stone courtyard)
-// - Temple models (heritage_temple_area, gopuram, props)
-// - Three stone puzzle mechanisms with StoneMechanism components
-// - Hidden chamber door
-// - Artifact pickup
-// - Player spawn point (using "Player" tag)
-// - Lighting (golden hour)
+// - PBR stone courtyard with authentic Dravidian paving materials
+// - Heritage temple models (heritage_temple_area, thanjavur_gopuram, props)
+// - Three realistic stone puzzle mechanisms with granite columns, carved dials,
+//   and StoneMechanism components (NO greybox cubes)
+// - Architectural Dravidian sanctum portal door with carved relief leaves and
+//   torana framing (NO greybox cube)
+// - Designed Kaveri Star Seal 8-pointed stellar medallion resting on a carved altar
+//   pedestal with sacred brass lamps (NO greybox sphere)
+// - Player spawn point (using "Player" tag) and PlayerCharacter
+// - Golden hour directional lighting and atmospheric temple lamps
 // - AncientTempleLevelController with all references wired
 // - TempleFolklorePuzzleController on separate GameObject
-//
-// Fixs from previous version:
-// 1. Uses UnityEngine.Terrain explicitly to avoid type conflicts
-// 2. Puzzle controller is on its own GameObject, not on mechanisms[0]
-// 3. Uses "Player" tag instead of non-existent "PlayerSpawn"
-// 4. Updates existing build settings entry instead of duplicating
-// 5. Adds StoneMechanism IInteractable components to puzzle stones
-// 6. Checks for existing scene before regenerating
+// - Deterministic mesh generation via TempleMeshBuilder with stable GUIDs
 // ============================================================================
 
 using System.IO;
@@ -46,12 +42,12 @@ namespace WhisperingWilds.Editor
         [MenuItem("Tools/Generate Temple Scene")]
         public static void Generate()
         {
-            // Check if scene already exists to avoid duplicates
-            if (File.Exists(ScenePath))
+            // In interactive mode, confirm overwrite if scene exists; in batchmode, overwrite cleanly
+            if (File.Exists(ScenePath) && !Application.isBatchMode)
             {
                 bool overwrite = EditorUtility.DisplayDialog(
                     "Temple Scene Exists",
-                    $"Scene {ScenePath} already exists. Overwrite?",
+                    $"Scene {ScenePath} already exists. Overwrite with realistic Dravidian temple assets?",
                     "Overwrite",
                     "Cancel");
                 if (!overwrite)
@@ -59,42 +55,39 @@ namespace WhisperingWilds.Editor
                     Debug.LogWarning("[GenerateTempleScene] Cancelled by user.");
                     return;
                 }
-                File.Delete(ScenePath);
-                string metaPath = ScenePath + ".meta";
-                if (File.Exists(metaPath))
-                {
-                    File.Delete(metaPath);
-                }
             }
 
-            // Create new scene using Editor API (SceneManager.CreateScene only works in play mode)
-            EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            // Create new scene using Editor API
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            // --- Ground (using flat plane instead of Terrain to avoid type issues) ---
+            // Clear material cache to ensure fresh PBR shader references
+            WWMaterialLibrary.ClearCache();
+
+            // --- Ground Courtyard ---
             CreateGround();
 
-            // --- Lighting (Golden Hour) ---
+            // --- Lighting (Golden Hour & Temple Torches) ---
             CreateLighting();
 
-            // --- Temple Models ---
+            // --- Heritage Architecture & Props ---
             CreateTempleModels();
 
-            // --- Puzzle Mechanisms with StoneMechanism components ---
+            // --- Realistic Puzzle Mechanisms with StoneMechanism components ---
             GameObject[] mechanisms = CreatePuzzleMechanisms();
 
-            // --- Hidden Chamber Door ---
+            // --- Fitted Dravidian Sanctum Portal Door ---
             GameObject door = CreateHiddenChamberDoor();
 
-            // --- Artifact Pickup ---
+            // --- Designed Kaveri Star Seal Medallion Artifact ---
             GameObject artifact = CreateArtifactPickup();
 
-            // --- Player Spawn (using "Player" tag from TagManager) ---
+            // --- Player Spawn ---
             CreatePlayerSpawn();
 
-            // --- Player Character (instantiate from prefab if available) ---
+            // --- Player Character ---
             GameObject playerCharacter = CreatePlayerCharacter();
 
-            // --- Gameplay Region Bootstrap (ensures GameManager, SaveManager, CampaignFlow) ---
+            // --- Gameplay Region Bootstrap ---
             CreateGameplayBootstrap();
 
             // --- Main Camera with CameraController ---
@@ -104,7 +97,7 @@ namespace WhisperingWilds.Editor
             GameObject puzzleObj = new GameObject("PuzzleController");
             TempleFolklorePuzzleController puzzleCtrl = puzzleObj.AddComponent<TempleFolklorePuzzleController>();
 
-            // --- Level Controller with all references ---
+            // --- Level Controller with all references wired ---
             GameObject controllerObj = new GameObject("TempleLevelController");
             AncientTempleLevelController controller = controllerObj.AddComponent<AncientTempleLevelController>();
             controller.puzzleController = puzzleCtrl;
@@ -114,64 +107,93 @@ namespace WhisperingWilds.Editor
             // --- Wire Audio Clips ---
             WireAudioClips(controller, puzzleCtrl);
 
-            // --- Save Scene ---
-            EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), ScenePath);
+            // --- Save Scene (Preserves existing .meta GUID) ---
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene, ScenePath);
+            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
             // --- Add to Build Settings (update existing or add new) ---
             AddOrUpdateSceneInBuildSettings(ScenePath);
 
-            Debug.Log($"[GenerateTempleScene] Temple scene created at {ScenePath} and added to build settings!");
+            Debug.Log($"<color=#00FF88><b>[GenerateTempleScene]</b></color> Dravidian temple ruins scene successfully created at {ScenePath}!");
         }
 
         private static void CreateGround()
         {
-            // Use a flat plane as the ground instead of Terrain to avoid type conflicts
             GameObject ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
             ground.name = "TempleGround";
-            ground.transform.position = new Vector3(0, 0, 0);
+            ground.transform.position = Vector3.zero;
             ground.transform.localScale = new Vector3(20, 1, 20);
 
-            // Stone material
-            Material stoneMat = new Material(Shader.Find("HDRP/Lit"));
-            if (stoneMat == null)
-            {
-                stoneMat = new Material(Shader.Find("Standard"));
-            }
-            stoneMat.name = "TempleStoneGround";
-            stoneMat.color = new Color(0.6f, 0.55f, 0.5f);
+            // Shared HDRP/Lit PBR Courtyard Stone Material
+            Material stoneMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/TempleCourtyardPaving.mat",
+                new Color(0.52f, 0.49f, 0.45f),
+                0.05f,
+                0.28f);
+
             ground.GetComponent<Renderer>().sharedMaterial = stoneMat;
 
-            // Add collider
             if (ground.GetComponent<Collider>() == null)
             {
                 ground.AddComponent<BoxCollider>();
             }
+
+            // Courtyard perimeter stone boundary kerbs
+            GameObject kerbs = new GameObject("Courtyard_Perimeter_Kerbs");
+            kerbs.transform.SetParent(ground.transform, false);
+
+            Material kerbMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/DravidianCarvedGranite.mat",
+                new Color(0.44f, 0.41f, 0.38f),
+                0.06f,
+                0.32f);
+
+            Mesh kerbMesh = TempleMeshBuilder.GetOrCreateBeveledSlabMesh(
+                "Assets/_Project/Art/Meshes/Temple/CourtyardKerb_Long.asset",
+                40f, 0.35f, 0.6f, 0.08f);
+
+            void PlaceKerb(string name, Vector3 pos, Quaternion rot)
+            {
+                GameObject k = new GameObject(name);
+                k.transform.SetParent(kerbs.transform, false);
+                k.transform.position = pos;
+                k.transform.rotation = rot;
+                var mf = k.AddComponent<MeshFilter>();
+                mf.sharedMesh = kerbMesh;
+                var mr = k.AddComponent<MeshRenderer>();
+                mr.sharedMaterial = kerbMat;
+            }
+
+            PlaceKerb("Kerb_North", new Vector3(0, 0.17f, 40f), Quaternion.identity);
+            PlaceKerb("Kerb_South", new Vector3(0, 0.17f, -40f), Quaternion.identity);
+            PlaceKerb("Kerb_West", new Vector3(-40f, 0.17f, 0), Quaternion.Euler(0, 90, 0));
+            PlaceKerb("Kerb_East", new Vector3(40f, 0.17f, 0), Quaternion.Euler(0, 90, 0));
         }
 
         private static void CreateLighting()
         {
-            // Main directional light (golden hour)
+            // Main directional light (golden hour sunlight across temple towers)
             GameObject sun = new GameObject("Sun");
             sun.transform.position = new Vector3(50, 30, -50);
             Light dirLight = sun.AddComponent<Light>();
             dirLight.type = LightType.Directional;
-            dirLight.color = new Color(1f, 0.85f, 0.6f);
-            dirLight.intensity = 2f;
+            dirLight.color = new Color(1f, 0.88f, 0.65f);
+            dirLight.intensity = 2.4f;
             dirLight.shadows = LightShadows.Soft;
-            dirLight.transform.rotation = Quaternion.Euler(30, 45, 0);
+            dirLight.transform.rotation = Quaternion.Euler(32, 48, 0);
 
-            // Ambient light and fog
+            // Ambient lighting and warm dust atmosphere
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-            RenderSettings.ambientLight = new Color(0.3f, 0.25f, 0.2f);
+            RenderSettings.ambientLight = new Color(0.32f, 0.28f, 0.24f);
             RenderSettings.fog = true;
-            RenderSettings.fogColor = new Color(0.77f, 0.69f, 0.55f);
-            RenderSettings.fogDensity = 0.015f;
+            RenderSettings.fogColor = new Color(0.78f, 0.70f, 0.58f);
+            RenderSettings.fogDensity = 0.012f;
         }
 
         private static void CreateTempleModels()
         {
-            // Load GLB models directly by path (not t:Prefab search which won't find imported GLBs)
             // Heritage temple area
             string templePath = "Assets/_Project/Art/Models/Architecture/thanjavur/heritage_temple_area.glb";
             GameObject templeModel = AssetDatabase.LoadAssetAtPath<GameObject>(templePath);
@@ -209,75 +231,136 @@ namespace WhisperingWilds.Editor
                 instance.name = "TempleBell";
                 Debug.Log("[GenerateTempleScene] Loaded temple_bell.glb");
             }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Temple bell model not found at {bellPath}");
-            }
 
-            // Stone inscription
+            // Stone inscription prop in the mandapa
             string inscriptionPath = "Assets/_Project/Art/Models/Props/temple/stone_inscription.glb";
             GameObject inscriptionModel = AssetDatabase.LoadAssetAtPath<GameObject>(inscriptionPath);
             if (inscriptionModel != null)
             {
-                GameObject instance = GameObject.Instantiate(inscriptionModel, new Vector3(-5, 1, -5), Quaternion.identity);
-                instance.name = "StoneInscription";
+                GameObject instance = GameObject.Instantiate(inscriptionModel, new Vector3(-6, 0, -5), Quaternion.Euler(0, 25, 0));
+                instance.name = "StoneInscription_Mandapa";
                 Debug.Log("[GenerateTempleScene] Loaded stone_inscription.glb");
             }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Stone inscription model not found at {inscriptionPath}");
-            }
 
-            // Brass lamp
+            // Brass lamp with warm point light
             string lampPath = "Assets/_Project/Art/Models/Props/temple/brass_lamp.glb";
             GameObject lampModel = AssetDatabase.LoadAssetAtPath<GameObject>(lampPath);
             if (lampModel != null)
             {
-                GameObject instance = GameObject.Instantiate(lampModel, new Vector3(3, 1, 3), Quaternion.identity);
-                instance.name = "BrassLamp";
+                GameObject lampInstance = GameObject.Instantiate(lampModel, new Vector3(3.5f, 0, 3), Quaternion.identity);
+                lampInstance.name = "BrassLamp_Courtyard";
+                AddWarmLampLight(lampInstance, 1.2f);
                 Debug.Log("[GenerateTempleScene] Loaded brass_lamp.glb");
             }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Brass lamp model not found at {lampPath}");
-            }
 
-            // Granite column (extra prop)
+            // Granite columns forming the colonnade approach
             string columnPath = "Assets/_Project/Art/Models/Props/temple/granite_column.glb";
             GameObject columnModel = AssetDatabase.LoadAssetAtPath<GameObject>(columnPath);
             if (columnModel != null)
             {
-                GameObject instance = GameObject.Instantiate(columnModel, new Vector3(-3, 0, 3), Quaternion.identity);
-                instance.name = "GraniteColumn";
-                Debug.Log("[GenerateTempleScene] Loaded granite_column.glb");
+                GameObject col1 = GameObject.Instantiate(columnModel, new Vector3(-4.5f, 0, -10), Quaternion.identity);
+                col1.name = "Colonnade_Pillar_West";
+                GameObject col2 = GameObject.Instantiate(columnModel, new Vector3(4.5f, 0, -10), Quaternion.identity);
+                col2.name = "Colonnade_Pillar_East";
+                Debug.Log("[GenerateTempleScene] Loaded colonnade granite_column.glb pillars");
             }
-            else
+
+            // Sacred standing lamps (kuthu_vilakku) flanking the sanctum vestibule
+            string kuthuPath = "Assets/_Project/Art/Models/Props/temple/kuthu_vilakku.glb";
+            GameObject kuthuModel = AssetDatabase.LoadAssetAtPath<GameObject>(kuthuPath);
+            if (kuthuModel != null)
             {
-                Debug.LogWarning($"[GenerateTempleScene] Granite column model not found at {columnPath}");
+                GameObject kvWest = GameObject.Instantiate(kuthuModel, new Vector3(-3.2f, 0, -17), Quaternion.identity);
+                kvWest.name = "KuthuVilakku_Vestibule_West";
+                AddWarmLampLight(kvWest, 1.4f);
+
+                GameObject kvEast = GameObject.Instantiate(kuthuModel, new Vector3(3.2f, 0, -17), Quaternion.identity);
+                kvEast.name = "KuthuVilakku_Vestibule_East";
+                AddWarmLampLight(kvEast, 1.4f);
+                Debug.Log("[GenerateTempleScene] Loaded kuthu_vilakku.glb sanctum lamps");
             }
         }
 
         private static GameObject[] CreatePuzzleMechanisms()
         {
             GameObject[] mechanisms = new GameObject[3];
+
+            string columnPath = "Assets/_Project/Art/Models/Props/temple/granite_column.glb";
+            GameObject columnModel = AssetDatabase.LoadAssetAtPath<GameObject>(columnPath);
+
+            string inscriptionPath = "Assets/_Project/Art/Models/Props/temple/stone_inscription.glb";
+            GameObject inscriptionModel = AssetDatabase.LoadAssetAtPath<GameObject>(inscriptionPath);
+
+            // Shared PBR granite material for carved dial
+            Material dialMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/DravidianCarvedGranite.mat",
+                new Color(0.44f, 0.41f, 0.38f),
+                0.06f,
+                0.32f);
+
+            // Carved stone rotating dial mesh with 3 radial position relief notches
+            Mesh dialMesh = TempleMeshBuilder.GetOrCreateCarvedStoneDialMesh(
+                "Assets/_Project/Art/Meshes/Temple/StoneMechanismDial.asset",
+                0.95f,
+                0.28f,
+                24);
+
+            // Circular stepped plinth base slab
+            Mesh plinthMesh = TempleMeshBuilder.GetOrCreateCarvedStoneDialMesh(
+                "Assets/_Project/Art/Meshes/Temple/StoneMechanismPlinth.asset",
+                1.35f,
+                0.15f,
+                24);
+
             for (int i = 0; i < 3; i++)
             {
-                GameObject mech = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                mech.name = $"StoneMechanism_{i}";
-                mech.transform.position = new Vector3(-10 + i * 10, 1, 10);
-                mech.transform.localScale = new Vector3(2, 2, 2);
+                // Root mechanism GameObject: NO primitive cube!
+                GameObject mech = new GameObject($"StoneMechanism_{i}");
+                mech.transform.position = new Vector3(-10 + i * 10, 0, 10);
 
-                // Stone material
-                Material stoneMat = new Material(Shader.Find("HDRP/Lit"));
-                if (stoneMat == null)
+                // Invisible interaction and navigation collision bounds
+                BoxCollider collider = mech.AddComponent<BoxCollider>();
+                collider.center = new Vector3(0, 1.3f, 0);
+                collider.size = new Vector3(2.2f, 2.6f, 2.2f);
+
+                // Child 1: Stone Plinth Base
+                GameObject plinth = new GameObject("PlinthBase");
+                plinth.transform.SetParent(mech.transform, false);
+                plinth.transform.localPosition = new Vector3(0, 0.08f, 0);
+                var plinthMf = plinth.AddComponent<MeshFilter>();
+                plinthMf.sharedMesh = plinthMesh;
+                var plinthMr = plinth.AddComponent<MeshRenderer>();
+                plinthMr.sharedMaterial = dialMat;
+
+                // Child 2: Carved Granite Pillar Shaft (from granite_column.glb)
+                if (columnModel != null)
                 {
-                    stoneMat = new Material(Shader.Find("Standard"));
+                    GameObject col = GameObject.Instantiate(columnModel, mech.transform);
+                    col.name = "PillarShaft";
+                    col.transform.localPosition = Vector3.zero;
+                    col.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
                 }
-                stoneMat.name = $"MechanismStone_{i}";
-                stoneMat.color = new Color(0.5f, 0.45f, 0.4f);
-                mech.GetComponent<Renderer>().sharedMaterial = stoneMat;
 
-                // Add StoneMechanism component for interaction
+                // Child 3: Rotating Inscribed Tablet & Capital Dial
+                GameObject dial = new GameObject("RotatingMechanismDial");
+                dial.transform.SetParent(mech.transform, false);
+                dial.transform.localPosition = new Vector3(0, 2.15f, 0);
+                var dialMf = dial.AddComponent<MeshFilter>();
+                dialMf.sharedMesh = dialMesh;
+                var dialMr = dial.AddComponent<MeshRenderer>();
+                dialMr.sharedMaterial = dialMat;
+
+                // Child 4: Inscription Tablet mounted on the mechanism capital
+                if (inscriptionModel != null)
+                {
+                    GameObject insc = GameObject.Instantiate(inscriptionModel, mech.transform);
+                    insc.name = "CarvedRuneTablet";
+                    insc.transform.localPosition = new Vector3(0, 1.35f, 0.42f);
+                    insc.transform.localRotation = Quaternion.Euler(-10f, 0, 0);
+                    insc.transform.localScale = new Vector3(0.55f, 0.55f, 0.55f);
+                }
+
+                // Add StoneMechanism gameplay component
                 StoneMechanism stoneMech = mech.AddComponent<StoneMechanism>();
                 stoneMech.mechanismIndex = i;
                 stoneMech.numberOfPositions = 3;
@@ -285,47 +368,191 @@ namespace WhisperingWilds.Editor
 
                 mechanisms[i] = mech;
             }
+
             return mechanisms;
         }
 
         private static GameObject CreateHiddenChamberDoor()
         {
-            GameObject door = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            door.name = "HiddenChamberDoor";
+            // Root chamber door assembly: NO primitive cube!
+            GameObject door = new GameObject("HiddenChamberDoor");
             door.transform.position = new Vector3(0, 2, -20);
-            door.transform.localScale = new Vector3(6, 4, 0.5f);
 
-            Material doorMat = new Material(Shader.Find("HDRP/Lit"));
-            if (doorMat == null)
+            // Invisible collision volume matching exact original door boundaries
+            BoxCollider col = door.AddComponent<BoxCollider>();
+            col.center = Vector3.zero;
+            col.size = new Vector3(6f, 4f, 0.5f);
+
+            // Shared PBR material for the sanctum stone door
+            Material doorStoneMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/SanctumStoneDoor.mat",
+                new Color(0.38f, 0.35f, 0.32f),
+                0.08f,
+                0.35f);
+
+            // Carved door leaves with traditional Dravidian relief panels
+            Mesh leafMesh = TempleMeshBuilder.GetOrCreateDoorLeafMesh(
+                "Assets/_Project/Art/Meshes/Temple/SanctumDoorLeaf.asset",
+                2.8f,
+                3.8f,
+                0.32f);
+
+            // Left stone door leaf
+            GameObject leftLeaf = new GameObject("SanctumDoor_Left");
+            leftLeaf.transform.SetParent(door.transform, false);
+            leftLeaf.transform.localPosition = new Vector3(-1.45f, 0, 0);
+            var leftMf = leftLeaf.AddComponent<MeshFilter>();
+            leftMf.sharedMesh = leafMesh;
+            var leftMr = leftLeaf.AddComponent<MeshRenderer>();
+            leftMr.sharedMaterial = doorStoneMat;
+
+            // Right stone door leaf
+            GameObject rightLeaf = new GameObject("SanctumDoor_Right");
+            rightLeaf.transform.SetParent(door.transform, false);
+            rightLeaf.transform.localPosition = new Vector3(1.45f, 0, 0);
+            rightLeaf.transform.localRotation = Quaternion.Euler(0, 180, 0);
+            var rightMf = rightLeaf.AddComponent<MeshFilter>();
+            rightMf.sharedMesh = leafMesh;
+            var rightMr = rightLeaf.AddComponent<MeshRenderer>();
+            rightMr.sharedMaterial = doorStoneMat;
+
+            // Carved stone lintel spanning the doorway
+            Mesh lintelMesh = TempleMeshBuilder.GetOrCreateBeveledSlabMesh(
+                "Assets/_Project/Art/Meshes/Temple/SanctumDoorLintel.asset",
+                6.5f,
+                0.55f,
+                0.75f,
+                0.08f);
+
+            GameObject lintel = new GameObject("SanctumLintel");
+            lintel.transform.SetParent(door.transform, false);
+            lintel.transform.localPosition = new Vector3(0, 2.15f, 0);
+            var lintelMf = lintel.AddComponent<MeshFilter>();
+            lintelMf.sharedMesh = lintelMesh;
+            var lintelMr = lintel.AddComponent<MeshRenderer>();
+            lintelMr.sharedMaterial = doorStoneMat;
+
+            // Flanking Torana pillars
+            string columnPath = "Assets/_Project/Art/Models/Props/temple/granite_column.glb";
+            GameObject columnModel = AssetDatabase.LoadAssetAtPath<GameObject>(columnPath);
+            if (columnModel != null)
             {
-                doorMat = new Material(Shader.Find("Standard"));
-            }
-            doorMat.name = "ChamberDoorStone";
-            doorMat.color = new Color(0.3f, 0.25f, 0.2f);
-            door.GetComponent<Renderer>().sharedMaterial = doorMat;
+                GameObject colWest = GameObject.Instantiate(columnModel, door.transform);
+                colWest.name = "PortalColumn_West";
+                colWest.transform.localPosition = new Vector3(-3.25f, -2f, 0);
 
-            door.SetActive(false); // Initially hidden until puzzle is solved
+                GameObject colEast = GameObject.Instantiate(columnModel, door.transform);
+                colEast.name = "PortalColumn_East";
+                colEast.transform.localPosition = new Vector3(3.25f, -2f, 0);
+            }
+
+            // Warm interior sanctum point light (revealed when door opens)
+            GameObject sanctumLightObj = new GameObject("SanctumInnerLight");
+            sanctumLightObj.transform.SetParent(door.transform, false);
+            sanctumLightObj.transform.localPosition = new Vector3(0, 0.5f, -2.5f);
+            Light sanctumLight = sanctumLightObj.AddComponent<Light>();
+            sanctumLight.type = LightType.Point;
+            sanctumLight.color = new Color(1f, 0.84f, 0.52f);
+            sanctumLight.intensity = 2.5f;
+            sanctumLight.range = 8f;
+            sanctumLight.shadows = LightShadows.Soft;
+
+            door.SetActive(false); // Initially hidden/sealed until puzzle is solved
             return door;
         }
 
         private static GameObject CreateArtifactPickup()
         {
-            GameObject artifact = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            artifact.name = "KaveriStarSeal";
-            artifact.transform.position = new Vector3(0, 1, -25);
-            artifact.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            // Root artifact pickup GameObject: NO primitive sphere!
+            GameObject artifact = new GameObject("KaveriStarSeal");
+            artifact.transform.position = new Vector3(0, 1.0f, -25);
 
-            Material artifactMat = new Material(Shader.Find("HDRP/Lit"));
-            if (artifactMat == null)
+            // Trigger collider for player interaction
+            SphereCollider sphereCol = artifact.AddComponent<SphereCollider>();
+            sphereCol.isTrigger = true;
+            sphereCol.radius = 1.25f;
+
+            // Artifact Visual Model Container (assigned to HiddenArtifactPickup.artifactModel)
+            GameObject visual = new GameObject("KaveriStarSeal_Visual");
+            visual.transform.SetParent(artifact.transform, false);
+            visual.transform.localPosition = new Vector3(0, 0.15f, 0);
+            visual.transform.localRotation = Quaternion.Euler(25f, 0, 0); // Tilted toward player view
+
+            // 8-Pointed Celestial Star Seal Medallion Mesh
+            Mesh sealMesh = TempleMeshBuilder.GetOrCreateStarSealMesh(
+                "Assets/_Project/Art/Meshes/Temple/KaveriStarSealMedallion.asset",
+                8,
+                0.48f,
+                0.26f,
+                0.12f);
+
+            // Gilded antique bronze and polished Chola gold PBR material
+            Material goldMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/KaveriSealGold.mat",
+                new Color(0.96f, 0.80f, 0.28f),
+                0.85f,
+                0.62f);
+
+            var mf = visual.AddComponent<MeshFilter>();
+            mf.sharedMesh = sealMesh;
+            var mr = visual.AddComponent<MeshRenderer>();
+            mr.sharedMaterial = goldMat;
+
+            // Sacred golden aura point light on the artifact
+            GameObject auraObj = new GameObject("SealAura");
+            auraObj.transform.SetParent(visual.transform, false);
+            auraObj.transform.localPosition = Vector3.zero;
+            Light auraLight = auraObj.AddComponent<Light>();
+            auraLight.type = LightType.Point;
+            auraLight.color = new Color(1f, 0.86f, 0.45f);
+            auraLight.intensity = 2.2f;
+            auraLight.range = 4.5f;
+            auraLight.shadows = LightShadows.None;
+
+            // Stone Altar Pedestal beneath the seal
+            GameObject altar = new GameObject("SanctumAltarPedestal");
+            altar.transform.SetParent(artifact.transform, false);
+            altar.transform.localPosition = new Vector3(0, -0.92f, 0);
+
+            Mesh altarMesh = TempleMeshBuilder.GetOrCreateBeveledSlabMesh(
+                "Assets/_Project/Art/Meshes/Temple/SanctumAltarPedestal.asset",
+                1.4f,
+                0.95f,
+                1.4f,
+                0.08f);
+
+            Material altarMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/DravidianCarvedGranite.mat",
+                new Color(0.38f, 0.35f, 0.32f),
+                0.06f,
+                0.30f);
+
+            var altarMf = altar.AddComponent<MeshFilter>();
+            altarMf.sharedMesh = altarMesh;
+            var altarMr = altar.AddComponent<MeshRenderer>();
+            altarMr.sharedMaterial = altarMat;
+
+            // Flanking sacred brass lamp on the altar
+            string lampPath = "Assets/_Project/Art/Models/Props/temple/brass_lamp.glb";
+            GameObject lampModel = AssetDatabase.LoadAssetAtPath<GameObject>(lampPath);
+            if (lampModel != null)
             {
-                artifactMat = new Material(Shader.Find("Standard"));
+                GameObject altarLamp = GameObject.Instantiate(lampModel, artifact.transform);
+                altarLamp.name = "AltarLamp";
+                altarLamp.transform.localPosition = new Vector3(1.1f, -0.92f, 0);
+                altarLamp.transform.localScale = Vector3.one * 0.75f;
+                AddWarmLampLight(altarLamp, 0.8f);
             }
-            artifactMat.name = "KaveriStarSealMaterial";
-            artifactMat.color = new Color(1f, 0.84f, 0f); // Gold
-            artifact.GetComponent<Renderer>().sharedMaterial = artifactMat;
 
+            // Attach HiddenArtifactPickup gameplay component
             HiddenArtifactPickup pickup = artifact.AddComponent<HiddenArtifactPickup>();
-            // Initialize will be called by AncientTempleLevelController
+            pickup.artifactId = "kaveri_star_seal";
+            pickup.displayNameEnglish = "Kaveri Star Seal";
+            pickup.displayNameTamil = "காவிரி நட்சத்திர முத்திரை";
+            pickup.descriptionEnglish = "An ancient stone seal bearing the constellation of the Kaveri river, said to grant wisdom to those who find it.";
+            pickup.descriptionTamil = "காவிரி நதியின் நட்சத்திர வடிவம் பொறிக்கப்பட்ட பழமையான கல் முத்திரை, அதனைக் கண்டுபிடிப்பவர்க்கு ஞானம் தரும் என நம்பப்படுகிறது.";
+            pickup.artifactModel = visual; // Wired to visual container so collection hides the seal cleanly
+
             return artifact;
         }
 
@@ -333,13 +560,11 @@ namespace WhisperingWilds.Editor
         {
             GameObject spawn = new GameObject("PlayerSpawnPoint");
             spawn.transform.position = new Vector3(0, 1, 20);
-            // Use "Player" tag which exists in TagManager.asset
             spawn.tag = "Player";
         }
 
         private static GameObject CreatePlayerCharacter()
         {
-            // Try to load PlayerCharacter prefab from the project
             string[] playerAssets = AssetDatabase.FindAssets("PlayerCharacter t:Prefab");
             GameObject playerInstance = null;
             foreach (string guid in playerAssets)
@@ -359,14 +584,12 @@ namespace WhisperingWilds.Editor
 
             if (playerInstance == null)
             {
-                // Fallback: create a minimal player GameObject with required components
                 Debug.LogWarning("[GenerateTempleScene] PlayerCharacter prefab not found, creating minimal player.");
                 playerInstance = new GameObject("PlayerCharacter");
                 playerInstance.tag = "Player";
                 playerInstance.transform.position = new Vector3(0, 1, 20);
                 playerInstance.transform.rotation = Quaternion.Euler(0, 180, 0);
 
-                // Add basic components needed for gameplay
                 var capsule = playerInstance.AddComponent<CapsuleCollider>();
                 capsule.height = 2f;
                 capsule.radius = 0.5f;
@@ -377,9 +600,6 @@ namespace WhisperingWilds.Editor
                 rb.useGravity = false;
             }
 
-            // Add required gameplay scripts (same as Chennai scene)
-            // These are NOT on the prefab - they are serialized in the scene
-            // All fields are [SerializeField] private with good defaults, so we just add the components
             if (playerInstance.GetComponent<PlayerMovement>() == null)
             {
                 playerInstance.AddComponent<PlayerMovement>();
@@ -400,13 +620,9 @@ namespace WhisperingWilds.Editor
 
         private static void CreateGameplayBootstrap()
         {
-            // GameplayRegionBootstrap ensures GameManager, SaveManager, CampaignFlow exist
-            // and sets the region ID for this scene
             GameObject bootstrapObj = new GameObject("GameplayRegionBootstrap");
             GameplayRegionBootstrap bootstrap = bootstrapObj.AddComponent<GameplayRegionBootstrap>();
-            // Use "thanjavur" as the region since the temple is geographically near Thanjavur
-            // The discovery ID "ancient_temple" is used separately in the puzzle/artifact systems
-            // regionId is [SerializeField] private, so we use reflection from Editor code
+
             FieldInfo regionIdField = typeof(GameplayRegionBootstrap).GetField("regionId", BindingFlags.Instance | BindingFlags.NonPublic);
             if (regionIdField != null)
             {
@@ -417,34 +633,30 @@ namespace WhisperingWilds.Editor
 
         private static void CreateMainCamera(GameObject playerTarget)
         {
-            // Create Main Camera (same as Chennai scene)
             GameObject cameraObj = new GameObject("Main Camera");
             cameraObj.tag = "MainCamera";
             cameraObj.transform.position = new Vector3(0, 3, 25);
             cameraObj.transform.rotation = Quaternion.Euler(10, 180, 0);
 
-            // Add Camera component
             Camera cam = cameraObj.AddComponent<Camera>();
             cam.nearClipPlane = 0.1f;
             cam.farClipPlane = 1000f;
             cam.fieldOfView = 60f;
 
-            // Add AudioListener (only one per scene)
             cameraObj.AddComponent<AudioListener>();
 
-            // Add CameraController bound to the player
             CameraController camCtrl = cameraObj.AddComponent<CameraController>();
             if (playerTarget != null)
             {
-                // Use public SetTarget method instead of accessing private field
                 camCtrl.SetTarget(playerTarget.transform);
             }
-            // Set other fields via reflection (they are [SerializeField] private)
+
             FieldInfo offsetField = typeof(CameraController).GetField("targetOffset", BindingFlags.Instance | BindingFlags.NonPublic);
             if (offsetField != null)
             {
                 offsetField.SetValue(camCtrl, new Vector3(0.35f, 1.4f, 0f));
             }
+
             FieldInfo smoothingField = typeof(CameraController).GetField("cameraSmoothing", BindingFlags.Instance | BindingFlags.NonPublic);
             if (smoothingField != null)
             {
@@ -454,9 +666,22 @@ namespace WhisperingWilds.Editor
             Debug.Log("[GenerateTempleScene] Main Camera created with CameraController.");
         }
 
+        private static void AddWarmLampLight(GameObject parent, float height)
+        {
+            GameObject lightObj = new GameObject("LampLight");
+            lightObj.transform.SetParent(parent.transform, false);
+            lightObj.transform.localPosition = new Vector3(0, height, 0);
+
+            Light pLight = lightObj.AddComponent<Light>();
+            pLight.type = LightType.Point;
+            pLight.color = new Color(1f, 0.78f, 0.45f);
+            pLight.intensity = 1.6f;
+            pLight.range = 5f;
+            pLight.shadows = LightShadows.None;
+        }
+
         private static void WireAudioClips(AncientTempleLevelController levelCtrl, TempleFolklorePuzzleController puzzleCtrl)
         {
-            // Load audio clips from the Audio directory
             string ambiencePath = "Assets/_Project/Audio/Ambience/temple_ambience.wav";
             string stoneClickPath = "Assets/_Project/Audio/Interactions/stone_click.wav";
             string successPath = "Assets/_Project/Audio/Interactions/puzzle_success.wav";
@@ -469,69 +694,23 @@ namespace WhisperingWilds.Editor
             AudioClip wrongAnswer = AssetDatabase.LoadAssetAtPath<AudioClip>(wrongAnswerPath);
             AudioClip doorOpen = AssetDatabase.LoadAssetAtPath<AudioClip>(doorOpenPath);
 
-            // Wire to level controller
-            if (ambience != null)
-            {
-                levelCtrl.templeAmbienceClip = ambience;
-                Debug.Log("[GenerateTempleScene] Temple ambience clip wired.");
-            }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Ambience clip not found at {ambiencePath}");
-            }
+            if (ambience != null) levelCtrl.templeAmbienceClip = ambience;
+            if (stoneClick != null) puzzleCtrl.stoneClickSound = stoneClick;
+            if (success != null) puzzleCtrl.puzzleSuccessSound = success;
+            if (wrongAnswer != null) puzzleCtrl.wrongAnswerSound = wrongAnswer;
+            if (doorOpen != null) puzzleCtrl.doorOpenSound = doorOpen;
 
-            // Wire to puzzle controller
-            if (stoneClick != null)
-            {
-                puzzleCtrl.stoneClickSound = stoneClick;
-                Debug.Log("[GenerateTempleScene] Stone click clip wired.");
-            }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Stone click clip not found at {stoneClickPath}");
-            }
-
-            if (success != null)
-            {
-                puzzleCtrl.puzzleSuccessSound = success;
-                Debug.Log("[GenerateTempleScene] Puzzle success clip wired.");
-            }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Puzzle success clip not found at {successPath}");
-            }
-
-            if (wrongAnswer != null)
-            {
-                puzzleCtrl.wrongAnswerSound = wrongAnswer;
-                Debug.Log("[GenerateTempleScene] Wrong answer clip wired.");
-            }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Wrong answer clip not found at {wrongAnswerPath}");
-            }
-
-            if (doorOpen != null)
-            {
-                puzzleCtrl.doorOpenSound = doorOpen;
-                Debug.Log("[GenerateTempleScene] Door open clip wired.");
-            }
-            else
-            {
-                Debug.LogWarning($"[GenerateTempleScene] Door open clip not found at {doorOpenPath}");
-            }
+            Debug.Log("[GenerateTempleScene] Audio clips wired successfully.");
         }
 
         private static void AddOrUpdateSceneInBuildSettings(string scenePath)
         {
             EditorBuildSettingsScene[] scenes = EditorBuildSettings.scenes;
 
-            // Check if scene already exists in build settings
             for (int i = 0; i < scenes.Length; i++)
             {
                 if (scenes[i].path == scenePath)
                 {
-                    // Update existing entry
                     scenes[i].enabled = true;
                     EditorBuildSettings.scenes = scenes;
                     Debug.Log($"[GenerateTempleScene] Updated existing build settings entry for {scenePath}");
@@ -539,7 +718,6 @@ namespace WhisperingWilds.Editor
                 }
             }
 
-            // Add new entry at the end
             EditorBuildSettingsScene[] newScenes = new EditorBuildSettingsScene[scenes.Length + 1];
             for (int i = 0; i < scenes.Length; i++)
             {

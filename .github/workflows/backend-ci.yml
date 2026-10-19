@@ -1,0 +1,48 @@
+
+# Backend CI — The Whispering Wilds
+# Runs on push/PR to main; tests backend security, cloud saves, and game/asset verification.
+# Uses run-all-tests.js which starts the server, runs tests, and stops the server.
+
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check JavaScript syntax
+        run: node -c server/server.js && node -c server/config.js && echo "Syntax OK"
+
+      - name: Verify asset scopes
+        run: npm run verify-assets
+
+      - name: Run all tests (server auto-started)
+        run: npm test
+        env:
+          TEST_SERVER_PORT: 3000
+

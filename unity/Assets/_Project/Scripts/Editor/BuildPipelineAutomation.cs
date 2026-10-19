@@ -23,7 +23,8 @@ namespace WhisperingWilds.Editor
             "Assets/_Project/Scenes/04_Thanjavur_Delta.unity",
             "Assets/_Project/Scenes/05_Chettinad_Mansion.unity",
             "Assets/_Project/Scenes/06_Mamallapuram_Shore.unity",
-            "Assets/_Project/Scenes/07_Nilgiris_Sanctuary.unity"
+            "Assets/_Project/Scenes/07_Nilgiris_Sanctuary.unity",
+            "Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity"
         };
 
         public static readonly string[] BenchmarkScenes = new string[]

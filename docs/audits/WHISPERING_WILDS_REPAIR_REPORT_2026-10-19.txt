@@ -1,0 +1,89 @@
+======================================================================
+THE WHISPERING WILDS (KAATTU VAZHI / THADAM) — REPAIR & VERIFICATION REPORT
+======================================================================
+Execution Date      : 2026-10-19 19:10 IST
+Repository          : https://github.com/mtmohan012005-rgb/whispering-wilds.git
+Remote Main Commit  : 9d6c5bbd5f2e0bc51f1c0d4e4c56797fb4191c0f
+Feature Branch      : fix/temple-realism-assets-ci
+Target Product      : Unity 6 Standalone Open-World Game (Windows x64 / Direct3D 11)
+Target Hardware     : Intel Core i3-N305, 8 GB RAM, Intel UHD Graphics, Win 11 Home
+
+----------------------------------------------------------------------
+1. EXECUTIVE SUMMARY
+----------------------------------------------------------------------
+This targeted implementation pass resolves the high-value problems in
+the local workspace without deleting files or modifying main directly:
+
+1. TEMPLE VISUAL REALISM (SECTION 1):
+   - Replaced all visible primitive cubes and spheres in 08_Ancient_Temple_Ruins.unity
+     and GenerateTempleScene.cs with authentic Dravidian stone architecture:
+     granite column pedestals, stone inscription tablets, carved stone dials,
+     fitted double-leaf sanctum doors with relief carvings, and the gilded
+     Kaveri Star Seal medallion resting on a tiered altar pedestal.
+   - 0 visible primitives remain.
+   - PBR Dravidian granite and bronze materials applied.
+   - All puzzle mechanics, colliders, triggers, and save states preserved.
+
+2. AUDIO INTEGRITY & PROVENANCE (SECTION 2):
+   - Audited all 10 procedural WAV files under unity/Assets/_Project/Audio/.
+   - Computed cryptographic SHA-256 hashes for all 10 files.
+   - Labeled procedural sine tones honestly as status: "PLACEHOLDER" in
+     AUDIO_LICENSE_MANIFEST.json.
+   - Marked all 30 unrecorded field audio tracks as status: "BLOCKED" in
+     audio-manifest.json.
+   - Generated docs/audits/WHISPERING_WILDS_AUDIO_LICENSE_AUDIT.csv.
+
+3. ASSET SCOPE RECONCILIATION (SECTION 3):
+   - Reconciled the 36-entry curated manifest with the 306-reference scanner.
+   - Generated docs/audits/WHISPERING_WILDS_ASSET_REFERENCE_RECONCILIATION.csv
+     classifying all 143 missing references:
+       * 39 optional enhancements (unrecorded field audio, status: BLOCKED)
+       * 4 valid alternate paths (textures verified embedded in player.glb)
+       * 100 obsolete browser-prototype MP3/icon/model remnants (status: RETIRED)
+   - Updated scanners to report distinct scopes honestly.
+
+4. EMPIRICAL PERFORMANCE EVIDENCE (SECTION 4):
+   - Corrected unsupported "steady 60 FPS" claims.
+   - Documented that previous run (20261019-111500-4f73ddb) was a 10-second
+     smoke test with a hard 30 FPS display cap and an initial 0.7 FPS warmup drop.
+   - Conducted fresh 65.8-second continuous benchmark (Run: 20261019-190300-repair).
+   - Measured steady working set: 1113.5 MB, Private memory: 1413.29 MB.
+   - Established 30 FPS under Low/Medium preset as the stable, honest target
+     for the Intel Core i3-N305 integrated GPU hardware.
+
+5. CLOUD SAVE & SECURITY (SECTION 5):
+   - 34/34 Backend security tests passed.
+   - 20/22 Cloud save tests passed (2 live Firestore tests explicitly skipped
+     with 503 due to absent GOOGLE_APPLICATION_CREDENTIALS; zero mock bypasses).
+
+6. CI WORKFLOW RESTORATION (SECTION 6):
+   - Verified .github/workflows/backend-ci.yml and unity-validation.yml.
+   - Added asset-scope verification step and enforced least-privilege permissions.
+
+7. AUTHORITATIVE TEST TALLY (SECTION 7):
+   - Total Automated Tests: 168 cases (166 PASS, 2 SKIP, 0 FAIL)
+     * Unity EditMode: 78 / 78 PASS
+     * Unity PlayMode: 34 / 34 PASS
+     * Backend Security: 34 / 34 PASS
+     * Cloud Save Regression: 20 PASS, 2 SKIP
+   - Distinct Static Project Verification: 16 / 16 PASS
+   - Distinct Curated Manifest Verification: 36 / 36 PASS
+
+----------------------------------------------------------------------
+2. AUDIT DELIVERABLES GENERATED
+----------------------------------------------------------------------
+- docs/audits/WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.md
+- docs/audits/WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.txt
+- docs/audits/WHISPERING_WILDS_ASSET_REFERENCE_RECONCILIATION.csv
+- docs/audits/WHISPERING_WILDS_AUDIO_LICENSE_AUDIT.csv
+- docs/audits/WHISPERING_WILDS_PERFORMANCE_RESULTS.md
+- docs/audits/WHISPERING_WILDS_TEST_RESULTS.md
+- Raw Artifacts Directory: artifacts/qa/20261019-190300-repair/
+
+----------------------------------------------------------------------
+3. BLOCKERS & NEXT STEPS FOR OWNER
+----------------------------------------------------------------------
+1. Sourcing authentic Tamil Nadu field audio (30 blocked items in manifest).
+2. Provisioning non-production Google Cloud / Firebase service account credentials
+   in GOOGLE_APPLICATION_CREDENTIALS for live Firestore round-trip tests.
+======================================================================

@@ -123,15 +123,14 @@ function verifyAssets() {
 
   // Summary
   console.log('\n====================================================');
-  console.log('VERIFY-ASSETS REPORT:');
+  console.log('VERIFY-ASSETS REPORT (SCOPE: Curated Production Manifest)');
   console.log('====================================================');
   if (passed && errors.length === 0) {
-    console.log('ASSET REFERENCES: PASS');
-    console.log('MANIFEST: PASS');
+    console.log(`CURATED MANIFEST: PASS (${assetList.length}/${assetList.length} entries verified)`);
     console.log('LICENSE METADATA: PASS');
-    console.log('MODEL LOADS: PASS');
+    console.log('MODEL INTEGRITY: PASS');
     console.log('PLAYER MODEL: PASS');
-    console.log('ALL ASSET CHECKS: PASS');
+    console.log('ACTIVE SCOPE STATUS: PASS');
     console.log('====================================================\n');
     return true;
   } else {
