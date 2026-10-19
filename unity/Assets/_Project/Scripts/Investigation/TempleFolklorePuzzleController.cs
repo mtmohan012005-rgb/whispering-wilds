@@ -15,6 +15,7 @@ using System.Collections;
 using UnityEngine;
 using WhisperingWilds.World;
 using WhisperingWilds.Localization;
+using WhisperingWilds.UI;
 
 namespace WhisperingWilds.Investigation
 {
@@ -159,8 +160,11 @@ namespace WhisperingWilds.Investigation
                 _levelController.OnPuzzleCompleted();
             }
 
-            // TODO: Play success animation and audio
-            // TODO: Open hidden chamber door
+            // Open the hidden chamber door if referenced
+            if (_levelController != null)
+            {
+                _levelController.OpenHiddenChamber();
+            }
         }
 
         private void OnPuzzleFailed()
@@ -174,9 +178,28 @@ namespace WhisperingWilds.Investigation
                 ShowHint();
             }
 
-            // TODO: Play failure sound and visual feedback
-            // TODO: Reset mechanisms after delay
+            // Show failure feedback through the journal UI
+            ShowFailureFeedback();
             StartCoroutine(ResetMechanismsAfterDelay(2f));
+        }
+
+        private void ShowFailureFeedback()
+        {
+            // Display wrong-answer feedback through the journal UI
+            string feedback = LocalizationManager.Instance != null &&
+                LocalizationManager.Instance.CurrentLanguage == Language.Tamil
+                ? "தவறான வரிசை. மீண்டும் முயற்சிக்கவும்."
+                : "Incorrect sequence. Try again.";
+            
+            // Show failure feedback through the HUD notification system
+            if (HUDManager.Instance != null)
+            {
+                HUDManager.Instance.ShowNotification(feedback, 3f);
+            }
+            else
+            {
+                Debug.LogWarning($"<color=#FF6B6B><b>[TemplePuzzle]</b></color> {feedback}");
+            }
         }
 
         private void ShowHint()
@@ -186,10 +209,16 @@ namespace WhisperingWilds.Investigation
                 LocalizationManager.Instance.CurrentLanguage == Language.Tamil;
             string hint = useTamil ? hintTamil : hintEnglish;
             
-            // Display hint — InvestigationManager tracks clues but doesn't have a
-            // dedicated hint UI. The hint is logged and can be displayed by the
-            // GameplayJournalUI or a custom hint panel when one is authored.
-            Debug.Log($"<color=#FFD700><b>[TemplePuzzle]</b></color> HINT: {hint}");
+            // Display hint through the HUD notification system
+            // so the player sees it in the actual game UI, not just the Console.
+            if (HUDManager.Instance != null)
+            {
+                HUDManager.Instance.ShowNotification(hint, 5f);
+            }
+            else
+            {
+                Debug.Log($"<color=#FFD700><b>[TemplePuzzle]</b></color> HINT: {hint}");
+            }
         }
 
         private IEnumerator ResetMechanismsAfterDelay(float delay)

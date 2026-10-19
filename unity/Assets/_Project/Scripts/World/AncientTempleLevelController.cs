@@ -24,6 +24,9 @@ namespace WhisperingWilds.World
         [Tooltip("The hidden artifact pickup component.")]
         public HiddenArtifactPickup artifactPickup;
 
+        [Tooltip("The hidden chamber door GameObject to activate when puzzle is solved.")]
+        public GameObject hiddenChamberDoor;
+
         [Header("Scene Settings")]
         [Tooltip("Region identifier for save data.")]
         public string regionId = "ancient_temple";
@@ -122,6 +125,23 @@ namespace WhisperingWilds.World
 
         public bool IsPuzzleCompleted() => _puzzleCompleted;
         public bool IsArtifactCollected() => _artifactCollected;
+
+        /// <summary>
+        /// Opens the hidden chamber door when the puzzle is solved.
+        /// Called by TempleFolklorePuzzleController after correct solution.
+        /// </summary>
+        public void OpenHiddenChamber()
+        {
+            if (hiddenChamberDoor != null)
+            {
+                hiddenChamberDoor.SetActive(true);
+                Debug.Log("[AncientTemple] Hidden chamber door opened!");
+            }
+            else
+            {
+                Debug.LogWarning("[AncientTemple] hiddenChamberDoor reference is null — door cannot open.");
+            }
+        }
 
         private void OnDestroy()
         {
