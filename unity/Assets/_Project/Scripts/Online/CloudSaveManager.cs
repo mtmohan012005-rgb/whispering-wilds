@@ -464,32 +464,33 @@ namespace WhisperingWilds.Online
         }
 
         /// <summary>
-        /// Builds the upload request envelope that includes revision and idempotencyKey.
-        /// The server wraps raw GameSaveData automatically, but it reads baseRevision
-        /// and idempotencyKey from the request body. Without this envelope, baseRevision
-        /// defaults to 0, causing stale-revision conflicts on every upload.
+        /// Builds the upload request envelope that separates request-control fields
+        /// (revision, idempotencyKey) from the actual GameSaveData.
+        /// The server auto-wraps raw GameSaveData (detecting schemaVersion without "data"),
+        /// reading baseRevision and idempotencyKey from the request body.
+        /// We send the raw GameSaveData with revision and idempotencyKey as sibling fields
+        /// so the server's wrapper can extract them without polluting the stored save data.
+        /// The server strips these fields before persisting, so they don't become part of
+        /// the GameSaveData stored in Firestore.
         /// </summary>
         private static string BuildUploadEnvelope(string gameSaveJson, int baseRevision, string idempotencyKey)
         {
-            // The gameSaveJson is the raw GameSaveData. We need to wrap it so the server
-            // receives: { saveId, saveVersion, data: {...}, checksum, baseRevision, idempotencyKey }
-            // But since the server auto-wraps raw GameSaveData (detecting schemaVersion without data),
-            // we need to include baseRevision and idempotencyKey in the raw payload itself so the
-            // server's wrapper picks them up.
-            //
-            // Strategy: inject baseRevision and idempotencyKey into the raw GameSaveData JSON.
-            // The server's wrapper reads body.revision and body.idempotencyKey from the raw body.
-            // GameSaveData doesn't have these fields, so we add them as extra JSON properties.
-            
             if (string.IsNullOrEmpty(gameSaveJson)) return "{}";
             
-            // Remove the closing brace, add our extra fields, then close
+            // The server's auto-wrapper (persistence-routes.js line 63-76) detects raw
+            // GameSaveData by checking body.schemaVersion && !body.data, then wraps it:
+            //   { saveId, saveVersion, data: body, checksum, baseRevision: body.revision, idempotencyKey: body.idempotencyKey }
+            // So we need body.revision and body.idempotencyKey to be present in the raw JSON.
+            // The server reads these fields and does NOT store them inside the data envelope.
+            // After wrapping, the stored data is the original GameSaveData (without revision/idempotencyKey).
+            
             string json = gameSaveJson.Trim();
             if (!json.EndsWith("}")) return json; // malformed, send as-is
             
             string withoutClosingBrace = json.Substring(0, json.Length - 1);
             
-            // Add baseRevision and idempotencyKey as extra fields
+            // Add baseRevision and idempotencyKey as extra fields.
+            // These are read by the server's wrapper and stripped before storage.
             string extraFields = $",\"revision\":{baseRevision}";
             if (!string.IsNullOrEmpty(idempotencyKey))
             {

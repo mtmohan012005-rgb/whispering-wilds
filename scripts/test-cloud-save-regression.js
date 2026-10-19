@@ -358,14 +358,27 @@ async function testExpiredSession() {
 
 // ---------------------------------------------------------------------------
 // Helper: compute FNV-1a checksum (same algorithm as server)
+// The server uses: stableStringify (sorted keys) + FNV-1a 32-bit + hex output
+// This must match server/firebase/persistence-service.js exactly.
 // ---------------------------------------------------------------------------
-function fnv1aHash(str) {
-    let hash = 0x811c9dc5 ^ 0;
-    for (let i = 0; i < str.length; i++) {
-        hash ^= str.charCodeAt(i);
-        hash = (hash * 0x01000193) | 0; // unsigned 32-bit
+function stableStringify(value) {
+    if (value === null || typeof value !== 'object') return JSON.stringify(value);
+    if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+    const keys = Object.keys(value).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify(value[k])}`).join(',')}}`;
+}
+
+function fnv1aHash(payload) {
+    // Use stableStringify (sorted keys) to match server's canonicalization
+    const json = typeof payload === 'string' ? payload : stableStringify(payload);
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < json.length; i++) {
+        hash ^= json.charCodeAt(i);
+        // Use Math.imul for correct 32-bit signed multiplication, then >>> 0 for unsigned
+        hash = Math.imul(hash, 0x01000193) >>> 0;
     }
-    return hash.toString(36);
+    // Server uses hex output, zero-padded to 8 characters
+    return hash.toString(16).padStart(8, '0');
 }
 
 // ---------------------------------------------------------------------------

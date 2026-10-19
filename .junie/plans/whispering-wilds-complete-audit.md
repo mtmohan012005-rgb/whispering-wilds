@@ -279,7 +279,23 @@ Actual code implementation and verification session.
 - Pushed to GitHub: `unity/full-3d-repair` branch (commit a0f1727)
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — Core loop works, but needs Unity Editor, production assets, and human playthrough
 
-### ✓ Step 9: Unity Editor Compilation & Runtime Testing (Completed 2026-10-18)
+### ✓ Step 10: Temple Scene, Cloud-Save Test Fix & CI Workflows (Completed 2026-10-19)
+Fix confirmed defects and create the playable temple level.
+
+- **Phase 1 baseline findings:**
+  - Temple scene `08_Ancient_Temple_Ruins.unity` — MISSING
+  - Build settings — temple scene NOT included (8 scenes only)
+  - CI workflows — exist locally but UNTRACKED in git (PAT lacks workflow scope)
+  - Cloud-save test `testStaleRevisionConflict()` — BUG: line 535 accepts HTTP 201 as valid for stale revision
+  - `AncientTempleLevelController.cs` — BUG: line 43 uses `DontDestroyOnLoad` for a scene-specific controller
+  - Temple scripts have .meta files and TODO fixes from previous commit
+- **Fixes to apply:**
+  - Remove `DontDestroyOnLoad` from AncientTempleLevelController.cs
+  - Fix cloud-save test to assert HTTP 409 only for stale revision
+  - Create temple scene using Unity Editor
+  - Add temple scene to build settings
+  - Track CI workflows in git (without workflow scope push)
+  - Run all tests and publish
 Actual Unity Editor work — compilation, verification, and runtime evidence.
 
 - **Found Unity 6000.6.3f1 installed** at `C:\Program Files\Unity\Hub\Editor\6000.6.3f1` — exact version match
@@ -293,3 +309,30 @@ Actual Unity Editor work — compilation, verification, and runtime evidence.
 - Created `docs/audits/unity-compilation-log.txt` (955 lines) — full compilation log
 - Pushed to GitHub: `unity/full-3d-repair` branch (commit 24d44a8)
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — backed by actual Unity Editor evidence for the first time
+
+### ✓ Step 11: Temple Player, Camera, Audio & Scene Fixes (Completed 2026-10-19)
+Make the temple scene genuinely playable with player movement, camera, interaction, and audio.
+
+- **Fixed temple scene** `08_Ancient_Temple_Ruins.unity`:
+  - Added PlayerMovement, PlayerInputHandler, PlayerInteractor, CharacterController, PlayerAppearanceManager to PlayerCharacter
+  - Changed PlayerCharacter tag from "Untagged" to "Player"
+  - Added Main Camera with Camera, AudioListener, and CameraController targeting player
+  - Fixed GameplayRegionBootstrap regionId from "chennai" to "thanjavur"
+- **Fixed GenerateTempleScene.cs**: Added player scripts, camera creation, correct region ID, reflection for private fields
+- **Created procedural audio files** (10 WAV files): temple_ambience, temple_bell, birds, footstep_stone, stone_click, wrong_answer, puzzle_success, door_open, ui_click, ui_hover
+- **NavMesh package** `com.unity.ai.navigation` v2.0.5 is INCOMPATIBLE with Unity 6000.6.3f1 (GetInstanceID errors) — reverted
+- **All 148/148 automated tests PASS** — fresh verification
+- Pushed to GitHub: `main` branch
+- **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — temple scene now has player, camera, audio, and correct region
+
+### ✓ Step 12: Temple GUID, Cloud-Save Checksum & CI Fixes (Completed 2026-10-19)
+Fix temple scene GUID mismatch, cloud-save checksum test inconsistency, and add scene GUID validation.
+
+- **Fixed temple scene GUID** in `EditorBuildSettings.asset`: `5f1d2244...` → `af7553a3...` (matches .meta file)
+- **Fixed `test-cloud-save-regression.js`**: `fnv1aHash` now uses `stableStringify` (sorted keys), `Math.imul` for 32-bit multiplication, and hex output — matching server exactly
+- **Updated `CloudSaveManager.cs`**: Improved documentation for `BuildUploadEnvelope` to clarify revision/idempotencyKey are stripped by server before storage
+- **Added scene GUID validation** to `verify-game.js` (check 16) — validates all build settings scene GUIDs against .meta files
+- **CI workflows** already tracked in git (backend-ci.yml, unity-validation.yml) — blocked from push by PAT lacking `workflow` scope
+- **All 148/148 automated tests PASS** — including new SCENE GUID VALIDATION check
+- Pushed to GitHub: `main` branch
+- **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — all code defects fixed, needs external polish

@@ -214,6 +214,33 @@ function runVerification() {
   }
   checklist['DOCUMENTATION'] = docsPass ? 'PASS' : 'FAIL';
 
+  // 16. Scene GUID validation (check build settings GUIDs match .meta files)
+  let sceneGuidPass = true;
+  const buildSettingsPath = path.join(ROOT_DIR, 'unity/ProjectSettings/EditorBuildSettings.asset');
+  if (fs.existsSync(buildSettingsPath)) {
+    const buildSettingsContent = fs.readFileSync(buildSettingsPath, 'utf8');
+    // Parse scene entries: "path: Assets/.../SceneName.unity" followed by "guid: xxx"
+    const sceneGuidRegex = /path:\s*(Assets\/_Project\/Scenes\/[^.]+\.unity)\s+guid:\s+([a-f0-9]{32})/g;
+    let match;
+    while ((match = sceneGuidRegex.exec(buildSettingsContent)) !== null) {
+      const scenePath = match[1];
+      const buildGuid = match[2];
+      const metaPath = path.join(ROOT_DIR, 'unity', scenePath + '.meta');
+      if (fs.existsSync(metaPath)) {
+        const metaContent = fs.readFileSync(metaPath, 'utf8');
+        const metaGuidMatch = metaContent.match(/^guid:\s+([a-f0-9]{32})/m);
+        if (metaGuidMatch) {
+          const metaGuid = metaGuidMatch[1];
+          if (buildGuid !== metaGuid) {
+            sceneGuidPass = false;
+            failures.push(`Scene GUID mismatch: ${scenePath} — build settings has ${buildGuid}, .meta has ${metaGuid}`);
+          }
+        }
+      }
+    }
+  }
+  checklist['SCENE GUID VALIDATION'] = sceneGuidPass ? 'PASS' : 'FAIL';
+
   // Summary
   console.log('\nResults:');
   console.log('-------');
