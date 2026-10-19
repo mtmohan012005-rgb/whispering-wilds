@@ -406,6 +406,15 @@ Fresh verification of all tests, CI workflow recreation, and push attempt.
 ### ✓ Step 19: Test Runner, CI Workflows & Campaign Checklist (Completed 2026-10-19)
 Fix missing test runner, update CI workflows, and create human campaign playthrough checklist.
 
+### ✓ Step 20: Documentation Corrections & Test Runner Reliability (Completed 2026-10-19)
+Fix outdated documentation, fabricated audio claims, and improve test runner robustness.
+
+- **Fixed `docs/PROJECT_HEALTH.md`**: Corrected 3 outdated claims from 2026-10-16 audit — multiplayer client is IMPLEMENTED (not MISSING), cloud saves are INTEGRATED (not disconnected), added historical correction table
+- **Fixed `assets/audio/AUDIO_LICENSE_MANIFEST.json`** (v2.0.0): Replaced fabricated "commissioned field recording" claims with honest provenance for 10 procedural WAV placeholder files; added `missingProductionAudio` list
+- **Improved `scripts/run-all-tests.js`**: Added 2-minute timeout per test suite, server output logging on failure, PROJECT_ROOT resolution, double-stop guard, spawn error handling, environment variable docs
+- **All 5 test suites PASS** — fresh verification
+- Pushed to GitHub `main`: Commit `ddf8a30`
+
 - **Created `scripts/run-all-tests.js`** (193 lines) — Self-contained test runner that starts backend server, waits for readiness, runs all test suites, and stops server even on failure
 - **Updated `package.json`**: `npm test` now uses `node scripts/run-all-tests.js` instead of chaining individual scripts
 - **Updated `.github/workflows/backend-ci.yml`** (44 lines) — Simplified to use `npm test` which auto-starts server
