@@ -11,7 +11,7 @@
     "verify-assets": "node scripts/verify-assets.js",
     "verify-production": "node scripts/verify-production.js",
     "validate": "node scripts/verify-game.js && node scripts/verify-production.js",
-    "test": "node scripts/test-backend-security.js && node scripts/verify-game.js && node scripts/verify-production.js && node scripts/verify-assets.js && node scripts/test-cloud-save-regression.js",
+    "test": "node scripts/run-all-tests.js",
     "test:backend": "node scripts/test-backend-security.js",
     "test:cloudsave": "node scripts/test-cloud-save-regression.js",
     "assets:validate": "node scripts/validate-assets.js",

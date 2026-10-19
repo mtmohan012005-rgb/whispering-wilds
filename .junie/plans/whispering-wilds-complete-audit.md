@@ -402,3 +402,14 @@ Fresh verification of all tests, CI workflow recreation, and push attempt.
 - **Remote `main` is at commit f3fa5c7** — all game code, temple scene, audio, cloud save fixes, security fixes, and tests are published
 - **Remaining blocker:** User must add `workflow` scope to GitHub PAT, then `git push origin main`
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — all code complete; CI workflows need user action to publish
+
+### ✓ Step 19: Test Runner, CI Workflows & Campaign Checklist (Completed 2026-10-19)
+Fix missing test runner, update CI workflows, and create human campaign playthrough checklist.
+
+- **Created `scripts/run-all-tests.js`** (193 lines) — Self-contained test runner that starts backend server, waits for readiness, runs all test suites, and stops server even on failure
+- **Updated `package.json`**: `npm test` now uses `node scripts/run-all-tests.js` instead of chaining individual scripts
+- **Updated `.github/workflows/backend-ci.yml`** (44 lines) — Simplified to use `npm test` which auto-starts server
+- **Created `docs/qa/HUMAN_CAMPAIGN_PLAYTHROUGH.md`** (249 lines) — 116-test checklist covering boot, settings, all 6 regions, temple level, save/load, localization, audio, performance, campaign ending, cloud save
+- **All 5 test suites PASS** via run-all-tests.js: Backend Security, Cloud Save Regression, Game Verification, Production Verification, Asset Verification
+- **CI workflows ready** but BLOCKED from push — PAT lacks `workflow` scope
+- **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — Test infrastructure complete, campaign checklist ready, CI workflows need user action
