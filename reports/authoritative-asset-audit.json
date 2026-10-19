@@ -1,6 +1,6 @@
 {
   "schema": "whispering-wilds/authoritative-asset-audit@1",
-  "generatedAt": "2026-10-18T17:29:41.669Z",
+  "generatedAt": "2026-10-19T19:20:51.317Z",
   "generatedFrom": "scripts/authoritative-asset-audit.js",
   "supersedes": [
     "ASSET_AUDIT_REPORT.json",
@@ -18,15 +18,15 @@
   },
   "totals": {
     "physicalAssetFiles": 167,
-    "physicalAssetBytes": 30338404,
-    "distinctReferencedPaths": 18,
-    "present": 18,
-    "missing": 0,
+    "physicalAssetBytes": 30352367,
+    "distinctReferencedPaths": 21,
+    "present": 19,
+    "missing": 2,
     "caseMismatched": 0,
     "templatedReferences": 0,
-    "totalReferenceOccurrences": 22,
-    "sourceFilesScanned": 76,
-    "unusedPhysicalAssets": 148,
+    "totalReferenceOccurrences": 31,
+    "sourceFilesScanned": 78,
+    "unusedPhysicalAssets": 147,
     "duplicateGroups": 27,
     "glbFiles": 124,
     "runtimeLoadedModules": 0
@@ -38,19 +38,24 @@
       "missing": 0
     },
     "AUDIO_OTHER": {
-      "referenced": 1,
+      "referenced": 2,
       "present": 1,
-      "missing": 0
+      "missing": 1
     },
     "CHARACTER": {
-      "referenced": 3,
-      "present": 3,
+      "referenced": 4,
+      "present": 4,
       "missing": 0
     },
     "OTHER": {
       "referenced": 1,
       "present": 1,
       "missing": 0
+    },
+    "TEXTURE": {
+      "referenced": 1,
+      "present": 0,
+      "missing": 1
     },
     "VEGETATION": {
       "referenced": 3,
@@ -65,9 +70,9 @@
   },
   "byRegion": {
     "CHENNAI": {
-      "referenced": 3,
+      "referenced": 4,
       "present": 3,
-      "missing": 0
+      "missing": 1
     },
     "CHETTINAD": {
       "referenced": 1,
@@ -95,7 +100,9 @@
       "missing": 0
     }
   },
-  "classification": {},
+  "classification": {
+    "C_DEVTOOL_DECLARED_ONLY": 2
+  },
   "manifestCrossCheck": {
     "present": true,
     "declared": 36,
@@ -104,15 +111,15 @@
   },
   "oldReportReconciliation": {
     "oldReport": "ASSET_AUDIT_REPORT.json",
-    "oldTimestamp": "2026-10-17T16:46:02.628Z",
+    "oldTimestamp": "2026-10-19T13:31:21.745Z",
     "oldReferenced": 306,
     "oldFound": 163,
     "oldMissing": 143,
-    "oldMissingStillMissing": 0,
+    "oldMissingStillMissing": 2,
     "oldMissingNowPresent": 0,
-    "oldMissingNoLongerStaticallyReferenced": 143,
-    "oldFoundStillPresentAndReferenced": 18,
-    "oldFoundNoLongerReferenced": 145,
+    "oldMissingNoLongerStaticallyReferenced": 141,
+    "oldFoundStillPresentAndReferenced": 19,
+    "oldFoundNoLongerReferenced": 144,
     "newMissingNotInOldMissing": 0,
     "note": "Both scans are literal-string based. A difference in totals reflects which literals each scanner matched, not a change in what the game loads. The intersection (still-missing) is the stable figure."
   },
@@ -4515,6 +4522,10 @@
       "size": 8712
     },
     {
+      "path": "assets/audio/AUDIO_LICENSE_MANIFEST.json",
+      "size": 8633
+    },
+    {
       "path": "assets/architecture/village/cattle_shed.glb",
       "size": 7668
     },
@@ -4549,14 +4560,6 @@
     {
       "path": "assets/props/household/wooden_bench.glb",
       "size": 6532
-    },
-    {
-      "path": "assets/characters/player/CHARACTER_MANIFEST.json",
-      "size": 6320
-    },
-    {
-      "path": "assets/audio/AUDIO_LICENSE_MANIFEST.json",
-      "size": 6206
     },
     {
       "path": "assets/characters/wildlife/kingfisher.glb",
@@ -5117,6 +5120,37 @@
       }
     },
     {
+      "path": "assets/audio/ambience_chennai.mp3",
+      "status": "MISSING",
+      "caseExact": true,
+      "resolvedPath": null,
+      "category": "AUDIO_OTHER",
+      "region": "CHENNAI",
+      "extensions": [
+        ".mp3"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 90,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "} else if (ref.startsWith('assets/audio/footsteps/') || ref.startsWith('assets/audio/vehicles/') || ref.startsWith('assets/audio/interaction/') || ref.startsWith('assets/audio/traversal/') || ref.startsWith('assets/audio/puzzles/') || ref.s"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": true,
+      "glb": null,
+      "classification": "C_DEVTOOL_DECLARED_ONLY",
+      "responsibleSubsystem": "dev tool / validator",
+      "runtimeLoadedBy": [],
+      "pathDriftTarget": null,
+      "note": "Declared only by a script/tool that the shipped page never loads. No runtime impact."
+    },
+    {
       "path": "assets/audio/audio-manifest.json",
       "status": "PRESENT",
       "caseExact": true,
@@ -5127,9 +5161,57 @@
         ".json"
       ],
       "dynamicTemplate": false,
-      "referenceCount": 1,
-      "referenceSourceCount": 1,
+      "referenceCount": 7,
+      "referenceSourceCount": 2,
       "referenceSources": [
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 24,
+          "system": "UNKNOWN",
+          "registryKey": "notes",
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = 'assets/audio/audio-manifest.json';"
+        },
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 31,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = ref.endsWith('.mp3') ? 'Legacy Web Client (docs/audits/ASSET_AND_CONTENT_GAPS.csv)' : 'assets/audio/audio-manifest.json';"
+        },
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 46,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = 'assets/audio/audio-manifest.json';"
+        },
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 62,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = 'assets/audio/audio-manifest.json';"
+        },
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 70,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = 'assets/audio/audio-manifest.json';"
+        },
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 85,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = 'assets/audio/audio-manifest.json';"
+        },
         {
           "source": "scripts/unity-asset-audit.js",
           "line": 141,
@@ -5139,7 +5221,7 @@
           "lineText": "const manifestPath = path.join(ROOT, 'assets/audio/audio-manifest.json');"
         }
       ],
-      "referencingFilesHaveFallbackLogic": false,
+      "referencingFilesHaveFallbackLogic": true,
       "glb": null
     },
     {
@@ -5200,6 +5282,32 @@
       }
     },
     {
+      "path": "assets/characters/player/CHARACTER_MANIFEST.json",
+      "status": "PRESENT",
+      "caseExact": true,
+      "resolvedPath": "assets/characters/player/CHARACTER_MANIFEST.json",
+      "category": "CHARACTER",
+      "region": null,
+      "extensions": [
+        ".json"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 100,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": false,
+          "lineText": "citingFile = 'assets/characters/player/CHARACTER_MANIFEST.json';"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": true,
+      "glb": null
+    },
+    {
       "path": "assets/characters/player/player.glb",
       "status": "PRESENT",
       "caseExact": true,
@@ -5223,7 +5331,7 @@
         },
         {
           "source": "scripts/validate-assets.js",
-          "line": 113,
+          "line": 143,
           "system": "UNKNOWN",
           "registryKey": "isPlayerMissing",
           "inlineFallbackHint": false,
@@ -5238,7 +5346,7 @@
           "lineText": "const playerGLBPath = path.join(ROOT_DIR, 'assets/characters/player/player.glb');"
         }
       ],
-      "referencingFilesHaveFallbackLogic": true,
+      "referencingFilesHaveFallbackLogic": false,
       "glb": {
         "validContainer": true,
         "version": 2,
@@ -5586,6 +5694,37 @@
       ],
       "referencingFilesHaveFallbackLogic": true,
       "glb": null
+    },
+    {
+      "path": "assets/textures/placeholder.png",
+      "status": "MISSING",
+      "caseExact": true,
+      "resolvedPath": null,
+      "category": "TEXTURE",
+      "region": null,
+      "extensions": [
+        ".png"
+      ],
+      "dynamicTemplate": false,
+      "referenceCount": 1,
+      "referenceSourceCount": 1,
+      "referenceSources": [
+        {
+          "source": "scripts/generate-reconciliation-csv.js",
+          "line": 104,
+          "system": "UNKNOWN",
+          "registryKey": null,
+          "inlineFallbackHint": true,
+          "lineText": "} else if (ref.startsWith('assets/icons/') || ref === 'assets/textures/placeholder.png') {"
+        }
+      ],
+      "referencingFilesHaveFallbackLogic": true,
+      "glb": null,
+      "classification": "C_DEVTOOL_DECLARED_ONLY",
+      "responsibleSubsystem": "dev tool / validator",
+      "runtimeLoadedBy": [],
+      "pathDriftTarget": null,
+      "note": "Declared only by a script/tool that the shipped page never loads. No runtime impact."
     },
     {
       "path": "assets/vegetation/bushes/tea_hedge.glb",
