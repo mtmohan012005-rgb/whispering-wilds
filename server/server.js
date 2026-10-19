@@ -26,6 +26,18 @@ const app = express();
 app.use(cors({ origin: config.CORS_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '5mb' }));
 
+// Security headers — required for production hardening.
+// These protect against MIME-type sniffing and clickjacking.
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('X-DNS-Prefetch-Control', 'off');
+    res.setHeader('X-Download-Options', 'noopen');
+    res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+    next();
+});
+
 // Request identity + structured access log. Registered before routes so every
 // request (including errors) carries a requestId.
 app.use(requestContext());

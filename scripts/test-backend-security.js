@@ -329,12 +329,16 @@ async function testSecurityHeaders() {
     console.log('\n[Test] Security Headers');
 
     const res = await request('GET', '/health');
-    // Check for common security headers (may not all be present)
-    const hasSomeSecurityHeaders =
-        res.headers['x-content-type-options'] !== undefined ||
-        res.headers['x-frame-options'] !== undefined ||
-        res.headers['strict-transport-security'] !== undefined;
-    assert(hasSomeSecurityHeaders || true, 'Security headers check (informational)');
+    // Check for required security headers — these must be present in production.
+    // The server sets them via helmet middleware; if missing, the server config is wrong.
+    assert(res.headers['x-content-type-options'] === 'nosniff', 'X-Content-Type-Options is nosniff');
+    assert(res.headers['x-frame-options'] === 'SAMEORIGIN', 'X-Frame-Options is SAMEORIGIN');
+    // Strict-Transport-Security is only set over HTTPS; skip in local HTTP testing
+    if (res.headers['strict-transport-security']) {
+        assert(res.headers['strict-transport-security'].includes('max-age'), 'Strict-Transport-Security has max-age');
+    } else {
+        console.log('  ℹ️  INFO: Strict-Transport-Security not set (expected over HTTP)');
+    }
 }
 
 // ============================================================================

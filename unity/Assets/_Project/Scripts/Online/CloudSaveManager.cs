@@ -288,14 +288,24 @@ namespace WhisperingWilds.Online
                     {
                         // The server returns { success: true, revision: N, savedAt, region, replayed, requestId }
                         // Parse the top-level "revision" field from the upload response.
+                        // A valid revision is REQUIRED to confirm the save — without it we cannot
+                        // trust that the backend actually persisted the data, so we treat it as a failure.
                         string response = request.downloadHandler.text;
                         int newRevision = ParseRevisionFromUploadResponse(response);
                         if (newRevision > 0)
                         {
                             CurrentCloudRevision = newRevision;
+                            Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> {label} confirmed by backend (HTTP {request.responseCode}, revision {CurrentCloudRevision}).");
+                            message = "Sync confirmed by backend.";
                         }
-                        Debug.Log($"<color=#00FF99><b>[CloudSaveManager]</b></color> {label} confirmed by backend (HTTP {request.responseCode}, revision {CurrentCloudRevision}).");
-                        message = "Sync confirmed by backend.";
+                        else
+                        {
+                            // HTTP 2xx but no revision — the response is malformed.
+                            // Do NOT report success because we cannot confirm the save was persisted.
+                            succeeded = false;
+                            Debug.LogWarning($"<color=#FFAA00><b>[CloudSaveManager]</b></color> {label} response missing revision (HTTP {request.responseCode}). Cannot confirm save was persisted. Local persistence remains authoritative.");
+                            message = "Backend response missing revision — save not confirmed.";
+                        }
                     }
                     else if (request.responseCode == 409)
                     {
@@ -415,9 +425,11 @@ namespace WhisperingWilds.Online
                                     }
                                     else
                                     {
+                                        // Capture the schema value BEFORE clearing downloadedData to avoid NullReferenceException
+                                        int badSchema = downloadedData.schemaVersion;
                                         downloadedData = null;
                                         message = "Downloaded save has invalid schema version.";
-                                        Debug.LogWarning($"[CloudSaveManager] Corrupted cloud save rejected (schema version: {downloadedData.schemaVersion}).");
+                                        Debug.LogWarning($"[CloudSaveManager] Corrupted cloud save rejected (schema version: {badSchema}).");
                                     }
                                 }
                                 else
