@@ -19,7 +19,9 @@ param(
     [ValidateSet("EditMode", "PlayMode")]
     [string]$TestMode = "PlayMode",
 
-    [string]$TestFilter = ""
+    [string]$TestFilter = "",
+
+    [string]$ArtifactDir = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -209,17 +211,32 @@ if (Test-Path $unityLog) {
     }
 }
 
-# Cleanup QA artifacts — preserve logs and results on failure
+# Evidence retention: copy artifacts to specified $ArtifactDir before any cleanup
 Write-Host ""
-if ($testsExecuted -and $testFailed -eq 0 -and $exitCode -eq 0) {
-    # Success: clean up all QA artifacts
-    Write-Host "Tests passed. Cleaning up QA artifacts: $qaTempRoot"
-    try {
-        Remove-Item -Recurse -Force $qaTempRoot -ErrorAction SilentlyContinue
-        Write-Host "OK: All QA artifacts cleaned up."
+if (-not [string]::IsNullOrWhiteSpace($ArtifactDir)) {
+    if (-not (Test-Path $ArtifactDir)) {
+        New-Item -ItemType Directory -Force -Path $ArtifactDir | Out-Null
     }
-    catch {
-        Write-Warning "Could not clean up QA directory: $_"
+    if (Test-Path $unityLog) {
+        $destLog = Join-Path $ArtifactDir (Split-Path $unityLog -Leaf)
+        Copy-Item -Path $unityLog -Destination $destLog -Force
+        Write-Host "Preserved Unity log to: $destLog"
+    }
+    if (Test-Path $resultXml) {
+        $destXml = Join-Path $ArtifactDir (Split-Path $resultXml -Leaf)
+        Copy-Item -Path $resultXml -Destination $destXml -Force
+        Write-Host "Preserved Test results XML to: $destXml"
+    }
+}
+
+# Cleanup QA artifacts — preserve logs and results on failure or when no ArtifactDir
+if ($testsExecuted -and $testFailed -eq 0 -and $exitCode -eq 0) {
+    if (-not [string]::IsNullOrWhiteSpace($ArtifactDir)) {
+        Write-Host "Tests passed. Evidence preserved in: $ArtifactDir. Cleaning up temp root: $qaTempRoot"
+        Remove-Item -Recurse -Force $qaTempRoot -ErrorAction SilentlyContinue
+    }
+    else {
+        Write-Host "Tests passed. Preserving QA artifacts in temp directory: $qaTempRoot"
     }
 }
 else {

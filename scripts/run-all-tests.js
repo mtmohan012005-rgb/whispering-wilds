@@ -115,7 +115,7 @@ async function main() {
   try {
     serverProcess = spawn('node', ['server.js'], {
       stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, PORT: SERVER_PORT.toString() },
+      env: { ...process.env, PORT: SERVER_PORT.toString(), NODE_ENV: 'test' },
       cwd: PROJECT_ROOT
     });
   } catch (err) {

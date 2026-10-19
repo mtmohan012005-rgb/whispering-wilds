@@ -15,8 +15,9 @@ class AuthService {
      * Registers a new account.
      */
     static async register({ email, password, confirmPassword, displayName }, clientIp) {
-        // Rate limit check for registrations per IP (max 5 per hour)
-        const ipLimit = rateLimiter.check('register_ip', clientIp, 5, 60 * 60 * 1000);
+        // Rate limit check for registrations per IP (max 5 per hour in prod, 100 in test)
+        const maxRegistrations = (process.env.NODE_ENV === 'test') ? 100 : 5;
+        const ipLimit = rateLimiter.check('register_ip', clientIp, maxRegistrations, 60 * 60 * 1000);
         if (!ipLimit.allowed) {
             return { success: false, status: 429, message: 'Too many registration attempts. Please try again later.' };
         }

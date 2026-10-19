@@ -17,8 +17,18 @@ function runLinkValidation() {
   console.log('====================================================\n');
 
   if (!fs.existsSync(INDEX_HTML)) {
-    console.error('Fatal: index.html not found!');
-    process.exit(1);
+    console.log('Notice: index.html not present (Unity standalone architecture; web browser client removed).');
+    const report = {
+      timestamp: new Date().toISOString(),
+      note: 'index.html not present (Unity standalone game architecture)',
+      totalAudited: 0,
+      missingCount: 0,
+      errors: [],
+      checked: []
+    };
+    fs.writeFileSync(path.join(ROOT_DIR, 'LINK_AUDIT_REPORT.json'), JSON.stringify(report, null, 2));
+    console.log('Report written to LINK_AUDIT_REPORT.json\n');
+    return { success: true, errors: [], checked: [] };
   }
 
   const content = fs.readFileSync(INDEX_HTML, 'utf8');

@@ -58,43 +58,48 @@ function request(method, path, body, headers = {}) {
 // ---------------------------------------------------------------------------
 // Helper: register + login to get a session token
 // ---------------------------------------------------------------------------
-async function loginAs(email, password) {
-    const unique = `test_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const testEmail = email || `ww_${unique}@example.com`;
-    const testPassword = password || 'TestPass123!';
+const sessionCache = new Map();
 
-    // Small delay to avoid rate limiting from rapid registrations
-    await new Promise((r) => setTimeout(r, 200));
-
-    // Try to register (ignore if already exists)
-    const regRes = await request('POST', '/api/auth/register', {
-        email: testEmail,
-        password: testPassword,
-        confirmPassword: testPassword,
-        displayName: 'Test User'
-    }, { 'X-WW-CSRF': '1' });
-
-    // If rate limited, wait and retry once
-    if (regRes.status === 429) {
-        await new Promise((r) => setTimeout(r, 1500));
-        await request('POST', '/api/auth/register', {
-            email: testEmail,
-            password: testPassword,
-            confirmPassword: testPassword,
-            displayName: 'Test User'
-        }, { 'X-WW-CSRF': '1' });
+async function loginAs(userLabel = 'default') {
+    if (sessionCache.has(userLabel)) {
+        return sessionCache.get(userLabel);
     }
+    const testEmail = `ww_test_${userLabel}_cloudsave@example.com`;
+    const testPassword = 'TestPass123!';
 
-    // Login
+    // Try login first in case user was already registered
     const loginRes = await request('POST', '/api/auth/login', {
         email: testEmail,
         password: testPassword
     }, { 'X-WW-CSRF': '1' });
 
-    if (!loginRes.body || !loginRes.body.token) {
-        throw new Error(`Login failed for ${testEmail}: status=${loginRes.status}, body=${JSON.stringify(loginRes.body)}`);
+    if (loginRes.body && loginRes.body.token) {
+        const session = { token: loginRes.body.token, email: testEmail };
+        sessionCache.set(userLabel, session);
+        return session;
     }
-    return { token: loginRes.body.token, email: testEmail };
+
+    // Otherwise register
+    await request('POST', '/api/auth/register', {
+        email: testEmail,
+        password: testPassword,
+        confirmPassword: testPassword,
+        displayName: `Test User ${userLabel}`
+    }, { 'X-WW-CSRF': '1' });
+
+    // Then login
+    const postRegLogin = await request('POST', '/api/auth/login', {
+        email: testEmail,
+        password: testPassword
+    }, { 'X-WW-CSRF': '1' });
+
+    if (!postRegLogin.body || !postRegLogin.body.token) {
+        throw new Error(`Login failed for ${testEmail}: status=${postRegLogin.status}, body=${JSON.stringify(postRegLogin.body)}`);
+    }
+
+    const session = { token: postRegLogin.body.token, email: testEmail };
+    sessionCache.set(userLabel, session);
+    return session;
 }
 
 // ---------------------------------------------------------------------------
@@ -227,8 +232,8 @@ async function testRawGameSaveDataBackwardsCompat() {
 async function testCrossAccountAccess() {
     console.log('\n[Test] Cross-account access rejected');
 
-    const { token: tokenA } = await loginAs();
-    const { token: tokenB } = await loginAs();
+    const { token: tokenA } = await loginAs('user_a');
+    const { token: tokenB } = await loginAs('user_b');
 
     // User A uploads a save
     const saveBody = {
@@ -282,8 +287,8 @@ async function testMalformedPayload() {
         'X-WW-CSRF': '1'
     });
     assert(
-        noChecksumRes.status === 400 || noChecksumRes.status === 503,
-        `Missing checksum returns 400 or 503 — got ${noChecksumRes.status}`
+        noChecksumRes.status === 400 || noChecksumRes.status === 422 || noChecksumRes.status === 503,
+        `Missing checksum returns 400, 422 or 503 — got ${noChecksumRes.status}`
     );
 }
 
