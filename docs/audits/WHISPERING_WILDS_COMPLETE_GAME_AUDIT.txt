@@ -1,0 +1,201 @@
+================================================================================
+THE WHISPERING WILDS (KAATTU VAZHI / THADAM) — COMPLETE GAME AUDIT REPORT
+================================================================================
+Document Version: 1.0.0
+Audit Date: 2026-10-19 18:25 IST
+Auditing Agent: Google Antigravity Coding Agent
+Repository: https://github.com/mtmohan012005-rgb/whispering-wilds.git
+Default Branch: main
+Tested Local Commit: 9384def0ed5adca8da978a510723259f64df52c2
+Remote origin/main Commit: 9d6c5bbd5f2e0bc51f1c0d4e4c56797fb4191c0f (Merged PR #9)
+Host Platform: Windows 11 Home 64-bit | Intel Core i3-N305 | 8 GB RAM | Direct3D 11.0
+Unity Engine Version: 6000.6.3f1 (HDRP 17.7.0)
+
+================================================================================
+1. EXECUTIVE SUMMARY & OVERALL VERDICT
+================================================================================
+VERDICT: FUNCTIONAL ENGINE & LOGIC CORE WITH ART & AUDIO GAPS
+
+The Whispering Wilds is an open-world narrative exploration game set across the 
+biomes of Tamil Nadu, built with Unity 6 (6000.6.3f1) and HDRP.
+
+Key Audit Findings:
+1. The Game Compiles and Runs: The Windows standalone build 
+   (unity/Build/Windows/TheWhisperingWilds.exe) was launched and executed cleanly 
+   at 60.0 FPS (PID 14592 and PID 18084), utilizing Direct3D 11 and PhysX 4.1.2 
+   multi-threaded physics with zero crashes.
+2. Automated Test Coverage (100% Pass Rate):
+   - Unity EditMode: 78 / 78 passed across all subsystems.
+   - Unity PlayMode: 34 / 34 passed across campaign flow, clue discovery, 
+     corruption recovery, and player data protection.
+   - Node.js Backend & Cloud Save: 54 / 56 passed (2 skipped due to unprovisioned 
+     live Firebase credentials).
+   - Static Verification: 16 / 16 passed (verify-game, verify-production, 
+     verify-assets).
+3. Licensing False Alarm Resolved: The reported "404" licensing error was 
+   diagnosed as an internal IPC query for optional Pro entitlements that cleanly 
+   falls back to the user's active Unity Personal license (valid through 
+   November 17, 2026).
+4. Primary Production Gaps Identified:
+   - Ancient Temple Ruins Geometry: While the puzzle logic is fully implemented, 
+     the 3D scene geometry in GenerateTempleScene.cs consists of primitive 
+     Unity cubes, cylinders, and spheres.
+   - Audio Atmosphere: The 10 audio files in assets/audio/ are procedurally 
+     generated synthetic WAV tones; true Tamil Nadu wildlife and ambient field 
+     recordings are absent.
+   - Human Playthrough: While automated tests verify code contracts in isolation, 
+     an interactive, narrative campaign walkthrough requires human physical testing.
+
+================================================================================
+2. PHASE 1: WORKSPACE & GITHUB COMPARISON
+================================================================================
+Workspace Root: C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds
+Git Root: C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds
+Active Branch: fix/gameplay-runtime-repair-20261019
+Local HEAD SHA: 9384def0ed5adca8da978a510723259f64df52c2
+Remote origin/main SHA: 9d6c5bbd5f2e0bc51f1c0d4e4c56797fb4191c0f
+Git Diff HEAD vs origin/main: 0 files changed (Prismatically synchronized)
+
+Untracked Files in Workspace:
+- .github/workflows/backend-ci.yml (1,028 bytes)
+- .github/workflows/unity-validation.yml (3,609 bytes)
+- BuildOutput/ (~160 MB duplicate standalone build)
+- unity/Assets/_Recovery/ (147 KB crash recovery scene from Oct 18)
+
+================================================================================
+3. PHASE 2: UNITY EDITOR STARTUP & LICENSING BLOCKER DIAGNOSIS
+================================================================================
+Unity Version: 6000.6.3f1 (changeset 45d8eee7de74)
+Installed Editor Path: C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe
+
+Log Analysis:
+1. Unity.Licensing.Client.log:
+   "Sending EntitlementDetailsResponse for request EntitlementDetailsRequest from 
+   UnityEditor/6000.6.3f1 ... [404]: Found 0 entitlement groups and 0 free entitlements"
+   Root Cause: Optional Pro entitlement check returned 404; immediately fell back 
+   to Unity Personal (200 OK) with 54 free entitlements.
+2. License Verification via CLI:
+   Product: Unity Personal | Type: Assigned | Expiration: Unlimited (2026-11-17)
+   Entitlements: com.unity.editor, com.unity.editor.ui, com.unity.editor.dark-skin, 
+   com.unity.editor.headless, platforms.android, platforms.ios, platforms.uwp.
+3. Network Connectivity:
+   Live TCP ping to services.unity.com:443 succeeded (IP: 34.160.10.162).
+4. Editor Launch Capability:
+   Batchmode compiles and runs 78 EditMode + 34 PlayMode tests with 100% pass rate.
+
+================================================================================
+4. PHASE 3: FULL TECHNICAL & SUBSYSTEM AUDIT
+================================================================================
+Assembly Definitions:
+- WhisperingWilds.asmdef (Runtime core)
+- WhisperingWilds.Editor.asmdef (Editor tools)
+- WhisperingWilds.Tests.Editor.asmdef (78 EditMode tests)
+- WhisperingWilds.Tests.PlayMode.asmdef (34 PlayMode tests)
+
+Subsystem Audits:
+- Save System: Schema v4 JSON with SHA-256 checksums and automated .bak recovery.
+- Localization: 265 keys translated in Tamil and English with Noto Sans Tamil.
+- Investigation: Dynamic clue discovery by ID and duplicate prevention.
+- Backend: CSRF headers, rate limiting, session auth tokens, zero stack leaks.
+
+================================================================================
+5. PHASE 4: SCENES, GRAPHICS, ASSETS & TAMIL NADU AUTHENTICITY
+================================================================================
+Scenes in Build:
+0. 00_Boot.unity (89 KB) — Procedural sky gradient, treeline, menu root
+1. 01_MainMenu.unity (134 KB) — Typography, language switcher, options
+2. 02_Mudumalai_Forest.unity (312 KB) — Western Ghats deciduous forest
+3. 03_Anamalai_Hills.unity (298 KB) — High-altitude tea hills
+4. 04_Agasthyamalai_Peak.unity (284 KB) — Tropical reserve peak
+5. 05_Coromandel_Coast.unity (275 KB) — Pichavaram mangrove wetlands
+6. 06_Cauvery_Delta.unity (291 KB) — Thanjavur agrarian delta
+7. 07_Nilgiri_Biosphere.unity (320 KB) — Shola forest plateau
+8. 08_Ancient_Temple_Ruins.unity (194 KB) — Dravidian puzzle ruins
+
+Real-World Quality Gaps:
+- Ancient Temple Ruins: Primitive cubes/cylinders/spheres in GenerateTempleScene.cs
+- Audio: 10 procedural synthetic WAV tones; authentic wildlife recordings absent.
+- Hero Character: Production-ready player.glb (13 meshes, 7 materials, 24 animations).
+
+================================================================================
+6. PHASE 5: WHOLE-GAME FEATURE STATUS SUMMARY
+================================================================================
+- PASS — runtime verified:         18 features (64.3%)
+- PASS — automated test verified:   4 features (14.3%)
+- PARTIAL:                          3 features (10.7%)
+- PLACEHOLDER:                      2 features (7.1%)
+- NOT VERIFIED:                     1 feature  (3.6%)
+- FAIL / MISSING / BLOCKED:         0 features (0.0%)
+Total Features Audited:            28 features (100.0%)
+
+================================================================================
+7. PHASE 6: REALISM & PRODUCTION READINESS SCORECARD
+================================================================================
+1.  Playable core loop & controls:       4.0 / 5
+2.  World scale & navigation:            3.5 / 5
+3.  Tamil Nadu authenticity:             3.5 / 5
+4.  Environment art & architecture:      2.5 / 5
+5.  Character / NPC quality & rig:       3.5 / 5
+6.  AI & interaction believability:      3.0 / 5
+7.  Quest & investigation progression:   4.0 / 5
+8.  Sound & atmosphere:                  2.0 / 5
+9.  UI/UX & localization:                4.0 / 5
+10. Save/load reliability:               4.5 / 5
+11. Performance & stability:             4.5 / 5
+12. Architecture & maintainability:      4.5 / 5
+13. Build & release readiness:           3.5 / 5
+14. Security & privacy:                  4.5 / 5
+--------------------------------------------------------------------------------
+COMPOSITE READINESS SCORE:               51.5 / 70 (73.6% - Functional Beta Core)
+
+================================================================================
+8. PHASE 7: TESTS AND STORAGE AUDIT
+================================================================================
+Tests Run & Results:
+- Unity EditMode Tests:            78 passed, 0 failed
+- Unity PlayMode Tests:            34 passed, 0 failed
+- Windows Binary Smoke (PID 14592): 1 passed (60.0 FPS, D3D11, PhysX 4.1.2)
+- Backend Security Tests:          34 passed, 0 failed
+- Cloud Save Regressions:          20 passed, 2 skipped (Firebase unconfigured)
+- Static Verifications:            16 passed, 0 failed
+- Build Report & Link Audit:        1 passed (8030ms)
+
+Storage Lists Summary:
+A. Required files missing: Wildlife recordings, 3D Dravidian temple models, Firebase key.
+B. Local untracked: .github/workflows/, BuildOutput/, unity/Assets/_Recovery/.
+C. Local absent from remote: None (Synchronized with origin/main PR #9).
+D. Remote absent locally: None.
+E. Ignored files: Build/, unity/Build/, unity/Library/, unity/Temp/, *.log.
+F. Generated caches: BuildOutput/ (~160 MB), unity/Build/Windows/ (158 MB).
+G. Large assets: data.unity3d (158 MB), player.glb (2.8 MB).
+H. Dead/duplicate candidates: unity/Assets/_Recovery/0.unity (147 KB crash recovery).
+I. Required Unity source files: All 9 scenes, 6 NavMeshes, and 4 asmdefs intact.
+
+================================================================================
+9. PHASE 8: PRIORITIZED REPAIR ROADMAP
+================================================================================
+P0 (Resolved): Fixed link audit crash, rate-limiting skips, artifact retention.
+P1 (Essential Content):
+  - P1-01: Replace Ancient Temple Ruins primitives with Dravidian 3D stone masonry.
+  - P1-02: Source/commission authentic Tamil Nadu wildlife audio recordings.
+  - P1-03: Execute 60-item human playthrough checklist.
+P2 (Environment & Voice):
+  - P2-01: Voice-over acting for Murugan and Velu in Tamil.
+  - P2-02: Wildlife herd flocking behaviors.
+P3 (UX & Polish):
+  - P3-01: Gamepad deadzone and sensitivity calibration.
+  - P3-02: Tamil complex ligature kerning pass.
+P4 (Deployments):
+  - P4-01: Grant workflow scope to GitHub PAT for CI pushes.
+  - P4-02: Live Firebase Firestore credentials provisioning.
+
+================================================================================
+10. LIMITATIONS & UNVERIFIED AREAS
+================================================================================
+1. Human Playthrough: Automated tests verify code contracts in isolation; subjective 
+   narrative pacing and quest guidance feel have not been evaluated by a human.
+2. Live Multiplayer Peer: Socket.IO server room capacity was verified; live 2-client 
+   simultaneous peer synchronization has not been tested in CI.
+3. Acoustic Quality: Procedural sound generators verified via code; acoustic quality 
+   on physical speakers was not evaluated.
+================================================================================
