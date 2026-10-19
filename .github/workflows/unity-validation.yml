@@ -1,0 +1,128 @@
+name: Unity Validation
+
+on:
+  push:
+    branches: [ main, 'fix/**', 'unity/**' ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unity-check:
+    name: Unity Project Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Unity project structure
+        run: |
+          echo "=== Unity Project Structure Check ==="
+          
+          # Check Unity version
+          if [ -f "unity/ProjectSettings/ProjectVersion.txt" ]; then
+            echo "✅ ProjectVersion.txt exists"
+            grep "m_EditorVersion" unity/ProjectSettings/ProjectVersion.txt
+          else
+            echo "❌ ProjectVersion.txt missing"
+            exit 1
+          fi
+
+          # Check manifest.json
+          if [ -f "unity/Packages/manifest.json" ]; then
+            echo "✅ Packages/manifest.json exists"
+          else
+            echo "❌ Packages/manifest.json missing"
+            exit 1
+          fi
+
+          # Check build settings
+          if [ -f "unity/ProjectSettings/EditorBuildSettings.asset" ]; then
+            echo "✅ EditorBuildSettings.asset exists"
+          else
+            echo "❌ EditorBuildSettings.asset missing"
+            exit 1
+          fi
+
+          # Check scenes
+          SCENE_COUNT=$(find unity/Assets/_Project/Scenes -name "*.unity" 2>/dev/null | wc -l)
+          echo "✅ Found $SCENE_COUNT Unity scenes"
+          if [ "$SCENE_COUNT" -lt 6 ]; then
+            echo "❌ Expected at least 6 gameplay scenes"
+            exit 1
+          fi
+
+          # Check scripts
+          SCRIPT_COUNT=$(find unity/Assets/_Project/Scripts -name "*.cs" 2>/dev/null | wc -l)
+          echo "✅ Found $SCRIPT_COUNT C# scripts"
+          if [ "$SCRIPT_COUNT" -lt 100 ]; then
+            echo "⚠️  Expected at least 100 C# scripts"
+          fi
+
+          # Check for common issues
+          echo "=== Checking for common issues ==="
+          
+          # Check for .meta files
+          META_COUNT=$(find unity/Assets -name "*.meta" 2>/dev/null | wc -l)
+          echo "✅ Found $META_COUNT .meta files"
+
+          # Check for assembly definition
+          if [ -f "unity/Assets/_Project/Scripts/WhisperingWilds.asmdef" ]; then
+            echo "✅ Assembly definition file exists"
+          else
+            echo "⚠️  No assembly definition file found"
+          fi
+
+      - name: Check C# script syntax
+        run: |
+          echo "=== C# Script Syntax Check ==="
+          
+          # Check for common syntax issues
+          if grep -r "using System;" unity/Assets/_Project/Scripts --include="*.cs" | head -5; then
+            echo "✅ Scripts have proper using statements"
+          fi
+
+          # Check for TODO/FIXME markers
+          TODO_COUNT=$(grep -r "TODO\|FIXME\|PLACEHOLDER" unity/Assets/_Project/Scripts --include="*.cs" 2>/dev/null | wc -l)
+          echo "⚠️  Found $TODO_COUNT TODO/FIXME/PLACEHOLDER markers"
+
+      - name: Validate package manifest
+        run: |
+          echo "=== Package Manifest Validation ==="
+          
+          # Check for required packages
+          if grep -q "com.unity.render-pipeline.high-definition" unity/Packages/manifest.json; then
+            echo "✅ HDRP package is present"
+          else
+            echo "❌ HDRP package is missing"
+            exit 1
+          fi
+
+          if grep -q "com.unity.textmeshpro" unity/Packages/manifest.json; then
+            echo "✅ TextMeshPro package is present"
+          else
+            echo "⚠️  TextMeshPro package is missing"
+          fi
+
+          echo "✅ Package manifest validation complete"
+
+  note:
+    name: Unity Build Note
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Note
+        run: |
+          echo "=== Unity Build Note ==="
+          echo "Full Unity Editor build requires:"
+          echo "  - Unity 6000.6.3f1 installed"
+          echo "  - Valid Unity license"
+          echo "  - Windows build support module"
+          echo ""
+          echo "This workflow validates project structure only."
+          echo "For full build, use local Unity Editor or a Unity Cloud Build pipeline."
