@@ -332,7 +332,18 @@ Fix temple scene GUID mismatch, cloud-save checksum test inconsistency, and add 
 - **Fixed `test-cloud-save-regression.js`**: `fnv1aHash` now uses `stableStringify` (sorted keys), `Math.imul` for 32-bit multiplication, and hex output — matching server exactly
 - **Updated `CloudSaveManager.cs`**: Improved documentation for `BuildUploadEnvelope` to clarify revision/idempotencyKey are stripped by server before storage
 - **Added scene GUID validation** to `verify-game.js` (check 16) — validates all build settings scene GUIDs against .meta files
-- **CI workflows** already tracked in git (backend-ci.yml, unity-validation.yml) — blocked from push by PAT lacking `workflow` scope
+- **CI workflows** committed locally but BLOCKED from push by PAT lacking `workflow` scope
 - **All 148/148 automated tests PASS** — including new SCENE GUID VALIDATION check
-- Pushed to GitHub: `main` branch
+- Pushed to GitHub: `main` branch (commit 653f38d)
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — all code defects fixed, needs external polish
+
+### ✓ Step 13: CI Workflow Push Attempt & Final Verification (Completed 2026-10-19)
+Attempt to publish CI workflows and run final verification of all tests.
+
+- **CI workflows committed** locally (commit bffd6f1): `backend-ci.yml`, `unity-validation.yml`
+- **Push REJECTED** by GitHub: "refusing to allow a Personal Access Token to create or update workflow `.github/workflows/backend-ci.yml` without `workflow` scope"
+- **Exact error captured** for user documentation
+- **Fresh test run:** 132 PASS, 0 FAIL, 11 SKIP across all 8 test suites
+- **All code defects confirmed fixed** and pushed to GitHub `main` (latest: 653f38d)
+- **Remaining blocker:** User must add `workflow` scope to GitHub PAT, then `git push origin main`
+- **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — code is complete; CI workflows need user action to publish
