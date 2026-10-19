@@ -24,6 +24,7 @@
 
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -31,6 +32,8 @@ using UnityEngine.SceneManagement;
 using WhisperingWilds.World;
 using WhisperingWilds.Investigation;
 using WhisperingWilds.Gameplay;
+using WhisperingWilds.Player;
+using WhisperingWilds.Cameras;
 
 namespace WhisperingWilds.Editor
 {
@@ -88,10 +91,13 @@ namespace WhisperingWilds.Editor
             CreatePlayerSpawn();
 
             // --- Player Character (instantiate from prefab if available) ---
-            CreatePlayerCharacter();
+            GameObject playerCharacter = CreatePlayerCharacter();
 
             // --- Gameplay Region Bootstrap (ensures GameManager, SaveManager, CampaignFlow) ---
             CreateGameplayBootstrap();
+
+            // --- Main Camera with CameraController ---
+            CreateMainCamera(playerCharacter);
 
             // --- Puzzle Controller on its own GameObject ---
             GameObject puzzleObj = new GameObject("PuzzleController");
@@ -307,7 +313,7 @@ namespace WhisperingWilds.Editor
             spawn.tag = "Player";
         }
 
-        private static void CreatePlayerCharacter()
+        private static GameObject CreatePlayerCharacter()
         {
             // Try to load PlayerCharacter prefab from the project
             string[] playerAssets = AssetDatabase.FindAssets("PlayerCharacter t:Prefab");
@@ -346,6 +352,26 @@ namespace WhisperingWilds.Editor
                 rb.isKinematic = true;
                 rb.useGravity = false;
             }
+
+            // Add required gameplay scripts (same as Chennai scene)
+            // These are NOT on the prefab - they are serialized in the scene
+            // All fields are [SerializeField] private with good defaults, so we just add the components
+            if (playerInstance.GetComponent<PlayerMovement>() == null)
+            {
+                playerInstance.AddComponent<PlayerMovement>();
+            }
+
+            if (playerInstance.GetComponent<PlayerInputHandler>() == null)
+            {
+                playerInstance.AddComponent<PlayerInputHandler>();
+            }
+
+            if (playerInstance.GetComponent<PlayerInteractor>() == null)
+            {
+                playerInstance.AddComponent<PlayerInteractor>();
+            }
+
+            return playerInstance;
         }
 
         private static void CreateGameplayBootstrap()
@@ -354,9 +380,54 @@ namespace WhisperingWilds.Editor
             // and sets the region ID for this scene
             GameObject bootstrapObj = new GameObject("GameplayRegionBootstrap");
             GameplayRegionBootstrap bootstrap = bootstrapObj.AddComponent<GameplayRegionBootstrap>();
-            // The regionId will be set to "ancient_temple" in the inspector or via script
-            // For now, the bootstrap will use the default Chennai region, which is fine for testing
-            Debug.Log("[GenerateTempleScene] GameplayRegionBootstrap added to ensure persistent managers.");
+            // Use "thanjavur" as the region since the temple is geographically near Thanjavur
+            // The discovery ID "ancient_temple" is used separately in the puzzle/artifact systems
+            // regionId is [SerializeField] private, so we use reflection from Editor code
+            FieldInfo regionIdField = typeof(GameplayRegionBootstrap).GetField("regionId", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (regionIdField != null)
+            {
+                regionIdField.SetValue(bootstrap, "thanjavur");
+            }
+            Debug.Log("[GenerateTempleScene] GameplayRegionBootstrap added with regionId=thanjavur.");
+        }
+
+        private static void CreateMainCamera(GameObject playerTarget)
+        {
+            // Create Main Camera (same as Chennai scene)
+            GameObject cameraObj = new GameObject("Main Camera");
+            cameraObj.tag = "MainCamera";
+            cameraObj.transform.position = new Vector3(0, 3, 25);
+            cameraObj.transform.rotation = Quaternion.Euler(10, 180, 0);
+
+            // Add Camera component
+            Camera cam = cameraObj.AddComponent<Camera>();
+            cam.nearClipPlane = 0.1f;
+            cam.farClipPlane = 1000f;
+            cam.fieldOfView = 60f;
+
+            // Add AudioListener (only one per scene)
+            cameraObj.AddComponent<AudioListener>();
+
+            // Add CameraController bound to the player
+            CameraController camCtrl = cameraObj.AddComponent<CameraController>();
+            if (playerTarget != null)
+            {
+                // Use public SetTarget method instead of accessing private field
+                camCtrl.SetTarget(playerTarget.transform);
+            }
+            // Set other fields via reflection (they are [SerializeField] private)
+            FieldInfo offsetField = typeof(CameraController).GetField("targetOffset", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (offsetField != null)
+            {
+                offsetField.SetValue(camCtrl, new Vector3(0.35f, 1.4f, 0f));
+            }
+            FieldInfo smoothingField = typeof(CameraController).GetField("cameraSmoothing", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (smoothingField != null)
+            {
+                smoothingField.SetValue(camCtrl, 15f);
+            }
+
+            Debug.Log("[GenerateTempleScene] Main Camera created with CameraController.");
         }
 
         private static void AddOrUpdateSceneInBuildSettings(string scenePath)
