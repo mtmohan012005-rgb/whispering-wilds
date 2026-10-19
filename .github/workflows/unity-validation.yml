@@ -1,0 +1,99 @@
+# Unity Validation — The Whispering Wilds
+# Static checks for Unity project structure, scenes, scripts, and assets.
+# Unity Editor compilation and PlayMode tests are BLOCKED without a licensed Unity Editor.
+
+name: Unity Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unity-static-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Unity version
+        run: |
+          echo "Checking Unity version..."
+          cat unity/ProjectSettings/ProjectVersion.txt || echo "ProjectVersion.txt not found"
+
+      - name: Validate package manifest
+        run: |
+          echo "Checking package manifest..."
+          test -f unity/Packages/manifest.json && echo "manifest.json exists" || exit 1
+          test -f unity/Packages/packages-lock.json && echo "packages-lock.json exists" || echo "WARNING: packages-lock.json missing"
+
+      - name: Validate build scenes
+        run: |
+          echo "Checking build scenes..."
+          test -f unity/ProjectSettings/EditorBuildSettings.asset && echo "EditorBuildSettings.asset exists" || exit 1
+
+      - name: Check required scripts
+        run: |
+          echo "Checking critical scripts..."
+          FAILED=0
+          for script in \
+            unity/Assets/_Project/Scripts/Core/SaveSystem.cs \
+            unity/Assets/_Project/Scripts/Online/CloudSaveManager.cs \
+            unity/Assets/_Project/Scripts/Online/AuthService.cs \
+            unity/Assets/_Project/Scripts/Online/SocketIOClient.cs \
+            unity/Assets/_Project/Scripts/Player/PlayerMovement.cs \
+            unity/Assets/_Project/Scripts/World/AncientTempleLevelController.cs \
+            unity/Assets/_Project/Scripts/Investigation/TempleFolklorePuzzleController.cs \
+            unity/Assets/_Project/Scripts/Investigation/HiddenArtifactPickup.cs
+          do
+            if [ -f "$script" ]; then
+              echo "OK: $script"
+            else
+              echo "MISSING: $script"
+              FAILED=1
+            fi
+          done
+          test "$FAILED" -eq 0 || { echo "ERROR: Critical script missing!"; exit 1; }
+
+      - name: Check temple scene
+        run: |
+          echo "Checking temple scene..."
+          test -f unity/Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity || { echo "MISSING: Temple scene"; exit 1; }
+          test -f unity/Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity.meta || { echo "MISSING: Temple scene .meta"; exit 1; }
+          echo "OK: Temple scene and .meta exist"
+
+      - name: Check audio files
+        run: |
+          echo "Checking audio files..."
+          WAV_COUNT=$(find unity/Assets/_Project/Audio/ -name "*.wav" 2>/dev/null | wc -l)
+          echo "Found $WAV_COUNT WAV files"
+          test "$WAV_COUNT" -gt 0 || { echo "ERROR: No audio WAV files found!"; exit 1; }
+
+      - name: Check NavMesh assets
+        run: |
+          echo "Checking NavMesh assets across region folders..."
+          NAVMESH_COUNT=$(find unity/Assets/_Project/NavMeshData/ -name "*.asset" 2>/dev/null | wc -l)
+          echo "Found $NAVMESH_COUNT NavMesh assets"
+          test "$NAVMESH_COUNT" -ge 6 || { echo "ERROR: Expected at least 6 NavMesh assets, found $NAVMESH_COUNT"; exit 1; }
+
+      - name: Check character prefabs
+        run: |
+          echo "Checking character prefabs..."
+          PREFAB_COUNT=$(find unity/Assets/_Project/Prefabs/Characters/ -name "*.prefab" 2>/dev/null | wc -l)
+          echo "Found $PREFAB_COUNT character prefabs"
+          test "$PREFAB_COUNT" -gt 0 || { echo "ERROR: No character prefabs found!"; exit 1; }
+
+      - name: Unity Editor checks status
+        run: |
+          echo "=========================================="
+          echo "Unity Editor compilation: BLOCKED"
+          echo "Unity PlayMode tests: BLOCKED"
+          echo "NavMesh baking: BLOCKED"
+          echo "Reason: No licensed Unity Editor in CI"
+          echo "=========================================="

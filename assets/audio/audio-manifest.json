@@ -1,8 +1,8 @@
 {
   "project": "The Whispering Wilds (Kaattu Vazhi / காட்டு வழி)",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "generated": "2026-09-25T20:40:00Z",
-  "description": "Production audio manifest documenting all licensed and original sound assets, voices, music, and ambiences.",
+  "description": "Authoritative audio manifest distinguishing physically present development placeholders from blocked production audio requirements.",
   "assets": [
     {
       "id": "audio.voice.murugan.intro_01",
@@ -15,7 +15,11 @@
       "creator": "K. Murugesan (Murugan Voice Artist)",
       "streamable": true,
       "critical": true,
-      "fallback": "audio.voice.en.murugan.intro_01"
+      "fallback": "audio.voice.en.murugan.intro_01",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.voice.en.murugan.intro_01",
@@ -28,7 +32,11 @@
       "creator": "R. Anand (English Dub Cast)",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.voice.tamizh.investigate_01",
@@ -41,7 +49,11 @@
       "creator": "Iniyan Sundar (Player Protagonist Voice)",
       "streamable": true,
       "critical": true,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.voice.velu.pichavaram_01",
@@ -54,7 +66,11 @@
       "creator": "M. Velayudham (Boatman Voice)",
       "streamable": true,
       "critical": true,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.voice.selvam.delta_01",
@@ -67,7 +83,11 @@
       "creator": "S. Selvaraj (Delta Farmer Voice)",
       "streamable": true,
       "critical": true,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.chennai",
@@ -75,12 +95,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "chennai",
-      "duration": 182.0,
+      "duration": 182,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.chennai.day"
+      "fallback": "audio.ambience.chennai.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.cauvery_delta",
@@ -88,12 +112,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "cauvery_delta",
-      "duration": 210.0,
+      "duration": 210,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.cauvery_delta.day"
+      "fallback": "audio.ambience.cauvery_delta.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.pichavaram",
@@ -101,12 +129,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "pichavaram",
-      "duration": 195.0,
+      "duration": 195,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.pichavaram.day"
+      "fallback": "audio.ambience.pichavaram.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.chettinad",
@@ -114,12 +146,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "chettinad",
-      "duration": 204.0,
+      "duration": 204,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.chettinad.day"
+      "fallback": "audio.ambience.chettinad.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.thanjavur",
@@ -127,12 +163,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "thanjavur",
-      "duration": 228.0,
+      "duration": 228,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.thanjavur.day"
+      "fallback": "audio.ambience.thanjavur.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.mamallapuram",
@@ -140,12 +180,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "mamallapuram",
-      "duration": 188.0,
+      "duration": 188,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.mamallapuram.day"
+      "fallback": "audio.ambience.mamallapuram.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.region.nilgiris",
@@ -153,12 +197,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "nilgiris",
-      "duration": 240.0,
+      "duration": 240,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan (Whispering Wilds Ensemble)",
       "streamable": true,
       "critical": false,
-      "fallback": "audio.ambience.nilgiris.day"
+      "fallback": "audio.ambience.nilgiris.day",
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.mystery",
@@ -166,12 +214,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "universal",
-      "duration": 160.0,
+      "duration": 160,
       "license": "Original Score Commissioned for Whispering Wilds",
       "creator": "S. Vidyadharan",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.discovery_stinger",
@@ -184,7 +236,11 @@
       "creator": "S. Vidyadharan",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.music.festival_pongal",
@@ -192,12 +248,16 @@
       "type": "music",
       "language": "instrumental",
       "region": "cauvery_delta",
-      "duration": 174.0,
+      "duration": 174,
       "license": "Custom Traditional Performance Recording (Recorded in Thanjavur District)",
       "creator": "Thanjavur Traditional Arts Collective",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.chennai.day",
@@ -205,12 +265,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "chennai",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.cauvery_delta.day",
@@ -218,12 +282,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "cauvery_delta",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.pichavaram.day",
@@ -231,12 +299,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "pichavaram",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.chettinad.day",
@@ -244,12 +316,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "chettinad",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.thanjavur.day",
@@ -257,12 +333,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "thanjavur",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.mamallapuram.day",
@@ -270,12 +350,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "mamallapuram",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.ambience.nilgiris.day",
@@ -283,12 +367,16 @@
       "type": "ambience",
       "language": "ambient",
       "region": "nilgiris",
-      "duration": 120.0,
+      "duration": 120,
       "license": "Field Recording License - CC BY 4.0 Attributed & Mastered",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.wildlife.nilgiri_tahr.call",
@@ -301,7 +389,11 @@
       "creator": "Western Ghats Ecological Survey",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.wildlife.nilgiri_langur.alarm",
@@ -314,7 +406,11 @@
       "creator": "Western Ghats Ecological Survey",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.wildlife.peafowl.call",
@@ -327,7 +423,11 @@
       "creator": "Tamil Nadu Wildlife Sound Registry",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.wildlife.elephant.rumble",
@@ -340,7 +440,11 @@
       "creator": "Western Ghats Bio-Acoustics Team",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.vehicle.auto_rickshaw.engine",
@@ -348,12 +452,16 @@
       "type": "vehicle",
       "language": "mechanical",
       "region": "chennai",
-      "duration": 18.0,
+      "duration": 18,
       "license": "Direct Foley & Field Recording (Chennai Auto Fleet)",
       "creator": "Whispering Wilds Sound Production Team",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.vehicle.boat.oar_stroke",
@@ -366,7 +474,11 @@
       "creator": "Whispering Wilds Sound Production Team",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.footstep.stone.sandals",
@@ -379,7 +491,11 @@
       "creator": "Chennai Soundstage Studios",
       "streamable": false,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
     },
     {
       "id": "audio.weather.rain.roof",
@@ -387,12 +503,157 @@
       "type": "weather",
       "language": "environmental",
       "region": "universal",
-      "duration": 45.0,
+      "duration": 45,
       "license": "Field Recording Chettinad Roof Rains",
       "creator": "Sound Heritage Tamil Nadu Archives",
       "streamable": true,
       "critical": false,
-      "fallback": null
+      "fallback": null,
+      "status": "BLOCKED",
+      "filePresent": false,
+      "provenanceStatus": "PENDING_ACQUISITION",
+      "blockerReason": "Physical recording not yet acquired; license provenance unverified on disk."
+    },
+    {
+      "id": "audio.unity.ambience.temple_ambience",
+      "path": "unity/Assets/_Project/Audio/Ambience/temple_ambience.wav",
+      "type": "ambience",
+      "region": "thanjavur",
+      "duration": 1,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "EE575EF11F0437B79F45EB6327E18002E847C3F9AEE177739F4434EC3AA8A5E3",
+      "quality": "Procedural 80 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.ambience.temple_bell",
+      "path": "unity/Assets/_Project/Audio/Ambience/temple_bell.wav",
+      "type": "sfx",
+      "region": "thanjavur",
+      "duration": 0.5,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "C2879B216B5628427206E5D4507D4C8BBEF9C06910A10A0D6D990E3529746522",
+      "quality": "Procedural 520 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.ambience.birds",
+      "path": "unity/Assets/_Project/Audio/Ambience/birds.wav",
+      "type": "ambience",
+      "region": "universal",
+      "duration": 0.5,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "212FD64FAE4EA2F5EF179FD3F588064E2859BE01D8CA944054BDAD20C2C8FD19",
+      "quality": "Procedural 2000 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.footsteps.stone",
+      "path": "unity/Assets/_Project/Audio/Footsteps/footstep_stone.wav",
+      "type": "footsteps",
+      "region": "universal",
+      "duration": 0.2,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "2F789FFF7C9DA17E6D19975E3FF72E548C6BCA943F79CFDFB0C5F474C8824B59",
+      "quality": "Procedural 300 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.interactions.stone_click",
+      "path": "unity/Assets/_Project/Audio/Interactions/stone_click.wav",
+      "type": "sfx",
+      "region": "thanjavur",
+      "duration": 0.2,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "696C1FEDD68C35435718EB246D8695FCDD860DBE3D163DA5DAA1A9B132722730",
+      "quality": "Procedural 800 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.interactions.wrong_answer",
+      "path": "unity/Assets/_Project/Audio/Interactions/wrong_answer.wav",
+      "type": "sfx",
+      "region": "thanjavur",
+      "duration": 0.3,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "F8DC0E6CAFB98168C0C76BB4C018F0D4EB33A281795852EF22838AE688C69B25",
+      "quality": "Procedural 150 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.interactions.puzzle_success",
+      "path": "unity/Assets/_Project/Audio/Interactions/puzzle_success.wav",
+      "type": "sfx",
+      "region": "thanjavur",
+      "duration": 0.5,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "C347D6C0301548BAB68E0BD00B85BF6F31880E8116851C2C236954BB465F19F7",
+      "quality": "Procedural 440 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.interactions.door_open",
+      "path": "unity/Assets/_Project/Audio/Interactions/door_open.wav",
+      "type": "sfx",
+      "region": "thanjavur",
+      "duration": 0.5,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "ED5E68DC8734ACB3A1E8029B1FF118375F71AE3E71C8A148AE7F4FB867B5FD70",
+      "quality": "Procedural 60 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.ui.ui_click",
+      "path": "unity/Assets/_Project/Audio/UI/ui_click.wav",
+      "type": "ui",
+      "region": "universal",
+      "duration": 0.1,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "57ED4CC6E3D077E54EE4CDA2E4022CDFC023D93C13BAB81C9CDE2EC1FDD50C62",
+      "quality": "Procedural 1200 Hz sine tone fallback"
+    },
+    {
+      "id": "audio.unity.ui.ui_hover",
+      "path": "unity/Assets/_Project/Audio/UI/ui_hover.wav",
+      "type": "ui",
+      "region": "universal",
+      "duration": 0.08,
+      "license": "MIT / In-House",
+      "creator": "GenerateAudioAssets.cs",
+      "status": "PLACEHOLDER",
+      "filePresent": true,
+      "provenanceStatus": "DEVELOPMENT_PLACEHOLDER",
+      "sha256": "F88123482A7A10A41E91FA1C1D5544FB415E0E3F035F9E5079CD851A7553A4E6",
+      "quality": "Procedural 800 Hz sine tone fallback"
     }
-  ]
+  ],
+  "lastAudited": "2026-10-19"
 }
