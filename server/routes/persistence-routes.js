@@ -61,17 +61,23 @@ router.post('/saves', asyncHandler(async (req, res) => {
     // Backwards compatibility: if the client sends raw GameSaveData (has schemaVersion
     // but no "data" envelope), wrap it automatically so the persistence service accepts it.
     if (body.schemaVersion && !body.data) {
-        // Compute a valid checksum over the raw payload so the persistence service
-        // does not reject it with MISSING_CHECKSUM. The persistence service will
-        // recompute the checksum over sanitized data after stripping privileged fields.
-        const rawChecksum = computeChecksum(body);
+        // Extract request-control fields so they don't pollute the stored save data.
+        // The client injects revision and idempotencyKey into the raw GameSaveData JSON
+        // so the server can read them here. We strip them before wrapping.
+        const { revision, idempotencyKey, ...gameData } = body;
+
+        // Compute a valid checksum over the raw game data (without control fields)
+        // so the persistence service does not reject it with MISSING_CHECKSUM.
+        // The persistence service will recompute the checksum over sanitized data
+        // after stripping privileged fields.
+        const rawChecksum = computeChecksum(gameData);
         body = {
-            saveId: body.saveId || 'slot_0',
-            saveVersion: body.schemaVersion,
-            data: body,
+            saveId: gameData.saveId || 'slot_0',
+            saveVersion: gameData.schemaVersion,
+            data: gameData,
             checksum: rawChecksum,
-            baseRevision: body.revision || 0,
-            idempotencyKey: body.idempotencyKey || null
+            baseRevision: (typeof revision === 'number') ? revision : 0,
+            idempotencyKey: (typeof idempotencyKey === 'string') ? idempotencyKey : null
         };
     }
 
