@@ -13,6 +13,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using WhisperingWilds.Audio;
 using WhisperingWilds.World;
 using WhisperingWilds.Localization;
 using WhisperingWilds.UI;
@@ -30,6 +31,16 @@ namespace WhisperingWilds.Investigation
 
         [Tooltip("Stable puzzle ID for PuzzleStateStore persistence.")]
         public string puzzleId = "temple_folklore_puzzle";
+
+        [Header("Audio Clips")]
+        [Tooltip("Sound played when a stone mechanism is interacted with.")]
+        public AudioClip stoneClickSound;
+        [Tooltip("Sound played when the puzzle is solved correctly.")]
+        public AudioClip puzzleSuccessSound;
+        [Tooltip("Sound played when the puzzle sequence is wrong.")]
+        public AudioClip wrongAnswerSound;
+        [Tooltip("Sound played when the hidden chamber door opens.")]
+        public AudioClip doorOpenSound;
 
         [Header("Clue Text (English)")]
         public string clue1English = "The first stone bears the symbol of the rising sun.";
@@ -120,6 +131,12 @@ namespace WhisperingWilds.Investigation
             _currentSequence[mechanismIndex] = position;
             Debug.Log($"[TemplePuzzle] Mechanism {mechanismIndex} set to position {position}");
 
+            // Play stone click sound
+            if (AudioManager.Instance != null && stoneClickSound != null)
+            {
+                AudioManager.Instance.PlaySFX(stoneClickSound, transform.position);
+            }
+
             // Check if all mechanisms are set
             bool allSet = true;
             for (int i = 0; i < _currentSequence.Length; i++)
@@ -164,6 +181,12 @@ namespace WhisperingWilds.Investigation
             _puzzleCompleted = true;
             Debug.Log("[TemplePuzzle] Puzzle solved! Hidden chamber unlocked.");
 
+            // Play puzzle success sound
+            if (AudioManager.Instance != null && puzzleSuccessSound != null)
+            {
+                AudioManager.Instance.PlaySFX(puzzleSuccessSound, transform.position);
+            }
+
             // Record in PuzzleStateStore for save persistence
             PuzzleStateStore.MarkSolved(puzzleId);
 
@@ -177,6 +200,20 @@ namespace WhisperingWilds.Investigation
             if (_levelController != null)
             {
                 _levelController.OpenHiddenChamber();
+                // Play door open sound after a short delay so it coincides with the door animation
+                if (AudioManager.Instance != null && doorOpenSound != null)
+                {
+                    StartCoroutine(PlayDoorOpenSoundDelayed(0.5f));
+                }
+            }
+        }
+
+        private IEnumerator PlayDoorOpenSoundDelayed(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (AudioManager.Instance != null && doorOpenSound != null)
+            {
+                AudioManager.Instance.PlaySFX(doorOpenSound, transform.position);
             }
         }
 
@@ -184,6 +221,12 @@ namespace WhisperingWilds.Investigation
         {
             _failedAttempts++;
             Debug.Log($"[TemplePuzzle] Incorrect sequence. Failed attempts: {_failedAttempts}");
+
+            // Play wrong answer sound
+            if (AudioManager.Instance != null && wrongAnswerSound != null)
+            {
+                AudioManager.Instance.PlaySFX(wrongAnswerSound, transform.position);
+            }
 
             // Show hint after threshold
             if (!_hintShown && _failedAttempts >= hintThreshold)

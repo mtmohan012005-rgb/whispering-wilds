@@ -11,6 +11,7 @@
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WhisperingWilds.Audio;
 using WhisperingWilds.Investigation;
 
 namespace WhisperingWilds.World
@@ -26,6 +27,10 @@ namespace WhisperingWilds.World
 
         [Tooltip("The hidden chamber door GameObject to activate when puzzle is solved.")]
         public GameObject hiddenChamberDoor;
+
+        [Header("Audio")]
+        [Tooltip("Ambient loop played while in the temple scene.")]
+        public AudioClip templeAmbienceClip;
 
         [Header("Scene Settings")]
         [Tooltip("Region identifier for save data.")]
@@ -60,7 +65,23 @@ namespace WhisperingWilds.World
                 artifactPickup.Initialize(_artifactCollected);
             }
 
+            // Play temple ambience
+            if (AudioManager.Instance != null && templeAmbienceClip != null)
+            {
+                AudioManager.Instance.PlayAmbient(templeAmbienceClip);
+            }
+
             Debug.Log($"[AncientTemple] Level initialized. Puzzle completed: {_puzzleCompleted}, Artifact collected: {_artifactCollected}");
+        }
+
+        private void OnDestroy()
+        {
+            // Stop ambience when leaving the scene
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.StopAmbient();
+            }
+            SavePuzzleState();
         }
 
         private void LoadPuzzleState()
@@ -136,11 +157,6 @@ namespace WhisperingWilds.World
             {
                 Debug.LogWarning("[AncientTemple] hiddenChamberDoor reference is null — door cannot open.");
             }
-        }
-
-        private void OnDestroy()
-        {
-            SavePuzzleState();
         }
     }
 }

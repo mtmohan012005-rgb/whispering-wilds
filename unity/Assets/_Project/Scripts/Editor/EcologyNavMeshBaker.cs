@@ -92,14 +92,35 @@ namespace WhisperingWilds.Editor
         [MenuItem("Whispering Wilds/Ecology/Bake NavMesh For All Regions")]
         public static void BakeAllRegions()
         {
+            int successCount = 0;
+            int failCount = 0;
+            List<string> failedScenes = new List<string>();
+
             foreach (string scenePath in GameplayScenes)
             {
-                BakeScene(scenePath);
+                if (BakeScene(scenePath))
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failCount++;
+                    failedScenes.Add(scenePath);
+                }
             }
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("[EcologyNavMeshBaker] Finished baking all gameplay scenes.");
+
+            if (failCount == 0)
+            {
+                Debug.Log($"[EcologyNavMeshBaker] Finished baking all {successCount} gameplay scenes successfully.");
+            }
+            else
+            {
+                Debug.LogError($"[EcologyNavMeshBaker] Finished with {successCount} succeeded, {failCount} failed.\n" +
+                    $"Failed scenes:\n  {string.Join("\n  ", failedScenes.ToArray())}");
+            }
         }
 
         public static bool BakeScene(string scenePath)
