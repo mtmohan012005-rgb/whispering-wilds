@@ -17,6 +17,7 @@
 
 const express = require('express');
 const persistence = require('../firebase/persistence-service');
+const { computeChecksum } = require('../firebase/persistence-service');
 const { ERROR_CODES } = require('../error-codes');
 const { asyncHandler } = require('../middleware/request-context');
 const { authMiddleware, requireAuth } = require('../auth/auth-middleware');
@@ -57,12 +58,20 @@ router.post('/saves', asyncHandler(async (req, res) => {
 
     // Backwards compatibility: if the client sends raw GameSaveData (has schemaVersion
     // but no "data" envelope), wrap it automatically so the persistence service accepts it.
+    // The checksum is computed server-side over the exact data payload using FNV-1a.
     if (body.schemaVersion && !body.data) {
+        const rawChecksum = body.checksum;
+        const cleanData = { ...body };
+        // Remove envelope-only fields from the data payload before computing checksum
+        delete cleanData.checksum;
+        delete cleanData.idempotencyKey;
+        delete cleanData.revision;
+        delete cleanData.saveId;
         body = {
-            saveId: body.saveId || 'slot_0',
+            saveId: rawChecksum ? body.saveId : (body.saveId || 'slot_0'),
             saveVersion: body.schemaVersion,
-            data: body,
-            checksum: body.checksum || '',
+            data: cleanData,
+            checksum: rawChecksum || computeChecksum(cleanData),
             baseRevision: body.revision || 0,
             idempotencyKey: body.idempotencyKey || null
         };
