@@ -19,13 +19,15 @@ const express = require('express');
 const persistence = require('../firebase/persistence-service');
 const { ERROR_CODES } = require('../error-codes');
 const { asyncHandler } = require('../middleware/request-context');
-const { requireAuth } = require('../auth/auth-middleware');
+const { authMiddleware, requireAuth } = require('../auth/auth-middleware');
 const Logger = require('../logger');
 
 const router = express.Router();
 
-// Require authenticated session. The userId comes from req.user.id, never
-// from the client request body.
+// First, populate req.user from session cookie or Bearer token.
+// Then, require that the user is authenticated.
+// The userId comes from req.user.id, never from the client request body.
+router.use(authMiddleware);
 router.use(requireAuth);
 
 // GET /api/v1/persistence/saves/slot_0
