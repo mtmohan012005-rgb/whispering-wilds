@@ -4,7 +4,7 @@
 **Game:** The Whispering Wilds / காட்டு வழி • தடம்  
 **Engine:** Unity 6 (6000.6.3f1), HDRP 17.7.0, Windows x64  
 **Branch:** `scene-regen-review`  
-**Backend:** Node.js + Express + Socket.IO + Firebase + PostgreSQL + MEGA Cloud Drive  
+**Backend:** Node.js + Express + Socket.IO + Firebase Firestore + PostgreSQL
 
 ---
 
@@ -161,11 +161,11 @@ However, the `assets/audio/` directory contains ONLY 2 files:
 **Severity:** P1 — Cloud saves fall back to local only  
 **Files:** `server/config.js`, `.env.example`
 
-**Problem:** Neither Firebase nor MEGA Cloud Drive credentials are configured. The server boots with `FIREBASE_ENABLED = false` and MEGA reports `NOT_CONFIGURED`. Cloud saves gracefully fall back to local-only, but the cloud feature is non-functional.
+**Problem:** Firebase credentials are not configured. The server boots with `FIREBASE_ENABLED = false`. Cloud saves gracefully fall back to local-only, but the cloud feature is non-functional.
 
 **Impact:** Players cannot sync saves across devices. "Cloud Save" in settings shows disconnected status.
 
-**Fix Required:** User must provision either Firebase service account credentials or MEGA Cloud Drive account credentials and set them as environment variables.
+**Fix Required:** User must provision Firebase service account credentials and set them as environment variables (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`).
 
 ---
 
@@ -281,7 +281,6 @@ However, the `assets/audio/` directory contains ONLY 2 files:
 | Kannan NPC model | **1** | P1 | Explicitly missing, logged as error |
 | Unity AI Navigation package | **1** | P0 | `com.unity.ai.navigation` not in manifest |
 | Firebase credentials | **1** | P1 | Service account JSON not configured |
-| MEGA credentials | **1** | P1 | Email/password not configured |
 | Tamil font in build | **?** | P2 | May not bundle correctly |
 | Complete Tamil translations | **?** | P2 | Some keys missing |
 
@@ -321,7 +320,6 @@ However, the `assets/audio/` directory contains ONLY 2 files:
 | **NPC visual quality** | ❌ PLACEHOLDER | All 9 NPC models are low-poly blocks |
 | **Kannan NPC** | ❌ MISSING | kannan.glb file does not exist |
 | **Cloud saves (Firebase)** | ❌ BLOCKED | No Firebase credentials configured |
-| **Cloud saves (MEGA)** | ❌ BLOCKED | No MEGA credentials configured |
 | **Cloud save token refresh** | ❌ BROKEN | Stale token after 1 hour |
 | **Full Tamil translation** | ⚠️ PARTIAL | Some keys missing, font may not bundle |
 | **World streaming** | ⚠️ PARTIAL | Placeholder streaming cells |
@@ -336,7 +334,7 @@ However, the `assets/audio/` directory contains ONLY 2 files:
 | NPC dialogue quality | Requires reading dialogue in running game |
 | Tamil font rendering | Requires visual inspection of standalone build |
 | Multiplayer with 2 clients | Requires two game instances |
-| Cloud save upload/download | Requires Firebase or MEGA credentials |
+| Cloud save upload/download | Requires Firebase credentials |
 | Unity Editor tests | Requires valid Unity license (Code 404) |
 | Performance profiling | Requires Unity Profiler or standalone build analysis |
 | Save corruption recovery | Requires deliberate save file manipulation |
@@ -359,7 +357,7 @@ The following audit documents already exist in `docs/audits/` and contain detail
 | `ASSET_AND_CONTENT_GAPS.csv` | 199 | All missing assets classified by criticality |
 | `COMPLETE_GAME_ERROR_AND_MISSING_PARTS_REPORT.md` | 416 | Previous consolidated report (being updated) |
 | `PHASE_1_READ_ONLY_SOURCE_AUDIT.md` | 191 | Source code audit with P0-P3 bug rankings |
-| `MEGA_CLOUD_SAVE_INTEGRATION_REPORT.md` | 155 | MEGA Cloud Drive integration details |
+| `MEGA_CLOUD_SAVE_INTEGRATION_REPORT.md` | 155 | ~~MEGA Cloud Drive~~ (HISTORICAL — MEGA removed, Firebase only) |
 
 ---
 
@@ -374,7 +372,7 @@ The following audit documents already exist in `docs/audits/` and contain detail
 4. **Replace 9 NPC models** with production-quality rigged characters
 5. **Create kannan.glb** for Chennai NPC
 6. **Fix CloudSaveManager token refresh** — Fetch fresh token per request
-7. **Configure Firebase or MEGA credentials** — Enable cloud saves
+7. **Configure Firebase credentials** — Enable cloud saves
 
 ### Medium Priority (Polish)
 8. **Rebake NavMesh** after scene regeneration
@@ -394,7 +392,7 @@ The following audit documents already exist in `docs/audits/` and contain detail
 | Branch | Status | Details |
 |---|---|---|
 | `main` | Base | Original development branch |
-| `scene-regen-review` | **Current** | 5 commits ahead of main, 12 regenerated scenes, audit docs, MEGA integration |
+| `scene-regen-review` | **Current** | 5 commits ahead of main, 12 regenerated scenes, audit docs |
 | `ai/unity-graphics-world-upgrade` | ⚠️ 50 commits behind main | Do not use as base without review |
 
 **12 Modified Scene Files on `scene-regen-review`:**
@@ -432,7 +430,7 @@ These are full scene regenerations (~49k insertions, ~49k deletions). Content ap
 2. **Install `com.unity.ai.navigation`** — Add to `manifest.json` and rebake NavMesh
 3. **Source audio files** — Purchase or create the 125+ audio files documented in `audio-manifest.json`
 4. **Replace NPC models** — Commission or create production-quality 3D characters
-5. **Configure cloud credentials** — Set up Firebase or MEGA Cloud Drive account
+5. **Configure cloud credentials** — Set up Firebase service account
 6. **Fix SocketIOClient.cs** — Rewrite ParseHandshake() to handle JSON response
 7. **Fix CloudSaveManager** — Implement token refresh per request
 

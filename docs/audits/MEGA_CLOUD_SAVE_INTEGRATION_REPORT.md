@@ -1,4 +1,8 @@
-# GitHub PR + MEGA Cloud Save Integration Report
+# GitHub PR + MEGA Cloud Save Integration Report — HISTORICAL (OBSOLETE)
+
+> **⚠️ THIS REPORT IS HISTORICAL.** MEGA Cloud Drive was removed from the project on 2026-10-18.
+> Firebase Firestore is now the sole cloud-save provider. This report is preserved for reference only.
+> See `COMPLETE_REPOSITORY_REPAIR_REPORT.md` for the current state.
 
 **Date:** 2026-10-18  
 **Branch:** `scene-regen-review`  
