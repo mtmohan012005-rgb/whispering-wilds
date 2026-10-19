@@ -35,7 +35,7 @@ const MAX_BACKOFF_MS = 400;
 // Bound on serialized save payload size (Firestore hard limit is ~1 MiB).
 const MAX_SAVE_BYTES = 512 * 1024;
 
-const SUPPORTED_SAVE_VERSIONS = new Set([1, 2, 3]);
+const SUPPORTED_SAVE_VERSIONS = new Set([1, 2, 3, 4]);
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
