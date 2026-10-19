@@ -358,3 +358,13 @@ Fix cloud-save request contract, add checksum test vectors, and include cloud-sa
 - **All 145+ automated tests PASS**, 0 FAIL — verify-game (16/16), test:backend (30/32), verify-production (6/6), verify-assets (36/36), verify-runtime (7/7), verify-compatibility (20/20), Socket.IO integration (17/17), cloud-save regression (13/13 PASS, 8 SKIP rate-limited)
 - Pushed to GitHub: `main` branch (commit 73c529f)
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — cloud-save contract now correct end-to-end
+
+### ✓ Step 15: Final Verification & CI Workflow Status (Completed 2026-10-19)
+Fresh verification of all tests and CI workflow push attempt.
+
+- **Fresh test run:** 132+ PASS, 0 FAIL, 11 SKIP across all 8 test suites
+- **CI workflows committed locally** (commit 316fbc5): `backend-ci.yml`, `unity-validation.yml`
+- **Push REJECTED** by GitHub: "refusing to allow a Personal Access Token to create or update workflow `.github/workflows/backend-ci.yml` without `workflow` scope"
+- **Remote `main` is at commit cf83797** — all game code, temple scene, audio, cloud save fixes, security fixes, and tests are published
+- **Remaining blocker:** User must add `workflow` scope to GitHub PAT, then `git push origin main`
+- **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — all code complete; CI workflows need user action to publish
