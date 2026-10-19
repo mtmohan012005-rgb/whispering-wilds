@@ -411,5 +411,6 @@ Fix missing test runner, update CI workflows, and create human campaign playthro
 - **Updated `.github/workflows/backend-ci.yml`** (44 lines) — Simplified to use `npm test` which auto-starts server
 - **Created `docs/qa/HUMAN_CAMPAIGN_PLAYTHROUGH.md`** (249 lines) — 116-test checklist covering boot, settings, all 6 regions, temple level, save/load, localization, audio, performance, campaign ending, cloud save
 - **All 5 test suites PASS** via run-all-tests.js: Backend Security, Cloud Save Regression, Game Verification, Production Verification, Asset Verification
-- **CI workflows ready** but BLOCKED from push — PAT lacks `workflow` scope
+- **Pushed to GitHub `main`**: Commit `c04af89` — test runner, campaign checklist, package.json, audit plan
+- **CI workflows ready** but BLOCKED from push — PAT lacks `workflow` scope; files exist locally in `.github/workflows/`
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — Test infrastructure complete, campaign checklist ready, CI workflows need user action
