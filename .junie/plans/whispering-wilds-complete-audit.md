@@ -393,12 +393,12 @@ Wire actual audio clip references into temple scene generator, load real GLB mod
 - **CI workflows BLOCKED** from push — PAT lacks `workflow` scope; user must add `workflow` scope to GitHub PAT
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — Audio clips wired, real GLB models loaded, Kannan alias fixed, CI workflows ready
 
-### ✓ Step 18: Final Repository Status & CI Workflow Push (Completed 2026-10-19)
-Fresh verification of all tests, CI workflow commit, and push attempt.
+### ✓ Step 18: Final Repository Status & CI Workflow Push (Re-verified 2026-10-19)
+Fresh verification of all tests, CI workflow recreation, and push attempt.
 
-- **Fresh test run:** 132+ PASS, 0 FAIL, ~14 SKIP across all 8 test suites
-- **CI workflows committed locally** (commit 9b66c78): `backend-ci.yml`, `unity-validation.yml`
+- **Fresh test run:** 132+ PASS, 0 FAIL, ~14 SKIP across all 8 test suites (backend security, verify-game, verify-production, verify-assets, cloud-save regression)
+- **CI workflows recreated** (commit 6982b13 locally): `backend-ci.yml` (75 lines), `unity-validation.yml` (91 lines) — previous versions were lost during git reset
 - **Push REJECTED** by GitHub: "refusing to allow a Personal Access Token to create or update workflow `.github/workflows/backend-ci.yml` without `workflow` scope"
-- **Remote `main` is at commit aedd090** — all game code, temple scene, audio, cloud save fixes, security fixes, and tests are published
+- **Remote `main` is at commit f3fa5c7** — all game code, temple scene, audio, cloud save fixes, security fixes, and tests are published
 - **Remaining blocker:** User must add `workflow` scope to GitHub PAT, then `git push origin main`
 - **Verdict: PLAYABLE GAME WITH KNOWN GAPS** — all code complete; CI workflows need user action to publish
