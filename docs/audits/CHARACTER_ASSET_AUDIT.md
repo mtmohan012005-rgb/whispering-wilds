@@ -21,7 +21,7 @@
 | NPC_ForestGuide | `NPC_ForestGuide.prefab` | ⚠️ Placeholder | ❌ Unrigged | ❌ Missing | ❌ Missing | **BLOCKED** |
 | NPC_TeaWorker | `NPC_TeaWorker.prefab` | ⚠️ Placeholder | ❌ Unrigged | ❌ Missing | ❌ Missing | **BLOCKED** |
 | NPC_Meenakshi | `NPC_Meenakshi.prefab` | ⚠️ Placeholder | ❌ Unrigged | ❌ Missing | ❌ Missing | **BLOCKED** |
-| NPC_Kannan | N/A | ❌ Missing | ❌ Missing | ❌ Missing | ❌ Missing | **MISSING** |
+| NPC_Kannan | `NPC_TeaWorker.prefab` (alias) | ⚠️ Placeholder | ❌ Unrigged | ❌ Missing | ❌ Missing | **ALIAS** |
 
 ---
 
@@ -62,11 +62,12 @@
 | TeaWorker | Plantation | Nilgiris | `teaworker.glb` | ~9 KB | Placeholder block |
 | Meenakshi | Temple | Thanjavur | `meenakshi.glb` | ~10 KB | Placeholder block |
 
-### Kannan NPC ❌ MISSING
+### Kannan NPC ⚠️ ALIAS for TeaWorker
 
-- **GLB file:** `kannan.glb` does not exist in the repository
-- **Code reference:** `CharacterPrefabCatalog.cs` logs "Missing production asset: kannan.glb"
-- **Impact:** Cannot spawn this NPC in any scene
+- **GLB file:** `kannan.glb` does not exist as a separate file
+- **Code reference:** `CharacterPrefabCatalog.cs` maps `"kannan"` → `NPC_TeaWorker.prefab` (line 44)
+- **Resolution:** Kannan is an intentional alias for the TeaWorker NPC, not a missing character
+- **Impact:** Kannan spawns using NPC_TeaWorker.prefab (placeholder quality)
 
 ---
 
@@ -123,6 +124,6 @@ Potential sources for licensed NPC models:
 
 ## Conclusion
 
-**Player character is production-ready.** All 9 NPC characters are placeholder quality. Kannan NPC model is completely missing. The game is functional but NPCs will appear as low-poly blocks until production models are acquired and integrated.
+**Player character is production-ready.** All 9 NPC characters are placeholder quality. Kannan is an alias for TeaWorker, not a missing character. The game is functional but NPCs will appear as low-poly blocks until production models are acquired and integrated.
 
-**Verdict:** ⚠️ **PARTIAL** — Player ready, NPCs blocked by missing production assets.
+**Verdict:** ⚠️ **PARTIAL** — Player ready, NPCs blocked by missing production assets. Kannan resolves via TeaWorker alias.

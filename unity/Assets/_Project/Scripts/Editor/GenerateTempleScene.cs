@@ -34,6 +34,7 @@ using WhisperingWilds.Investigation;
 using WhisperingWilds.Gameplay;
 using WhisperingWilds.Player;
 using WhisperingWilds.Cameras;
+using WhisperingWilds.Audio;
 
 namespace WhisperingWilds.Editor
 {
@@ -110,6 +111,9 @@ namespace WhisperingWilds.Editor
             controller.artifactPickup = artifact.GetComponent<HiddenArtifactPickup>();
             controller.hiddenChamberDoor = door;
 
+            // --- Wire Audio Clips ---
+            WireAudioClips(controller, puzzleCtrl);
+
             // --- Save Scene ---
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), ScenePath);
             AssetDatabase.Refresh();
@@ -167,69 +171,89 @@ namespace WhisperingWilds.Editor
 
         private static void CreateTempleModels()
         {
-            // Try to load heritage_temple_area if it exists in the project
-            string[] templeAssets = AssetDatabase.FindAssets("heritage_temple_area t:Prefab");
-            if (templeAssets.Length > 0)
+            // Load GLB models directly by path (not t:Prefab search which won't find imported GLBs)
+            // Heritage temple area
+            string templePath = "Assets/_Project/Art/Models/Architecture/thanjavur/heritage_temple_area.glb";
+            GameObject templeModel = AssetDatabase.LoadAssetAtPath<GameObject>(templePath);
+            if (templeModel != null)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(templeAssets[0]);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                if (prefab != null)
-                {
-                    GameObject instance = GameObject.Instantiate(prefab, new Vector3(0, 0, 0), Quaternion.identity);
-                    instance.name = "HeritageTempleArea";
-                }
+                GameObject instance = GameObject.Instantiate(templeModel, new Vector3(0, 0, 0), Quaternion.identity);
+                instance.name = "HeritageTempleArea";
+                Debug.Log("[GenerateTempleScene] Loaded heritage_temple_area.glb");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Temple model not found at {templePath}");
             }
 
-            // Try to load gopuram
-            string[] gopuramAssets = AssetDatabase.FindAssets("thanjavur_gopuram t:Prefab");
-            if (gopuramAssets.Length > 0)
+            // Gopuram
+            string gopuramPath = "Assets/_Project/Art/Models/Architecture/thanjavur_gopuram.glb";
+            GameObject gopuramModel = AssetDatabase.LoadAssetAtPath<GameObject>(gopuramPath);
+            if (gopuramModel != null)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(gopuramAssets[0]);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                if (prefab != null)
-                {
-                    GameObject instance = GameObject.Instantiate(prefab, new Vector3(0, 0, -30), Quaternion.identity);
-                    instance.name = "Gopuram";
-                }
+                GameObject instance = GameObject.Instantiate(gopuramModel, new Vector3(0, 0, -30), Quaternion.identity);
+                instance.name = "Gopuram";
+                Debug.Log("[GenerateTempleScene] Loaded thanjavur_gopuram.glb");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Gopuram model not found at {gopuramPath}");
             }
 
             // Temple bell
-            string[] bellAssets = AssetDatabase.FindAssets("temple_bell t:Prefab");
-            if (bellAssets.Length > 0)
+            string bellPath = "Assets/_Project/Art/Models/Props/temple/temple_bell.glb";
+            GameObject bellModel = AssetDatabase.LoadAssetAtPath<GameObject>(bellPath);
+            if (bellModel != null)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(bellAssets[0]);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                if (prefab != null)
-                {
-                    GameObject instance = GameObject.Instantiate(prefab, new Vector3(5, 2, -5), Quaternion.identity);
-                    instance.name = "TempleBell";
-                }
+                GameObject instance = GameObject.Instantiate(bellModel, new Vector3(5, 2, -5), Quaternion.identity);
+                instance.name = "TempleBell";
+                Debug.Log("[GenerateTempleScene] Loaded temple_bell.glb");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Temple bell model not found at {bellPath}");
             }
 
             // Stone inscription
-            string[] inscriptionAssets = AssetDatabase.FindAssets("stone_inscription t:Prefab");
-            if (inscriptionAssets.Length > 0)
+            string inscriptionPath = "Assets/_Project/Art/Models/Props/temple/stone_inscription.glb";
+            GameObject inscriptionModel = AssetDatabase.LoadAssetAtPath<GameObject>(inscriptionPath);
+            if (inscriptionModel != null)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(inscriptionAssets[0]);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                if (prefab != null)
-                {
-                    GameObject instance = GameObject.Instantiate(prefab, new Vector3(-5, 1, -5), Quaternion.identity);
-                    instance.name = "StoneInscription";
-                }
+                GameObject instance = GameObject.Instantiate(inscriptionModel, new Vector3(-5, 1, -5), Quaternion.identity);
+                instance.name = "StoneInscription";
+                Debug.Log("[GenerateTempleScene] Loaded stone_inscription.glb");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Stone inscription model not found at {inscriptionPath}");
             }
 
             // Brass lamp
-            string[] lampAssets = AssetDatabase.FindAssets("brass_lamp t:Prefab");
-            if (lampAssets.Length > 0)
+            string lampPath = "Assets/_Project/Art/Models/Props/temple/brass_lamp.glb";
+            GameObject lampModel = AssetDatabase.LoadAssetAtPath<GameObject>(lampPath);
+            if (lampModel != null)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(lampAssets[0]);
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                if (prefab != null)
-                {
-                    GameObject instance = GameObject.Instantiate(prefab, new Vector3(3, 1, 3), Quaternion.identity);
-                    instance.name = "BrassLamp";
-                }
+                GameObject instance = GameObject.Instantiate(lampModel, new Vector3(3, 1, 3), Quaternion.identity);
+                instance.name = "BrassLamp";
+                Debug.Log("[GenerateTempleScene] Loaded brass_lamp.glb");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Brass lamp model not found at {lampPath}");
+            }
+
+            // Granite column (extra prop)
+            string columnPath = "Assets/_Project/Art/Models/Props/temple/granite_column.glb";
+            GameObject columnModel = AssetDatabase.LoadAssetAtPath<GameObject>(columnPath);
+            if (columnModel != null)
+            {
+                GameObject instance = GameObject.Instantiate(columnModel, new Vector3(-3, 0, 3), Quaternion.identity);
+                instance.name = "GraniteColumn";
+                Debug.Log("[GenerateTempleScene] Loaded granite_column.glb");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Granite column model not found at {columnPath}");
             }
         }
 
@@ -428,6 +452,74 @@ namespace WhisperingWilds.Editor
             }
 
             Debug.Log("[GenerateTempleScene] Main Camera created with CameraController.");
+        }
+
+        private static void WireAudioClips(AncientTempleLevelController levelCtrl, TempleFolklorePuzzleController puzzleCtrl)
+        {
+            // Load audio clips from the Audio directory
+            string ambiencePath = "Assets/_Project/Audio/Ambience/temple_ambience.wav";
+            string stoneClickPath = "Assets/_Project/Audio/Interactions/stone_click.wav";
+            string successPath = "Assets/_Project/Audio/Interactions/puzzle_success.wav";
+            string wrongAnswerPath = "Assets/_Project/Audio/Interactions/wrong_answer.wav";
+            string doorOpenPath = "Assets/_Project/Audio/Interactions/door_open.wav";
+
+            AudioClip ambience = AssetDatabase.LoadAssetAtPath<AudioClip>(ambiencePath);
+            AudioClip stoneClick = AssetDatabase.LoadAssetAtPath<AudioClip>(stoneClickPath);
+            AudioClip success = AssetDatabase.LoadAssetAtPath<AudioClip>(successPath);
+            AudioClip wrongAnswer = AssetDatabase.LoadAssetAtPath<AudioClip>(wrongAnswerPath);
+            AudioClip doorOpen = AssetDatabase.LoadAssetAtPath<AudioClip>(doorOpenPath);
+
+            // Wire to level controller
+            if (ambience != null)
+            {
+                levelCtrl.templeAmbienceClip = ambience;
+                Debug.Log("[GenerateTempleScene] Temple ambience clip wired.");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Ambience clip not found at {ambiencePath}");
+            }
+
+            // Wire to puzzle controller
+            if (stoneClick != null)
+            {
+                puzzleCtrl.stoneClickSound = stoneClick;
+                Debug.Log("[GenerateTempleScene] Stone click clip wired.");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Stone click clip not found at {stoneClickPath}");
+            }
+
+            if (success != null)
+            {
+                puzzleCtrl.puzzleSuccessSound = success;
+                Debug.Log("[GenerateTempleScene] Puzzle success clip wired.");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Puzzle success clip not found at {successPath}");
+            }
+
+            if (wrongAnswer != null)
+            {
+                puzzleCtrl.wrongAnswerSound = wrongAnswer;
+                Debug.Log("[GenerateTempleScene] Wrong answer clip wired.");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Wrong answer clip not found at {wrongAnswerPath}");
+            }
+
+            if (doorOpen != null)
+            {
+                puzzleCtrl.doorOpenSound = doorOpen;
+                Debug.Log("[GenerateTempleScene] Door open clip wired.");
+            }
+            else
+            {
+                Debug.LogWarning($"[GenerateTempleScene] Door open clip not found at {doorOpenPath}");
+            }
         }
 
         private static void AddOrUpdateSceneInBuildSettings(string scenePath)
