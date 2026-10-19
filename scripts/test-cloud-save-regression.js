@@ -530,10 +530,16 @@ async function testStaleRevisionConflict() {
         'X-WW-CSRF': '1'
     });
 
-    // Server should reject with 409 Conflict
+    // Server MUST reject with 409 Conflict — accepting 201 would mean the revision
+    // check is not enforced, allowing stale saves to overwrite newer data.
+    if (upload2.status === 503) {
+        console.log('  ℹ️  INFO: Firebase not configured — revision conflict test skipped (503)');
+        testsSkipped++;
+        return;
+    }
     assert(
-        upload2.status === 409 || upload2.status === 201,
-        `Stale revision returns 409 Conflict or 201 (if revision check not enforced) — got ${upload2.status}`
+        upload2.status === 409,
+        `Stale revision MUST return 409 Conflict — got ${upload2.status}. If 201, the server is not enforcing revision checks.`
     );
 }
 

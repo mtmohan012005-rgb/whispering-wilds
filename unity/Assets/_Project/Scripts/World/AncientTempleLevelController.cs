@@ -38,11 +38,6 @@ namespace WhisperingWilds.World
         private bool _puzzleCompleted;
         private bool _artifactCollected;
 
-        private void Awake()
-        {
-            DontDestroyOnLoad(gameObject);
-        }
-
         private void Start()
         {
             InitializeLevel();
