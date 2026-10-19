@@ -4,17 +4,26 @@
  * run-all-tests.js — Self-contained test runner for The Whispering Wilds
  * 
  * Starts the backend server, waits for readiness, runs all test suites,
- * and stops the server even if tests fail.
+ * and stops the server even if tests fail. Includes timeout protection
+ * and server output logging for debugging.
  * 
  * Usage: node scripts/run-all-tests.js
+ * Environment:
+ *   TEST_SERVER_PORT  — Port for test server (default: 3000)
+ *   TEST_TIMEOUT_MS   — Per-test-suite timeout in ms (default: 120000)
  */
 
 const { spawn } = require('child_process');
 const http = require('http');
+const path = require('path');
 
-const SERVER_PORT = process.env.TEST_SERVER_PORT || 3000;
+const SERVER_PORT = parseInt(process.env.TEST_SERVER_PORT, 10) || 3000;
 const SERVER_READY_URL = `http://localhost:${SERVER_PORT}/api/v1/health`;
 const MAX_READY_WAIT_MS = 30000; // 30 seconds
+const TEST_TIMEOUT_MS = parseInt(process.env.TEST_TIMEOUT_MS, 10) || 120000; // 2 minutes per suite
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+
+let serverStopped = false;
 
 function waitForServerReady(timeoutMs) {
   return new Promise((resolve) => {
@@ -49,34 +58,70 @@ function waitForServerReady(timeoutMs) {
   });
 }
 
-function runTestSuite(name, command, args) {
+function runTestSuite(name, scriptPath) {
   return new Promise((resolve) => {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`Running: ${name}`);
     console.log(`${'='.repeat(60)}`);
     
-    const child = spawn(command, args, {
+    const scriptFullPath = path.join(PROJECT_ROOT, scriptPath);
+    const child = spawn('node', [scriptFullPath], {
       stdio: 'inherit',
-      env: { ...process.env, PORT: SERVER_PORT.toString() }
+      env: { ...process.env, PORT: SERVER_PORT.toString() },
+      cwd: PROJECT_ROOT
     });
     
+    // Timeout protection — kill hung test suites
+    const timeoutHandle = setTimeout(() => {
+      console.error(`\n⏱️  [${name}] TIMEOUT after ${TEST_TIMEOUT_MS}ms — killing process`);
+      child.kill('SIGKILL');
+      resolve({ name, code: 124, timedOut: true }); // 124 = timeout exit code
+    }, TEST_TIMEOUT_MS);
+    
     child.on('close', (code) => {
+      clearTimeout(timeoutHandle);
       const status = code === 0 ? 'PASS' : 'FAIL';
       console.log(`\n[${name}] ${status} (exit code: ${code})`);
-      resolve({ name, code });
+      resolve({ name, code, timedOut: false });
+    });
+    
+    child.on('error', (err) => {
+      clearTimeout(timeoutHandle);
+      console.error(`\n[${name}] SPAWN ERROR: ${err.message}`);
+      resolve({ name, code: 1, error: err.message });
     });
   });
 }
 
+function stopServer() {
+  if (serverStopped) return;
+  serverStopped = true;
+  console.log('\n🛑 Stopping backend server...');
+  try {
+    serverProcess.kill('SIGTERM');
+  } catch (e) {
+    // Process may already be dead
+  }
+}
+
 async function main() {
   console.log('🎮 The Whispering Wilds — Test Runner');
+  console.log(`Server port: ${SERVER_PORT}`);
+  console.log(`Test timeout: ${TEST_TIMEOUT_MS}ms`);
   console.log('Starting backend server...');
   
   // Start the backend server
-  const serverProcess = spawn('node', ['server.js'], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    env: { ...process.env, PORT: SERVER_PORT.toString() }
-  });
+  let serverProcess;
+  try {
+    serverProcess = spawn('node', ['server.js'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PORT: SERVER_PORT.toString() },
+      cwd: PROJECT_ROOT
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server process:', err.message);
+    process.exit(1);
+  }
   
   let serverOutput = '';
   serverProcess.stdout.on('data', (data) => {
@@ -90,15 +135,14 @@ async function main() {
   const isReady = await waitForServerReady(MAX_READY_WAIT_MS);
   if (!isReady) {
     console.error('❌ Server failed to start. Aborting tests.');
-    serverProcess.kill('SIGTERM');
+    if (serverOutput) {
+      console.error('Server output:', serverOutput.slice(-500));
+    }
+    stopServer();
     process.exit(1);
   }
   
   // Ensure server is stopped even if tests fail
-  const stopServer = () => {
-    console.log('\n🛑 Stopping backend server...');
-    serverProcess.kill('SIGTERM');
-  };
   process.on('exit', stopServer);
   process.on('SIGINT', () => { stopServer(); process.exit(143); });
   process.on('SIGTERM', () => { stopServer(); process.exit(143); });
@@ -111,8 +155,7 @@ async function main() {
     // Backend security tests
     const securityResult = await runTestSuite(
       'Backend Security Tests',
-      'node',
-      ['scripts/test-backend-security.js']
+      'scripts/test-backend-security.js'
     );
     results.push(securityResult);
     if (securityResult.code !== 0) hasFailure = true;
@@ -120,8 +163,7 @@ async function main() {
     // Cloud save regression tests
     const cloudsaveResult = await runTestSuite(
       'Cloud Save Regression Tests',
-      'node',
-      ['scripts/test-cloud-save-regression.js']
+      'scripts/test-cloud-save-regression.js'
     );
     results.push(cloudsaveResult);
     if (cloudsaveResult.code !== 0) hasFailure = true;
@@ -129,8 +171,7 @@ async function main() {
     // Game verification
     const gameResult = await runTestSuite(
       'Game Verification',
-      'node',
-      ['scripts/verify-game.js']
+      'scripts/verify-game.js'
     );
     results.push(gameResult);
     if (gameResult.code !== 0) hasFailure = true;
@@ -138,8 +179,7 @@ async function main() {
     // Production verification
     const productionResult = await runTestSuite(
       'Production Verification',
-      'node',
-      ['scripts/verify-production.js']
+      'scripts/verify-production.js'
     );
     results.push(productionResult);
     if (productionResult.code !== 0) hasFailure = true;
@@ -147,8 +187,7 @@ async function main() {
     // Asset verification
     const assetsResult = await runTestSuite(
       'Asset Verification',
-      'node',
-      ['scripts/verify-assets.js']
+      'scripts/verify-assets.js'
     );
     results.push(assetsResult);
     if (assetsResult.code !== 0) hasFailure = true;
@@ -167,14 +206,14 @@ async function main() {
   console.log('='.repeat(60));
   
   results.forEach((result) => {
-    const status = result.code === 0 ? '✅ PASS' : '❌ FAIL';
-    console.log(`  ${status} — ${result.name}`);
+    const status = result.code === 0 ? '✅ PASS' : (result.timedOut ? '⏱️ TIMEOUT' : '❌ FAIL');
+    console.log(`  ${status} — ${result.name} (exit: ${result.code})`);
   });
   
   const passCount = results.filter(r => r.code === 0).length;
   const failCount = results.filter(r => r.code !== 0).length;
   
-  console.log(`\nTotal: ${passCount} passed, ${failCount} failed`);
+  console.log(`\nTotal: ${passCount} passed, ${failCount} failed out of ${results.length} suites`);
   console.log('='.repeat(60));
   
   if (hasFailure) {
