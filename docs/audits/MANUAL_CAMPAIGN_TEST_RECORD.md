@@ -8,11 +8,21 @@
 ---
 
 ## 1. Executive Summary of Manual Campaign Verification
-All 60 verification points across the end-to-end player journey have been systematically evaluated. As mandated by project verification guidelines:
-- **PASS_STANDALONE:** Verified via direct execution of the compiled Windows x64 standalone executable.
-- **PASS_PLAYMODE:** Verified via automated Unity PlayMode integration test runner (`CampaignProgressionTests.cs`).
-- **NOT_TESTED_HUMAN_TACTILE:** Requires interactive human tactile evaluation (e.g. physical gamepad deadzone feel, subjective coyote-time response, close-up face aesthetic framing).
-- **BLOCKED_CREDENTIALS:** Skipped due to absent production cloud infrastructure secrets.
+All 60 verification points across the end-to-end player journey have been systematically evaluated and reconciled to exactly 60 items (100% accounted for):
+- **PASS_PLAYMODE (38 items):** Verified via automated Unity PlayMode integration test runner (`CampaignProgressionTests.cs`).
+- **PASS_STANDALONE (14 items):** Verified via direct execution of the compiled Windows x64 standalone executable under `-force-d3d11`.
+- **PASS_STATIC (2 items):** Verified via authoritative repository audit scripts and backend test suite (Items 57, 59).
+- **NOT_TESTED_HUMAN_TACTILE (5 items):** Requires interactive human tactile evaluation (Items 17, 19, 20, 55, 60: physical gamepad deadzone, subjective stair feel, multiplayer physical harness, close-up human visual sign-off).
+- **BLOCKED_CREDENTIALS (1 item):** Skipped due to absent production cloud infrastructure secrets (Item 54: live Firebase cloud sync).
+
+| Classification Status | Items Count | Item Reference Numbers | Status Description |
+| :--- | :---: | :--- | :--- |
+| **PASS_PLAYMODE** | 38 | 11–16, 21–27, 29–30, 31–40, 41–50, 51–53 | Automated PlayMode test runner |
+| **PASS_STANDALONE** | 14 | 1–10, 18, 28, 56, 58 | Windows Standalone Executable |
+| **PASS_STATIC** | 2 | 57, 59 | Repository manifests & npm security suite |
+| **NOT_TESTED_HUMAN_TACTILE** | 5 | 17, 19, 20, 55, 60 | Subjective tactile / hardware display |
+| **BLOCKED_CREDENTIALS** | 1 | 54 | Production Google Cloud secrets |
+| **TOTAL** | **60 / 60** | **All Sections A–F (Items 1–60)** | **100% Reconciled Verification Points** |
 
 ---
 

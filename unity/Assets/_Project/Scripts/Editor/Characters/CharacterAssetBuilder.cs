@@ -39,6 +39,23 @@ namespace WhisperingWilds.Editor.Characters
             AssetDatabase.Refresh();
         }
 
+        public static void BuildAllCharactersBatch()
+        {
+            try
+            {
+                Debug.Log("[Characters] Starting batch character build...");
+                BuildAllCharacters();
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+                Debug.Log("[Characters] Batch character build finished successfully.");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[Characters] Batch character build failed: {ex}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         public static void BuildAllCharacters()
         {
             // ---- reusable shared assets (created once, stable GUIDs) ----
@@ -51,17 +68,27 @@ namespace WhisperingWilds.Editor.Characters
             var refBones = CharacterFactory.BuildRig(refRig.transform);
             var boneCache = new Dictionary<string, Transform>(refBones);
 
-            Mesh LoadOrCreateMesh(string name, Func<Dictionary<string, int>, Mesh> build)
+            Mesh LoadOrCreateMesh(string name, Func<Dictionary<string, int>, Mesh> build, bool forceRebuild = false)
             {
                 string path = $"{ProceduralRoot}/{name}.asset";
                 var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(path);
-                if (mesh == null)
+                if (mesh == null || forceRebuild)
                 {
                     var idx = new Dictionary<string, int>(StringComparer.Ordinal);
                     for (int i = 0; i < CharacterFactory.RigBoneNames.Length; i++) idx[CharacterFactory.RigBoneNames[i]] = i;
-                    mesh = build(idx);
-                    mesh.bindposes = Utils.BoneWorldToLocal(refBones);
-                    AssetDatabase.CreateAsset(mesh, path);
+                    var newMesh = build(idx);
+                    newMesh.bindposes = Utils.BoneWorldToLocal(refBones);
+                    if (mesh == null)
+                    {
+                        AssetDatabase.CreateAsset(newMesh, path);
+                        mesh = newMesh;
+                    }
+                    else
+                    {
+                        mesh.Clear();
+                        EditorUtility.CopySerialized(newMesh, mesh);
+                        AssetDatabase.SaveAssets();
+                    }
                     AssetDatabase.SaveAssets();
                 }
                 return mesh;
@@ -69,8 +96,21 @@ namespace WhisperingWilds.Editor.Characters
 
             var bodyMesh = LoadOrCreateMesh("Mesh_Body", CharacterFactory.BuildBodyMesh);
             var handsMesh = LoadOrCreateMesh("Mesh_Hands", CharacterFactory.BuildHandsMesh);
-            var headMale = LoadOrCreateMesh("Mesh_HeadMale", d => CharacterFactory.BuildHeadMesh(d, false));
-            var headFemale = LoadOrCreateMesh("Mesh_HeadFemale", d => CharacterFactory.BuildHeadMesh(d, true));
+            var headMale = LoadOrCreateMesh("Mesh_HeadMale", d => CharacterFactory.BuildHeadMesh(d, false), true);
+            var headFemale = LoadOrCreateMesh("Mesh_HeadFemale", d => CharacterFactory.BuildHeadMesh(d, true), true);
+
+            // Distinct culturally grounded 3D character head meshes
+            var headGeneric = LoadOrCreateMesh("Mesh_Head_GenericMale", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.GenericMale), true);
+            var headMurugan = LoadOrCreateMesh("Mesh_Head_Murugan", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Murugan), true);
+            var headVelu = LoadOrCreateMesh("Mesh_Head_Velu", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Velu), true);
+            var headSelvam = LoadOrCreateMesh("Mesh_Head_Selvam", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Selvam), true);
+            var headMeenakshi = LoadOrCreateMesh("Mesh_Head_Meenakshi", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Meenakshi), true);
+            var headArtisan = LoadOrCreateMesh("Mesh_Head_Artisan", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Artisan), true);
+            var headFarmer = LoadOrCreateMesh("Mesh_Head_Farmer", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Farmer), true);
+            var headFisher = LoadOrCreateMesh("Mesh_Head_Fisher", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.Fisher), true);
+            var headForestGuide = LoadOrCreateMesh("Mesh_Head_ForestGuide", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.ForestGuide), true);
+            var headTeaWorker = LoadOrCreateMesh("Mesh_Head_TeaWorker", d => CharacterFactory.BuildRoleHeadMesh(d, CharacterFactory.NpcHeadRole.TeaWorker), true);
+
             var upperShirt = LoadOrCreateMesh("Mesh_UpperShirt", CharacterFactory.BuildUpperShirtMesh);
             var upperBlouse = LoadOrCreateMesh("Mesh_UpperBlouse", CharacterFactory.BuildUpperBlouseMesh);
             var lowerVeshti = LoadOrCreateMesh("Mesh_LowerVeshti", CharacterFactory.BuildLowerVeshtiMesh);
@@ -86,34 +126,34 @@ namespace WhisperingWilds.Editor.Characters
 
             // ---- prefabs (rewritten in place every run) ----
             EnsureDirectory(CharacterPrefabCatalog.CharacterPrefabRoot);
-            BuildPlayerPrefab(materials, clips, playerController, bodyMesh, handsMesh, headMale,
+            BuildPlayerPrefab(materials, clips, playerController, bodyMesh, handsMesh, headGeneric,
                 upperShirt, lowerVeshti, thunduMesh);
             BuildNpcPrefab(CharacterPrefabCatalog.MuruganPrefabPath, "Murugan", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerVeshti, thunduMesh,
+                npcController, bodyMesh, handsMesh, headMurugan, upperShirt, lowerVeshti, thunduMesh,
                 Archetype("skin_wheat", "hair_black", "fabric_cream", "veshti_white", "pallu_cream"));
             BuildNpcPrefab(CharacterPrefabCatalog.VeluPrefabPath, "Velu", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerVeshti, thunduMesh,
+                npcController, bodyMesh, handsMesh, headVelu, upperShirt, lowerVeshti, thunduMesh,
                 Archetype("skin_bronze", "hair_black", "fabric_mustard", "veshti_navy", "thundu_red"));
             BuildNpcPrefab(CharacterPrefabCatalog.SelvamPrefabPath, "Selvam", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerLungi, palluMesh,
+                npcController, bodyMesh, handsMesh, headSelvam, upperShirt, lowerLungi, palluMesh,
                 Archetype("skin_deep", "hair_black", "fabric_white", "lungi_red", null));
             BuildNpcPrefab(CharacterPrefabCatalog.MeenakshiPrefabPath, "Meenakshi", true, materials,
-                npcController, bodyMesh, handsMesh, headFemale, upperBlouse, lowerSari, palluMesh,
+                npcController, bodyMesh, handsMesh, headMeenakshi, upperBlouse, lowerSari, palluMesh,
                 Archetype("skin_wheat", "hair_black", "sari_crimson", "sari_crimson", "pallu_red"));
             BuildNpcPrefab(CharacterPrefabCatalog.ArtisanPrefabPath, "Artisan", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerVeshti, thunduMesh,
+                npcController, bodyMesh, handsMesh, headArtisan, upperShirt, lowerVeshti, thunduMesh,
                 Archetype("skin_bronze", "hair_black", "fabric_blue", "veshti_white", "thundu_red"));
             BuildNpcPrefab(CharacterPrefabCatalog.FarmerPrefabPath, "Farmer", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerVeshti, thunduMesh,
+                npcController, bodyMesh, handsMesh, headFarmer, upperShirt, lowerVeshti, thunduMesh,
                 Archetype("skin_wheat", "hair_black", "fabric_cream", "veshti_white", "pallu_cream"));
             BuildNpcPrefab(CharacterPrefabCatalog.FisherPrefabPath, "Fisher", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerLungi, palluMesh,
+                npcController, bodyMesh, handsMesh, headFisher, upperShirt, lowerLungi, palluMesh,
                 Archetype("skin_deep", "hair_brown", "fabric_white", "lungi_blue", null));
             BuildNpcPrefab(CharacterPrefabCatalog.ForestGuidePrefabPath, "ForestGuide", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerVeshti, thunduMesh,
+                npcController, bodyMesh, handsMesh, headForestGuide, upperShirt, lowerVeshti, thunduMesh,
                 Archetype("skin_bronze", "hair_black", "fabric_mustard", "veshti_navy", "wool_shawl"));
             BuildNpcPrefab(CharacterPrefabCatalog.TeaWorkerPrefabPath, "TeaWorker", false, materials,
-                npcController, bodyMesh, handsMesh, headMale, upperShirt, lowerVeshti, thunduMesh,
+                npcController, bodyMesh, handsMesh, headTeaWorker, upperShirt, lowerVeshti, thunduMesh,
                 Archetype("skin_wheat", "hair_black", "fabric_green", "veshti_white", "wool_shawl"));
 
             Debug.Log($"[Characters] Build all characters complete. " +
@@ -149,6 +189,12 @@ namespace WhisperingWilds.Editor.Characters
             var root = new GameObject("PlayerCharacter");
             var parts = ComposeVisual(root, materials, controller, body, hands, head, upper, lower, accessory,
                 false, "skin_wheat", "hair_black", "sari_crimson", "sari_crimson", "pallu_red");
+
+            // CharacterController for locomotion and editor rig audit verification
+            var cc = root.AddComponent<CharacterController>();
+            cc.height = 1.8f;
+            cc.radius = 0.35f;
+            cc.center = new Vector3(0f, 0.9f, 0f);
 
             // ---- PlayerVisualState wiring ----
             var visual = root.AddComponent<PlayerVisualState>();
@@ -198,6 +244,17 @@ namespace WhisperingWilds.Editor.Characters
             var root = new GameObject("NPC_" + displayName);
             ComposeVisual(root, materials, controller, body, hands, head, upper, lower, accessory,
                 female, archetype.skin, archetype.hair, archetype.upper, archetype.lower, archetype.accessory);
+
+            // Interaction collider for NPC interaction and editor rig audit verification
+            var col = root.AddComponent<CapsuleCollider>();
+            col.height = 1.8f;
+            col.radius = 0.4f;
+            col.center = new Vector3(0f, 0.9f, 0f);
+
+            // Autonomous NPC character component
+            var npc = root.AddComponent<WhisperingWilds.NPC.NPCCharacter>();
+            npc.SetCharacterProfile(displayName, displayName, "", "Resident");
+
             PrefabUtility.SaveAsPrefabAsset(root, path);
             UnityEngine.Object.DestroyImmediate(root);
         }

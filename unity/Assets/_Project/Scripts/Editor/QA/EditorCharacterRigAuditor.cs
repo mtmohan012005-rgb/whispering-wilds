@@ -178,12 +178,34 @@ namespace WhisperingWilds.Editor.QA
                             meshesValid = false;
                             result.errors.Add($"SkinnedMeshRenderer '{smr.name}' has null sharedMesh");
                         }
-                        if (smr.bones != null && smr.bones.Length > 0)
+                        else
                         {
-                            totalBones = Mathf.Max(totalBones, smr.bones.Length);
+                            if (smr.sharedMesh.bounds.size.sqrMagnitude < 0.0001f)
+                            {
+                                result.errors.Add($"SkinnedMeshRenderer '{smr.name}' has degenerate sharedMesh bounds");
+                            }
                         }
 
-                        if (smr.sharedMaterials != null)
+                        if (smr.rootBone == null)
+                        {
+                            result.findings.Add($"SkinnedMeshRenderer '{smr.name}' has no explicit rootBone (falls back to transform)");
+                        }
+
+                        if (smr.bones != null && smr.bones.Length > 0)
+                        {
+                            int validBonesInSmr = 0;
+                            foreach (var b in smr.bones)
+                            {
+                                if (b != null) validBonesInSmr++;
+                            }
+                            totalBones = Mathf.Max(totalBones, validBonesInSmr);
+                            if (validBonesInSmr < smr.bones.Length)
+                            {
+                                result.errors.Add($"SkinnedMeshRenderer '{smr.name}' has {smr.bones.Length - validBonesInSmr} null bone transform bindings");
+                            }
+                        }
+
+                        if (smr.sharedMaterials != null && smr.sharedMaterials.Length > 0)
                         {
                             result.materialCount += smr.sharedMaterials.Length;
                             foreach (var mat in smr.sharedMaterials)
@@ -199,6 +221,11 @@ namespace WhisperingWilds.Editor.QA
                                     shadersOk = false;
                                 }
                             }
+                        }
+                        else
+                        {
+                            result.errors.Add($"SkinnedMeshRenderer '{smr.name}' has 0 assigned materials");
+                            shadersOk = false;
                         }
                     }
 
@@ -217,6 +244,30 @@ namespace WhisperingWilds.Editor.QA
                         result.hasController = true;
                         result.controllerName = anim.runtimeAnimatorController.name;
                         result.findings.Add($"Controller: {anim.runtimeAnimatorController.name}");
+
+                        // Verify controller has active motion clips/states
+                        var ac = anim.runtimeAnimatorController as AnimatorController;
+                        if (ac != null)
+                        {
+                            int stateCount = 0;
+                            int clipCount = 0;
+                            foreach (var layer in ac.layers)
+                            {
+                                if (layer.stateMachine != null)
+                                {
+                                    foreach (var childState in layer.stateMachine.states)
+                                    {
+                                        stateCount++;
+                                        if (childState.state.motion != null) clipCount++;
+                                    }
+                                }
+                            }
+                            result.findings.Add($"AnimatorController has {stateCount} states with {clipCount} assigned motions");
+                            if (stateCount > 0 && clipCount == 0)
+                            {
+                                result.errors.Add("AnimatorController has states but 0 assigned motion clips");
+                            }
+                        }
                     }
                     else
                     {
@@ -229,7 +280,15 @@ namespace WhisperingWilds.Editor.QA
                         result.avatarValid = anim.avatar.isValid;
                         result.avatarIsHuman = anim.avatar.isHuman;
                         result.avatarType = anim.avatar.isHuman ? "Humanoid" : "Generic";
-                        result.findings.Add($"Avatar: {anim.avatar.name} (Type: {result.avatarType}, Valid: {result.avatarValid})");
+
+                        if (!anim.avatar.isValid)
+                        {
+                            result.errors.Add($"Avatar '{anim.avatar.name}' is invalid (avatar.isValid == false)");
+                        }
+                        else
+                        {
+                            result.findings.Add($"Avatar: {anim.avatar.name} (Type: {result.avatarType}, Valid: true)");
+                        }
                     }
                     else
                     {
@@ -241,24 +300,35 @@ namespace WhisperingWilds.Editor.QA
                     result.errors.Add("Missing Animator component");
                 }
 
-                // Check Colliders
+                // Check Colliders based on character role
+                bool isPlayer = charId.Contains("player");
                 var col = instance.GetComponentInChildren<Collider>(true);
                 var cc = instance.GetComponentInChildren<CharacterController>(true);
-                if (cc != null)
+                if (isPlayer)
                 {
-                    result.hasCollider = true;
-                    result.colliderType = "CharacterController";
-                    result.findings.Add("CharacterController active");
-                }
-                else if (col != null)
-                {
-                    result.hasCollider = true;
-                    result.colliderType = col.GetType().Name;
-                    result.findings.Add($"Collider: {col.GetType().Name}");
+                    if (cc != null && cc.enabled)
+                    {
+                        result.hasCollider = true;
+                        result.colliderType = "CharacterController";
+                        result.findings.Add("CharacterController active for player locomotion");
+                    }
+                    else
+                    {
+                        result.errors.Add("PlayerCharacter prefab missing enabled CharacterController");
+                    }
                 }
                 else
                 {
-                    result.findings.Add("No root collider (spawn controller attaches at runtime)");
+                    if (col != null)
+                    {
+                        result.hasCollider = true;
+                        result.colliderType = col.GetType().Name;
+                        result.findings.Add($"Interaction collider present: {col.GetType().Name}");
+                    }
+                    else
+                    {
+                        result.errors.Add("NPC prefab missing interaction collider");
+                    }
                 }
 
                 result.status = (result.errors.Count == 0) ? "PASS_EDITOR" : "FAIL";

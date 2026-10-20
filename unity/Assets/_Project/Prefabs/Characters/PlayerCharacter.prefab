@@ -218,7 +218,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: fc66d6d649ca6cc44a9189cdddc556d6, type: 2}
+  m_Mesh: {fileID: 4300000, guid: 5df10264f4f854d4d9f68906ad7ecefc, type: 2}
   m_Bones:
   - {fileID: 1838296961119870611}
   - {fileID: 8832155779586169188}
@@ -278,6 +278,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6156717046007868717}
+  - component: {fileID: 235686280316467836}
   - component: {fileID: 4315490595735724211}
   m_Layer: 0
   m_Name: PlayerCharacter
@@ -302,6 +303,31 @@ Transform:
   - {fileID: 5870173408923627896}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!143 &235686280316467836
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244942832031579981}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 1.8
+  m_Radius: 0.35
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &4315490595735724211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -313,7 +339,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7ff3e7726111574088b6afb54294239, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Characters.PlayerVisualState
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.Characters.PlayerVisualState
   garmentUpper: {fileID: 467133212358902679}
   garmentLower: {fileID: 2961637052588513398}
   garmentAccessory: {fileID: 3486528592275033852}
@@ -444,7 +470,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: 118e6f99c612e1d48bc8da1e4b04a45f, type: 2}
+  m_Mesh: {fileID: 4300000, guid: c6c9d0c65a81dab4f848c07eb907ca6e, type: 2}
   m_Bones:
   - {fileID: 1838296961119870611}
   - {fileID: 8832155779586169188}
@@ -1553,7 +1579,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: a2abdf4629580264d9a1c8525680b740, type: 2}
+  m_Mesh: {fileID: 4300000, guid: 116fdede573491746a053b9871db6bcf, type: 2}
   m_Bones:
   - {fileID: 1838296961119870611}
   - {fileID: 8832155779586169188}
