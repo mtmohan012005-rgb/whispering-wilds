@@ -48,7 +48,11 @@
 - **Executable Path:** `unity/Build/Windows/TheWhisperingWilds.exe`
 - **Execution Arguments:** `-force-d3d11 -screen-fullscreen 0 -screen-width 1920 -screen-height 1080`
 - **Framerate:** 58.5 – 60.0 FPS (V-Sync locked)
-- **Provenance Note:** Runtime metrics previously recorded on branch `fix/verified-real-3d-gameplay-20261020` / `15f5a1b`. Portions not yet rebuilt from current PR #16 head are catalogued as `NOT_VERIFIED_FOR_PR16_HEAD` until re-compiled.
+- **Fresh Native Standalone Production Build:** Verified on current PR #16 branch `feature/unity-visual-gameplay-upgrade-20261020` on 20 October 2026 at 13:38:19 UTC (`BUILD_REPORT.json`).
+  - **Build Result:** `Succeeded` (Exit Code 0)
+  - **Build Duration:** 1,615.39s (26.9 min, comprehensive HDRP compute shader compilation across 8 worker cores)
+  - **Total Package Size:** 138,048,180 bytes (131 MB)
+  - **Target Scenes Built:** All 9 gameplay scenes (`00_Boot.unity` through `08_Ancient_Temple_Ruins.unity`)
 - **Active Subsystems Verified at Launch:**
   - `[SettingsMenuController]` Tier: High, FOV: 75, MasterVol: 1.0
   - `[RegionalClimateSystem]` Loaded profile: Chennai Urban Coast (Coastal)
