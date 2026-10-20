@@ -17,6 +17,7 @@ namespace WhisperingWilds.Player
         [Header("Sensitivity Settings")]
         [Range(0.1f, 5f)] public float mouseSensitivity = 1.0f;
         [Range(0.5f, 5f)] public float gamepadSensitivity = 2.0f;
+        [Range(0.01f, 0.4f)] public float gamepadDeadzone = 0.12f;
         public bool invertY = false;
         public bool invertX = false;
 
@@ -39,6 +40,21 @@ namespace WhisperingWilds.Player
 
         public float EffectiveGamepadSensitivity =>
             SettingsMenuController.Instance != null ? SettingsMenuController.Instance.gamepadSensitivity : gamepadSensitivity;
+
+        public float EffectiveGamepadDeadzone =>
+            SettingsMenuController.Instance != null ? SettingsMenuController.Instance.gamepadDeadzone : gamepadDeadzone;
+
+        /// <summary>
+        /// Applies radial deadzone calibration and smoothly remaps remaining magnitude to [0, 1].
+        /// Eliminates controller stick drift while preserving subtle analog steering and look precision.
+        /// </summary>
+        public static Vector2 ApplyRadialDeadzone(Vector2 input, float deadzone)
+        {
+            float mag = input.magnitude;
+            if (mag <= deadzone) return Vector2.zero;
+            float remapped = Mathf.Clamp01((mag - deadzone) / (1.0f - deadzone));
+            return input.normalized * remapped;
+        }
 
         public bool EffectiveInvertY =>
             SettingsMenuController.Instance != null ? SettingsMenuController.Instance.invertY : invertY;
@@ -283,11 +299,11 @@ namespace WhisperingWilds.Player
                 if (keyboard.f9Key.wasPressedThisFrame) quickLoadBufferTimer = 0.15f;
             }
 
-            // Gamepad input polling
+            // Gamepad input polling with radial deadzone remapping
             if (gamepad != null)
             {
-                Vector2 stick = gamepad.leftStick.ReadValue();
-                if (stick.sqrMagnitude > 0.05f)
+                Vector2 stick = ApplyRadialDeadzone(gamepad.leftStick.ReadValue(), EffectiveGamepadDeadzone);
+                if (stick.sqrMagnitude > 0f)
                 {
                     moveX = stick.x;
                     moveZ = stick.y;
@@ -329,8 +345,8 @@ namespace WhisperingWilds.Player
 
             if (gamepad != null)
             {
-                Vector2 rStick = gamepad.rightStick.ReadValue();
-                if (rStick.sqrMagnitude > 0.05f)
+                Vector2 rStick = ApplyRadialDeadzone(gamepad.rightStick.ReadValue(), EffectiveGamepadDeadzone);
+                if (rStick.sqrMagnitude > 0f)
                 {
                     lookX += rStick.x * gamepadSens * Time.deltaTime * 60f * (invX ? -1f : 1f);
                     lookY += rStick.y * gamepadSens * Time.deltaTime * 60f * (invY ? 1f : -1f);

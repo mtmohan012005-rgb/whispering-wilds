@@ -64,6 +64,7 @@ if (_instance == null)
         public float mouseSensitivity = 1.0f;
         public float mouseSensitivityY = 1.0f;
         public float gamepadSensitivity = 2.0f;
+        [Range(0.01f, 0.4f)] public float gamepadDeadzone = 0.12f;
         public bool invertY = false;
         public bool invertX = false;
         public float cameraSmoothing = 15.0f;
@@ -117,6 +118,7 @@ if (_instance == null)
             mouseSensitivity = PlayerPrefs.GetFloat("WW_MouseSens", 1.0f);
             mouseSensitivityY = PlayerPrefs.GetFloat("WW_MouseSensY", mouseSensitivity);
             gamepadSensitivity = PlayerPrefs.GetFloat("WW_GamepadSens", 2.0f);
+            gamepadDeadzone = PlayerPrefs.GetFloat("WW_GamepadDeadzone", 0.12f);
             invertY = PlayerPrefs.GetInt("WW_InvertY", 0) == 1;
             invertX = PlayerPrefs.GetInt("WW_InvertX", 0) == 1;
             cameraSmoothing = PlayerPrefs.GetFloat("WW_CameraSmoothing", 15.0f);
@@ -233,6 +235,7 @@ if (_instance == null)
             PlayerPrefs.SetFloat("WW_MouseSens", mouseSensitivity);
             PlayerPrefs.SetFloat("WW_MouseSensY", mouseSensitivityY);
             PlayerPrefs.SetFloat("WW_GamepadSens", gamepadSensitivity);
+            PlayerPrefs.SetFloat("WW_GamepadDeadzone", gamepadDeadzone);
             PlayerPrefs.SetInt("WW_InvertY", invertY ? 1 : 0);
             PlayerPrefs.SetInt("WW_InvertX", invertX ? 1 : 0);
             PlayerPrefs.SetFloat("WW_CameraSmoothing", cameraSmoothing);
