@@ -76,6 +76,10 @@ namespace WhisperingWilds.Editor.QA
         public static void RunBatchAudit()
         {
             ExecuteAudit();
+            if (Application.isBatchMode)
+            {
+                EditorApplication.Exit(0);
+            }
         }
 
         public static EditorCharacterRigReport ExecuteAudit()

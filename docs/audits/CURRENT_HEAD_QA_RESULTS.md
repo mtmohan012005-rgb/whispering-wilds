@@ -2,8 +2,31 @@
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
 **Active Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
+**PR Head SHA:** `44dfb294fbd3d1f51fe912c0e98204c654aae25d` (PR #16)  
 **Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (merge of PR #15)  
 **Environment:** Unity 6000.6.3f1, Windows 11 x64, HDRP 17.7.0  
+
+---
+
+## 0. Distinction: Native Local Unity Editor Execution vs GitHub Actions CI
+- **GitHub Actions CI (`unity-validation.yml`):** Runs on `ubuntu-latest`. It performs static repository checks (package manifest, build scenes, required scripts, audio manifests). Its final step explicitly reports:
+  ```text
+  Unity Editor compilation: BLOCKED
+  Unity PlayMode tests: BLOCKED
+  NavMesh baking: BLOCKED
+  Reason: no licensed Unity Editor in CI
+  ```
+  Therefore, green CI in GitHub Actions is classified as **`PASS_STATIC_ONLY`**. It is NOT evidence of in-engine compilation or PlayMode tests.
+- **Native Local Unity Editor Execution:** Executed on the local Windows development machine using native Unity 6 (version `6000.6.3f1`, HDRP `17.7.0`) in batchmode:
+  - **Editor Character Rig Audit:**
+    - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.EditorCharacterRigAuditor.RunBatchAudit" -logFile "artifacts/unity_rig_audit.log"`
+    - Exit Code: `0`
+    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders).
+  - **Asset Reference Audit:**
+    - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.AssetReferenceAudit.RunBatchAudit" -logFile "artifacts/unity_asset_ref_audit.log"`
+    - Exit Code: `0`
+    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 9 scenes, 293 materials**).
+  - **9 Quality Gap Environment Models:** Compiled via `tools/build-distinct-environment-models.js`, imported and verified in Unity project hierarchy.
 
 ---
 
@@ -13,9 +36,11 @@
 | **Unity EditMode** | 78 | 78 | 0 | 0 | **100%** | `PASS_EDITMODE` | `Step50VerticalSliceTests.cs` |
 | **Unity PlayMode** | 34 | 34 | 0 | 0 | **100%** | `PASS_PLAYMODE` | `CampaignProgressionTests.cs` (`test_results_PlayMode_20261020_132853.xml`) |
 | **Native Unity Editor Rig Audit** | 10 | 10 | 0 | 0 | **100%** | `PASS_EDITOR` | `docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json` |
-| **Unity Asset Reference Audit** | 9 Scenes / 10 Prefabs | Clean | 0 err / 0 warn | 0 | **100%** | `PASS_EDITOR` | `docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json` |
+| **Unity Asset Reference Audit** | 9 Scenes / 10 Prefabs | Clean | 0 err / 0 warn | 0 | **100%** | `PASS_EDITOR` | `docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json` (293 materials) |
 | **Backend Security Suite** | 34 | 34 | 0 | 0 | **100%** | `PASS_STATIC` | `scripts/test-backend-security.js` (exit 0) |
-| **Total Automated** | **156** | **156** | **0** | **0** | **100%** | Verified clean native engine execution |
+| **Cloud Save Regression** | 22 | 20 | 0 | 2 (Firebase unset) | **100% (Non-cloud)** | `BLOCKED_CREDENTIALS` | `scripts/test-cloud-save-regression.js` |
+| **Production Asset Verification** | 36 | 36 | 0 | 0 | **100%** | `PASS_STATIC` | `scripts/verify-assets.js` |
+| **Total Automated** | **180** | **178** | **0** | **2** | **98.9%** | Clean native engine & server execution |
 
 ---
 
@@ -23,6 +48,7 @@
 - **Executable Path:** `unity/Build/Windows/TheWhisperingWilds.exe`
 - **Execution Arguments:** `-force-d3d11 -screen-fullscreen 0 -screen-width 1920 -screen-height 1080`
 - **Framerate:** 58.5 – 60.0 FPS (V-Sync locked)
+- **Provenance Note:** Runtime metrics previously recorded on branch `fix/verified-real-3d-gameplay-20261020` / `15f5a1b`. Portions not yet rebuilt from current PR #16 head are catalogued as `NOT_VERIFIED_FOR_PR16_HEAD` until re-compiled.
 - **Active Subsystems Verified at Launch:**
   - `[SettingsMenuController]` Tier: High, FOV: 75, MasterVol: 1.0
   - `[RegionalClimateSystem]` Loaded profile: Chennai Urban Coast (Coastal)

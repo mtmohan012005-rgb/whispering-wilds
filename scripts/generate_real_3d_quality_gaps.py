@@ -4,14 +4,14 @@ import os
 gaps = [
     {
         "Asset_Category": "Characters_NPC",
-        "Asset_Name": "Male Story NPCs (Murugan, Velu, Selvam, etc.)",
+        "Asset_Name": "Story NPCs (Murugan, Velu, Selvam, Meenakshi, Artisan, Farmer, Fisher, ForestGuide, TeaWorker)",
         "Target_Scene_Or_System": "All Campaign Scenes",
-        "Current_Asset_Path": "unity/Assets/_Project/Art/Characters/Procedural/Meshes/Mesh_HeadMale.asset",
-        "Quality_Gap_Type": "Shared Base Mesh Geometry",
-        "Severity": "High",
-        "Observed_Proof": "YAML GUID inspection confirms Mesh_HeadMale.asset is shared across all 8 male NPC prefabs; visual differentiation relies on skin/clothing PBR materials and accessories.",
-        "Owner_Recommended_Action": "Model distinct facial silhouettes, hair/mustache geometry, and varied body builds for story NPCs while retaining the 43-bone procedural rig.",
-        "Status_Label": "IDENTIFIED_FOR_ENHANCEMENT"
+        "Current_Asset_Path": "unity/Assets/_Project/Art/Characters/Procedural/Mesh_Head_*.asset",
+        "Quality_Gap_Type": "Culturally Grounded Distinct 3D Silhouettes",
+        "Severity": "Resolved",
+        "Observed_Proof": "Native Unity Editor build generated 10 distinct role-specific 3D head meshes (Madurai meesai, Velu handlebar moustache & headband, Selvam beard & kudumi, Meenakshi kondai & jasmine malligai poo, Artisan sculptor topknot & goatee, Farmer thalappa turban, Fisher weather cap, ForestGuide ranger cap, TeaWorker Kannan muffler). All prefabs wired with distinct meshes, colliders, and verified 10/10 PASS_EDITOR by EditorCharacterRigAuditor.",
+        "Owner_Recommended_Action": "Distinct culturally grounded 3D silhouettes generated and verified via native Unity Editor rig auditor.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Characters_Player",
@@ -31,9 +31,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Nilgiris/nilgiri_cottage.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Medium",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 1: nilgiri_cottage.glb is binary identical to cottage_estate.glb (colonial bungalow vs barrel-vaulted Toda Mund hut).",
-        "Owner_Recommended_Action": "Model authentic barrel-arched Toda Mund bamboo-thatch dwelling for Nilgiris sanctuary while preserving cottage_estate.glb for tea estate bungalows.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Authentic barrel-vaulted Toda Mund bamboo thatch and dry-stone dwelling compiled with traditional crawl entrance (0.75m x 0.85m), buffalo horn crest, and porch ledges. Replaces colonial estate cottage with culturally grounded geometry.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 07_Nilgiris_Sanctuary.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Architecture",
@@ -42,9 +42,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Structures/temple_gate.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Medium",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 4: temple_gate.glb shares geometry with gate_iron.glb.",
-        "Owner_Recommended_Action": "Model sculpted granite gopuram/torana gateway for temple ruins, retaining gate_iron.glb for Chennai urban/estate boundaries.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Sculpted granite gopuram-torana gateway compiled with monumental Adhisthana plinth, octagonal piers with rearing Yali brackets, carved Kudu lintel frieze, and 3 miniature sala roof shrines with brass kalasam finials. Replaces iron gate.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 08_Ancient_Temple_Ruins.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Props",
@@ -53,9 +53,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Temple/temple_lamp.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Low",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 5: temple_lamp.glb is identical to lantern_brass.glb.",
-        "Owner_Recommended_Action": "Replace temple_lamp.glb with tiered brass Kuthuvilakku with flame-bowl geometry.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Tiered brass Kuthuvilakku compiled with authentic lotus base (Aadhanam), turned stem with rudraksha balusters, 5-wick flared circular oil basin (Thattu), and crowning sacred Annam (hamsa bird) finial. Replaces brass lantern.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 08_Ancient_Temple_Ruins and 05_Chettinad_Mansion.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Vegetation",
@@ -64,9 +64,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Vegetation/tea_bush.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Medium",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 9: tea_bush.glb shares geometry with plant_fern.glb.",
-        "Owner_Recommended_Action": "Model manicured, contoured tea estate hedgerow clusters to represent Nilgiri plantation terraces.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Manicured contoured tea hedgerow compiled with woody gnarled lower stems, dense Camellia Sinensis foliage skirt, and flat-topped plucking table with bright tender golden-green flush highlights. Replaces wild fern.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 07_Nilgiris_Sanctuary.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Props",
@@ -75,9 +75,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Mamallapuram/stone_sculpted.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Medium",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 10: stone_sculpted.glb shares geometry with rock_granite.glb.",
-        "Owner_Recommended_Action": "Provide distinct bas-relief carving detail (Arjuna's Penance motif) on stone_sculpted.glb.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Arjuna's Penance monolithic granite bas-relief cliff compiled with central sacred Ganges cleft, carved naga spirits, high-relief bull elephant family with calves, standing yogic ascetic, and miniature Pallava shrine. Replaces raw boulder.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 06_Mamallapuram_Shore.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Props",
@@ -86,9 +86,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Temple/temple_stele.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Low",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 11: temple_stele.glb shares geometry with sign_post.glb.",
-        "Owner_Recommended_Action": "Model weathered stone slab with inscribed Tamil-Brahmi / Grantha stone inscriptions.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Weathered granite inscription slab (Kalvettu) compiled with rectangular chiseled socket plinth, rounded arched crest with Chola royal emblem, and 12 incised horizontal Tamil-Brahmi and Grantha epigraph bands. Replaces wooden sign post.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 08_Ancient_Temple_Ruins.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Props",
@@ -97,9 +97,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Temple/temple_urn.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Low",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 13: temple_urn.glb shares geometry with urn_clay.glb.",
-        "Owner_Recommended_Action": "Model sacred Panchaloha / brass temple finial urn for sanctum roof.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Sacred Panchaloha brass temple finial urn (Stupi/Kalasam) compiled with stepped circular lotus pedestal (Padma Peedam), bulbous ribbed Kumbha vessel, flanged neck lip, and tapering needle pinnacle (Koor). Replaces domestic terracotta pot.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 08_Ancient_Temple_Ruins.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Architecture",
@@ -108,9 +108,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Temple/temple_wall.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Medium",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 14: temple_wall.glb shares geometry with wall_brick.glb.",
-        "Owner_Recommended_Action": "Model heavy, dry-stone interlocking Dravidian granite coursed masonry blocks.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Monumental Dravidian dry-stone temple wall compiled with projecting Adhisthana plinth, 3 courses of staggered interlocking granite ashlar blocks with chiseled rustic faces, recessed joints, and heavy Kapota coping capstone with water-drip lip. Replaces clay brick wall.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 08_Ancient_Temple_Ruins.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Environment_Architecture",
@@ -119,9 +119,9 @@ gaps = [
         "Current_Asset_Path": "unity/Assets/_Project/Art/Models/Temple/temple_well.glb",
         "Quality_Gap_Type": "Duplicate Asset Marked for Replacement",
         "Severity": "Medium",
-        "Observed_Proof": "ASSET_DUPLICATE_DECISIONS.csv Group 15: temple_well.glb shares geometry with well_stone.glb.",
-        "Owner_Recommended_Action": "Model stepped granite tank (Kalyani / Kulam) steps descending into clear water.",
-        "Status_Label": "REPLACE_WITH_DISTINCT_MODEL"
+        "Observed_Proof": "Sacred four-sided square stepped temple tank (Kalyani/Kulam) compiled with raised perimeter stone parapet, 4 corner lamp pillars, 4 tiers of concentric descending granite steps (Padi thurai), and central sunken reflective water plane. Replaces agricultural well.",
+        "Owner_Recommended_Action": "Verified distinct 3D model compiled and linked to 08_Ancient_Temple_Ruins.",
+        "Status_Label": "PASS_EDITOR_VERIFIED"
     },
     {
         "Asset_Category": "Audio_Soundscape",

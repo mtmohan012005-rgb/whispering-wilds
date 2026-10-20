@@ -1,16 +1,19 @@
 # Manual Campaign & Visual Playthrough Test Record
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
-**Audited Commit:** `15f5a1b` (Base) → `fix/verified-real-3d-gameplay-20261020`  
+**Audited HEAD SHA:** `44dfb294fbd3d1f51fe912c0e98204c654aae25d` (PR #16)  
+**Target Base SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (`main` at PR #15 merge)  
+**Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
 **Target Hardware Profile:** Intel UHD Graphics / 8 GB RAM / Windows x64  
 **Standalone Executable:** `unity/Build/Windows/TheWhisperingWilds.exe -force-d3d11`  
+**Provenance Note:** Standalone runtime execution traces previously conducted on early testing branch `fix/verified-real-3d-gameplay-20261020` / `15f5a1b` are catalogued with exact branch provenance. Native Editor rig audit, asset reference audit, and automated PlayMode test validations are executed directly on `feature/unity-visual-gameplay-upgrade-20261020`.  
 
 ---
 
 ## 1. Executive Summary of Manual Campaign Verification
 All 60 verification points across the end-to-end player journey have been systematically evaluated and reconciled to exactly 60 items (100% accounted for):
 - **PASS_PLAYMODE (38 items):** Verified via automated Unity PlayMode integration test runner (`CampaignProgressionTests.cs`).
-- **PASS_STANDALONE (14 items):** Verified via direct execution of the compiled Windows x64 standalone executable under `-force-d3d11`.
+- **PASS_STANDALONE (14 items):** Verified via direct execution of the Windows x64 standalone executable under `-force-d3d11`. (Historical runs from `15f5a1b` flagged `NOT_VERIFIED_FOR_CURRENT_HEAD` pending rebuilt runtime capture).
 - **PASS_STATIC (2 items):** Verified via authoritative repository audit scripts and backend test suite (Items 57, 59).
 - **NOT_TESTED_HUMAN_TACTILE (5 items):** Requires interactive human tactile evaluation (Items 17, 19, 20, 55, 60: physical gamepad deadzone, subjective stair feel, multiplayer physical harness, close-up human visual sign-off).
 - **BLOCKED_CREDENTIALS (1 item):** Skipped due to absent production cloud infrastructure secrets (Item 54: live Firebase cloud sync).
