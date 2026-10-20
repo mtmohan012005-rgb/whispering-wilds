@@ -2,7 +2,7 @@
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
 **Active Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
-**PR Head SHA:** `fa06ced8b8e61371119c3097e7e3eed3bfcf676a` (PR #16)  
+**PR Head SHA:** `7e3955cbb92095fda94df58fa34e7ef9e80c7fd9` (PR #16 Merge)  
 **Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (merge of PR #15)  
 **Environment:** Unity 6000.6.3f1, Windows 11 x64, HDRP 17.7.0  
 
@@ -29,7 +29,7 @@
   - **Authentic In-Engine Visual Evidence (Graphics-Enabled Direct3D 11 Render):**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.SceneVisualCapturePipeline.RunBatchCapture" -logFile "artifacts/unity_visual_capture.log"`
     - Exit Code: `0`
-    - Visual Artifact Index: [`artifacts/unity-visual-qa/fa06ced8b8e61371119c3097e7e3eed3bfcf676a/INDEX.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/unity-visual-qa/fa06ced8b8e61371119c3097e7e3eed3bfcf676a/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, and SHA-256 validation).
+    - Visual Artifact Index: [`artifacts/unity-visual-qa/7e3955cbb92095fda94df58fa34e7ef9e80c7fd9/INDEX.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/unity-visual-qa/7e3955cbb92095fda94df58fa34e7ef9e80c7fd9/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, and SHA-256 validation).
   - **9 Culturally Grounded Environment Models Wired Into Scenes:**
     - `temple_gate.glb` (Dravidian Torana Gateway), `temple_wall.glb` (Ashlar precinct walls), `temple_urn.glb` (Kalasam finials), `temple_well.glb` (Stepped theertham Kalyani tank), `kuthu_vilakku.glb`, `stone_inscription.glb` instantiated into `08_Ancient_Temple_Ruins.unity`.
     - `stone_sculpture.glb` (Mamallapuram Bas-Relief Monolith) and `stone_carving_tools.glb` instantiated into `06_Mamallapuram_Shore.unity`.

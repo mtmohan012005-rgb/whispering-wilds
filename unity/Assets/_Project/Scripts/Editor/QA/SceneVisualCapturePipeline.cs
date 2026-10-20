@@ -103,23 +103,7 @@ namespace WhisperingWilds.Editor.QA
 
         public static string ResolveGitSha()
         {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var proc = System.Diagnostics.Process.Start(psi))
-                {
-                    string sha = proc.StandardOutput.ReadToEnd().Trim();
-                    proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
-                }
-            }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "fa06ced000000000000000000000000000000000";
+            return EditorCharacterRigAuditor.ResolveGitSha();
         }
 
         [MenuItem("Whispering Wilds/QA/Run Visual Playthrough Capture")]
@@ -229,10 +213,22 @@ namespace WhisperingWilds.Editor.QA
                 allScenesOk = false;
             }
 
-            // 4. Copy Reports & Logs
+            // 4. Synchronously execute Character Rig and Asset Reference Audits
+            try
+            {
+                EditorCharacterRigAuditor.ExecuteAudit();
+                AssetReferenceAudit.ExecuteAudit();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SceneVisualCapture] Failed to execute synchronous audits: {ex.Message}");
+                allScenesOk = false;
+            }
+
+            // 5. Copy Reports & Logs
             CopyReportsAndLogs(repoRoot, reportsDir, logsDir);
 
-            // 5. Write Visual Manifest JSON & INDEX.md
+            // 6. Write Visual Manifest JSON & INDEX.md
             manifest.totalCaptures = manifest.captures.Count;
             foreach (var c in manifest.captures)
             {
@@ -246,7 +242,7 @@ namespace WhisperingWilds.Editor.QA
             WriteArtifactIndex(baseDir, headSha, manifest);
 
             Debug.Log($"<color=#00FF88><b>[SceneVisualCapture]</b></color> Visual evidence generation completed for commit {headSha}! Passed: {manifest.passedCaptures}/{manifest.totalCaptures}");
-            return allScenesOk;
+            return allScenesOk && manifest.failedCaptures == 0 && manifest.totalCaptures == 19;
         }
 
         private static CapturedVisualEntry CaptureSceneFrame(Scene scene, string outPath, string shortName, int width, int height)

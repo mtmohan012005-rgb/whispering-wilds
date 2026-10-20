@@ -1,8 +1,8 @@
 ﻿# Unity Visual QA Artifact Index
-**Tested HEAD SHA:** `fa06ced8b8e61371119c3097e7e3eed3bfcf676a`  
+**Tested HEAD SHA:** `7e3955cbb92095fda94df58fa34e7ef9e80c7fd9`  
 **Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c`  
 **Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
-**Execution Timestamp:** 2026-10-20T15:35:46.0452088Z  
+**Execution Timestamp:** 2026-10-20T17:03:29.5644310Z  
 **Engine:** Unity 6000.6.3f1, Windows x64, Direct3D 11 / HDRP 17.7.0  
 **Captures Passed:** 19 / 19  
 

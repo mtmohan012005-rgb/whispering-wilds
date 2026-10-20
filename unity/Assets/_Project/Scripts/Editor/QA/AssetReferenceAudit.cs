@@ -41,23 +41,7 @@ namespace WhisperingWilds.Editor.QA
     {
         private static string ResolveGitSha()
         {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var proc = System.Diagnostics.Process.Start(psi))
-                {
-                    string sha = proc.StandardOutput.ReadToEnd().Trim();
-                    proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
-                }
-            }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "unknown_commit";
+            return EditorCharacterRigAuditor.ResolveGitSha();
         }
 
         [MenuItem("Whispering Wilds/QA/Run Unity Asset Reference Audit")]

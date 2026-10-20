@@ -53,13 +53,38 @@ namespace WhisperingWilds.Editor.QA
     /// </summary>
     public static class EditorCharacterRigAuditor
     {
-        private static string ResolveGitSha()
+        public static string ResolveGitSha()
         {
+            // 1. Check command line argument: -gitSha <sha>
+            string[] args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (args[i].Equals("-gitSha", StringComparison.OrdinalIgnoreCase))
+                {
+                    string candidate = args[i + 1]?.Trim();
+                    if (!string.IsNullOrEmpty(candidate) && System.Text.RegularExpressions.Regex.IsMatch(candidate, "^[a-fA-F0-9]{40}$"))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+
+            // 2. Check environment variable: WW_AUDIT_SHA
+            string envSha = Environment.GetEnvironmentVariable("WW_AUDIT_SHA")?.Trim();
+            if (!string.IsNullOrEmpty(envSha) && System.Text.RegularExpressions.Regex.IsMatch(envSha, "^[a-fA-F0-9]{40}$"))
+            {
+                return envSha;
+            }
+
+            // 3. Run git rev-parse HEAD from repository root
             try
             {
+                string repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".."));
                 var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
                 {
+                    WorkingDirectory = repoRoot,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
@@ -67,11 +92,24 @@ namespace WhisperingWilds.Editor.QA
                 {
                     string sha = proc.StandardOutput.ReadToEnd().Trim();
                     proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
+                    if (proc.ExitCode == 0 && !string.IsNullOrEmpty(sha) && System.Text.RegularExpressions.Regex.IsMatch(sha, "^[a-fA-F0-9]{40}$"))
+                    {
+                        return sha;
+                    }
                 }
             }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "unknown_commit";
+            catch (Exception ex)
+            {
+                Debug.LogError($"[EditorCharacterRigAuditor] Failed to execute git rev-parse HEAD: {ex.Message}");
+            }
+
+            // Safe failure: Do NOT return a hard-coded fallback SHA!
+            Debug.LogError("[EditorCharacterRigAuditor] FATAL: Unable to resolve verified 40-character Git SHA. Marking as UNVERIFIED and terminating with non-zero exit code.");
+            if (Application.isBatchMode)
+            {
+                EditorApplication.Exit(1);
+            }
+            throw new InvalidOperationException("Git commit SHA could not be verified. Aborting audit/capture execution.");
         }
 
         private static readonly string[] PrefabPaths = new[]
