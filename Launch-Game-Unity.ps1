@@ -49,8 +49,8 @@ if ($Diagnostic) {
   Write-Host "Launch time: $launchTime" -ForegroundColor White
   Write-Host ""
 
-  # Launch with explicit log file
-  $process = Start-Process -FilePath $targetExe -ArgumentList "-logFile", $logFile -PassThru
+  # Launch with explicit log file and D3D11 for Intel UHD GPU stability
+  $process = Start-Process -FilePath $targetExe -ArgumentList "-force-d3d11", "-logFile", $logFile -PassThru
   Write-Host "Process ID: $($process.Id)" -ForegroundColor White
   Write-Host "Waiting for game to exit..." -ForegroundColor Yellow
 
@@ -96,7 +96,7 @@ if ($Diagnostic) {
   }
 }
 else {
-  # Normal mode: launch and detach
-  Write-Host "Launching The Whispering Wilds: $targetExe" -ForegroundColor Green
-  Start-Process -FilePath $targetExe
+  # Normal mode: launch and detach with -force-d3d11 for Intel UHD GPU stability
+  Write-Host "Launching The Whispering Wilds: $targetExe (-force-d3d11)" -ForegroundColor Green
+  Start-Process -FilePath $targetExe -ArgumentList "-force-d3d11"
 }
