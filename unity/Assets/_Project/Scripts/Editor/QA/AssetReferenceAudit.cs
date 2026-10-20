@@ -39,13 +39,39 @@ namespace WhisperingWilds.Editor.QA
 
     public static class AssetReferenceAudit
     {
-        private static string ResolveGitSha()
+        public static string ResolveGitSha()
         {
+            // 1. Check command line arguments for -gitSha <sha>
+            string[] args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (args[i] == "-gitSha" && IsValidSha(args[i + 1]))
+                {
+                    return args[i + 1].Trim().ToLowerInvariant();
+                }
+            }
+
+            // 2. Check environment variable
+            string envSha = Environment.GetEnvironmentVariable("WW_AUDIT_SHA");
+            if (!string.IsNullOrEmpty(envSha) && IsValidSha(envSha))
+            {
+                return envSha.Trim().ToLowerInvariant();
+            }
+
+            // 3. Run git rev-parse HEAD with repository root as working directory
             try
             {
+                string repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".."));
+                if (!Directory.Exists(Path.Combine(repoRoot, ".git")))
+                {
+                    repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                }
+
                 var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
                 {
+                    WorkingDirectory = repoRoot,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
@@ -53,11 +79,24 @@ namespace WhisperingWilds.Editor.QA
                 {
                     string sha = proc.StandardOutput.ReadToEnd().Trim();
                     proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
+                    if (proc.ExitCode == 0 && IsValidSha(sha))
+                    {
+                        return sha.ToLowerInvariant();
+                    }
                 }
             }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "unknown_commit";
+            catch (Exception ex)
+            {
+                Debug.LogError($"[AssetReferenceAudit] Git execution failed: {ex.Message}");
+            }
+
+            throw new InvalidOperationException("Git SHA resolution failed: no valid 40-character commit SHA could be resolved from git, environment, or command line.");
+        }
+
+        public static bool IsValidSha(string sha)
+        {
+            if (string.IsNullOrWhiteSpace(sha) || sha.Length != 40) return false;
+            return System.Text.RegularExpressions.Regex.IsMatch(sha, "^[a-fA-F0-9]{40}$");
         }
 
         [MenuItem("Whispering Wilds/QA/Run Unity Asset Reference Audit")]
@@ -69,10 +108,18 @@ namespace WhisperingWilds.Editor.QA
 
         public static void RunBatchAudit()
         {
-            var report = ExecuteAudit();
-            if (Application.isBatchMode)
+            try
             {
-                EditorApplication.Exit(report.errorCount > 0 ? 1 : 0);
+                var report = ExecuteAudit();
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(report.errorCount > 0 ? 1 : 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[AssetReferenceAudit] Fatal asset audit error: {ex}");
+                if (Application.isBatchMode) EditorApplication.Exit(1);
             }
         }
 

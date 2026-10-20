@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="78" result="Passed" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.4129828">
+  <test-suite type="TestSuite" id="1000" name="The Whispering Wilds" fullname="The Whispering Wilds" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.412983" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1094" name="WhisperingWilds.Tests.Editor.dll" fullname="C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Library/ScriptAssemblies/WhisperingWilds.Tests.Editor.dll" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.393252" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="9164" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1095" name="WhisperingWilds" fullname="WhisperingWilds" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.392256" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1096" name="Tests" fullname="WhisperingWilds.Tests" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.391874" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1097" name="Editor" fullname="WhisperingWilds.Tests.Editor" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.391332" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1015" name="Step50VerticalSliceTests" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" testcasecount="78" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.386503" total="78" passed="78" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1082" name="AllRegionalNavMeshData_Exist" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.AllRegionalNavMeshData_Exist" methodname="AllRegionalNavMeshData_Exist" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="130442273" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:06Z" duration="0.041035" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1081" name="AllRegionalScenes_Exist" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.AllRegionalScenes_Exist" methodname="AllRegionalScenes_Exist" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1666368916" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:06Z" duration="0.007192" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1052" name="BootScene_ContainsIntroVisuals" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BootScene_ContainsIntroVisuals" methodname="BootScene_ContainsIntroVisuals" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="390097408" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:06Z" duration="0.016761" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1051" name="BootScene_ContainsMenuRoot" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BootScene_ContainsMenuRoot" methodname="BootScene_ContainsMenuRoot" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="361768573" result="Passed" start-time="2026-10-20 16:28:06Z" end-time="2026-10-20 16:28:07Z" duration="0.009888" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1042" name="BootScene_FileExists" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BootScene_FileExists" methodname="BootScene_FileExists" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1808566777" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001070" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1050" name="BuildBootScene_BindsMenuRootToIntro" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_BindsMenuRootToIntro" methodname="BuildBootScene_BindsMenuRootToIntro" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="594319570" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.007910" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1093" name="BuildBootScene_BindsSkyGradientAndTreeline" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_BindsSkyGradientAndTreeline" methodname="BuildBootScene_BindsSkyGradientAndTreeline" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="2095904065" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.003588" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1049" name="BuildBootScene_CreatesMenuRoot" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_CreatesMenuRoot" methodname="BuildBootScene_CreatesMenuRoot" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="395918550" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.005401" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1091" name="BuildBootScene_CreatesSkyGradient" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_CreatesSkyGradient" methodname="BuildBootScene_CreatesSkyGradient" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1424531527" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.004057" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1092" name="BuildBootScene_CreatesTreeline" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_CreatesTreeline" methodname="BuildBootScene_CreatesTreeline" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1366499952" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.007552" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="BuildBootScene_HasConfirmationDialog_Generation" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_HasConfirmationDialog_Generation" methodname="BuildBootScene_HasConfirmationDialog_Generation" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1149241810" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.006170" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1020" name="BuildBootScene_HasNoCodexButton_Generation" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_HasNoCodexButton_Generation" methodname="BuildBootScene_HasNoCodexButton_Generation" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1142824272" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.010943" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1079" name="BuildBootScene_IncludesEndingController" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_IncludesEndingController" methodname="BuildBootScene_IncludesEndingController" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1738505617" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.014466" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1080" name="BuildBootScene_IncludesQuestEndingBridge" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_IncludesQuestEndingBridge" methodname="BuildBootScene_IncludesQuestEndingBridge" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="709918835" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.038674" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1078" name="BuildBootScene_IncludesRegionUnlockManager" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.BuildBootScene_IncludesRegionUnlockManager" methodname="BuildBootScene_IncludesRegionUnlockManager" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1841504766" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002887" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1041" name="CampaignFlow_CanContinue_IsStatic" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CampaignFlow_CanContinue_IsStatic" methodname="CampaignFlow_CanContinue_IsStatic" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1679054290" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.010199" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1040" name="CampaignFlow_HasContinueGame_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CampaignFlow_HasContinueGame_Method" methodname="CampaignFlow_HasContinueGame_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1209852624" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000964" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1039" name="CampaignFlow_HasStartNewGame_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CampaignFlow_HasStartNewGame_Method" methodname="CampaignFlow_HasStartNewGame_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="769628684" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000579" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1073" name="CampaignFlow_ResetCampaign_CallsAllResets" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CampaignFlow_ResetCampaign_CallsAllResets" methodname="CampaignFlow_ResetCampaign_CallsAllResets" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1660981741" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.003510" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1033" name="ChennaiOpeningContent_HasClues" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ChennaiOpeningContent_HasClues" methodname="ChennaiOpeningContent_HasClues" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1591655762" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000730" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1030" name="ChennaiOpeningContent_HasMurugan_NPC" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ChennaiOpeningContent_HasMurugan_NPC" methodname="ChennaiOpeningContent_HasMurugan_NPC" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1847848635" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.010414" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1032" name="ChennaiOpeningContent_HasOpeningQuest" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ChennaiOpeningContent_HasOpeningQuest" methodname="ChennaiOpeningContent_HasOpeningQuest" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1980453503" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000593" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1031" name="ChennaiOpeningContent_HasVelu_NPC" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ChennaiOpeningContent_HasVelu_NPC" methodname="ChennaiOpeningContent_HasVelu_NPC" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1957954417" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000710" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1043" name="ChennaiScene_FileExists" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ChennaiScene_FileExists" methodname="ChennaiScene_FileExists" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1895493144" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000821" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1055" name="CinematicIntroController_CompleteIntro_DoesNotPersistIntroPlayed" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_CompleteIntro_DoesNotPersistIntroPlayed" methodname="CinematicIntroController_CompleteIntro_DoesNotPersistIntroPlayed" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="243963750" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.017723" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1057" name="CinematicIntroController_CompleteIntro_IsIdempotent" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_CompleteIntro_IsIdempotent" methodname="CinematicIntroController_CompleteIntro_IsIdempotent" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1438897025" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.004011" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1062" name="CinematicIntroController_HasAnimatedFogDensity" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasAnimatedFogDensity" methodname="CinematicIntroController_HasAnimatedFogDensity" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="951680818" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.003786" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1061" name="CinematicIntroController_HasGradientBackgroundColors" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasGradientBackgroundColors" methodname="CinematicIntroController_HasGradientBackgroundColors" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1803233534" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002191" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1029" name="CinematicIntroController_HasIsPlaying_Property" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasIsPlaying_Property" methodname="CinematicIntroController_HasIsPlaying_Property" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1025546335" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000915" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1047" name="CinematicIntroController_HasMenuRoot_Field" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasMenuRoot_Field" methodname="CinematicIntroController_HasMenuRoot_Field" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="914333308" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000819" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1060" name="CinematicIntroController_HasNoIntroPlayedField" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasNoIntroPlayedField" methodname="CinematicIntroController_HasNoIntroPlayedField" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="573219197" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000785" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1048" name="CinematicIntroController_HasNoMainMenuCanvas_Field" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasNoMainMenuCanvas_Field" methodname="CinematicIntroController_HasNoMainMenuCanvas_Field" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="620972659" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000511" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1086" name="CinematicIntroController_HasShortDuration" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasShortDuration" methodname="CinematicIntroController_HasShortDuration" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1705065313" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002442" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1028" name="CinematicIntroController_HasSkipIntro_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasSkipIntro_Method" methodname="CinematicIntroController_HasSkipIntro_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="956303135" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000638" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1089" name="CinematicIntroController_HasSkyGradientField" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasSkyGradientField" methodname="CinematicIntroController_HasSkyGradientField" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="873924603" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000635" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1090" name="CinematicIntroController_HasTreelineField" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_HasTreelineField" methodname="CinematicIntroController_HasTreelineField" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1642041290" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000723" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1054" name="CinematicIntroController_RepeatLaunch_CallsCompleteIntroNotSkipIntro" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_RepeatLaunch_CallsCompleteIntroNotSkipIntro" methodname="CinematicIntroController_RepeatLaunch_CallsCompleteIntroNotSkipIntro" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1181887485" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002598" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1056" name="CinematicIntroController_ReplayIntro_SetsPlayIntroPreference" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_ReplayIntro_SetsPlayIntroPreference" methodname="CinematicIntroController_ReplayIntro_SetsPlayIntroPreference" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="16955473" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002869" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1088" name="CinematicIntroController_SkipTextAppearsEarly" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_SkipTextAppearsEarly" methodname="CinematicIntroController_SkipTextAppearsEarly" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1947229020" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001583" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1053" name="CinematicIntroController_Source_UsesMenuRoot" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_Source_UsesMenuRoot" methodname="CinematicIntroController_Source_UsesMenuRoot" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="533119261" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001771" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1059" name="CinematicIntroController_SupportsForceIntroArgument" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_SupportsForceIntroArgument" methodname="CinematicIntroController_SupportsForceIntroArgument" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="230622233" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001643" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1087" name="CinematicIntroController_TitleAppearsEarly" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_TitleAppearsEarly" methodname="CinematicIntroController_TitleAppearsEarly" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="728993406" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001503" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1058" name="CinematicIntroController_UsesPlayIntroOnStartupPreference" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_UsesPlayIntroOnStartupPreference" methodname="CinematicIntroController_UsesPlayIntroOnStartupPreference" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="977082944" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001684" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1085" name="CinematicIntroController_UsesUnscaledDeltaTime" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.CinematicIntroController_UsesUnscaledDeltaTime" methodname="CinematicIntroController_UsesUnscaledDeltaTime" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1181703735" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002235" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1027" name="ConfirmationDialog_TypeExists" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ConfirmationDialog_TypeExists" methodname="ConfirmationDialog_TypeExists" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="319239677" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000958" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1065" name="EndingController_HasEvaluateEnding_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.EndingController_HasEvaluateEnding_Method" methodname="EndingController_HasEvaluateEnding_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="918905130" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000666" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1067" name="EndingController_HasFourEndings" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.EndingController_HasFourEndings" methodname="EndingController_HasFourEndings" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1525951594" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001086" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1066" name="EndingController_HasResetForNewGame_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.EndingController_HasResetForNewGame_Method" methodname="EndingController_HasResetForNewGame_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="2110701097" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000575" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1068" name="EndingController_HasSnapshotAndRestore" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.EndingController_HasSnapshotAndRestore" methodname="EndingController_HasSnapshotAndRestore" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1521481088" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000682" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1074" name="GameplayContentRegistry_HasAllRegions" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.GameplayContentRegistry_HasAllRegions" methodname="GameplayContentRegistry_HasAllRegions" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1350160516" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002384" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1036" name="InvestigationManager_HasDiscoverClue_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.InvestigationManager_HasDiscoverClue_Method" methodname="InvestigationManager_HasDiscoverClue_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="755143176" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000648" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1037" name="InvestigationManager_HasDiscoverClueById_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.InvestigationManager_HasDiscoverClueById_Method" methodname="InvestigationManager_HasDiscoverClueById_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="286137194" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000513" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1071" name="InvestigationManager_HasResetState_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.InvestigationManager_HasResetState_Method" methodname="InvestigationManager_HasResetState_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="283273692" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000694" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1024" name="Localization_HasDialogCancel_Key" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.Localization_HasDialogCancel_Key" methodname="Localization_HasDialogCancel_Key" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="274900766" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.007080" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <reason>
+                  <message><![CDATA[LocalizationManager not available in EditMode]]></message>
+                </reason>
+              </test-case>
+              <test-case id="1023" name="Localization_HasDialogConfirm_Key" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.Localization_HasDialogConfirm_Key" methodname="Localization_HasDialogConfirm_Key" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="2122446023" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001938" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <reason>
+                  <message><![CDATA[LocalizationManager not available in EditMode]]></message>
+                </reason>
+              </test-case>
+              <test-case id="1022" name="Localization_HasNewGameConfirm_Key" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.Localization_HasNewGameConfirm_Key" methodname="Localization_HasNewGameConfirm_Key" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1993300938" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001105" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <reason>
+                  <message><![CDATA[LocalizationManager not available in EditMode; key presence checked elsewhere]]></message>
+                </reason>
+              </test-case>
+              <test-case id="1025" name="Localization_MenuKeys_HaveTamilTranslation" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.Localization_MenuKeys_HaveTamilTranslation" methodname="Localization_MenuKeys_HaveTamilTranslation" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="993238522" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001200" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <reason>
+                  <message><![CDATA[LocalizationManager not available in EditMode]]></message>
+                </reason>
+              </test-case>
+              <test-case id="1084" name="LocalizationManager_HasTamilFontSupport" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.LocalizationManager_HasTamilFontSupport" methodname="LocalizationManager_HasTamilFontSupport" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1383058661" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000707" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1045" name="MuruganPrefab_FileExists" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.MuruganPrefab_FileExists" methodname="MuruganPrefab_FileExists" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1831538141" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001012" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1077" name="NilgirisContent_HasClues" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.NilgirisContent_HasClues" methodname="NilgirisContent_HasClues" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1354299313" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002828" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1035" name="NPCCharacter_ImplementsIInteractable" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.NPCCharacter_ImplementsIInteractable" methodname="NPCCharacter_ImplementsIInteractable" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="533280230" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000578" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1075" name="PichavaramContent_HasClues" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.PichavaramContent_HasClues" methodname="PichavaramContent_HasClues" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="870724125" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000903" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1034" name="PlayerMovement_RequiresCharacterController" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.PlayerMovement_RequiresCharacterController" methodname="PlayerMovement_RequiresCharacterController" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1176376452" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001215" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1044" name="PlayerPrefab_FileExists" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.PlayerPrefab_FileExists" methodname="PlayerPrefab_FileExists" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1331927855" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001430" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1038" name="QuestManager_HasAcceptOpeningQuests_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.QuestManager_HasAcceptOpeningQuests_Method" methodname="QuestManager_HasAcceptOpeningQuests_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1973252831" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000779" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1072" name="QuestManager_HasResetAllProgress_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.QuestManager_HasResetAllProgress_Method" methodname="QuestManager_HasResetAllProgress_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1918826624" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000725" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1063" name="RegionUnlocks_HasProgressionOrder" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.RegionUnlocks_HasProgressionOrder" methodname="RegionUnlocks_HasProgressionOrder" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="674919797" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002221" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1064" name="RegionUnlocks_HasResetForNewGame_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.RegionUnlocks_HasResetForNewGame_Method" methodname="RegionUnlocks_HasResetForNewGame_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1345299301" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000733" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1069" name="SaveSystem_HasSaveAndLoad_Methods" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.SaveSystem_HasSaveAndLoad_Methods" methodname="SaveSystem_HasSaveAndLoad_Methods" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1065333620" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000796" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1026" name="SaveSystem_HasValidSave_ReflectsFileState" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.SaveSystem_HasValidSave_ReflectsFileState" methodname="SaveSystem_HasValidSave_ReflectsFileState" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="389985901" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.004511" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1070" name="SaveSystem_SaveData_HasRequiredFields" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.SaveSystem_SaveData_HasRequiredFields" methodname="SaveSystem_SaveData_HasRequiredFields" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="172457056" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000703" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1083" name="TamilFont_ExistsInResources" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.TamilFont_ExistsInResources" methodname="TamilFont_ExistsInResources" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1508272891" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001683" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1076" name="ThanjavurContent_HasClues" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.ThanjavurContent_HasClues" methodname="ThanjavurContent_HasClues" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1788779288" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.002149" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1018" name="TitleMenuController_HasConfirmationDialog_Field" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.TitleMenuController_HasConfirmationDialog_Field" methodname="TitleMenuController_HasConfirmationDialog_Field" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1009945264" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000682" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1019" name="TitleMenuController_HasExecuteNewGame_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.TitleMenuController_HasExecuteNewGame_Method" methodname="TitleMenuController_HasExecuteNewGame_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="748960129" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000598" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1016" name="TitleMenuController_HasNoCodexButton_Field" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.TitleMenuController_HasNoCodexButton_Field" methodname="TitleMenuController_HasNoCodexButton_Field" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="2102421139" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000437" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1017" name="TitleMenuController_HasNoOnOpenCodexClicked_Method" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.TitleMenuController_HasNoOnOpenCodexClicked_Method" methodname="TitleMenuController_HasNoOnOpenCodexClicked_Method" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="1745938021" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.000390" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1046" name="VeluPrefab_FileExists" fullname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests.VeluPrefab_FileExists" methodname="VeluPrefab_FileExists" classname="WhisperingWilds.Tests.Editor.Step50VerticalSliceTests" runstate="Runnable" seed="984234499" result="Passed" start-time="2026-10-20 16:28:07Z" end-time="2026-10-20 16:28:07Z" duration="0.001031" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/mohan/AppData/LocalLow/Whispering Wilds Studios/The Whispering Wilds\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

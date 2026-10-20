@@ -103,11 +103,37 @@ namespace WhisperingWilds.Editor.QA
 
         public static string ResolveGitSha()
         {
+            // 1. Check command line arguments for -gitSha <sha>
+            string[] args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (args[i] == "-gitSha" && IsValidSha(args[i + 1]))
+                {
+                    return args[i + 1].Trim().ToLowerInvariant();
+                }
+            }
+
+            // 2. Check environment variable
+            string envSha = Environment.GetEnvironmentVariable("WW_AUDIT_SHA");
+            if (!string.IsNullOrEmpty(envSha) && IsValidSha(envSha))
+            {
+                return envSha.Trim().ToLowerInvariant();
+            }
+
+            // 3. Run git rev-parse HEAD with repository root as working directory
             try
             {
+                string repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".."));
+                if (!Directory.Exists(Path.Combine(repoRoot, ".git")))
+                {
+                    repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                }
+
                 var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
                 {
+                    WorkingDirectory = repoRoot,
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
@@ -115,11 +141,24 @@ namespace WhisperingWilds.Editor.QA
                 {
                     string sha = proc.StandardOutput.ReadToEnd().Trim();
                     proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
+                    if (proc.ExitCode == 0 && IsValidSha(sha))
+                    {
+                        return sha.ToLowerInvariant();
+                    }
                 }
             }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "fa06ced000000000000000000000000000000000";
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SceneVisualCapture] Git execution failed: {ex.Message}");
+            }
+
+            throw new InvalidOperationException("Git SHA resolution failed: no valid 40-character commit SHA could be resolved from git, environment, or command line.");
+        }
+
+        public static bool IsValidSha(string sha)
+        {
+            if (string.IsNullOrWhiteSpace(sha) || sha.Length != 40) return false;
+            return System.Text.RegularExpressions.Regex.IsMatch(sha, "^[a-fA-F0-9]{40}$");
         }
 
         [MenuItem("Whispering Wilds/QA/Run Visual Playthrough Capture")]
@@ -159,12 +198,39 @@ namespace WhisperingWilds.Editor.QA
             string logsDir = Path.Combine(baseDir, "logs");
             string reportsDir = Path.Combine(baseDir, "reports");
 
+            // Clean previous captures in target commit directory so old results are never counted
+            if (Directory.Exists(baseDir))
+            {
+                try { Directory.Delete(baseDir, true); } catch {}
+            }
+
             Directory.CreateDirectory(screenshotsDir);
             Directory.CreateDirectory(envDir);
             Directory.CreateDirectory(logsDir);
             Directory.CreateDirectory(reportsDir);
 
             Debug.Log($"<color=#00FF99><b>[SceneVisualCapture]</b></color> Starting AUTHENTIC visual evidence capture for commit {headSha} -> {baseDir}");
+
+            // Execute Rig Audit and Asset Reference Audit synchronously to guarantee fresh reports for this exact commit
+            try
+            {
+                var rigReport = EditorCharacterRigAuditor.ExecuteAudit();
+                Debug.Log($"[SceneVisualCapture] Synchronously ran Rig Audit for {headSha}: {rigReport.passCount}/10 passed");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SceneVisualCapture] Failed to run synchronous rig audit: {ex.Message}");
+            }
+
+            try
+            {
+                var assetReport = AssetReferenceAudit.ExecuteAudit();
+                Debug.Log($"[SceneVisualCapture] Synchronously ran Asset Reference Audit for {headSha}: {assetReport.errorCount} errors, {assetReport.warningCount} warnings");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SceneVisualCapture] Failed to run synchronous asset audit: {ex.Message}");
+            }
 
             VisualManifestReport manifest = new VisualManifestReport
             {
@@ -210,6 +276,7 @@ namespace WhisperingWilds.Editor.QA
             {
                 var charEntry = CaptureCharacterContactSheetInEngine(contactSheetPath, 1920, 1080);
                 manifest.captures.Add(charEntry);
+                if (charEntry.status != "PASS_RENDERED") allScenesOk = false;
             }
             catch (Exception ex)
             {
@@ -222,6 +289,10 @@ namespace WhisperingWilds.Editor.QA
             {
                 var envEntries = CaptureEnvironmentFixesInEngine(envDir, 1280, 720);
                 manifest.captures.AddRange(envEntries);
+                foreach (var ee in envEntries)
+                {
+                    if (ee.status != "PASS_RENDERED") allScenesOk = false;
+                }
             }
             catch (Exception ex)
             {
@@ -245,9 +316,11 @@ namespace WhisperingWilds.Editor.QA
 
             WriteArtifactIndex(baseDir, headSha, manifest);
 
-            Debug.Log($"<color=#00FF88><b>[SceneVisualCapture]</b></color> Visual evidence generation completed for commit {headSha}! Passed: {manifest.passedCaptures}/{manifest.totalCaptures}");
-            return allScenesOk;
+            bool finalSuccess = allScenesOk && manifest.passedCaptures == 19 && manifest.failedCaptures == 0;
+            Debug.Log($"<color=#00FF88><b>[SceneVisualCapture]</b></color> Visual evidence generation completed for commit {headSha}! Passed: {manifest.passedCaptures}/{manifest.totalCaptures} (allScenesOk={allScenesOk})");
+            return finalSuccess;
         }
+
 
         private static CapturedVisualEntry CaptureSceneFrame(Scene scene, string outPath, string shortName, int width, int height)
         {

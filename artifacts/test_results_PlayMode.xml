@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="34" result="Passed" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.6388125">
+  <test-suite type="TestSuite" id="1043" name="The Whispering Wilds" fullname="The Whispering Wilds" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.638813" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1082" name="WhisperingWilds.Tests.PlayMode.dll" fullname="C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/unity/Library/ScriptAssemblies/WhisperingWilds.Tests.PlayMode.dll" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.612696" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="25536" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1083" name="WhisperingWilds" fullname="WhisperingWilds" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.610704" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1084" name="Tests" fullname="WhisperingWilds.Tests" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.609491" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1085" name="PlayMode" fullname="WhisperingWilds.Tests.PlayMode" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.608200" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1047" name="CampaignProgressionTests" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" testcasecount="34" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.600373" total="34" passed="34" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <output><![CDATA[
+IgnoreFailingMessages:true
+]]></output>
+              <test-case id="1065" name="CampaignFlow_ResetCampaign_ResetsAllSystems" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.CampaignFlow_ResetCampaign_ResetsAllSystems" methodname="CampaignFlow_ResetCampaign_ResetsAllSystems" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1171258347" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:06Z" duration="0.123263" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#00FF99><b>[RegionUnlocks]</b></color> Destination opened: chettinad
+<color=#FFD700><b>[Investigation]</b></color> DISCOVERED CLUE: Murugan's Tea Ledger (Document)
+]]></output>
+              </test-case>
+              <test-case id="1070" name="ChennaiContent_HasClues" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.ChennaiContent_HasClues" methodname="ChennaiContent_HasClues" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="792937947" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:06Z" duration="0.012455" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1066" name="EndingController_EvaluateEnding_ReturnsFallbackC_WhenNoProgress" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.EndingController_EvaluateEnding_ReturnsFallbackC_WhenNoProgress" methodname="EndingController_EvaluateEnding_ReturnsFallbackC_WhenNoProgress" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="286573386" result="Passed" start-time="2026-10-20 16:30:06Z" end-time="2026-10-20 16:30:07Z" duration="0.024927" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#888888><b>[Ending]</b></color> ENDING C: The Shadowed Sanctuary (fallback)
+]]></output>
+              </test-case>
+              <test-case id="1067" name="EndingController_ResetForNewGame_ClearsState" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.EndingController_ResetForNewGame_ClearsState" methodname="EndingController_ResetForNewGame_ClearsState" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1828691712" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.009168" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1068" name="EndingController_SnapshotAndRestore_PreservesState" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.EndingController_SnapshotAndRestore_PreservesState" methodname="EndingController_SnapshotAndRestore_PreservesState" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1577299686" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.005835" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1069" name="GameplayContentRegistry_AllRegions_Initialized" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.GameplayContentRegistry_AllRegions_Initialized" methodname="GameplayContentRegistry_AllRegions_Initialized" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1106705488" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.006037" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1072" name="IntroPreference_CanBeDisabled" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.IntroPreference_CanBeDisabled" methodname="IntroPreference_CanBeDisabled" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1637712692" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.006502" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1071" name="IntroPreference_DefaultPlaysIntro" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.IntroPreference_DefaultPlaysIntro" methodname="IntroPreference_DefaultPlaysIntro" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="169754974" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.003755" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1054" name="InvestigationManager_DiscoverClueById_RecordsClue" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.InvestigationManager_DiscoverClueById_RecordsClue" methodname="InvestigationManager_DiscoverClueById_RecordsClue" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="921501334" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.009173" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#FFD700><b>[Investigation]</b></color> DISCOVERED CLUE: Murugan's Tea Ledger (Document)
+]]></output>
+              </test-case>
+              <test-case id="1055" name="InvestigationManager_DuplicateClue_ReturnsFalse" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.InvestigationManager_DuplicateClue_ReturnsFalse" methodname="InvestigationManager_DuplicateClue_ReturnsFalse" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1552905410" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.004795" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#FFD700><b>[Investigation]</b></color> DISCOVERED CLUE: Murugan's Tea Ledger (Document)
+]]></output>
+              </test-case>
+              <test-case id="1056" name="InvestigationManager_ResetState_ClearsClues" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.InvestigationManager_ResetState_ClearsClues" methodname="InvestigationManager_ResetState_ClearsClues" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1797197547" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.008460" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#FFD700><b>[Investigation]</b></color> DISCOVERED CLUE: Murugan's Tea Ledger (Document)
+]]></output>
+              </test-case>
+              <test-case id="1074" name="PlayerDataProtection_PlayerPrefs_RestoredAfterTests" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerDataProtection_PlayerPrefs_RestoredAfterTests" methodname="PlayerDataProtection_PlayerPrefs_RestoredAfterTests" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="2146730821" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.006484" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1073" name="PlayerDataProtection_TestSuite_DoesNotDamageRealSave" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerDataProtection_TestSuite_DoesNotDamageRealSave" methodname="PlayerDataProtection_TestSuite_DoesNotDamageRealSave" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1039056069" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.013163" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1076" name="PlayerPrefsType_Float_PreservedAfterBackupRestore" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_Float_PreservedAfterBackupRestore" methodname="PlayerPrefsType_Float_PreservedAfterBackupRestore" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1958214504" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.012855" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1081" name="PlayerPrefsType_GamePreferences_NotCorruptedByQA" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_GamePreferences_NotCorruptedByQA" methodname="PlayerPrefsType_GamePreferences_NotCorruptedByQA" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="2109581546" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.005667" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1075" name="PlayerPrefsType_Int_PreservedAfterBackupRestore" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_Int_PreservedAfterBackupRestore" methodname="PlayerPrefsType_Int_PreservedAfterBackupRestore" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="129786541" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.005582" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1078" name="PlayerPrefsType_NonExistentKey_DeletedAfterRestore" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_NonExistentKey_DeletedAfterRestore" methodname="PlayerPrefsType_NonExistentKey_DeletedAfterRestore" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="2037940959" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.007868" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1077" name="PlayerPrefsType_String_PreservedAfterBackupRestore" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_String_PreservedAfterBackupRestore" methodname="PlayerPrefsType_String_PreservedAfterBackupRestore" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1646645993" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.004216" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1080" name="PlayerPrefsType_TearDown_RestoresAfterFailedTest" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_TearDown_RestoresAfterFailedTest" methodname="PlayerPrefsType_TearDown_RestoresAfterFailedTest" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1000808163" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.009907" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1079" name="PlayerPrefsType_TestKey_CleanedUpAfterRestore" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.PlayerPrefsType_TestKey_CleanedUpAfterRestore" methodname="PlayerPrefsType_TestKey_CleanedUpAfterRestore" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="2070561619" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.004278" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1052" name="RegionUnlocks_CanUnlockRegion" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.RegionUnlocks_CanUnlockRegion" methodname="RegionUnlocks_CanUnlockRegion" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="881273386" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.007330" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#00FF99><b>[RegionUnlocks]</b></color> Destination opened: chettinad
+]]></output>
+              </test-case>
+              <test-case id="1048" name="RegionUnlocks_Chennai_IsUnlockedByDefault" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.RegionUnlocks_Chennai_IsUnlockedByDefault" methodname="RegionUnlocks_Chennai_IsUnlockedByDefault" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1613081279" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.004592" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1053" name="RegionUnlocks_DuplicateUnlock_ReturnsFalse" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.RegionUnlocks_DuplicateUnlock_ReturnsFalse" methodname="RegionUnlocks_DuplicateUnlock_ReturnsFalse" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1664533223" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.005409" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#00FF99><b>[RegionUnlocks]</b></color> Destination opened: chettinad
+]]></output>
+              </test-case>
+              <test-case id="1049" name="RegionUnlocks_Pichavaram_UnlockedByDefault" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.RegionUnlocks_Pichavaram_UnlockedByDefault" methodname="RegionUnlocks_Pichavaram_UnlockedByDefault" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="828167000" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.003396" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1051" name="RegionUnlocks_ProgressionOrder_IsCorrectOrder" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.RegionUnlocks_ProgressionOrder_IsCorrectOrder" methodname="RegionUnlocks_ProgressionOrder_IsCorrectOrder" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="722126879" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.006882" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1050" name="RegionUnlocks_ResetForNewGame_ResetsToStartingRegions" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.RegionUnlocks_ResetForNewGame_ResetsToStartingRegions" methodname="RegionUnlocks_ResetForNewGame_ResetsToStartingRegions" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1891404557" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.007767" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#00FF99><b>[RegionUnlocks]</b></color> Destination opened: chettinad
+<color=#00FF99><b>[RegionUnlocks]</b></color> Destination opened: mamallapuram
+<color=#00FF99><b>[RegionUnlocks]</b></color> Destination opened: nilgiris
+]]></output>
+              </test-case>
+              <test-case id="1059" name="SaveSystem_CaptureSnapshot_CreatesValidData" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_CaptureSnapshot_CreatesValidData" methodname="SaveSystem_CaptureSnapshot_CreatesValidData" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1565645877" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.017664" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1062" name="SaveSystem_CorruptPrimaryWithValidBackup_RecoverFromBackup" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_CorruptPrimaryWithValidBackup_RecoverFromBackup" methodname="SaveSystem_CorruptPrimaryWithValidBackup_RecoverFromBackup" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="207904920" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.062759" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#FF4444><b>[SaveSystem]</b></color> Primary save is invalid: Malformed JSON: JSON parse error: Invalid value.. Attempting backup...
+<color=#FFCC00><b>[SaveSystem]</b></color> Primary save is corrupt (Malformed JSON: JSON parse error: Invalid value.). Recovered campaign from backup.
+]]></output>
+              </test-case>
+              <test-case id="1061" name="SaveSystem_CorruptSave_ReturnsNull" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_CorruptSave_ReturnsNull" methodname="SaveSystem_CorruptSave_ReturnsNull" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="667541752" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.041634" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#FF4444><b>[SaveSystem]</b></color> Primary save is invalid: Malformed JSON: JSON parse error: Invalid value.. Attempting backup...
+<color=#FF4444><b>[SaveSystem]</b></color> Primary save is corrupt (Malformed JSON: JSON parse error: Invalid value.) and backup is unreadable (File not found.).
+]]></output>
+              </test-case>
+              <test-case id="1058" name="SaveSystem_GameSaveData_SchemaVersionIsCorrect" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_GameSaveData_SchemaVersionIsCorrect" methodname="SaveSystem_GameSaveData_SchemaVersionIsCorrect" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1958485145" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.003084" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1064" name="SaveSystem_LoadGame_NoSave_ReturnsNull" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_LoadGame_NoSave_ReturnsNull" methodname="SaveSystem_LoadGame_NoSave_ReturnsNull" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="641369082" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.005043" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[SaveSystem] No save file found.
+]]></output>
+              </test-case>
+              <test-case id="1063" name="SaveSystem_NoSave_HasValidSaveReturnsFalse" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_NoSave_HasValidSaveReturnsFalse" methodname="SaveSystem_NoSave_HasValidSaveReturnsFalse" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1042687026" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.008222" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1060" name="SaveSystem_SaveAndLoad_RoundTrip" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_SaveAndLoad_RoundTrip" methodname="SaveSystem_SaveAndLoad_RoundTrip" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1328250689" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.035827" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<color=#00FF88><b>[SaveSystem]</b></color> Save data loaded (schema v4). Remaining appearance changes: 5
+]]></output>
+              </test-case>
+              <test-case id="1057" name="SaveSystem_SaveFilePath_EndsWithExpectedFilename" fullname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests.SaveSystem_SaveFilePath_EndsWithExpectedFilename" methodname="SaveSystem_SaveFilePath_EndsWithExpectedFilename" classname="WhisperingWilds.Tests.PlayMode.CampaignProgressionTests" runstate="Runnable" seed="1125816444" result="Passed" start-time="2026-10-20 16:30:07Z" end-time="2026-10-20 16:30:07Z" duration="0.002884" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[<b><color=#2EA3FF>MCP-FOR-UNITY</color></b>: [TestRunnerNoThrottle] Restored Interaction Mode after test run.
+Saving results to: C:/Users/mohan/AppData/LocalLow/Whispering Wilds Studios/The Whispering Wilds\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
