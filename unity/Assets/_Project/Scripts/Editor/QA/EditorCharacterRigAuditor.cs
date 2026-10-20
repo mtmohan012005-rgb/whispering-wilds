@@ -53,25 +53,9 @@ namespace WhisperingWilds.Editor.QA
     /// </summary>
     public static class EditorCharacterRigAuditor
     {
-        private static string ResolveGitSha()
+        public static string ResolveGitSha()
         {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var proc = System.Diagnostics.Process.Start(psi))
-                {
-                    string sha = proc.StandardOutput.ReadToEnd().Trim();
-                    proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
-                }
-            }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "unknown_commit";
+            return GitShaResolver.ResolveGitSha();
         }
 
         private static readonly string[] PrefabPaths = new[]
@@ -97,10 +81,22 @@ namespace WhisperingWilds.Editor.QA
 
         public static void RunBatchAudit()
         {
-            var report = ExecuteAudit();
-            if (Application.isBatchMode)
+            try
             {
-                EditorApplication.Exit(report.failCount > 0 ? 1 : 0);
+                var report = ExecuteAudit();
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(report.failCount > 0 ? 1 : 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[EditorCharacterRigAuditor] Fatal audit failure: {ex.Message}");
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(1);
+                }
+                throw;
             }
         }
 

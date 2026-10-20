@@ -103,23 +103,7 @@ namespace WhisperingWilds.Editor.QA
 
         public static string ResolveGitSha()
         {
-            try
-            {
-                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                using (var proc = System.Diagnostics.Process.Start(psi))
-                {
-                    string sha = proc.StandardOutput.ReadToEnd().Trim();
-                    proc.WaitForExit();
-                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
-                }
-            }
-            catch {}
-            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "fa06ced000000000000000000000000000000000";
+            return EditorCharacterRigAuditor.ResolveGitSha();
         }
 
         [MenuItem("Whispering Wilds/QA/Run Visual Playthrough Capture")]
@@ -229,10 +213,22 @@ namespace WhisperingWilds.Editor.QA
                 allScenesOk = false;
             }
 
-            // 4. Copy Reports & Logs
+            // 4. Synchronously execute Character Rig and Asset Reference Audits
+            try
+            {
+                EditorCharacterRigAuditor.ExecuteAudit();
+                AssetReferenceAudit.ExecuteAudit();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[SceneVisualCapture] Failed to execute synchronous audits: {ex.Message}");
+                allScenesOk = false;
+            }
+
+            // 5. Copy Reports & Logs
             CopyReportsAndLogs(repoRoot, reportsDir, logsDir);
 
-            // 5. Write Visual Manifest JSON & INDEX.md
+            // 6. Write Visual Manifest JSON & INDEX.md
             manifest.totalCaptures = manifest.captures.Count;
             foreach (var c in manifest.captures)
             {
@@ -246,7 +242,7 @@ namespace WhisperingWilds.Editor.QA
             WriteArtifactIndex(baseDir, headSha, manifest);
 
             Debug.Log($"<color=#00FF88><b>[SceneVisualCapture]</b></color> Visual evidence generation completed for commit {headSha}! Passed: {manifest.passedCaptures}/{manifest.totalCaptures}");
-            return allScenesOk;
+            return allScenesOk && manifest.failedCaptures == 0 && manifest.totalCaptures == 19;
         }
 
         private static CapturedVisualEntry CaptureSceneFrame(Scene scene, string outPath, string shortName, int width, int height)
@@ -587,11 +583,14 @@ namespace WhisperingWilds.Editor.QA
         private static CapturedVisualEntry CreateVisualEntry(string fullPath, string id, int w, int h, string camPos, string camRot)
         {
             var fi = new FileInfo(fullPath);
+            string repoRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".."));
+            string relPath = Path.GetRelativePath(repoRoot, fullPath).Replace('\\', '/');
+
             return new CapturedVisualEntry
             {
                 id = id,
                 filename = Path.GetFileName(fullPath),
-                relativePath = fullPath.Replace('\\', '/'),
+                relativePath = relPath,
                 width = w,
                 height = h,
                 fileSizeBytes = fi.Exists ? fi.Length : 0,
@@ -639,11 +638,12 @@ namespace WhisperingWilds.Editor.QA
         private static void WriteArtifactIndex(string baseDir, string headSha, VisualManifestReport manifest)
         {
             string indexFile = Path.Combine(baseDir, "INDEX.md");
+            string activeBranch = GitShaResolver.ResolveGitBranch();
             var sb = new StringBuilder();
             sb.AppendLine("# Unity Visual QA Artifact Index");
             sb.AppendLine($"**Tested HEAD SHA:** `{headSha}`  ");
-            sb.AppendLine($"**Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c`  ");
-            sb.AppendLine($"**Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  ");
+            sb.AppendLine($"**Base Commit SHA:** `7e3955cbb92095fda94df58fa34e7ef9e80c7fd9`  ");
+            sb.AppendLine($"**Working Branch:** `{activeBranch}`  ");
             sb.AppendLine($"**Execution Timestamp:** {DateTime.UtcNow:o}  ");
             sb.AppendLine($"**Engine:** Unity {Application.unityVersion}, Windows x64, Direct3D 11 / HDRP 17.7.0  ");
             sb.AppendLine($"**Captures Passed:** {manifest.passedCaptures} / {manifest.totalCaptures}  ");

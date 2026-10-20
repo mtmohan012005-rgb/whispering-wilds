@@ -1,12 +1,12 @@
 # Manual Campaign & Visual Playthrough Test Record
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
-**Audited HEAD SHA:** `fa06ced8b8e61371119c3097e7e3eed3bfcf676a` (PR #16)  
-**Target Base SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (`main` at PR #15 merge)  
-**Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
+**Audited HEAD SHA:** `069b04b3fb791275c63f64888efa3fd31bbca699` (Hotfix Verified)  
+**Target Base SHA:** `7e3955cbb92095fda94df58fa34e7ef9e80c7fd9` (`main` target)  
+**Branch:** `fix/qa-evidence-head-integrity` (PR #17)  
 **Target Hardware Profile:** Intel UHD Graphics / 8 GB RAM / Windows x64  
-**Standalone Executable:** `unity/Build/Windows/TheWhisperingWilds.exe -force-d3d11` (Re-compiled on `feature/unity-visual-gameplay-upgrade-20261020` on 20-Oct-2026 at 13:38:19 UTC; Exit 0; 131 MB; `BUILD_REPORT.json`)  
-**Provenance Note:** Native Editor character rig audit, asset reference audit, automated PlayMode tests, and native Windows Standalone Player production build are executed and verified directly on `feature/unity-visual-gameplay-upgrade-20261020`. Historical multi-hour playthrough telemetry is catalogued with explicit branch provenance.  
+**Standalone Executable:** `unity/Build/Windows/TheWhisperingWilds.exe -force-d3d11` (Re-compiled on `fix/qa-evidence-head-integrity` on 20-Oct-2026 at 18:38:59 UTC; Exit 0; 131 MB; `BUILD_REPORT.json`)  
+**Provenance Note:** Native Editor character rig audit, asset reference audit, automated EditMode/PlayMode tests, deterministic GitShaResolver validation, and native Windows Standalone Player production build are executed and verified directly on `fix/qa-evidence-head-integrity` at commit `069b04b3fb791275c63f64888efa3fd31bbca699`. Historical multi-hour playthrough telemetry is catalogued with explicit branch provenance.  
 
 ---
 

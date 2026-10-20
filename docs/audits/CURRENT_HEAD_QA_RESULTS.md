@@ -1,9 +1,9 @@
 # Current HEAD QA Results & Verification Evidence
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
-**Active Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
-**PR Head SHA:** `fa06ced8b8e61371119c3097e7e3eed3bfcf676a` (PR #16)  
-**Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (merge of PR #15)  
+**Active Working Branch:** `fix/qa-evidence-head-integrity` (PR #17)  
+**Tested Code Commit SHA:** `069b04b3fb791275c63f64888efa3fd31bbca699`  
+**Base Commit SHA:** `7e3955cbb92095fda94df58fa34e7ef9e80c7fd9` (`main` target)  
 **Environment:** Unity 6000.6.3f1, Windows 11 x64, HDRP 17.7.0  
 
 ---
@@ -18,18 +18,21 @@
   ```
   Therefore, green CI in GitHub Actions is classified as **`PASS_STATIC_ONLY`**. It is NOT evidence of in-engine compilation or PlayMode tests.
 - **Native Local Unity Editor Execution:** Executed on the local Windows development machine using native Unity 6 (version `6000.6.3f1`, HDRP `17.7.0`) in batchmode:
+  - **Authoritative Git SHA Resolver Validation:**
+    - Script: `powershell -ExecutionPolicy Bypass -File scripts/test-git-sha-resolver.ps1`
+    - Exit Code: `0` (**5/5 PASS**: matching SHA = 0, mismatched CLI SHA = 1, malformed CLI SHA = 1, mismatched ENV = 1, malformed ENV = 1).
   - **Editor Character Rig Audit:**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.EditorCharacterRigAuditor.RunBatchAudit" -logFile "artifacts/unity_rig_audit.log"`
     - Exit Code: `0`
-    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders, dynamic Git SHA stamped).
+    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders, dynamic Git SHA stamped `069b04b3fb791275c63f64888efa3fd31bbca699`).
   - **Asset Reference Audit:**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.AssetReferenceAudit.RunBatchAudit" -logFile "artifacts/unity_asset_ref_audit.log"`
     - Exit Code: `0`
-    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 13 scenes including all 9 release scenes deeply inspected, 293 materials, 57 textures, 10 audio clips**).
+    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 9 release scenes deeply inspected, 293 materials, 57 textures, 10 audio clips**).
   - **Authentic In-Engine Visual Evidence (Graphics-Enabled Direct3D 11 Render):**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.SceneVisualCapturePipeline.RunBatchCapture" -logFile "artifacts/unity_visual_capture.log"`
     - Exit Code: `0`
-    - Visual Artifact Index: [`artifacts/unity-visual-qa/fa06ced8b8e61371119c3097e7e3eed3bfcf676a/INDEX.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/unity-visual-qa/fa06ced8b8e61371119c3097e7e3eed3bfcf676a/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, and SHA-256 validation).
+    - Visual Artifact Index: [`artifacts/unity-visual-qa/069b04b3fb791275c63f64888efa3fd31bbca699/INDEX.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/unity-visual-qa/069b04b3fb791275c63f64888efa3fd31bbca699/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, SHA-256 validation, and 100% repository-relative paths).
   - **9 Culturally Grounded Environment Models Wired Into Scenes:**
     - `temple_gate.glb` (Dravidian Torana Gateway), `temple_wall.glb` (Ashlar precinct walls), `temple_urn.glb` (Kalasam finials), `temple_well.glb` (Stepped theertham Kalyani tank), `kuthu_vilakku.glb`, `stone_inscription.glb` instantiated into `08_Ancient_Temple_Ruins.unity`.
     - `stone_sculpture.glb` (Mamallapuram Bas-Relief Monolith) and `stone_carving_tools.glb` instantiated into `06_Mamallapuram_Shore.unity`.
@@ -40,24 +43,23 @@
 ## 1. Automated Test Suite Execution Summary
 | Test Suite | Total Tests | Passed | Failed | Skipped | Pass Rate | Truth Label | Evidence Reference |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Unity EditMode** | 78 | 78 | 0 | 0 | **100%** | `PASS_EDITMODE` | `Step50VerticalSliceTests.cs` |
-| **Unity PlayMode** | 34 | 34 | 0 | 0 | **100%** | `PASS_PLAYMODE` | `CampaignProgressionTests.cs` (`test_results_PlayMode_20261020_132853.xml`) |
+| **Unity EditMode** | 83 | 83 | 0 | 0 | **100%** | `PASS_EDITMODE` | `artifacts/test_results_EditMode.xml` (includes 5 `GitShaResolverTests`) |
+| **Unity PlayMode** | 34 | 34 | 0 | 0 | **100%** | `PASS_PLAYMODE` | `artifacts/test_results_PlayMode.xml` (`CampaignProgressionTests.cs`) |
 | **Native Unity Editor Rig Audit** | 10 | 10 | 0 | 0 | **100%** | `PASS_EDITOR` | `docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json` |
 | **Unity Asset Reference Audit** | 9 Scenes / 10 Prefabs | Clean | 0 err / 0 warn | 0 | **100%** | `PASS_EDITOR` | `docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json` (293 materials) |
 | **Backend Security Suite** | 34 | 34 | 0 | 0 | **100%** | `PASS_STATIC` | `scripts/test-backend-security.js` (exit 0) |
 | **Cloud Save Regression** | 22 | 20 | 0 | 2 (Firebase unset) | **100% (Non-cloud)** | `BLOCKED_CREDENTIALS` | `scripts/test-cloud-save-regression.js` |
 | **Production Asset Verification** | 36 | 36 | 0 | 0 | **100%** | `PASS_STATIC` | `scripts/verify-assets.js` |
-| **Total Automated** | **180** | **178** | **0** | **2** | **98.9%** | Clean native engine & server execution |
+| **Total Automated** | **185** | **183** | **0** | **2** | **98.9%** | Clean native engine & server execution |
 
 ---
 
 ## 2. Standalone Windows Executable Runtime Telemetry
 - **Executable Path:** `unity/Build/Windows/TheWhisperingWilds.exe`
 - **Execution Arguments:** `-force-d3d11 -screen-fullscreen 0 -screen-width 1920 -screen-height 1080`
-- **Framerate:** 58.5 – 60.0 FPS (V-Sync locked)
-- **Fresh Native Standalone Production Build:** Verified on current PR #16 branch `feature/unity-visual-gameplay-upgrade-20261020` on 20 October 2026 at 13:38:19 UTC (`BUILD_REPORT.json`).
+- **Fresh Native Standalone Production Build:** Verified on branch `fix/qa-evidence-head-integrity` tested at commit `069b04b3fb791275c63f64888efa3fd31bbca699` (`BUILD_REPORT.json`).
   - **Build Result:** `Succeeded` (Exit Code 0)
-  - **Build Duration:** 1,615.39s (26.9 min, comprehensive HDRP compute shader compilation across 8 worker cores)
+  - **Build Duration:** 71.03s (HDRP player build, 131 MB)
   - **Total Package Size:** 138,048,180 bytes (131 MB)
   - **Target Scenes Built:** All 9 gameplay scenes (`00_Boot.unity` through `08_Ancient_Temple_Ruins.unity`)
 - **Active Subsystems Verified at Launch:**

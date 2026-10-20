@@ -199,6 +199,7 @@ namespace WhisperingWilds.Editor
                     $"  \"totalSizeMB\": {summary.totalSize / (1024 * 1024)},\n" +
                     $"  \"durationSeconds\": {summary.totalTime.TotalSeconds:F2},\n" +
                     $"  \"unityVersion\": \"{Application.unityVersion}\",\n" +
+                    $"  \"builtCommit\": \"{WhisperingWilds.Editor.QA.GitShaResolver.ResolveGitSha()}\",\n" +
                     $"  \"targetPlatform\": \"StandaloneWindows64\",\n" +
                     $"  \"sceneCount\": {scenes.Length},\n" +
                     $"  \"timestamp\": \"{DateTime.UtcNow:o}\"\n" +
