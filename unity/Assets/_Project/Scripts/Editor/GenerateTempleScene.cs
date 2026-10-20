@@ -279,6 +279,50 @@ namespace WhisperingWilds.Editor
                 AddWarmLampLight(kvEast, 1.4f);
                 Debug.Log("[GenerateTempleScene] Loaded kuthu_vilakku.glb sanctum lamps");
             }
+
+            // Dravidian monumental torana temple gateway at the courtyard entrance
+            string gatePath = "Assets/_Project/Art/Models/Architecture/temple/temple_gate.glb";
+            GameObject gateModel = AssetDatabase.LoadAssetAtPath<GameObject>(gatePath);
+            if (gateModel != null)
+            {
+                GameObject gateInstance = GameObject.Instantiate(gateModel, new Vector3(0, 0, -22), Quaternion.identity);
+                gateInstance.name = "DravidianTempleGateway_Torana";
+                Debug.Log("[GenerateTempleScene] Loaded temple_gate.glb");
+            }
+
+            // Interlocking granite ashlar precinct walls flanking the courtyard perimeter
+            string wallPath = "Assets/_Project/Art/Models/Props/temple/temple_wall.glb";
+            GameObject wallModel = AssetDatabase.LoadAssetAtPath<GameObject>(wallPath);
+            if (wallModel != null)
+            {
+                GameObject wallWest = GameObject.Instantiate(wallModel, new Vector3(-12, 0, 0), Quaternion.identity);
+                wallWest.name = "TemplePerimeterWall_West";
+                GameObject wallEast = GameObject.Instantiate(wallModel, new Vector3(12, 0, 0), Quaternion.identity);
+                wallEast.name = "TemplePerimeterWall_East";
+                Debug.Log("[GenerateTempleScene] Loaded temple_wall.glb precinct walls");
+            }
+
+            // Sacred brass kalasam finial urns crowning mandapa plinths
+            string urnPath = "Assets/_Project/Art/Models/Props/temple/temple_urn.glb";
+            GameObject urnModel = AssetDatabase.LoadAssetAtPath<GameObject>(urnPath);
+            if (urnModel != null)
+            {
+                GameObject urnWest = GameObject.Instantiate(urnModel, new Vector3(-2.2f, 0, -14f), Quaternion.identity);
+                urnWest.name = "SacredKalasamUrn_West";
+                GameObject urnEast = GameObject.Instantiate(urnModel, new Vector3(2.2f, 0, -14f), Quaternion.identity);
+                urnEast.name = "SacredKalasamUrn_East";
+                Debug.Log("[GenerateTempleScene] Loaded temple_urn.glb finial urns");
+            }
+
+            // Sacred stepped theertham water tank (Kalyani) for ritual ablutions
+            string wellPath = "Assets/_Project/Art/Models/Props/temple/temple_well.glb";
+            GameObject wellModel = AssetDatabase.LoadAssetAtPath<GameObject>(wellPath);
+            if (wellModel != null)
+            {
+                GameObject wellInstance = GameObject.Instantiate(wellModel, new Vector3(16, 0, -6), Quaternion.identity);
+                wellInstance.name = "SacredTheerthamTank_Kalyani";
+                Debug.Log("[GenerateTempleScene] Loaded temple_well.glb theertham water tank");
+            }
         }
 
         private static GameObject[] CreatePuzzleMechanisms()

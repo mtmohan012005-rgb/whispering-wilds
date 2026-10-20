@@ -2,7 +2,7 @@
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
 **Active Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
-**PR Head SHA:** `44dfb294fbd3d1f51fe912c0e98204c654aae25d` (PR #16)  
+**PR Head SHA:** `fa06ced8b8e61371119c3097e7e3eed3bfcf676a` (PR #16)  
 **Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (merge of PR #15)  
 **Environment:** Unity 6000.6.3f1, Windows 11 x64, HDRP 17.7.0  
 
@@ -21,12 +21,19 @@
   - **Editor Character Rig Audit:**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.EditorCharacterRigAuditor.RunBatchAudit" -logFile "artifacts/unity_rig_audit.log"`
     - Exit Code: `0`
-    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders).
+    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders, dynamic Git SHA stamped).
   - **Asset Reference Audit:**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.AssetReferenceAudit.RunBatchAudit" -logFile "artifacts/unity_asset_ref_audit.log"`
     - Exit Code: `0`
-    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 9 scenes, 293 materials**).
-  - **9 Quality Gap Environment Models:** Compiled via `tools/build-distinct-environment-models.js`, imported and verified in Unity project hierarchy.
+    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 13 scenes including all 9 release scenes deeply inspected, 293 materials, 57 textures, 10 audio clips**).
+  - **Authentic In-Engine Visual Evidence (Graphics-Enabled Direct3D 11 Render):**
+    - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.SceneVisualCapturePipeline.RunBatchCapture" -logFile "artifacts/unity_visual_capture.log"`
+    - Exit Code: `0`
+    - Visual Artifact Index: [`artifacts/unity-visual-qa/fa06ced8b8e61371119c3097e7e3eed3bfcf676a/INDEX.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/unity-visual-qa/fa06ced8b8e61371119c3097e7e3eed3bfcf676a/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, and SHA-256 validation).
+  - **9 Culturally Grounded Environment Models Wired Into Scenes:**
+    - `temple_gate.glb` (Dravidian Torana Gateway), `temple_wall.glb` (Ashlar precinct walls), `temple_urn.glb` (Kalasam finials), `temple_well.glb` (Stepped theertham Kalyani tank), `kuthu_vilakku.glb`, `stone_inscription.glb` instantiated into `08_Ancient_Temple_Ruins.unity`.
+    - `stone_sculpture.glb` (Mamallapuram Bas-Relief Monolith) and `stone_carving_tools.glb` instantiated into `06_Mamallapuram_Shore.unity`.
+    - `toda_mund_hut.glb`, `tea_hedge.glb`, and `tea_rows.glb` instantiated into `07_Nilgiris_Sanctuary.unity`.
 
 ---
 

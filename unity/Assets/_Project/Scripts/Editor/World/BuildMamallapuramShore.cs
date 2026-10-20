@@ -423,6 +423,12 @@ namespace WhisperingWilds.Editor
                     new Vector3(1.9f, 1.3f, 1.4f), new Color(0.55f, 0.53f, 0.50f));
             }
 
+            // Authentic Mamallapuram Arjuna's Penance Bas-Relief Monolith sculpture and carving tools
+            InstantiateDecorative("Assets/_Project/Art/Models/Props/craft/stone_sculpture.glb", yard.transform,
+                new Vector3(0f, 0f, 0f), Quaternion.identity, Vector3.one);
+            InstantiateDecorative("Assets/_Project/Art/Models/Props/craft/stone_carving_tools.glb", yard.transform,
+                new Vector3(1.5f, 0.1f, 1.5f), Quaternion.identity, Vector3.one);
+
             // Workshop east, with its working benches and a low wall behind it.
             var workshop = new GameObject("Stone_Workshop");
             workshop.transform.SetParent(root.transform, false);

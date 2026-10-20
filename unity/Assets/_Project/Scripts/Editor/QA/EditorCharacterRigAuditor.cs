@@ -37,6 +37,7 @@ namespace WhisperingWilds.Editor.QA
     {
         public string auditName = "Whispering Wilds Authentic Editor Character Rig Audit";
         public string executedAt;
+        public string auditedCommit;
         public string unityVersion;
         public int charactersAudited;
         public int passCount;
@@ -52,6 +53,27 @@ namespace WhisperingWilds.Editor.QA
     /// </summary>
     public static class EditorCharacterRigAuditor
     {
+        private static string ResolveGitSha()
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using (var proc = System.Diagnostics.Process.Start(psi))
+                {
+                    string sha = proc.StandardOutput.ReadToEnd().Trim();
+                    proc.WaitForExit();
+                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
+                }
+            }
+            catch {}
+            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "unknown_commit";
+        }
+
         private static readonly string[] PrefabPaths = new[]
         {
             "Assets/_Project/Prefabs/Characters/PlayerCharacter.prefab",
@@ -75,10 +97,10 @@ namespace WhisperingWilds.Editor.QA
 
         public static void RunBatchAudit()
         {
-            ExecuteAudit();
+            var report = ExecuteAudit();
             if (Application.isBatchMode)
             {
-                EditorApplication.Exit(0);
+                EditorApplication.Exit(report.failCount > 0 ? 1 : 0);
             }
         }
 
@@ -87,6 +109,7 @@ namespace WhisperingWilds.Editor.QA
             var report = new EditorCharacterRigReport
             {
                 executedAt = DateTime.UtcNow.ToString("o"),
+                auditedCommit = ResolveGitSha(),
                 unityVersion = Application.unityVersion,
                 charactersAudited = PrefabPaths.Length
             };
