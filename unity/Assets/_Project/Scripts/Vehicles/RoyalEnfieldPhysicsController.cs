@@ -36,6 +36,20 @@ namespace WhisperingWilds.Vehicles
         private Rigidbody rb;
         private float currentLeanAngle = 0f;
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void AutoBootstrapMotorcycles()
+        {
+            var allRigidbodies = Object.FindObjectsByType<Rigidbody>(FindObjectsSortMode.None);
+            foreach (var r in allRigidbodies)
+            {
+                string n = r.gameObject.name.ToLower();
+                if ((n.Contains("enfield") || n.Contains("bullet") || n.Contains("bike") || n.Contains("motorcycle")) && r.GetComponent<RoyalEnfieldPhysicsController>() == null)
+                {
+                    r.gameObject.AddComponent<RoyalEnfieldPhysicsController>();
+                }
+            }
+        }
+
         void Start()
         {
             rb = GetComponent<Rigidbody>();

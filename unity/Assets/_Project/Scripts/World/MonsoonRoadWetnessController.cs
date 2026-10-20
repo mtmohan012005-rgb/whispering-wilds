@@ -35,6 +35,20 @@ namespace WhisperingWilds.World
         private static readonly int SmoothnessProp = Shader.PropertyToID("_Smoothness");
         private static readonly int ColorProp = Shader.PropertyToID("_BaseColor");
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void AutoBootstrapChennaiRoads()
+        {
+            var activeScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            if (activeScene.name.Contains("Chennai") || activeScene.name.Contains("02_"))
+            {
+                if (FindFirstObjectByType<MonsoonRoadWetnessController>() == null)
+                {
+                    GameObject bootObj = new GameObject("Monsoon_RoadWetness_Engine");
+                    bootObj.AddComponent<MonsoonRoadWetnessController>();
+                }
+            }
+        }
+
         void Awake()
         {
             propBlock = new MaterialPropertyBlock();
@@ -42,6 +56,18 @@ namespace WhisperingWilds.World
             if (asphaltRoadRenderers == null || asphaltRoadRenderers.Length == 0)
             {
                 asphaltRoadRenderers = GetComponentsInChildren<MeshRenderer>();
+                if (asphaltRoadRenderers.Length == 0)
+                {
+                    var allRenderers = FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
+                    var roadList = new System.Collections.Generic.List<Renderer>();
+                    foreach (var r in allRenderers)
+                    {
+                        string n = r.name.ToLower();
+                        if (n.Contains("road") || n.Contains("asphalt") || n.Contains("street") || n.Contains("ground"))
+                            roadList.Add(r);
+                    }
+                    asphaltRoadRenderers = roadList.ToArray();
+                }
             }
             if (roadColliders == null || roadColliders.Length == 0)
             {

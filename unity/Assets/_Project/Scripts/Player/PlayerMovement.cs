@@ -106,6 +106,28 @@ namespace WhisperingWilds.Player
             }
 
             RefreshGroundMask();
+            EnsureRealismControllers();
+        }
+
+        private void EnsureRealismControllers()
+        {
+            if (GetComponent<PlayerIKRiggedController>() == null)
+            {
+                var ik = gameObject.AddComponent<PlayerIKRiggedController>();
+                ik.groundLayerMask = cachedGroundMask;
+                ik.footWeight = 1.0f;
+                ik.enableFootIK = true;
+            }
+
+            if (GetComponent<VeshtiClothPhysicsController>() == null)
+            {
+                gameObject.AddComponent<VeshtiClothPhysicsController>();
+            }
+
+            if (GetComponent<Characters.CharacterRagdollController>() == null)
+            {
+                gameObject.AddComponent<Characters.CharacterRagdollController>();
+            }
         }
 
         /// <summary>
