@@ -1,7 +1,7 @@
 # Manual Campaign & Visual Playthrough Test Record
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Date:** 20 October 2026  
-**Audited HEAD SHA:** `fa06ced8b8e61371119c3097e7e3eed3bfcf676a` (PR #16)  
+**Audited HEAD SHA:** `d5120d0b09bc625c624c9872d3446c353c9bf2d5` (PR #16)  
 **Target Base SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (`main` at PR #15 merge)  
 **Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
 **Target Hardware Profile:** Intel UHD Graphics / 8 GB RAM / Windows x64  
