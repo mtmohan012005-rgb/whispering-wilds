@@ -99,8 +99,8 @@ def measure_all_characters():
             "PrimaryLowerMaterial": lower_mat,
             "PrimaryAccessoryMaterial": acc_mat,
             "AnimatorController": ctrl_name,
-            "MeasuredStatus": "PASS_EDITOR" if (smr_count == 6 and bones_per_smr > 0) else "FAIL",
-            "MeasurementNotes": f"Dynamically parsed from {name}. 6 submeshes with {bones_per_smr} bone bindings across {total_transforms} skeletal transforms."
+            "MeasuredStatus": "PASS_STATIC" if (smr_count == 6 and bones_per_smr > 0) else "FAIL",
+            "MeasurementNotes": f"Static YAML structural parse from {name}. 6 submeshes with {bones_per_smr} bone bindings across {total_transforms} skeletal transforms. Avatar is GenericAvatar.asset (Generic rig type). Real-time animation evaluation requires Editor execution."
         })
 
     out_path = os.path.join("docs", "audits", "CHARACTER_RUNTIME_VALIDATION.csv")
