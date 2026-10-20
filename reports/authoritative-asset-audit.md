@@ -1,6 +1,6 @@
 # Authoritative Asset Audit
 
-Generated `2026-10-18T17:29:41.669Z` by `scripts/authoritative-asset-audit.js` from the working tree at `C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds`.
+Generated `2026-10-19T19:20:51.317Z` by `scripts/authoritative-asset-audit.js` from the working tree at `C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds`.
 
 > This report **supersedes** ASSET_AUDIT_REPORT.json, BUILD_REPORT.json, PRODUCTION_ASSET_STATUS.json, PRODUCTION_3D_ASSET_REPORT.json, DATA_AUDIT_REPORT.json.
 > No figure below is hardcoded; every number is recomputed from the current repository.
@@ -16,24 +16,25 @@ Generated `2026-10-18T17:29:41.669Z` by `scripts/authoritative-asset-audit.js` f
 | Metric | Value |
 | --- | --- |
 | Physical asset files | 167 |
-| Physical asset bytes | 3,03,38,404 |
-| Source files scanned | 76 |
-| Distinct referenced paths | 18 |
-| Total reference occurrences | 22 |
-| **PRESENT** | **18** |
-| **MISSING** | **0** |
+| Physical asset bytes | 3,03,52,367 |
+| Source files scanned | 78 |
+| Distinct referenced paths | 21 |
+| Total reference occurrences | 31 |
+| **PRESENT** | **19** |
+| **MISSING** | **2** |
 | Case-mismatched paths | 0 |
 | Templated / dynamic references | 0 |
-| Unused physical assets | 148 |
+| Unused physical assets | 147 |
 | Duplicate groups | 27 |
 | GLB files on disk | 124 |
 
 ## By category
 | Category | Referenced | Present | Missing |
 | --- | --- | --- | --- |
+| AUDIO_OTHER | 2 | 1 | 1 |
+| TEXTURE | 1 | 0 | 1 |
 | ARCHITECTURE | 8 | 8 | 0 |
-| AUDIO_OTHER | 1 | 1 | 0 |
-| CHARACTER | 3 | 3 | 0 |
+| CHARACTER | 4 | 4 | 0 |
 | OTHER | 1 | 1 | 0 |
 | VEGETATION | 3 | 3 | 0 |
 | VEHICLE | 2 | 2 | 0 |
@@ -41,7 +42,7 @@ Generated `2026-10-18T17:29:41.669Z` by `scripts/authoritative-asset-audit.js` f
 ## By region
 | Region | Referenced | Present | Missing |
 | --- | --- | --- | --- |
-| CHENNAI | 3 | 3 | 0 |
+| CHENNAI | 4 | 3 | 1 |
 | CHETTINAD | 1 | 1 | 0 |
 | DELTA | 1 | 1 | 0 |
 | NILGIRI | 3 | 3 | 0 |
@@ -177,7 +178,7 @@ Generated `2026-10-18T17:29:41.669Z` by `scripts/authoritative-asset-audit.js` f
 | `assets/wildlife/nilgiri_tahr.glb` | 12260 | yes | 8 | 8 | 0 | 0 | 2 | 0 | 0 | - |
 
 ## Missing references (full reverse map)
-Total missing: **0**
+Total missing: **2**
 
 ### Classification of every missing path
 A missing literal is only a live defect if a module that `index.html` actually loads references it.
@@ -186,7 +187,7 @@ A missing literal is only a live defect if a module that `index.html` actually l
 | --- | --- | --- |
 | `A_RUNTIME_REQUIRED_MISSING` | 0 | Loaded by a shipped module, no fallback in that module. Live gameplay gap. |
 | `B_RUNTIME_FALLBACK` | 0 | Loaded by a shipped module, but the module builds a procedural stand-in on failure. |
-| `C_DEVTOOL_DECLARED_ONLY` | 0 | Declared only by scripts/tools/validators the page never loads. No runtime impact. |
+| `C_DEVTOOL_DECLARED_ONLY` | 2 | Declared only by scripts/tools/validators the page never loads. No runtime impact. |
 | `D_PATH_DRIFT_EXISTS_ELSEWHERE` | 0 | The same model exists on disk at another path. Fix the reference. |
 | `E_WIRED_BUT_UNCONFIRMED` | 0 | Referenced by a non-dev file that index.html does not load. |
 | `F_NO_TRACEABLE_SOURCE` | 0 | No traceable source reference. |
@@ -223,27 +224,30 @@ Animations: `Player_Idle`, `Player_Walk`, `Player_Run`, `Player_Sprint`, `Player
 
 > PBR is present as metallic-roughness factors on 7 materials, but the file carries **zero texture maps** (`textures[]=0, images[]=0, samplers[]=0`). Every material uses a flat `baseColorFactor` only. This is flat-shaded PBR, not textured PBR.
 ## Reconciliation with the superseded `ASSET_AUDIT_REPORT.json`
-Old report generated `2026-10-17T16:46:02.628Z`.
+Old report generated `2026-10-19T13:31:21.745Z`.
 
 | Metric | Old | New |
 | --- | --- | --- |
-| Referenced paths | 306 | 18 |
-| Found / present | 163 | 18 |
-| Missing | 143 | 0 |
+| Referenced paths | 306 | 21 |
+| Found / present | 163 | 19 |
+| Missing | 143 | 2 |
 
 | Set comparison | Count |
 | --- | --- |
-| Old-missing still missing | 0 |
+| Old-missing still missing | 2 |
 | Old-missing now present | 0 |
-| Old-missing no longer statically referenced | 143 |
-| Old-found still present and referenced | 18 |
-| Old-found no longer referenced | 145 |
+| Old-missing no longer statically referenced | 141 |
+| Old-found still present and referenced | 19 |
+| Old-found no longer referenced | 144 |
 | New-missing not in the old missing list | 0 |
 
 > Both scans are literal-string based. A difference in totals reflects which literals each scanner matched, not a change in what the game loads. The intersection (still-missing) is the stable figure.
 
 ## All missing references
-_none_
+| Missing path | Category | Region | Refs | Source files |
+| --- | --- | --- | --- | --- |
+| `assets/audio/ambience_chennai.mp3` | AUDIO_OTHER | CHENNAI | 1 | `scripts/generate-reconciliation-csv.js:90` |
+| `assets/textures/placeholder.png` | TEXTURE | - | 1 | `scripts/generate-reconciliation-csv.js:104` |
 
 ## Duplicate groups (identical content)
 | SHA1 | Copies | Wasted bytes | Paths |
@@ -337,6 +341,7 @@ _none_
 | `assets/vehicles/bullock_cart/bullock_cart.glb` | 8852 |
 | `assets/props/market/flower_cart.glb` | 8812 |
 | `assets/vehicles/bicycle/old_bicycle.glb` | 8712 |
+| `assets/audio/AUDIO_LICENSE_MANIFEST.json` | 8633 |
 | `assets/architecture/village/cattle_shed.glb` | 7668 |
 | `assets/characters/npcs/farmer.glb` | 7644 |
 | `assets/characters/wildlife/egret.glb` | 7620 |
@@ -346,8 +351,6 @@ _none_
 | `assets/architecture/chennai/electrical_pole.glb` | 7036 |
 | `assets/characters/wildlife/peafowl.glb` | 6868 |
 | `assets/props/household/wooden_bench.glb` | 6532 |
-| `assets/characters/player/CHARACTER_MANIFEST.json` | 6320 |
-| `assets/audio/AUDIO_LICENSE_MANIFEST.json` | 6206 |
 | `assets/characters/wildlife/kingfisher.glb` | 5504 |
 | `assets/vehicles/boat/wooden_boat.glb` | 5464 |
 | `assets/vehicles/mangrove_boat.glb` | 5464 |

@@ -10,6 +10,20 @@ public class AutoRickshawPhysicsController : MonoBehaviour
     public float antiRollForce = 4000f;
     public float downforceConstant = 50f;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void AutoBootstrapRickshaws()
+    {
+        var allRigidbodies = Object.FindObjectsByType<Rigidbody>(FindObjectsSortMode.None);
+        foreach (var r in allRigidbodies)
+        {
+            string n = r.gameObject.name.ToLower();
+            if ((n.Contains("auto") || n.Contains("rickshaw")) && r.GetComponent<AutoRickshawPhysicsController>() == null)
+            {
+                r.gameObject.AddComponent<AutoRickshawPhysicsController>();
+            }
+        }
+    }
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
