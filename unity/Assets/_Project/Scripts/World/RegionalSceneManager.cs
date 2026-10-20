@@ -15,7 +15,7 @@ namespace WhisperingWilds.World
     /// Never unloads current region before target is safely active; never blindly falls back on invalid region IDs.
     /// </summary>
     [DisallowMultipleComponent]
-    public class RegionalSceneManager : MonoBehaviour
+    public partial class RegionalSceneManager : MonoBehaviour
     {
         public static RegionalSceneManager Instance { get; private set; }
 

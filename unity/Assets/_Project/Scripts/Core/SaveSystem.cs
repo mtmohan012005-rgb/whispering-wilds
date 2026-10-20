@@ -485,6 +485,23 @@ namespace WhisperingWilds.Core
         }
 
         /// <summary>
+        /// Convenience method supporting regional transition state persistence.
+        /// </summary>
+        public static GameSaveData SaveProgress(int remainingAppearanceChanges, string outfitId, int sceneIndex, Vector3 playerPosition)
+        {
+            var data = SaveGame();
+            if (data != null)
+            {
+                data.remainingPermanentAppearanceChanges = Mathf.Clamp(remainingAppearanceChanges, 0, 5);
+                data.posX = playerPosition.x;
+                data.posY = playerPosition.y;
+                data.posZ = playerPosition.z;
+                WriteAtomically(data);
+            }
+            return data;
+        }
+
+        /// <summary>
         /// Writes the payload via a temp file and an atomic swap, keeping the previous primary as a
         /// backup. A crash mid-write can therefore lose the new save but never the old one.
         /// </summary>
