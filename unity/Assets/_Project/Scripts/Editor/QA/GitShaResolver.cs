@@ -179,10 +179,6 @@ namespace WhisperingWilds.Editor.QA
         private static void FailExecution(string reason)
         {
             Debug.LogError($"[GitShaResolver] ABORTING EXECUTION: {reason}");
-            if (Application.isBatchMode)
-            {
-                EditorApplication.Exit(1);
-            }
             throw new InvalidOperationException($"Git SHA verification failed: {reason}");
         }
     }

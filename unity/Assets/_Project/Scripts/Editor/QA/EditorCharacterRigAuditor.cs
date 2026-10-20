@@ -81,10 +81,22 @@ namespace WhisperingWilds.Editor.QA
 
         public static void RunBatchAudit()
         {
-            var report = ExecuteAudit();
-            if (Application.isBatchMode)
+            try
             {
-                EditorApplication.Exit(report.failCount > 0 ? 1 : 0);
+                var report = ExecuteAudit();
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(report.failCount > 0 ? 1 : 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[EditorCharacterRigAuditor] Fatal audit failure: {ex.Message}");
+                if (Application.isBatchMode)
+                {
+                    EditorApplication.Exit(1);
+                }
+                throw;
             }
         }
 

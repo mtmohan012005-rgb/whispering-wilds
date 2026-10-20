@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
 using WhisperingWilds.Editor.QA;
 
 namespace WhisperingWilds.Tests.Editor
@@ -41,6 +43,8 @@ namespace WhisperingWilds.Tests.Editor
             {
                 // Set an intentional mismatching 40-character hex string
                 Environment.SetEnvironmentVariable("WW_AUDIT_SHA", "0000000000000000000000000000000000000000");
+                LogAssert.Expect(LogType.Error, new Regex(@"\[GitShaResolver\] \[FATAL\].*"));
+                LogAssert.Expect(LogType.Error, new Regex(@"\[GitShaResolver\] ABORTING EXECUTION:.*"));
                 Assert.Throws<InvalidOperationException>(() =>
                 {
                     GitShaResolver.ResolveGitSha();
@@ -59,6 +63,8 @@ namespace WhisperingWilds.Tests.Editor
             try
             {
                 Environment.SetEnvironmentVariable("WW_AUDIT_SHA", "not-a-valid-40-char-sha");
+                LogAssert.Expect(LogType.Error, new Regex(@"\[GitShaResolver\] \[FATAL\].*"));
+                LogAssert.Expect(LogType.Error, new Regex(@"\[GitShaResolver\] ABORTING EXECUTION:.*"));
                 Assert.Throws<InvalidOperationException>(() =>
                 {
                     GitShaResolver.ResolveGitSha();
