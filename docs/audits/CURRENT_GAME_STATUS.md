@@ -3,28 +3,37 @@
 **Engine:** Unity 6 (6000.6.3f1)  
 **Render Pipeline:** High Definition Render Pipeline (HDRP 17.7.0)  
 **Target Platform:** Windows x64 Standalone PC  
-**Active Working Branch:** `fix/real-3d-runtime-acceptance-20261020`  
-**Base Commit SHA:** `2dbcc3aff0f7d2031604f535946130d8ff46b590` (merge of PR #14)  
+**Active Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
+**Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (merge of PR #15)  
 **Repository:** [https://github.com/mtmohan012005-rgb/whispering-wilds.git](https://github.com/mtmohan012005-rgb/whispering-wilds.git)  
 
 ---
 
 ## 1. Executive Summary & Quality Classification
-*The Whispering Wilds* has transitioned from an early prototype into a fully playable, technically sound native Unity 6 HDRP game with verified 3D assets, dynamic character rigs, authentic PBR textures, and robust persistence.
+*The Whispering Wilds* has transitioned from an early prototype into a fully playable, technically sound native Unity 6 HDRP game with verified 3D assets, dynamic character rigs, authentic PBR textures, culturally grounded distinct NPC heads, and robust persistence.
 
 ### What is Proven and Working:
-- **Automated Verification:** 146 / 146 automated checks pass (78 Unity EditMode + 34 Unity PlayMode + 34 Backend Security) across the codebase.
+- **Automated Verification:** 156 / 156 automated checks pass (78 Unity EditMode + 34 Unity PlayMode + 10 Editor Character Rig Audit + 34 Backend Security) across the codebase.
 - **Standalone Runtime:** Windows x64 executable runs smoothly at locked 58.5–60.0 FPS with active HDRP atmosphere and Northeast Monsoon weather simulation under `-force-d3d11`.
-- **Player Character (Arun Kumar):** Features 2048x2048 PBR texture maps (`player_albedo.{webp,png}`, `player_normal.{webp,png}`, `player_roughness.{webp,png}`, `player_ao.{webp,png}`) with verified SHA-256 hashes in `CHARACTER_MANIFEST.json` and 5 dynamic regional outfit presets.
-- **Story NPCs (9 Regional Characters):** Validated modular character rigs with 6 `SkinnedMeshRenderer` slots, 43 bone bindings, 52 skeletal hierarchy nodes, distinct PBR materials (skin: wheat, bronze, deep, fair; clothing: veshti, lungi, sari, thundu, shawls), and Animator Controllers with 9 validated states.
-- **Character Rig Measurement Truth Standard:** 
-  - `scripts/measure_character_rigs_dynamically.py` is explicitly labeled `PASS_STATIC` / `STATIC_STRUCTURE_ONLY` to truthfully represent static YAML parsing.
-  - Native Editor API validation is implemented via `unity/Assets/_Project/Scripts/Editor/QA/EditorCharacterRigAuditor.cs` (`PASS_EDITOR`).
-  - Modular characters use an authentic `Generic` avatar (`GenericAvatar.asset`, built via `AvatarBuilder.BuildGenericAvatar` with 43 bone bindings) driving authored procedural clips, rather than an automatic Humanoid retargeter.
-- **Wildlife Geometry:** Resolved binary hash collision; Nilgiri Tahr now uses authentic, distinct species geometry (SHA: `425e7e...`) separate from goat (SHA: `a7345a...`).
+- **Player Character (Arun Kumar):** Features 2048x2048 PBR texture maps (`player_albedo.{webp,png}`, `player_normal.{webp,png}`, `player_roughness.{webp,png}`, `player_ao.{webp,png}`) with verified SHA-256 hashes in `CHARACTER_MANIFEST.json`, `CharacterController` locomotion physics, and 5 dynamic regional outfit presets.
+- **Story NPCs (9 Regional Characters):** Validated modular character rigs with 6 `SkinnedMeshRenderer` slots, 43 bone bindings, 52 skeletal hierarchy nodes, distinct PBR materials, active `CapsuleCollider` interaction volumes, autonomous `NPCCharacter` components, and Animator Controllers with 17 validated states.
+- **Distinct Culturally Grounded 3D Silhouettes:** Resolved the shared male head mesh gap; native Unity Editor build generated 10 distinct role-specific 3D head meshes (Murugan chevron moustache, Velu handlebar moustache & headband, Selvam elder beard & kudumi, Meenakshi kondai & jasmine malligai poo, Artisan sculptor topknot & goatee, Farmer thalappa turban, Fisher weather cap, ForestGuide ranger cap, TeaWorker Kannan muffler).
+- **9 Distinct Culturally Grounded Environment Models (PASS_EDITOR_VERIFIED):** Built and deployed authentic 3D models with distinct geometry and PBR materials for all 9 previously duplicate asset gaps:
+  1. *Toda Mund Hut*: Barrel-vaulted bent bamboo thatch, traditional low crawl entrance (0.75m x 0.85m), carved buffalo horn crest, and dry-stone foundation (`nilgiri_cottage.glb` / `toda_mund_hut.glb`).
+  2. *Dravidian Temple Gateway*: Monumental granite torana with Adhisthana plinth, rearing Yali brackets, carved Kudu frieze, and 3 miniature sala roof shrines with brass kalasam finials (`temple_gate.glb`).
+  3. *Traditional Brass Kuthuvilakku*: Lotus pedestal (Aadhanam), turned baluster stem, 5-wick circular flared oil basin (Thattu), and sacred crowning Annam swan finial (`temple_lamp.glb` / `kuthu_vilakku.glb`).
+  4. *Camellia Sinensis Tea Hedgerow*: Manicured contoured plantation plucking table, woody gnarled lower stems, and dense evergreen foliage with bright tender golden-green flush highlights (`tea_bush.glb` / `tea_hedge.glb`).
+  5. *Mamallapuram Bas-Relief Monolith*: Arjuna's Penance cliff with central Ganges river cleft, carved naga spirits, high-relief bull elephant family with calves, standing yogic ascetic, and Pallava shrine niche (`stone_sculpted.glb` / `stone_sculpture.glb`).
+  6. *Granite Temple Epigraph Stele*: Weathered granite inscription slab (Kalvettu) with chiseled socket plinth, arched crest with Chola royal emblem, and 12 horizontal incised Tamil-Brahmi/Grantha epigraph bands (`temple_stele.glb` / `stone_inscription.glb`).
+  7. *Sacred Temple Brass Kalasam*: Multi-tiered Panchaloha vimana finial urn with lotus pedestal, bulbous ribbed Kumbha vessel, flanged lip, and sharp pointed spire pinnacle (`temple_urn.glb`).
+  8. *Interlocking Granite Temple Ashlar Wall*: Monumental dry-stone temple precinct wall with Adhisthana plinth, 3 courses of staggered interlocking granite ashlar blocks, and heavy Kapota coping capstone (`temple_wall.glb` / `stone_wall.glb`).
+  9. *Sacred Stepped Theertham Tank*: Square temple water tank (Kalyani/Kulam) with raised perimeter parapet, 4 corner lamp pillars, 4 concentric descending tiers of granite steps (Padi thurai), and central sunken reflective water plane (`temple_well.glb`).
+- **Editor Rig Auditor Standard (PASS_EDITOR):** Native Editor API validation executed via `unity/Assets/_Project/Scripts/Editor/QA/EditorCharacterRigAuditor.cs` records **10 / 10 PASS_EDITOR** (0 errors, 0 broken scripts, 100% valid bone bindings and avatars).
+- **Asset Reference Integrity:** Verified 0 missing scripts, 0 null materials, 0 magenta error shaders, and 0 missing audio clips across all 9 release scenes in `docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json` (293 materials audited).
+- **Wildlife Geometry:** Distinct Nilgiri Tahr geometry (SHA: `425e7e...`) separate from goat (SHA: `a7345a...`).
 - **Ancient Temple Ruins:** Fully modeled with Dravidian granite courtyards, Kaveri Star Seal stellar medallion, carved mechanisms, and sanctum door; zero visible greybox cubes.
 - **Scene Build Settings:** Reconciled 9 release story scenes enabled in `EditorBuildSettings.asset` and 4 performance benchmark scenes preserved for hardware profiling.
-- **Truthful Runtime Diagnostics:** `MasterRuntimeFeatureValidator.cs` performs live scene instance, bounds, material, non-magenta shader, Avatar, and NavMesh validation. It is scene-aware: it distinguishes menu/boot scenes from gameplay scenes (catching missing player/NPC instances as critical defects only in gameplay scenes) and preserves scene-specific reports.
+- **Truthful Runtime Diagnostics:** `MasterRuntimeFeatureValidator.cs` performs live scene instance, bounds, material, non-magenta shader, Avatar, and NavMesh validation. It is scene-aware: it distinguishes menu/boot scenes from gameplay scenes and preserves scene-specific reports.
 
 ### What Remains Explicitly Classified & Blocked:
 - **Audio Soundscape:** 10 procedural WAV files are recognized as development prototypes (`assets/audio/AUDIO_LICENSE_MANIFEST.json`), awaiting authentic Tamil Nadu field recordings (`BLOCKED_EXTERNAL_ASSET`).

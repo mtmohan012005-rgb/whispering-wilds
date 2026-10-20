@@ -496,7 +496,8 @@ namespace WhisperingWilds.Diagnostics
         {
             try
             {
-                bool saveSuccess = SaveSystem.SaveProgress(1, "chennai_veshti", 1, Vector3.zero);
+                var saveData = SaveSystem.SaveProgress(1, "chennai_veshti", 1, Vector3.zero);
+                bool saveSuccess = (saveData != null);
                 if (saveSuccess)
                 {
                     report.results.Add(new RuntimeFeatureCheckResult

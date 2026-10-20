@@ -265,85 +265,164 @@ namespace WhisperingWilds.Editor.Characters
             mb.Append(PartFactory.SpherePart(new Vector3(bx + sign * 0.028f, 1.385f, 0.030f), 0.008f, 4, 4), bones[boneDist], 0);
         }
 
+        public enum NpcHeadRole
+        {
+            GenericMale,
+            Murugan,
+            Velu,
+            Selvam,
+            Meenakshi,
+            Artisan,
+            Farmer,
+            Fisher,
+            ForestGuide,
+            TeaWorker
+        }
+
         public static Mesh BuildHeadMesh(Dictionary<string, int> bones, bool female)
+        {
+            return BuildRoleHeadMesh(bones, female ? NpcHeadRole.Meenakshi : NpcHeadRole.GenericMale);
+        }
+
+        public static Mesh BuildRoleHeadMesh(Dictionary<string, int> bones, NpcHeadRole role)
         {
             var mb = new MeshBuilder();
             const int Skin = 0, Feature = 1, Hair = 2;
             mb.EnsureSubmesh(3);
 
-            // === IMPROVED HEAD: More realistic human face shape ===
+            bool female = (role == NpcHeadRole.Meenakshi);
 
-            // Skull - main head sphere (higher resolution for rounder look)
+            // === 1. Base Skull & Head Anatomy ===
             mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.610f, 0f), 0.105f, 8, 14), bones["Head"], Skin);
-
-            // Forehead - slightly flattened front
             mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.660f, 0.020f), 0.080f, 6, 10), bones["Head"], Skin);
 
-            // Cheekbones - wider face shape
-            mb.Append(PartFactory.SpherePart(new Vector3(0.075f, 1.590f, 0.040f), 0.055f, 5, 8), bones["Head"], Skin);
-            mb.Append(PartFactory.SpherePart(new Vector3(-0.075f, 1.590f, 0.040f), 0.055f, 5, 8), bones["Head"], Skin);
+            // Cheekbones
+            float cheekWidth = (role == NpcHeadRole.Fisher || role == NpcHeadRole.Murugan) ? 0.080f : 0.075f;
+            mb.Append(PartFactory.SpherePart(new Vector3(cheekWidth, 1.590f, 0.040f), 0.055f, 5, 8), bones["Head"], Skin);
+            mb.Append(PartFactory.SpherePart(new Vector3(-cheekWidth, 1.590f, 0.040f), 0.055f, 5, 8), bones["Head"], Skin);
 
-            // Jaw - more defined chin
+            // Jaw & Chin
             mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.530f, 0.030f), 0.065f, 5, 8), bones["Head"], Skin);
             mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.510f, 0.040f), new Vector3(0.070f, 0.030f, 0.040f)), bones["Head"], Skin);
-
-            // Chin point
             mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.495f, 0.055f), 0.030f, 4, 6), bones["Head"], Skin);
 
-            // Ears - proper ear shapes on both sides
+            // Ears & Lobes
             mb.Append(PartFactory.SpherePart(new Vector3(0.108f, 1.610f, -0.010f), 0.025f, 5, 6), bones["Head"], Skin);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.108f, 1.610f, -0.010f), 0.025f, 5, 6), bones["Head"], Skin);
-            // Ear lobes
             mb.Append(PartFactory.SpherePart(new Vector3(0.108f, 1.585f, 0.005f), 0.015f, 4, 4), bones["Head"], Skin);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.108f, 1.585f, 0.005f), 0.015f, 4, 4), bones["Head"], Skin);
 
-            // Nose bridge - raised from forehead
+            // Nose
             mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.610f, 0.085f), 0.012f, 0.040f, 6, true), bones["Head"], Skin);
-            // Nose tip - rounded
             mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.590f, 0.110f), 0.022f, 5, 6), bones["Head"], Skin);
-            // Nostrils
             mb.Append(PartFactory.SpherePart(new Vector3(0.015f, 1.578f, 0.105f), 0.010f, 4, 4), bones["Head"], Skin);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.015f, 1.578f, 0.105f), 0.010f, 4, 4), bones["Head"], Skin);
 
-            // Eye sockets - slight indentations (darker feature submesh)
+            // Eyes & Features
             mb.Append(PartFactory.SpherePart(new Vector3(0.042f, 1.625f, 0.075f), 0.028f, 5, 6), bones["Head"], Feature);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.042f, 1.625f, 0.075f), 0.028f, 5, 6), bones["Head"], Feature);
-            // Eyeballs - slightly protruding
             mb.Append(PartFactory.SpherePart(new Vector3(0.042f, 1.625f, 0.090f), 0.018f, 5, 6), bones["Head"], Feature);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.042f, 1.625f, 0.090f), 0.018f, 5, 6), bones["Head"], Feature);
-            // Pupils - small dark spheres
             mb.Append(PartFactory.SpherePart(new Vector3(0.042f, 1.625f, 0.102f), 0.008f, 4, 4), bones["Head"], Feature);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.042f, 1.625f, 0.102f), 0.008f, 4, 4), bones["Head"], Feature);
 
-            // Eyebrows - raised ridges above eyes
+            // Eyebrows
             mb.Append(PartFactory.BoxPart(new Vector3(0.045f, 1.648f, 0.085f), new Vector3(0.040f, 0.006f, 0.012f), Quaternion.Euler(0f, 0f, -5f)), bones["Head"], Hair);
             mb.Append(PartFactory.BoxPart(new Vector3(-0.045f, 1.648f, 0.085f), new Vector3(0.040f, 0.006f, 0.012f), Quaternion.Euler(0f, 0f, 5f)), bones["Head"], Hair);
 
-            // Lips - upper and lower lip
+            // Lips & Mouth
             mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.555f, 0.095f), new Vector3(0.045f, 0.008f, 0.015f), Quaternion.Euler(5f, 0f, 0f)), bones["Head"], Feature);
             mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.545f, 0.098f), new Vector3(0.050f, 0.010f, 0.018f), Quaternion.Euler(-5f, 0f, 0f)), bones["Head"], Feature);
-            // Mouth corners
             mb.Append(PartFactory.SpherePart(new Vector3(0.028f, 1.550f, 0.090f), 0.006f, 3, 4), bones["Head"], Feature);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.028f, 1.550f, 0.090f), 0.006f, 3, 4), bones["Head"], Feature);
 
-            // Hair cap - covers top of head
+            // === 2. Base Hair Cap ===
             mb.Append(PartFactory.HairCapPart(new Vector3(0f, 1.640f, -0.010f), 0.115f, 5, 12), bones["Head"], Hair);
-            // Hair sides
             mb.Append(PartFactory.SpherePart(new Vector3(0.090f, 1.630f, -0.020f), 0.040f, 4, 6), bones["Head"], Hair);
             mb.Append(PartFactory.SpherePart(new Vector3(-0.090f, 1.630f, -0.020f), 0.040f, 4, 6), bones["Head"], Hair);
 
-            if (female)
+            // === 3. Role-Specific Tamil Nadu Facial Silhouettes & Hair Architecture ===
+            switch (role)
             {
-                // Long back hair: stacked segments down the back
-                float y = 1.55f;
-                for (int i = 0; i < 6; i++)
-                {
-                    float w = 0.035f - i * 0.003f;
-                    mb.Append(PartFactory.SpherePart(new Vector3(0f, y, -0.060f - i * 0.015f), w, 4, 6), bones["Head"], Hair);
-                    y -= 0.065f;
-                }
+                case NpcHeadRole.Murugan:
+                    // Iconic Madurai/Chennai chevron moustache ('Meesai') + thick sideburns
+                    mb.Append(PartFactory.BoxPart(new Vector3(0.024f, 1.562f, 0.104f), new Vector3(0.042f, 0.014f, 0.020f), Quaternion.Euler(0f, 0f, -18f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.BoxPart(new Vector3(-0.024f, 1.562f, 0.104f), new Vector3(0.042f, 0.014f, 0.020f), Quaternion.Euler(0f, 0f, 18f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.BoxPart(new Vector3(0.096f, 1.585f, 0.015f), new Vector3(0.018f, 0.045f, 0.022f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.BoxPart(new Vector3(-0.096f, 1.585f, 0.015f), new Vector3(0.018f, 0.045f, 0.022f)), bones["Head"], Hair);
+                    break;
+
+                case NpcHeadRole.Velu:
+                    // Stylish auto-rickshaw driver handlebar moustache with pointed tips + driver forehead towel band
+                    mb.Append(PartFactory.BoxPart(new Vector3(0.025f, 1.565f, 0.102f), new Vector3(0.046f, 0.011f, 0.018f), Quaternion.Euler(0f, 0f, -25f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.BoxPart(new Vector3(-0.025f, 1.565f, 0.102f), new Vector3(0.046f, 0.011f, 0.018f), Quaternion.Euler(0f, 0f, 25f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.SpherePart(new Vector3(0.052f, 1.572f, 0.096f), 0.010f, 4, 4), bones["Head"], Hair); // upturned tip
+                    mb.Append(PartFactory.SpherePart(new Vector3(-0.052f, 1.572f, 0.096f), 0.010f, 4, 4), bones["Head"], Hair); // upturned tip
+                    // Forehead band
+                    mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.662f, 0.025f), 0.095f, 0.025f, 10, true), bones["Head"], Feature);
+                    break;
+
+                case NpcHeadRole.Selvam:
+                    // Elder archaeologist - full dignified beard across jaw and chin + traditional kudumi hair knot
+                    mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.482f, 0.065f), 0.042f, 5, 8), bones["Head"], Hair); // chin beard
+                    mb.Append(PartFactory.BoxPart(new Vector3(0.055f, 1.512f, 0.042f), new Vector3(0.028f, 0.048f, 0.055f)), bones["Head"], Hair); // jaw beard R
+                    mb.Append(PartFactory.BoxPart(new Vector3(-0.055f, 1.512f, 0.042f), new Vector3(0.028f, 0.048f, 0.055f)), bones["Head"], Hair); // jaw beard L
+                    mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.620f, -0.118f), 0.048f, 6, 8), bones["Head"], Hair); // traditional kudumi/bun
+                    break;
+
+                case NpcHeadRole.Artisan:
+                    // Mamallapuram stone sculptor - topknot bun on crown + sculptor goatee
+                    mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.738f, -0.010f), 0.045f, 5, 8), bones["Head"], Hair); // topknot
+                    mb.Append(PartFactory.BoxPart(new Vector3(0f, 1.488f, 0.062f), new Vector3(0.028f, 0.032f, 0.022f)), bones["Head"], Hair); // goatee
+                    break;
+
+                case NpcHeadRole.Farmer:
+                    // Cauvery Delta farmer - cotton headwrap / thalappa wrapped around brow
+                    mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.665f, 0.015f), 0.125f, 0.065f, 12, true), bones["Head"], Hair); // turban
+                    mb.Append(PartFactory.SpherePart(new Vector3(0.090f, 1.680f, 0.015f), 0.035f, 4, 6), bones["Head"], Hair); // cloth knot
+                    mb.Append(PartFactory.BoxPart(new Vector3(0.020f, 1.560f, 0.100f), new Vector3(0.035f, 0.010f, 0.016f), Quaternion.Euler(0f, 0f, -10f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.BoxPart(new Vector3(-0.020f, 1.560f, 0.100f), new Vector3(0.035f, 0.010f, 0.016f), Quaternion.Euler(0f, 0f, 10f)), bones["Head"], Hair);
+                    break;
+
+                case NpcHeadRole.Fisher:
+                    // Pichavaram fisherman - weather cap / knit head covering + neat trimmed moustache
+                    mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.670f, 0.005f), 0.110f, 6, 10), bones["Head"], Hair); // fisher cap
+                    mb.Append(PartFactory.BoxPart(new Vector3(0.020f, 1.560f, 0.100f), new Vector3(0.036f, 0.010f, 0.016f)), bones["Head"], Hair);
+                    mb.Append(PartFactory.BoxPart(new Vector3(-0.020f, 1.560f, 0.100f), new Vector3(0.036f, 0.010f, 0.016f)), bones["Head"], Hair);
+                    break;
+
+                case NpcHeadRole.ForestGuide:
+                    // Nilgiris forest ranger - ranger brimmed cap trim
+                    mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.650f, 0.035f), 0.145f, 0.020f, 12, true), bones["Head"], Hair); // brim
+                    mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.680f, 0.015f), 0.115f, 0.045f, 10, true), bones["Head"], Hair); // crown
+                    break;
+
+                case NpcHeadRole.TeaWorker:
+                    // Nilgiri tea picker Kannan - woollen ear muffler wrap
+                    mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.590f, 0.005f), 0.118f, 0.085f, 10, true), bones["Head"], Hair); // muffler
+                    break;
+
+                case NpcHeadRole.Meenakshi:
+                    // Traditional South Indian female hairstyle: low kondai bun + jasmine garland ring (Malligai poo) + long braid
+                    mb.Append(PartFactory.SpherePart(new Vector3(0f, 1.585f, -0.122f), 0.056f, 6, 10), bones["Head"], Hair); // kondai bun
+                    mb.Append(PartFactory.CylinderPart(new Vector3(0f, 1.585f, -0.108f), 0.065f, 0.020f, 10, true), bones["Head"], Feature); // jasmine garland
+                    // Long back braid
+                    float yBraid = 1.55f;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        float w = 0.035f - i * 0.003f;
+                        mb.Append(PartFactory.SpherePart(new Vector3(0f, yBraid, -0.060f - i * 0.015f), w, 4, 6), bones["Head"], Hair);
+                        yBraid -= 0.065f;
+                    }
+                    break;
+
+                default:
+                    // GenericMale (Arun Kumar) - neat modern hairline
+                    break;
             }
-            return mb.Finalize(female ? "Procedure_HeadFemale" : "Procedure_HeadMale");
+
+            string meshName = $"Procedure_Head_{role}";
+            return mb.Finalize(meshName);
         }
 
         public static Mesh BuildUpperShirtMesh(Dictionary<string, int> bones)

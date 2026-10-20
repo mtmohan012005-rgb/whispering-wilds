@@ -146,11 +146,13 @@ namespace WhisperingWilds.Editor
         {
             var managersObj = GameObject.Find("--- MANAGERS ---");
             if (managersObj == null) managersObj = new GameObject("--- MANAGERS ---");
+            else GameObjectUtility.RemoveMonoBehavioursWithMissingScript(managersObj);
 
             // PHASE 2 - SINGLE AUTHORITIES
             if (managersObj.GetComponent<GameManager>() == null) managersObj.AddComponent<GameManager>();
             if (managersObj.GetComponent<GraphicsPerformanceManager>() == null) managersObj.AddComponent<GraphicsPerformanceManager>();
             if (managersObj.GetComponent<MemoryManager>() == null) managersObj.AddComponent<MemoryManager>();
+            if (managersObj.GetComponent<QualityPresetManager>() == null) managersObj.AddComponent<QualityPresetManager>();
             if (managersObj.GetComponent<WorldStreamingManager>() == null) managersObj.AddComponent<WorldStreamingManager>();
             if (managersObj.GetComponent<AssetManager>() == null) managersObj.AddComponent<AssetManager>();
             if (managersObj.GetComponent<InputManager>() == null) managersObj.AddComponent<InputManager>();

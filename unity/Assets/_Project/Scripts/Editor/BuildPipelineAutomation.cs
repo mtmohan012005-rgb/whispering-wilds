@@ -61,6 +61,7 @@ namespace WhisperingWilds.Editor
             BuildChennaiPopulation.Build();
 
             AssembleAllRegions.BuildAllScenes();
+            GenerateTempleScene.Generate();
 
             // Bake static NavMesh AFTER scene assembly so ground geometry exists, and BEFORE the
             // build so NavMeshAgent pathing works in the shipping player.
@@ -128,6 +129,7 @@ namespace WhisperingWilds.Editor
             AssembleWhisperingWilds.BuildPlayableChennaiScene();
             BuildChennaiPopulation.Build();
             AssembleAllRegions.BuildAllScenes();
+            GenerateTempleScene.Generate();
             EcologyNavMeshBaker.BakeAllRegions();
             if (Application.isBatchMode) EditorApplication.Exit(0);
         }

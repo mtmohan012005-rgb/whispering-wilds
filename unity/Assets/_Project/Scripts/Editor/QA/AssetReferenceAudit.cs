@@ -23,6 +23,8 @@ namespace WhisperingWilds.Editor.QA
     {
         public string auditName = "Whispering Wilds Authoritative Unity Asset Reference Audit";
         public string generatedAt;
+        public string auditedCommit;
+        public string unityVersion;
         public int enabledScenesCount;
         public int prefabsAuditedCount;
         public int materialsAuditedCount;
@@ -37,6 +39,27 @@ namespace WhisperingWilds.Editor.QA
 
     public static class AssetReferenceAudit
     {
+        private static string ResolveGitSha()
+        {
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-parse HEAD")
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using (var proc = System.Diagnostics.Process.Start(psi))
+                {
+                    string sha = proc.StandardOutput.ReadToEnd().Trim();
+                    proc.WaitForExit();
+                    if (!string.IsNullOrEmpty(sha) && sha.Length >= 40) return sha;
+                }
+            }
+            catch {}
+            return Environment.GetEnvironmentVariable("WW_AUDIT_SHA") ?? "unknown_commit";
+        }
+
         [MenuItem("Whispering Wilds/QA/Run Unity Asset Reference Audit")]
         public static void RunAuditFromMenu()
         {
@@ -46,17 +69,23 @@ namespace WhisperingWilds.Editor.QA
 
         public static void RunBatchAudit()
         {
-            ExecuteAudit();
+            var report = ExecuteAudit();
+            if (Application.isBatchMode)
+            {
+                EditorApplication.Exit(report.errorCount > 0 ? 1 : 0);
+            }
         }
 
         public static AssetReferenceAuditReport ExecuteAudit()
         {
             var report = new AssetReferenceAuditReport
             {
-                generatedAt = DateTime.UtcNow.ToString("o")
+                generatedAt = DateTime.UtcNow.ToString("o"),
+                auditedCommit = ResolveGitSha(),
+                unityVersion = Application.unityVersion
             };
 
-            // 1. Audit Enabled Scenes in Build Settings
+            // 1. Audit Enabled Scenes in Build Settings & Walk Hierarchy
             var scenes = EditorBuildSettings.scenes;
             foreach (var s in scenes)
             {
@@ -70,6 +99,28 @@ namespace WhisperingWilds.Editor.QA
                             assetPath = s.path,
                             issueType = "MissingSceneFile",
                             details = "Scene declared in EditorBuildSettings does not exist on disk",
+                            severity = "Error"
+                        });
+                        continue;
+                    }
+
+                    // Open scene and deeply inspect all components in scene hierarchy
+                    try
+                    {
+                        Scene openedScene = EditorSceneManager.OpenScene(s.path, OpenSceneMode.Single);
+                        GameObject[] rootObjects = openedScene.GetRootGameObjects();
+                        foreach (var root in rootObjects)
+                        {
+                            AuditSceneGameObject(root, s.path, report);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        report.issues.Add(new AssetAuditIssue
+                        {
+                            assetPath = s.path,
+                            issueType = "SceneOpenError",
+                            details = $"Could not open scene {s.path} for hierarchy inspection: {ex.Message}",
                             severity = "Error"
                         });
                     }
@@ -218,6 +269,72 @@ namespace WhisperingWilds.Editor.QA
             }
 
             return report;
+        }
+
+        private static void AuditSceneGameObject(GameObject go, string scenePath, AssetReferenceAuditReport report)
+        {
+            if (go == null) return;
+
+            // Missing scripts check
+            int missingCount = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(go);
+            if (missingCount > 0)
+            {
+                report.issues.Add(new AssetAuditIssue
+                {
+                    assetPath = $"{scenePath}::{GetHierarchyPath(go)}",
+                    issueType = "MissingScript",
+                    details = $"GameObject '{go.name}' has {missingCount} missing MonoBehaviour script reference(s)",
+                    severity = "Error"
+                });
+            }
+
+            // Check renderers for null or error shaders
+            var renderer = go.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                var mats = renderer.sharedMaterials;
+                for (int i = 0; mats != null && i < mats.Length; i++)
+                {
+                    if (mats[i] == null)
+                    {
+                        report.issues.Add(new AssetAuditIssue
+                        {
+                            assetPath = $"{scenePath}::{GetHierarchyPath(go)}",
+                            issueType = "NullMaterial",
+                            details = $"Renderer '{go.name}' has null material in slot {i}",
+                            severity = "Warning"
+                        });
+                    }
+                    else if (mats[i].shader != null && mats[i].shader.name.Contains("InternalErrorShader"))
+                    {
+                        report.issues.Add(new AssetAuditIssue
+                        {
+                            assetPath = $"{scenePath}::{GetHierarchyPath(go)}",
+                            issueType = "ErrorShader",
+                            details = $"Renderer '{go.name}' material '{mats[i].name}' has broken shader",
+                            severity = "Error"
+                        });
+                    }
+                }
+            }
+
+            for (int i = 0; i < go.transform.childCount; i++)
+            {
+                AuditSceneGameObject(go.transform.GetChild(i).gameObject, scenePath, report);
+            }
+        }
+
+        private static string GetHierarchyPath(GameObject go)
+        {
+            if (go == null) return string.Empty;
+            string path = go.name;
+            Transform parent = go.transform.parent;
+            while (parent != null)
+            {
+                path = parent.name + "/" + path;
+                parent = parent.parent;
+            }
+            return path;
         }
     }
 }
