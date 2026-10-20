@@ -24,8 +24,13 @@ public class MonsoonalWaterSystem : MonoBehaviour
         if (boat != null)
         {
             catamaranRigidbody = boat.GetComponent<Rigidbody>() ?? boat.AddComponent<Rigidbody>();
-            catamaranRigidbody.linearDrag = waterDrag;
+#if UNITY_6000_0_OR_NEWER
+            catamaranRigidbody.linearDamping = waterDrag;
+            catamaranRigidbody.angularDamping = 3.0f;
+#else
+            catamaranRigidbody.drag = waterDrag;
             catamaranRigidbody.angularDrag = 3.0f;
+#endif
         }
     }
 
