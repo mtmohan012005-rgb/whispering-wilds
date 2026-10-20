@@ -134,7 +134,12 @@ namespace WhisperingWilds.Diagnostics
                 string json = JsonUtility.ToJson(report, true);
                 string outPath = Path.Combine(Application.persistentDataPath, "runtime_feature_validation.json");
                 File.WriteAllText(outPath, json);
-                Debug.Log($"📄 Runtime audit report saved to: {outPath}");
+
+                // Preserve scene-specific validation evidence
+                string sceneOutPath = Path.Combine(Application.persistentDataPath, $"runtime_feature_validation_{activeScene.name}.json");
+                File.WriteAllText(sceneOutPath, json);
+
+                Debug.Log($"📄 Runtime audit report saved to: {outPath} and {sceneOutPath}");
             }
             catch (Exception ex)
             {
@@ -157,18 +162,36 @@ namespace WhisperingWilds.Diagnostics
                 if (pm != null) playerGo = pm.gameObject;
             }
 
+            bool isMenuOrMapScene = scene.name.Contains("Boot") || scene.name.Contains("StateMap") || scene.buildIndex <= 1;
+
             if (playerGo == null)
             {
-                // In menu/boot scenes, player is not expected to be spawned yet
-                report.results.Add(new RuntimeFeatureCheckResult
+                if (isMenuOrMapScene)
                 {
-                    category = "Player Character",
-                    targetName = "Player (Arun Kumar)",
-                    status = ValidationStatus.NOT_TESTED.ToString(),
-                    details = $"Player instance not active in scene '{scene.name}'. Expected during gameplay scenes.",
-                    sceneName = scene.name,
-                    timestamp = DateTime.UtcNow.ToString("o")
-                });
+                    // In menu/boot/map scenes, player is not expected to be spawned
+                    report.results.Add(new RuntimeFeatureCheckResult
+                    {
+                        category = "Player Character",
+                        targetName = "Player (Arun Kumar)",
+                        status = ValidationStatus.NOT_TESTED.ToString(),
+                        details = $"Player instance not active in non-gameplay scene '{scene.name}' (not expected in Boot/Menu/Map).",
+                        sceneName = scene.name,
+                        timestamp = DateTime.UtcNow.ToString("o")
+                    });
+                }
+                else
+                {
+                    // In active gameplay scenes, player missing is a critical defect
+                    report.results.Add(new RuntimeFeatureCheckResult
+                    {
+                        category = "Player Character",
+                        targetName = "Player (Arun Kumar)",
+                        status = ValidationStatus.FAIL.ToString(),
+                        details = $"CRITICAL DEFECT: Player instance missing in gameplay scene '{scene.name}'.",
+                        sceneName = scene.name,
+                        timestamp = DateTime.UtcNow.ToString("o")
+                    });
+                }
                 return;
             }
 
@@ -240,6 +263,17 @@ namespace WhisperingWilds.Diagnostics
                 timestamp = DateTime.UtcNow.ToString("o")
             });
         }
+
+        private static readonly Dictionary<string, string[]> ExpectedResidentsPerScene = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "02_Chennai_GeorgeTown", new[] { "murugan", "velu" } },
+            { "03_Pichavaram_Wetlands", new[] { "fisher" } },
+            { "04_Thanjavur_Delta", new[] { "farmer" } },
+            { "05_Chettinad_Mansion", new[] { "meenakshi" } },
+            { "06_Mamallapuram_Shore", new[] { "artisan" } },
+            { "07_Nilgiris_Sanctuary", new[] { "forest_guide", "tea_worker" } },
+            { "08_Ancient_Temple_Ruins", new[] { "selvam" } }
+        };
 
         private void AuditStoryNPCs(Scene scene, RuntimeAuditReport report)
         {
@@ -315,9 +349,40 @@ namespace WhisperingWilds.Diagnostics
                 });
             }
 
-            // For core NPCs not in this scene, record NOT_TESTED with scene context
+            // Determine if any expected resident NPCs for this specific scene are missing
+            bool isGameplayScene = ExpectedResidentsPerScene.TryGetValue(scene.name, out string[] expectedResidents);
+
+            if (isGameplayScene && expectedResidents != null)
+            {
+                foreach (var expId in expectedResidents)
+                {
+                    bool foundResident = false;
+                    foreach (var fid in foundIds)
+                    {
+                        if (fid.Contains(expId)) { foundResident = true; break; }
+                    }
+
+                    if (!foundResident)
+                    {
+                        report.results.Add(new RuntimeFeatureCheckResult
+                        {
+                            category = "Human NPCs",
+                            targetName = $"NPC {expId}",
+                            status = ValidationStatus.FAIL.ToString(),
+                            details = $"CRITICAL DEFECT: Expected resident story NPC '{expId}' missing from gameplay scene '{scene.name}'.",
+                            sceneName = scene.name,
+                            timestamp = DateTime.UtcNow.ToString("o")
+                        });
+                    }
+                }
+            }
+
+            // For other core NPCs not resident in this scene, record NOT_TESTED with explicit non-residency reason
             foreach (var coreId in coreNpcIds)
             {
+                bool isExpectedInThisScene = isGameplayScene && expectedResidents != null && Array.IndexOf(expectedResidents, coreId) >= 0;
+                if (isExpectedInThisScene) continue; // Already audited above (either passed or failed)
+
                 bool inScene = false;
                 foreach (var fid in foundIds)
                 {
