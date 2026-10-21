@@ -40,16 +40,7 @@ let totalTests = 0;
 let passedTests = 0;
 let failedTests = 0;
 
-function assert(condition, testName, details = '') {
-  totalTests++;
-  if (condition) {
-    passedTests++;
-    console.log(`  ✅ PASS: ${testName}`);
-  } else {
-    failedTests++;
-    console.error(`  ❌ FAIL: ${testName} ${details ? `(${details})` : ''}`);
-  }
-}
+let lastRunResult = null;
 
 function runPowerShell(args) {
   if (process.platform !== 'win32') {
@@ -66,13 +57,27 @@ function runPowerShell(args) {
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe']
     });
-    return { code: 0, stdout, stderr: '' };
+    lastRunResult = { code: 0, stdout, stderr: '' };
+    return lastRunResult;
   } catch (err) {
-    return {
+    lastRunResult = {
       code: err.status || 1,
       stdout: err.stdout ? err.stdout.toString() : '',
       stderr: err.stderr ? err.stderr.toString() : err.message
     };
+    return lastRunResult;
+  }
+}
+
+function assert(condition, testName, details = '') {
+  totalTests++;
+  if (condition) {
+    passedTests++;
+    console.log(`  ✅ PASS: ${testName}`);
+  } else {
+    failedTests++;
+    const extra = details || (lastRunResult ? `[code ${lastRunResult.code}] err: ${lastRunResult.stderr.replace(/\r?\n/g, ' ')}` : '');
+    console.error(`  ❌ FAIL: ${testName} ${extra ? `(${extra})` : ''}`);
   }
 }
 

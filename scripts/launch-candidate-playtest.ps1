@@ -108,9 +108,30 @@ function Assert-DestinationSafety {
         }
     }
 
-    # Canonicalize paths and verify parent directories before any delete
+    # Canonicalize paths and verify intermediate parent directories before any delete.
+    # Traversal stops at system boundaries (temp root, user profile, or drive root),
+    # which may be cloud VM mount points or virtual disks in CI environments.
+    $systemRoots = @(
+        [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/'),
+        [System.IO.Path]::GetFullPath($env:TEMP).TrimEnd('\', '/'),
+        [System.IO.Path]::GetFullPath($env:TMP).TrimEnd('\', '/'),
+        [System.IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\', '/')
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
     $parent = [System.IO.Directory]::GetParent($canonical)
-    while ($parent -ne $null) {
+    while ($parent -ne $null -and $parent.FullName -ne $parent.Root.FullName) {
+        $parentNorm = $parent.FullName.TrimEnd('\', '/')
+        $isSystemBoundary = $false
+        foreach ($sr in $systemRoots) {
+            if ($parentNorm -ieq $sr) {
+                $isSystemBoundary = $true
+                break
+            }
+        }
+        if ($isSystemBoundary) {
+            break
+        }
+
         if ($parent.Exists -and ($parent.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
             throw "Safety guard: Reparse points or junctions in parent directory hierarchy are strictly prohibited: '$($parent.FullName)'."
         }
