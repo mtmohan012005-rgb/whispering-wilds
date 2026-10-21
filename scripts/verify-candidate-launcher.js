@@ -125,10 +125,19 @@ try {
     const batContent = fs.readFileSync(path.join(PROJECT_ROOT, 'Play-Candidate-Build.bat'), 'utf8');
     assert(batContent.includes('launch-candidate-playtest.ps1'), 'Root BAT invokes safe PowerShell launcher');
     console.log('  ℹ️  Skipped Windows PowerShell execution tests on non-Windows CI runner.');
-  } else {
-    // -------------------------------------------------------------
-    // Test 2: Launcher accepts valid manifest and ZIP in TestMode
-    // -------------------------------------------------------------
+
+    console.log('\n' + '='.repeat(60));
+    console.log(`Regression Test Summary (Non-Windows CI): ${passedTests} passed, ${failedTests} failed out of ${totalTests} checks`);
+    console.log('='.repeat(60));
+    if (failedTests > 0) process.exit(1);
+    console.log('🎉 Static launcher analysis passed for non-Windows CI!\n');
+    return;
+  }
+
+  // -------------------------------------------------------------
+  // Test 2: Launcher accepts valid manifest and ZIP in TestMode
+  // -------------------------------------------------------------
+  {
     const tempDest = path.join(TEST_DIR, 'dest-valid');
     const res = runPowerShell([
       '-DestinationPath', tempDest,
