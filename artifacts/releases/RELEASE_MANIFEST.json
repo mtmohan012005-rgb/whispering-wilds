@@ -1,13 +1,41 @@
 ﻿{
-    "renderPipeline":  "HDRP 17.7.0",
-    "version":  "1.0.0",
-    "generatedAt":  "2026-10-21T02:41:38.0429201Z",
-    "sizeBytes":  62835087,
     "package":  "TheWhisperingWilds-v1.0.0-windows-x64.zip",
-    "sizeMB":  59.92,
-    "sha256":  "6F2D73A01F3DED83D632450C1341247ABE93F6CBFB0450C21926CEA4686A9A58",
+    "version":  "1.0.0",
     "target":  "Windows x64",
     "unityVersion":  "6000.6.3f1",
+    "renderPipeline":  "HDRP 17.7.0",
+    "testedCommit":  "21ed5e87f31dcd669e6aa89d11e4cd2a394de322",
+    "codeCommit":  "21ed5e87f31dcd669e6aa89d11e4cd2a394de322",
+    "headCommit":  "21ed5e87f31dcd669e6aa89d11e4cd2a394de322",
+    "isDirty":  true,
+    "status":  "UNVERIFIED_DIRTY",
+    "sizeBytes":  62868076,
+    "sizeMB":  59.96,
+    "sha256":  "82F25DB7F86F1F0311B0F73C27C0EF2F306C0B9429203EAE253E5D53A4B553ED",
+    "generatedAt":  "2026-10-21T04:21:52.9373822Z",
     "scenesIncluded":  9,
-    "testedCommit":  "1f15eb80eec90146dc0d0111595c2743607929c0"
+    "scenes":  [
+                   "00_Boot",
+                   "01_StateMap_TamilNadu",
+                   "02_Chennai_GeorgeTown",
+                   "03_Pichavaram_Wetlands",
+                   "04_Thanjavur_Delta",
+                   "05_Chettinad_Mansion",
+                   "06_Mamallapuram_Shore",
+                   "07_Nilgiris_Sanctuary",
+                   "08_Ancient_Temple_Ruins"
+               ],
+    "testStatuses":  {
+                         "unit_editmode":  "PASS_AUTOMATED",
+                         "playmode_gameplay":  "PASS_AUTOMATED",
+                         "backend_security":  "PASS_AUTOMATED",
+                         "gis_map_data":  "PASS_AUTOMATED",
+                         "server_cleanup":  "PASS_AUTOMATED",
+                         "interactive_walkthrough":  "PASS_INTERACTIVE"
+                     },
+    "blockers":  {
+                     "firebase_cloud_sync":  "BLOCKED_CREDENTIALS",
+                     "authentic_field_audio":  "BLOCKED_EXTERNAL_ASSET",
+                     "live_two_client_multiplayer":  "NOT_TESTED"
+                 }
 }
