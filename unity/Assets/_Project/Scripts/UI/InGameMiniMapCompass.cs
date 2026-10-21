@@ -111,9 +111,13 @@ namespace WhisperingWilds.UI
         {
             Debug.Log("[InGameMiniMapCompass] Transitioning from 3D region to 01_StateMap_TamilNadu...");
             // Save state before leaving region
-            if (WhisperingWilds.Persistence.SaveSystem.Instance != null)
+            try
             {
-                WhisperingWilds.Persistence.SaveSystem.Instance.SaveToDisk();
+                WhisperingWilds.Core.SaveSystem.SaveGame();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning("[InGameMiniMapCompass] Auto-save before state map transition: " + ex.Message);
             }
             SceneManager.LoadScene("01_StateMap_TamilNadu");
         }

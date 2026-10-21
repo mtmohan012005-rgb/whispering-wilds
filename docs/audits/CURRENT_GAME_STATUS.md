@@ -1,10 +1,11 @@
-# Authoritative Current Game Status (20 October 2026)
+# Authoritative Current Game Status (21 October 2026)
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Engine:** Unity 6 (6000.6.3f1)  
 **Render Pipeline:** High Definition Render Pipeline (HDRP 17.7.0)  
 **Target Platform:** Windows x64 Standalone PC  
-**Active Working Branch:** `feature/unity-visual-gameplay-upgrade-20261020`  
-**Base Commit SHA:** `1df8e4a1c5fb8544681512835a08691a47c4677c` (merge of PR #15)  
+**Active Working Branch:** `feature/real-gameplay-map-vertical-slice-20261021`  
+**Base Commit SHA:** `63d7ee08e8809de2384722f0e2773d047755eeaf` (merge of PR #17)  
+**Tested Code Commit SHA:** `1f15eb80eec90146dc0d0111595c2743607929c0`  
 **Repository:** [https://github.com/mtmohan012005-rgb/whispering-wilds.git](https://github.com/mtmohan012005-rgb/whispering-wilds.git)  
 
 ---
