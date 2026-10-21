@@ -46,3 +46,16 @@ jobs:
         env:
           TEST_SERVER_PORT: 3000
 
+  candidate-launcher-windows:
+    name: Candidate Launcher PowerShell Tests (Windows)
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run native Windows launcher regression suite
+        run: node scripts/verify-candidate-launcher.js

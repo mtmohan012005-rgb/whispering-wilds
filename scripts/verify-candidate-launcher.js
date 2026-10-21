@@ -82,9 +82,44 @@ function readJsonFile(filePath) {
 console.log('🧪 Starting Candidate Launcher Provenance Regression Suite');
 console.log(`   Scratch Directory: ${TEST_DIR}\n`);
 
+// Windows CI needs to exercise PowerShell even though compiled release ZIPs are intentionally gitignored.
+// When the real candidate ZIP is unavailable, create an isolated synthetic payload fixture. This exercises
+// launcher safety/provenance logic only; it does not certify the shipped game binary.
+let activeManifestPath = REAL_MANIFEST;
+let activeZipPath = REAL_ZIP;
+if (process.platform === 'win32' && !fs.existsSync(REAL_ZIP)) {
+  const sourceManifest = readJsonFile(REAL_MANIFEST);
+  const fixtureRoot = path.join(TEST_DIR, 'candidate-fixture');
+  const fixtureData = path.join(fixtureRoot, 'TheWhisperingWilds_Data');
+  fs.mkdirSync(fixtureData, { recursive: true });
+  fs.writeFileSync(path.join(fixtureRoot, 'TheWhisperingWilds.exe'), 'TEST_EXECUTABLE_FIXTURE');
+  fs.writeFileSync(path.join(fixtureRoot, 'UnityPlayer.dll'), 'TEST_PLAYER_DLL_FIXTURE');
+  fs.writeFileSync(path.join(fixtureData, 'globalgamemanagers'), 'TEST_GAME_DATA_FIXTURE');
+  fs.writeFileSync(path.join(fixtureData, 'sharedassets0.assets'), 'TEST_SHARED_ASSET_FIXTURE');
+  const fixtureZip = path.join(TEST_DIR, 'candidate-fixture.zip');
+  const psLiteral = value => "'" + value.replace(/'/g, "''") + "'";
+  const createZipCommand = 'Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory(' + psLiteral(fixtureRoot) + ', ' + psLiteral(fixtureZip) + ', [System.IO.Compression.CompressionLevel]::Optimal, $false);';
+  execFileSync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', createZipCommand], { stdio: 'pipe' });
+  const fixtureBytes = fs.readFileSync(fixtureZip);
+  const fixtureManifest = {
+    ...sourceManifest,
+    candidate: true,
+    status: 'VERIFIED_CLEAN',
+    isDirty: false,
+    sizeBytes: fixtureBytes.length,
+    sha256: crypto.createHash('sha256').update(fixtureBytes).digest('hex').toUpperCase(),
+    codeCommit: sourceManifest.codeCommit || sourceManifest.testedCommit
+  };
+  activeManifestPath = path.join(TEST_DIR, 'candidate-fixture-manifest.json');
+  activeZipPath = fixtureZip;
+  fs.writeFileSync(activeManifestPath, JSON.stringify(fixtureManifest, null, 2));
+  console.log('   Windows CI: created a disposable synthetic ZIP fixture because the compiled release archive is gitignored.');
+  console.log('   Fixture tests exercise launcher safety/provenance only; they do not certify the shipped game binary.');
+}
+
 try {
   // Read real manifest metadata for reference
-  const realManifestContent = readJsonFile(REAL_MANIFEST);
+  const realManifestContent = readJsonFile(activeManifestPath);
   const expectedHash = realManifestContent.sha256;
   const expectedSize = realManifestContent.sizeBytes;
   const expectedCommit = realManifestContent.codeCommit || realManifestContent.testedCommit;
@@ -93,12 +128,12 @@ try {
   // Test 1: Real Archive Hash & Size Verification
   // -------------------------------------------------------------
   console.log('--- Test Group 1: Archive Identity & Integrity ---');
-  if (fs.existsSync(REAL_ZIP)) {
-    const zipStats = fs.statSync(REAL_ZIP);
+  if (fs.existsSync(activeZipPath)) {
+    const zipStats = fs.statSync(activeZipPath);
     assert(zipStats.size === expectedSize, 'Real candidate ZIP size matches manifest',
       `size: ${zipStats.size} expected: ${expectedSize}`);
 
-    const fileBuffer = fs.readFileSync(REAL_ZIP);
+    const fileBuffer = fs.readFileSync(activeZipPath);
     const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex').toUpperCase();
     assert(hash === expectedHash.toUpperCase(), 'Real candidate ZIP SHA-256 matches manifest',
       `hash: ${hash}`);
@@ -149,8 +184,8 @@ try {
     const tempDest = path.join(TEST_DIR, 'dest-valid');
     const res = runPowerShell([
       '-DestinationPath', tempDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code === 0, 'Launcher succeeds in TestMode with valid ZIP and manifest');
@@ -176,8 +211,8 @@ try {
     const tempDest = path.join(TEST_DIR, 'dest-valid'); // Already extracted in Test 2
     const res = runPowerShell([
       '-DestinationPath', tempDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code === 0, 'Valid destination is reused without re-extraction');
@@ -197,7 +232,7 @@ try {
     const res = runPowerShell([
       '-DestinationPath', tempDest,
       '-ManifestPath', badManifestPath,
-      '-ZipPath', REAL_ZIP,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects archive when SHA-256 hash does not match manifest');
@@ -217,7 +252,7 @@ try {
     const res = runPowerShell([
       '-DestinationPath', tempDest,
       '-ManifestPath', badManifestPath,
-      '-ZipPath', REAL_ZIP,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects archive when file size does not match manifest');
@@ -245,8 +280,8 @@ try {
 
     const res = runPowerShell([
       '-DestinationPath', staleDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -266,8 +301,8 @@ try {
 
     const res = runPowerShell([
       '-DestinationPath', noMarkerDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -286,8 +321,8 @@ try {
 
     const res = runPowerShell([
       '-DestinationPath', corruptMarkerDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -311,8 +346,8 @@ try {
 
     const res = runPowerShell([
       '-DestinationPath', noExeDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -336,8 +371,8 @@ try {
 
     const res = runPowerShell([
       '-DestinationPath', noDataDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -356,8 +391,8 @@ try {
 
     const res = runPowerShell([
       '-DestinationPath', refreshDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code === 0, 'Normal invocation safely refreshes an unverified destination folder');
@@ -374,8 +409,8 @@ try {
     const tempDest = path.join(TEST_DIR, 'dest-valid');
     const res = runPowerShell([
       '-DestinationPath', tempDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SimulateProcessRunning',
       '-TestMode'
     ]);
@@ -414,8 +449,8 @@ try {
     const traversalDest = TEST_DIR + '\\..\\escape-attempt';
     const res = runPowerShell([
       '-DestinationPath', traversalDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects path traversal in DestinationPath');
@@ -427,8 +462,8 @@ try {
   {
     const res = runPowerShell([
       '-DestinationPath', 'C:\\',
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects drive root as DestinationPath');
@@ -440,8 +475,8 @@ try {
   {
     const res = runPowerShell([
       '-DestinationPath', PROJECT_ROOT,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects repository root as DestinationPath');
@@ -458,8 +493,8 @@ try {
       execFileSync('cmd.exe', ['/c', 'mklink', '/J', junctionDir, targetDir], { stdio: 'pipe' });
       const res = runPowerShell([
         '-DestinationPath', junctionDir,
-        '-ManifestPath', REAL_MANIFEST,
-        '-ZipPath', REAL_ZIP,
+        '-ManifestPath', activeManifestPath,
+        '-ZipPath', activeZipPath,
         '-TestMode'
       ]);
       assert(res.code !== 0, 'Launcher rejects reparse point / junction destination');
@@ -481,8 +516,8 @@ try {
     // Call without -TestMode so normal destination rules apply
     const res = runPowerShell([
       '-DestinationPath', mockFolder,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath
     ]);
     assert(res.code !== 0, 'Launcher fails closed when non-empty arbitrary folder is targeted');
     assert((res.stderr + res.stdout).includes('not the exact canonical candidate directory'),
@@ -505,8 +540,8 @@ try {
     try {
       const res = runPowerShell([
         '-DestinationPath', siblingFolder,
-        '-ManifestPath', REAL_MANIFEST,
-        '-ZipPath', REAL_ZIP
+        '-ManifestPath', activeManifestPath,
+        '-ZipPath', activeZipPath
       ]);
       assert(res.code !== 0, 'Launcher rejects similarly prefixed sibling folder that contains files');
       assert((res.stderr + res.stdout).includes('is not the exact canonical') || (res.stderr + res.stdout).includes('canonical candidate directory'),
@@ -526,8 +561,8 @@ try {
     const realCandidateDir = path.join(os.homedir(), 'Games', 'WhisperingWilds-Candidate-5056deb');
     const res = runPowerShell([
       '-DestinationPath', realCandidateDir,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'TestMode is rejected when targeting real user candidate directory');
@@ -547,7 +582,7 @@ try {
     const res = runPowerShell([
       '-DestinationPath', path.join(TEST_DIR, 'dest-schema-1'),
       '-ManifestPath', badSchemaPath,
-      '-ZipPath', REAL_ZIP,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects manifest where candidate is false');
@@ -562,7 +597,7 @@ try {
     const res = runPowerShell([
       '-DestinationPath', path.join(TEST_DIR, 'dest-schema-2'),
       '-ManifestPath', badSchemaPath,
-      '-ZipPath', REAL_ZIP,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects manifest where status is not VERIFIED_CLEAN');
@@ -577,7 +612,7 @@ try {
     const res = runPowerShell([
       '-DestinationPath', path.join(TEST_DIR, 'dest-schema-3'),
       '-ManifestPath', badSchemaPath,
-      '-ZipPath', REAL_ZIP,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects manifest where isDirty is true');
@@ -592,7 +627,7 @@ try {
     const res = runPowerShell([
       '-DestinationPath', path.join(TEST_DIR, 'dest-schema-4'),
       '-ManifestPath', badSchemaPath,
-      '-ZipPath', REAL_ZIP,
+      '-ZipPath', activeZipPath,
       '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher rejects manifest with invalid commit format');
@@ -632,8 +667,8 @@ try {
     // Verify that launcher provenance check rejects this tampered folder
     const checkRes = runPowerShell([
       '-DestinationPath', tamperedDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -697,8 +732,8 @@ if %ERRORLEVEL% neq 0 (
 
     const res = runPowerShell([
       '-DestinationPath', missingFileDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -734,8 +769,8 @@ if %ERRORLEVEL% neq 0 (
 
     const res = runPowerShell([
       '-DestinationPath', tamperedPayloadDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
@@ -766,8 +801,8 @@ if %ERRORLEVEL% neq 0 (
 
     const res = runPowerShell([
       '-DestinationPath', unexpectedFileDest,
-      '-ManifestPath', REAL_MANIFEST,
-      '-ZipPath', REAL_ZIP,
+      '-ManifestPath', activeManifestPath,
+      '-ZipPath', activeZipPath,
       '-SkipExtract',
       '-TestMode'
     ]);
