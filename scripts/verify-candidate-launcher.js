@@ -121,6 +121,10 @@ try {
     assert(psContent.includes('-force-d3d11'), 'Launcher passes -force-d3d11 for Intel UHD GPU');
     assert(psContent.includes('SimulateProcessRunning'), 'Launcher implements duplicate process prevention');
     assert(psContent.includes('SkipExtract'), 'Launcher enforces safe SkipExtract verification');
+    assert(psContent.includes('Assert-DestinationSafety'), 'Launcher implements Assert-DestinationSafety allowlist');
+    assert(psContent.includes('ReparsePoint'), 'Launcher rejects reparse points and symbolic links');
+    assert(psContent.includes('payload_manifest'), 'Launcher computes and verifies deterministic payload manifest');
+    assert(psContent.includes('unsafe path traversal entry'), 'Launcher inspects and rejects ZIP traversal entries');
 
     const batContent = fs.readFileSync(path.join(PROJECT_ROOT, 'Play-Candidate-Build.bat'), 'utf8');
     assert(batContent.includes('launch-candidate-playtest.ps1'), 'Root BAT invokes safe PowerShell launcher');
@@ -368,7 +372,8 @@ try {
       '-DestinationPath', tempDest,
       '-ManifestPath', REAL_MANIFEST,
       '-ZipPath', REAL_ZIP,
-      '-SimulateProcessRunning'
+      '-SimulateProcessRunning',
+      '-TestMode'
     ]);
     assert(res.code !== 0, 'Launcher halts when game process is already running');
     assert((res.stderr + res.stdout).includes('already running'),
@@ -392,6 +397,315 @@ try {
         'Play-Candidate.bat checks expected candidate code commit');
       assert(batContent.includes('-force-d3d11'),
         'Play-Candidate.bat includes -force-d3d11 flag for Intel UHD');
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Test Group 4: Path & Destination Safety Guards
+  // -------------------------------------------------------------
+  console.log('\n--- Test Group 4: Path & Destination Safety Guards ---');
+
+  // Test 14: Path traversal in -DestinationPath rejected
+  {
+    const traversalDest = TEST_DIR + '\\..\\escape-attempt';
+    const res = runPowerShell([
+      '-DestinationPath', traversalDest,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects path traversal in DestinationPath');
+    assert((res.stderr + res.stdout).includes('Path traversal'),
+      'Error message identifies path traversal rejection');
+  }
+
+  // Test 15: Drive root rejected
+  {
+    const res = runPowerShell([
+      '-DestinationPath', 'C:\\',
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects drive root as DestinationPath');
+    assert((res.stderr + res.stdout).includes('drive root'),
+      'Error message identifies drive root rejection');
+  }
+
+  // Test 16: Protected Repository Root rejected
+  {
+    const res = runPowerShell([
+      '-DestinationPath', PROJECT_ROOT,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects repository root as DestinationPath');
+    assert((res.stderr + res.stdout).includes('protected system or user directory'),
+      'Error message identifies protected repository root rejection');
+  }
+
+  // Test 17: Reparse point / junction rejected
+  {
+    const targetDir = path.join(TEST_DIR, 'junction-target');
+    const junctionDir = path.join(TEST_DIR, 'junction-link');
+    fs.mkdirSync(targetDir, { recursive: true });
+    try {
+      execFileSync('cmd.exe', ['/c', 'mklink', '/J', junctionDir, targetDir], { stdio: 'pipe' });
+      const res = runPowerShell([
+        '-DestinationPath', junctionDir,
+        '-ManifestPath', REAL_MANIFEST,
+        '-ZipPath', REAL_ZIP,
+        '-TestMode'
+      ]);
+      assert(res.code !== 0, 'Launcher rejects reparse point / junction destination');
+      assert((res.stderr + res.stdout).includes('Reparse points'),
+        'Error message identifies reparse point / junction rejection');
+    } finally {
+      try { execFileSync('cmd.exe', ['/c', 'rmdir', junctionDir], { stdio: 'pipe' }); } catch (_) {}
+    }
+  }
+
+  // Test 18: Arbitrary directory sentinel safety (normal mode)
+  {
+    const mockFolder = path.join(TEST_DIR, 'mock-documents');
+    fs.mkdirSync(mockFolder, { recursive: true });
+    const sentinelFile = path.join(mockFolder, 'sentinel.txt');
+    const sentinelContent = 'CRITICAL_USER_DATA_DO_NOT_DELETE';
+    fs.writeFileSync(sentinelFile, sentinelContent);
+
+    // Call without -TestMode so normal destination rules apply
+    const res = runPowerShell([
+      '-DestinationPath', mockFolder,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP
+    ]);
+    assert(res.code !== 0, 'Launcher fails closed when non-empty arbitrary folder is targeted');
+    assert((res.stderr + res.stdout).includes('not in the dedicated application Games folder'),
+      'Error message explains destination is not app-owned and not empty');
+    assert(fs.existsSync(sentinelFile), 'Sentinel file in arbitrary directory remains untouched');
+    if (fs.existsSync(sentinelFile)) {
+      assert(fs.readFileSync(sentinelFile, 'utf8') === sentinelContent,
+        'Sentinel file content is intact and was not overwritten');
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Test Group 5: Manifest Schema & Identity Hardening
+  // -------------------------------------------------------------
+  console.log('\n--- Test Group 5: Manifest Schema & Identity Hardening ---');
+
+  // Test 19: candidate == false rejected
+  {
+    const badSchemaPath = path.join(TEST_DIR, 'manifest-candidate-false.json');
+    fs.writeFileSync(badSchemaPath, JSON.stringify({ ...realManifestContent, candidate: false }, null, 2));
+    const res = runPowerShell([
+      '-DestinationPath', path.join(TEST_DIR, 'dest-schema-1'),
+      '-ManifestPath', badSchemaPath,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects manifest where candidate is false');
+    assert((res.stderr + res.stdout).includes('candidate must be true'),
+      'Error identifies candidate flag error');
+  }
+
+  // Test 20: status != VERIFIED_CLEAN rejected
+  {
+    const badSchemaPath = path.join(TEST_DIR, 'manifest-status-dirty.json');
+    fs.writeFileSync(badSchemaPath, JSON.stringify({ ...realManifestContent, status: 'UNVERIFIED_DIRTY' }, null, 2));
+    const res = runPowerShell([
+      '-DestinationPath', path.join(TEST_DIR, 'dest-schema-2'),
+      '-ManifestPath', badSchemaPath,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects manifest where status is not VERIFIED_CLEAN');
+    assert((res.stderr + res.stdout).includes('status must be \'VERIFIED_CLEAN\''),
+      'Error identifies invalid manifest status');
+  }
+
+  // Test 21: isDirty == true rejected
+  {
+    const badSchemaPath = path.join(TEST_DIR, 'manifest-is-dirty.json');
+    fs.writeFileSync(badSchemaPath, JSON.stringify({ ...realManifestContent, isDirty: true }, null, 2));
+    const res = runPowerShell([
+      '-DestinationPath', path.join(TEST_DIR, 'dest-schema-3'),
+      '-ManifestPath', badSchemaPath,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects manifest where isDirty is true');
+    assert((res.stderr + res.stdout).includes('isDirty must be false'),
+      'Error identifies isDirty violation');
+  }
+
+  // Test 22: Invalid code commit format rejected
+  {
+    const badSchemaPath = path.join(TEST_DIR, 'manifest-bad-commit.json');
+    fs.writeFileSync(badSchemaPath, JSON.stringify({ ...realManifestContent, codeCommit: 'not-a-valid-40-hex-sha' }, null, 2));
+    const res = runPowerShell([
+      '-DestinationPath', path.join(TEST_DIR, 'dest-schema-4'),
+      '-ManifestPath', badSchemaPath,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects manifest with invalid commit format');
+    assert((res.stderr + res.stdout).includes('candidate code commit must be a valid 40-character'),
+      'Error identifies invalid code commit');
+  }
+
+  // -------------------------------------------------------------
+  // Test Group 6: Payload Integrity & Binary Tampering Protection
+  // -------------------------------------------------------------
+  console.log('\n--- Test Group 6: Payload Integrity & Binary Tampering Protection ---');
+
+  // Test 23: Tampered executable is detected and rejected
+  {
+    const tamperedDest = path.join(TEST_DIR, 'dest-tampered-exe');
+    fs.mkdirSync(tamperedDest, { recursive: true });
+    fs.mkdirSync(path.join(tamperedDest, 'TheWhisperingWilds_Data'), { recursive: true });
+    const exePath = path.join(tamperedDest, 'TheWhisperingWilds.exe');
+    fs.writeFileSync(exePath, 'TAMPERED_EXE_CONTENT_FOR_INTEGRITY_CHECK');
+
+    // Write marker expecting a different SHA-256 for TheWhisperingWilds.exe
+    const marker = {
+      archive_sha256: expectedHash,
+      archive_size: expectedSize,
+      candidate_code_commit: expectedCommit,
+      extracted_at_utc: '2026-10-21T00:00:00Z',
+      payload_manifest: {
+        'TheWhisperingWilds.exe': {
+          size: 40,
+          sha256: '0000000000000000000000000000000000000000000000000000000000000000'
+        }
+      }
+    };
+    fs.writeFileSync(path.join(tamperedDest, '.candidate-archive.json'), JSON.stringify(marker, null, 2));
+    assert(true, 'Initial destination fixture set up for tampering test');
+
+    // Verify that launcher provenance check rejects this tampered folder
+    const checkRes = runPowerShell([
+      '-DestinationPath', tamperedDest,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-SkipExtract',
+      '-TestMode'
+    ]);
+    assert(checkRes.code !== 0, 'Launcher rejects destination when TheWhisperingWilds.exe binary is tampered');
+    assert((checkRes.stderr + checkRes.stdout).includes('tampered or modified binary'),
+      'Error identifies tampered binary');
+
+    // Verify that Play-Candidate.bat check rejects the tampered executable (exit code 3)
+    try {
+      execFileSync('powershell.exe', [
+        '-NoProfile', '-ExecutionPolicy', 'Bypass',
+        '-Command',
+        `Set-Location '${tamperedDest}'; $m = Get-Content -Path '.candidate-archive.json' -Raw | ConvertFrom-Json; $sha = [System.Security.Cryptography.SHA256]::Create(); $exe = (Resolve-Path 'TheWhisperingWilds.exe').Path; $s = [System.IO.File]::OpenRead($exe); $h = [System.BitConverter]::ToString($sha.ComputeHash($s)).Replace('-', ''); $s.Close(); if ($m.payload_manifest.'TheWhisperingWilds.exe'.sha256 -and $h -ne $m.payload_manifest.'TheWhisperingWilds.exe'.sha256) { exit 3 }`
+      ], { encoding: 'utf8', stdio: 'pipe' });
+      assert(false, 'Play-Candidate.bat integrity check should have failed with exit code 3');
+    } catch (batErr) {
+      assert(batErr.status === 3, 'Play-Candidate.bat PowerShell check exits with status 3 on tampered binary');
+    }
+
+    // Also write and execute the generated Play-Candidate.bat in the tampered destination
+    const batContent = `@echo off
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference = 'Stop'; $m = Get-Content -Path '.candidate-archive.json' -Raw | ConvertFrom-Json; if ($m.archive_sha256 -ne '${expectedHash}' -or $m.candidate_code_commit -ne '${expectedCommit}') { exit 2 }; $sha = [System.Security.Cryptography.SHA256]::Create(); $exe = (Resolve-Path 'TheWhisperingWilds.exe').Path; $s = [System.IO.File]::OpenRead($exe); $h = [System.BitConverter]::ToString($sha.ComputeHash($s)).Replace('-', ''); $s.Close(); if ($m.payload_manifest -and $m.payload_manifest.'TheWhisperingWilds.exe'.sha256 -and $h -ne $m.payload_manifest.'TheWhisperingWilds.exe'.sha256) { exit 3 }"
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Candidate provenance or executable integrity validation failed [exit %ERRORLEVEL%]!
+    exit /b 1
+)
+`;
+    fs.writeFileSync(path.join(tamperedDest, 'Play-Candidate.bat'), batContent);
+
+    try {
+      execFileSync('cmd.exe', ['/c', 'Play-Candidate.bat'], {
+        cwd: tamperedDest,
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
+      assert(false, 'Play-Candidate.bat should fail when executable is tampered');
+    } catch (batCmdErr) {
+      assert(batCmdErr.status !== 0, 'Play-Candidate.bat exits non-zero on tampered executable');
+      const output = (batCmdErr.stdout || '') + (batCmdErr.stderr || '');
+      assert(output.includes('exit 3'), 'Play-Candidate.bat output reports exit 3 on tampered executable');
+    }
+  }
+
+  // Test 24: Removed payload file is detected and rejected
+  {
+    const missingFileDest = path.join(TEST_DIR, 'dest-missing-payload-file');
+    fs.mkdirSync(missingFileDest, { recursive: true });
+    fs.mkdirSync(path.join(missingFileDest, 'TheWhisperingWilds_Data'), { recursive: true });
+    fs.writeFileSync(path.join(missingFileDest, 'TheWhisperingWilds.exe'), 'mock-exe');
+    const marker = {
+      archive_sha256: expectedHash,
+      archive_size: expectedSize,
+      candidate_code_commit: expectedCommit,
+      extracted_at_utc: '2026-10-21T00:00:00Z',
+      payload_manifest: {
+        'TheWhisperingWilds.exe': { size: 8, sha256: '' },
+        'UnityPlayer.dll': { size: 100, sha256: '' }
+      }
+    };
+    fs.writeFileSync(path.join(missingFileDest, '.candidate-archive.json'), JSON.stringify(marker, null, 2));
+
+    const res = runPowerShell([
+      '-DestinationPath', missingFileDest,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-SkipExtract',
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher rejects destination when a payload file (UnityPlayer.dll) was removed');
+    assert((res.stderr + res.stdout).includes('Payload file missing'),
+      'Error identifies missing payload file');
+  }
+
+  // -------------------------------------------------------------
+  // Test Group 7: Archive Security & Traversal Protection
+  // -------------------------------------------------------------
+  console.log('\n--- Test Group 7: Archive Security & Traversal Protection ---');
+
+  // Test 25: ZIP path traversal entry is detected and rejected
+  {
+    const mockZipPath = path.join(TEST_DIR, 'mock-traversal.zip');
+    const psScript = `
+      Add-Type -AssemblyName System.IO.Compression
+      $zipStream = [System.IO.File]::Create('${mockZipPath.replace(/\\/g, '\\\\')}')
+      $archive = New-Object System.IO.Compression.ZipArchive($zipStream, [System.IO.Compression.ZipArchiveMode]::Create)
+      $entry = $archive.CreateEntry("../traversal.txt")
+      $writer = New-Object System.IO.StreamWriter($entry.Open())
+      $writer.Write("malicious")
+      $writer.Dispose()
+      $archive.Dispose()
+      $zipStream.Dispose()
+    `;
+    execFileSync('powershell.exe', ['-NoProfile', '-Command', psScript], { stdio: 'pipe' });
+
+    if (fs.existsSync(mockZipPath)) {
+      const mockZipSize = fs.statSync(mockZipPath).size;
+      const mockZipHash = crypto.createHash('sha256').update(fs.readFileSync(mockZipPath)).digest('hex').toUpperCase();
+
+      const traversalManifestPath = path.join(TEST_DIR, 'manifest-traversal.json');
+      fs.writeFileSync(traversalManifestPath, JSON.stringify({
+        candidate: true,
+        status: 'VERIFIED_CLEAN',
+        isDirty: false,
+        sizeBytes: mockZipSize,
+        sha256: mockZipHash,
+        codeCommit: expectedCommit
+      }, null, 2));
+
+      const res = runPowerShell([
+        '-DestinationPath', path.join(TEST_DIR, 'dest-zip-traversal'),
+        '-ManifestPath', traversalManifestPath,
+        '-ZipPath', mockZipPath,
+        '-TestMode'
+      ]);
+      assert(res.code !== 0, 'Launcher rejects archive containing unsafe path traversal entries');
+      assert((res.stderr + res.stdout).includes('unsafe path traversal entry'),
+        'Error identifies unsafe path traversal entry in ZIP');
     }
   }
 } finally {

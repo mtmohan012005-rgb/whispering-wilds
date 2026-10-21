@@ -4,7 +4,8 @@
 **Render Pipeline:** High Definition Render Pipeline (HDRP 17.7.0)  
 **Target Platform:** Windows x64 Standalone PC  
 **Active Working Branch:** `feature/real-gameplay-map-vertical-slice-20261021`  
-**Base Commit SHA:** `63d7ee08e8809de2384722f0e2773d047755eeaf` (`origin/main`)  
+**Base Commit SHA:** `aa1b1f381f7476bea10a9a4aa51a019d7916c34d` (`origin/main`, PR #18 merged)  
+**Active Open PR:** PR #19 ([https://github.com/mtmohan012005-rgb/whispering-wilds/pull/19](https://github.com/mtmohan012005-rgb/whispering-wilds/pull/19))  
 **Tested Candidate Code Commit SHA:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
 **QA Evidence Commit SHA:** `751ad38ba5169a9b70b368fe0efd5d8ae1bb686a`  
 **Repository:** [https://github.com/mtmohan012005-rgb/whispering-wilds.git](https://github.com/mtmohan012005-rgb/whispering-wilds.git)  
@@ -47,14 +48,14 @@
 - **Asset Reference Integrity:** Verified 0 missing scripts, 0 null materials, 0 magenta error shaders, and 0 missing audio clips across all 9 release scenes in `docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`.
 - **Ancient Temple Ruins:** Fully modeled with Dravidian granite courtyards, Kaveri Star Seal stellar medallion, carved mechanisms, and sanctum door; zero visible greybox cubes.
 - **Scene Build Settings:** Reconciled 9 release story scenes enabled in `EditorBuildSettings.asset` and 4 performance benchmark scenes preserved for hardware profiling.
-- **Candidate Launcher & Provenance Security:** Standalone launch automation (`Play-Candidate-Build.bat`, `scripts/launch-candidate-playtest.ps1`) enforces SHA-256 archive verification, extraction provenance markers (`.candidate-archive.json`), safe reuse, automatic refresh of stale folders, duplicate process prevention, and `-force-d3d11` execution; validated by 31 automated regression tests.
+- **Candidate Launcher & Provenance Security:** Standalone launch automation (`Play-Candidate-Build.bat`, `scripts/launch-candidate-playtest.ps1`) enforces SHA-256 archive verification, extraction provenance markers (`.candidate-archive.json`), deterministic payload manifest verification, path traversal & reparse point rejection, safe reuse, automatic refresh of stale folders, duplicate process prevention, and `-force-d3d11` execution; validated by 61 automated regression tests across 7 test groups.
 
 ### What Remains Explicitly Classified & Blocked:
 - **Audio Soundscape (`BLOCKED_EXTERNAL_ASSET`):** 10 procedural WAV files are recognized as development prototypes (`assets/audio/AUDIO_LICENSE_MANIFEST.json`), awaiting authentic Tamil Nadu field recordings.
 - **Live Cloud Saves (`BLOCKED_CREDENTIALS`):** Skipped due to intentionally uncommitted external Firebase staging/production credentials; local atomic JSON save/load passes 100%.
 - **Multiplayer State Synchronization (`NOT_TESTED`):** Socket.IO protocol implemented; simultaneous two-client gameplay has not been stress-tested.
 - **Human Visual Playthrough (`NOT_TESTED_HUMAN`):** Release manifest marks `interactive_walkthrough: NOT_TESTED_HUMAN` until the 60-point manual campaign checklist is performed on physical hardware.
-- **PR #8 Status:** Stale branch (7 ahead, 74 behind main, `mergeable: false`); one commit deletes active GitHub Actions CI workflows. **Do not merge.**
+- **PR #8 Status:** Stale branch closed without merging to prevent CI workflow regressions.
 
 ---
 
