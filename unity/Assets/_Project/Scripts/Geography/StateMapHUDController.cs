@@ -373,11 +373,11 @@ namespace WhisperingWilds.Geography
                 GUILayout.Space(8);
 
                 GUILayout.Label("<b>Natural Earth (Public Domain):</b>", _legendStyle);
-                GUILayout.Label("State outline, coastline, rivers, physical geography, and populated places derived from Natural Earth 10m public domain datasets (naturalearthdata.com).", _bodyStyle);
+                GUILayout.Label("State outline, coastline, rivers, highways/roads, physical geography regions, and populated places derived from Natural Earth 10m public domain datasets (naturalearthdata.com).", _bodyStyle);
                 GUILayout.Space(6);
 
-                GUILayout.Label("<b>OpenStreetMap Contributors (ODbL 1.0):</b>", _legendStyle);
-                GUILayout.Label("Major highway corridors (NH 16, NH 32, NH 81, NH 83, NH 38, NH 181) and river centerlines. Contains information from OpenStreetMap, licensed under Open Database License (ODbL) 1.0.", _bodyStyle);
+                GUILayout.Label("<b>Project Curated Campaign Hubs:</b>", _legendStyle);
+                GUILayout.Label("Primary exploration regions (Chennai, Mamallapuram, Pichavaram, Thanjavur, Chettinad, Nilgiris) with bilingual Tamil/English titles and progression unlock gating authored for The Whispering Wilds.", _bodyStyle);
                 GUILayout.Space(6);
 
                 GUILayout.Label("<b>Geographic Coordinate System & Canonical Projection:</b>", _legendStyle);

@@ -191,6 +191,7 @@ namespace WhisperingWilds.Editor
         {
             try
             {
+                string headSha = WhisperingWilds.Editor.QA.GitShaResolver.ResolveGitSha();
                 string json = "{\n" +
                     $"  \"buildType\": \"{buildType}\",\n" +
                     $"  \"result\": \"{summary.result}\",\n" +
@@ -199,13 +200,23 @@ namespace WhisperingWilds.Editor
                     $"  \"totalSizeMB\": {summary.totalSize / (1024 * 1024)},\n" +
                     $"  \"durationSeconds\": {summary.totalTime.TotalSeconds:F2},\n" +
                     $"  \"unityVersion\": \"{Application.unityVersion}\",\n" +
-                    $"  \"builtCommit\": \"{WhisperingWilds.Editor.QA.GitShaResolver.ResolveGitSha()}\",\n" +
+                    $"  \"builtCommit\": \"{headSha}\",\n" +
                     $"  \"targetPlatform\": \"StandaloneWindows64\",\n" +
                     $"  \"sceneCount\": {scenes.Length},\n" +
                     $"  \"timestamp\": \"{DateTime.UtcNow:o}\"\n" +
                     "}";
 
                 File.WriteAllText(Path.Combine(Path.GetDirectoryName(exePath) ?? ".", "BUILD_REPORT.json"), json);
+
+                if (!string.IsNullOrEmpty(headSha))
+                {
+                    string repoRoot = WhisperingWilds.Editor.QA.GitShaResolver.ResolveRepositoryRoot();
+                    string qaReportsDir = Path.Combine(repoRoot, "artifacts", "unity-visual-qa", headSha, "reports");
+                    if (Directory.Exists(qaReportsDir))
+                    {
+                        File.WriteAllText(Path.Combine(qaReportsDir, "BUILD_REPORT.json"), json);
+                    }
+                }
             }
             catch (Exception ex)
             {

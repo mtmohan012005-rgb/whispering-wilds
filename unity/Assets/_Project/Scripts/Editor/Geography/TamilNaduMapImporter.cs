@@ -179,9 +179,24 @@ else if (!File.Exists(Path.Combine(rawDir, "tn_boundary.geojson")))
 
             // ---- 6. Places ---------------------------------------------------------
             var places = LoadPlaces(rawDir, "tn_10m_populated_places.geojson", geo);
+            var anchors = LoadPlaces(rawDir, "campaign_anchors.geojson", geo);
+            foreach (var a in anchors)
+            {
+                int existingIdx = places.FindIndex(p => string.Equals(p.nameEnglish, a.nameEnglish, StringComparison.OrdinalIgnoreCase));
+                if (existingIdx >= 0)
+                {
+                    var place = places[existingIdx];
+                    place.nameTamil = a.nameTamil;
+                    places[existingIdx] = place;
+                }
+                else
+                {
+                    places.Add(a);
+                }
+            }
             places.Sort((a, b) => b.population.CompareTo(a.population));
             mapData.places = places;
-            stats.Add($"places: {places.Count}");
+            stats.Add($"places: {places.Count} ({anchors.Count} campaign anchors included)");
 
             // ---- 7. Region cells ----------------------------------------------------
             var cells = BuildRegionCells(places, mapData);
@@ -441,7 +456,8 @@ else if (!File.Exists(Path.Combine(rawDir, "tn_boundary.geojson")))
                 string english = MiniJson.PropertyString(f, "name") ?? MiniJson.PropertyString(f, "NAME");
                 if (string.IsNullOrEmpty(english)) continue;
 
-                TamilPlaceNames.TryGetTamil(english, out string tamil);
+                string tamil = MiniJson.PropertyString(f, "name_ta");
+                if (string.IsNullOrEmpty(tamil)) TamilPlaceNames.TryGetTamil(english, out tamil);
                 long pop = MiniJson.PropertyLong(f, "POP_MAX") + MiniJson.PropertyLong(f, "POP_MIN");
 
                 result.Add(new MapPlace

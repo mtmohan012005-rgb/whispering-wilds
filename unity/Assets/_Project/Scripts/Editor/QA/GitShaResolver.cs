@@ -127,6 +127,43 @@ namespace WhisperingWilds.Editor.QA
             return "UNVERIFIED";
         }
 
+        /// <summary>
+        /// Resolves the base commit SHA against origin/main or returns a sensible fallback.
+        /// </summary>
+        public static string ResolveBaseSha()
+        {
+            try
+            {
+                string repoRoot = ResolveRepositoryRoot();
+                var psi = new System.Diagnostics.ProcessStartInfo("git", "merge-base HEAD origin/main")
+                {
+                    WorkingDirectory = repoRoot,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using (var proc = System.Diagnostics.Process.Start(psi))
+                {
+                    if (proc != null)
+                    {
+                        string sha = proc.StandardOutput.ReadToEnd().Trim();
+                        proc.WaitForExit();
+                        if (proc.ExitCode == 0 && Sha40Regex.IsMatch(sha))
+                        {
+                            return sha.ToLowerInvariant();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[GitShaResolver] Could not resolve merge base from git: {ex.Message}");
+            }
+
+            return "63d7ee08e8809de2384722f0e2773d047755eeaf";
+        }
+
         private static string QueryGitHead(string repoRoot)
         {
             try

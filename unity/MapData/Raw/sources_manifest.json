@@ -1,6 +1,6 @@
 {
-  "pipelineVersion": "1.0.0",
-  "generatedAtUtc": "2026-10-21T03:39:52.727Z",
+  "pipelineVersion": "1.1.0",
+  "generatedAtUtc": "2026-10-21T04:52:59.797Z",
   "projection": {
     "canonicalOrigin": {
       "latitude": 10.79,
@@ -19,50 +19,87 @@
   "sources": {
     "admin1": {
       "name": "Natural Earth 10m Admin-1 States & Provinces",
-      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson",
+      "file": "ne_10m_admin_1_states_provinces.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/f1890d9f152c896d250a77557a5751a93d494776/geojson/ne_10m_admin_1_states_provinces.geojson",
       "license": "Public Domain",
-      "version": "v5.1.2 / git:master",
-      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+      "version": "v5.1.2 (commit f1890d9f152c896d250a77557a5751a93d494776)",
+      "expectedSha256": "22d0e3ad85eb3e27f17cabf8ba2d50e554fbc27a87796ff891d958185da62fb5",
+      "expectedBytes": 40726851,
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.",
+      "upstreamSha256": "22d0e3ad85eb3e27f17cabf8ba2d50e554fbc27a87796ff891d958185da62fb5",
+      "upstreamBytes": 40726851,
+      "retrievalDate": "2026-10-21"
     },
     "coastline": {
       "name": "Natural Earth 10m Coastline",
-      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_coastline.geojson",
+      "file": "ne_10m_coastline.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/f1890d9f152c896d250a77557a5751a93d494776/geojson/ne_10m_coastline.geojson",
       "license": "Public Domain",
-      "version": "v5.1.2 / git:master",
-      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+      "version": "v5.1.2 (commit f1890d9f152c896d250a77557a5751a93d494776)",
+      "expectedSha256": "6f75ae0e0de157b14946e2255eb1f5486d9a13819032e26d4610852d296788f6",
+      "expectedBytes": 10110735,
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.",
+      "upstreamSha256": "6f75ae0e0de157b14946e2255eb1f5486d9a13819032e26d4610852d296788f6",
+      "upstreamBytes": 10110735,
+      "retrievalDate": "2026-10-21"
     },
     "rivers": {
       "name": "Natural Earth 10m Rivers & Lake Centerlines",
-      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
-      "license": "Public Domain / OSM ODbL",
-      "version": "v5.1.2 / git:master",
-      "attribution": "Made with Natural Earth and OpenStreetMap contributors."
+      "file": "ne_10m_rivers_lake_centerlines.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/f1890d9f152c896d250a77557a5751a93d494776/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "license": "Public Domain",
+      "version": "v5.1.2 (commit f1890d9f152c896d250a77557a5751a93d494776)",
+      "expectedSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "expectedBytes": 7307743,
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.",
+      "upstreamSha256": "bb854a900ecbd3b408df46d5e16e3e0f974ba55993f9d8b5c26e855273c0905a",
+      "upstreamBytes": 7307743,
+      "retrievalDate": "2026-10-21"
     },
     "roads": {
       "name": "Natural Earth 10m Roads & Highways",
-      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_roads.geojson",
-      "license": "Public Domain / OSM ODbL",
-      "version": "v5.1.2 / git:master",
-      "attribution": "Made with Natural Earth and OpenStreetMap contributors."
+      "file": "ne_10m_roads.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/f1890d9f152c896d250a77557a5751a93d494776/geojson/ne_10m_roads.geojson",
+      "license": "Public Domain",
+      "version": "v5.1.2 (commit f1890d9f152c896d250a77557a5751a93d494776)",
+      "expectedSha256": "66a0c7b438e92fd124822cc5921cfa11042f48c294ade5e0f03f2c6640fd0248",
+      "expectedBytes": 50474096,
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.",
+      "upstreamSha256": "66a0c7b438e92fd124822cc5921cfa11042f48c294ade5e0f03f2c6640fd0248",
+      "upstreamBytes": 50474096,
+      "retrievalDate": "2026-10-21"
     },
     "geography": {
       "name": "Natural Earth 10m Physical Geography Regions",
-      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_geography_regions_polys.geojson",
+      "file": "ne_10m_geography_regions_polys.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/f1890d9f152c896d250a77557a5751a93d494776/geojson/ne_10m_geography_regions_polys.geojson",
       "license": "Public Domain",
-      "version": "v5.1.2 / git:master",
-      "attribution": "Made with Natural Earth."
+      "version": "v5.1.2 (commit f1890d9f152c896d250a77557a5751a93d494776)",
+      "expectedSha256": "b7b26e50ea917d3696aec87f932def2bf5f890f5770e441d59c162c6f4c92a77",
+      "expectedBytes": 5583870,
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.",
+      "upstreamSha256": "b7b26e50ea917d3696aec87f932def2bf5f890f5770e441d59c162c6f4c92a77",
+      "upstreamBytes": 5583870,
+      "retrievalDate": "2026-10-21"
     },
     "places": {
       "name": "Natural Earth 10m Populated Places",
-      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_populated_places.geojson",
+      "file": "ne_10m_populated_places.geojson",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/f1890d9f152c896d250a77557a5751a93d494776/geojson/ne_10m_populated_places.geojson",
       "license": "Public Domain",
-      "version": "v5.1.2 / git:master",
-      "attribution": "Made with Natural Earth."
+      "version": "v5.1.2 (commit f1890d9f152c896d250a77557a5751a93d494776)",
+      "expectedSha256": "9b8e3de09048ef00dfc70357dbb9fa324493f214b5e0ae4daf1aa79a8d10116b",
+      "expectedBytes": 19359003,
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com.",
+      "upstreamSha256": "9b8e3de09048ef00dfc70357dbb9fa324493f214b5e0ae4daf1aa79a8d10116b",
+      "upstreamBytes": 19359003,
+      "retrievalDate": "2026-10-21"
     }
   },
   "datasets": {
     "tn_boundary.geojson": {
       "source": "admin1",
+      "transformation": "Admin-1 State Boundary Extract",
       "featureCount": 1,
       "coordinateCount": 1071,
       "sha256": "9c287073e505ff7654d399f9720b4d967960e61a76a5f07f283ff0a8fd4c8c39",
@@ -70,38 +107,51 @@
     },
     "tn_10m_coastline.geojson": {
       "source": "coastline",
+      "transformation": "Cohen-Sutherland Line Clipping to Tamil Nadu Coastal Bounding Box",
       "featureCount": 5,
-      "coordinateCount": 853,
-      "sha256": "dfc13e2d965fde33efcdfda9221578045a311f49c9b74c0d7c700ee4ae0f6441",
-      "sizeBytes": 66463
+      "coordinateCount": 865,
+      "sha256": "33fea925f9f7fc2f1359b99810321743936dc13cc6160fea783b00fe1e219f02",
+      "sizeBytes": 67343
     },
     "tn_10m_rivers_lake_centerlines.geojson": {
       "source": "rivers",
+      "transformation": "Cohen-Sutherland Line Clipping to Tamil Nadu River Basin Bounding Box",
       "featureCount": 6,
-      "coordinateCount": 517,
-      "sha256": "f257adedc760cd7df553a8427fac76943e96e6c1f5bc28bc52e226c3719e81e6",
-      "sizeBytes": 41112
+      "coordinateCount": 519,
+      "sha256": "9fa76672dd4637562bd9095565151144b176232e996809c3abbd978c6dfd1a0c",
+      "sizeBytes": 41252
     },
     "tn_10m_roads.geojson": {
       "source": "roads",
+      "transformation": "Cohen-Sutherland Line Clipping to Tamil Nadu Highway Network Bounding Box",
       "featureCount": 28,
-      "coordinateCount": 720,
-      "sha256": "88585c0783d36e70af043a182462ac900b6f1b2ed628ced2bddfbd80a3fad226",
-      "sizeBytes": 76458
+      "coordinateCount": 731,
+      "sha256": "65b0552b438b369707e144542e70b1edebf380f309aa9fe9c33c68946d1457e3",
+      "sizeBytes": 77180
     },
     "tn_10m_geography_regions_polys.geojson": {
       "source": "geography",
-      "featureCount": 3,
-      "coordinateCount": 17,
-      "sha256": "f00a9d646ecb92f5e111e15211dea1dfaf870256c183b0bfbc70223335f58cf9",
-      "sizeBytes": 2171
+      "transformation": "Sutherland-Hodgman Polygon Clipping to Tamil Nadu Physiographic Bounding Box",
+      "featureCount": 5,
+      "coordinateCount": 133,
+      "sha256": "dd177cb002b179ec1f97f4ecbbec138f0132e043de0ca24edd26d81c979d9356",
+      "sizeBytes": 18578
     },
     "tn_10m_populated_places.geojson": {
       "source": "places",
-      "featureCount": 12,
-      "coordinateCount": 12,
-      "sha256": "2a1ed25cd1382719e0280d63b985e1b837f2cfa8af01fc400b737cc1238bc408",
-      "sizeBytes": 6175
+      "transformation": "Admin-1 Point Attribute Filter (ADM1NAME === \"Tamil Nadu\")",
+      "featureCount": 19,
+      "coordinateCount": 19,
+      "sha256": "0a39db09183211b15323b7acb93423ae63e46d8ac27c238c1b19187f8100525d",
+      "sizeBytes": 80376
+    },
+    "campaign_anchors.geojson": {
+      "source": "project_curated",
+      "transformation": "Authored Game Design Regional Bindings (Bilingual Tamil/English)",
+      "featureCount": 6,
+      "coordinateCount": 6,
+      "sha256": "08a258a46b180d7a21ab2bb19f0b1b60d339a1b3b4274def088dbe9eaa3eba36",
+      "sizeBytes": 3038
     }
   }
 }
