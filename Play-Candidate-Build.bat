@@ -4,9 +4,10 @@ cd /d "%~dp0"
 echo ==============================================================
 echo  The Whispering Wilds - Candidate Release 5056deb Launcher
 echo ==============================================================
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\launch-candidate-playtest.ps1" -SkipExtract
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\launch-candidate-playtest.ps1"
 if %ERRORLEVEL% neq 0 (
     echo.
-    echo Candidate launch or extraction encountered an error.
+    echo Candidate launch or extraction encountered an error (exit code %ERRORLEVEL%).
     pause
+    exit /b %ERRORLEVEL%
 )
