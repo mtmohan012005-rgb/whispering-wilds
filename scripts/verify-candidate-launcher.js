@@ -31,7 +31,9 @@ const LAUNCHER_PS1 = path.join(PROJECT_ROOT, 'scripts', 'launch-candidate-playte
 const REAL_MANIFEST = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'RELEASE_MANIFEST.json');
 const REAL_ZIP = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'TheWhisperingWilds-v1.0.0-windows-x64.zip');
 
-const TEST_DIR = path.join(os.tmpdir(), `ww-launcher-tests-${Date.now()}`);
+const rawTmp = os.tmpdir();
+const canonicalTmp = fs.existsSync(rawTmp) ? fs.realpathSync(rawTmp) : rawTmp;
+const TEST_DIR = path.join(canonicalTmp, `ww-launcher-tests-${Date.now()}`);
 fs.mkdirSync(TEST_DIR, { recursive: true });
 
 let totalTests = 0;

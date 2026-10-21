@@ -123,8 +123,49 @@ function Assert-DestinationSafety {
         if ($canonical.TrimEnd('\', '/') -eq $canonicalDefault) {
             throw "Safety guard (-TestMode): TestMode must never touch the real user candidate directory: '$canonical'."
         }
-        $tempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
-        if (-not $canonical.StartsWith($tempRoot + '\', [System.StringComparison]::OrdinalIgnoreCase)) {
+
+        # Resolve temp roots across long paths and 8.3 short aliases
+        $tempCandidates = @(
+            [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/'),
+            [System.IO.Path]::GetFullPath($env:TEMP).TrimEnd('\', '/'),
+            [System.IO.Path]::GetFullPath($env:TMP).TrimEnd('\', '/')
+        ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+        $validTempRoots = New-Object System.Collections.Generic.HashSet[string]([System.StringComparer]::OrdinalIgnoreCase)
+        foreach ($tc in $tempCandidates) {
+            $validTempRoots.Add($tc) | Out-Null
+            if (Test-Path -LiteralPath $tc) {
+                try {
+                    $validTempRoots.Add((Resolve-Path -LiteralPath $tc).Path.TrimEnd('\', '/')) | Out-Null
+                } catch { }
+            }
+        }
+
+        # Resolve destination path in case it was passed using an 8.3 alias
+        $probe = $canonical
+        $resolvedDest = $canonical
+        while (-not [string]::IsNullOrWhiteSpace($probe) -and -not (Test-Path -LiteralPath $probe)) {
+            $probe = Split-Path -Parent $probe
+        }
+        if (-not [string]::IsNullOrWhiteSpace($probe) -and (Test-Path -LiteralPath $probe)) {
+            try {
+                $longProbe = (Resolve-Path -LiteralPath $probe).Path.TrimEnd('\', '/')
+                $suffix = $canonical.Substring($probe.Length)
+                $resolvedDest = [System.IO.Path]::GetFullPath($longProbe + $suffix).TrimEnd('\', '/')
+            } catch { }
+        }
+
+        $isUnderTemp = $false
+        foreach ($vtr in $validTempRoots) {
+            if ($canonical.StartsWith($vtr + '\', [System.StringComparison]::OrdinalIgnoreCase) -or
+                $resolvedDest.StartsWith($vtr + '\', [System.StringComparison]::OrdinalIgnoreCase) -or
+                ($canonical -ieq $vtr) -or ($resolvedDest -ieq $vtr)) {
+                $isUnderTemp = $true
+                break
+            }
+        }
+
+        if (-not $isUnderTemp) {
             throw "Safety guard (-TestMode): In TestMode, destination must be an isolated path under the OS temp directory: '$canonical'."
         }
         return $canonical
