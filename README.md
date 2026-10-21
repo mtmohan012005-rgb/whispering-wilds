@@ -31,8 +31,13 @@ powershell -ExecutionPolicy Bypass -File scripts/run-unity-audits.ps1 -Action bu
 # 2. Run the newly compiled standalone executable:
 & ".\unity\Build\Windows\TheWhisperingWilds.exe"
 
-# 3. (Optional) Package a distributable release ZIP with manifest:
-powershell -ExecutionPolicy Bypass -File scripts/package-release.ps1
+# 3. (Optional) Package a versioned release candidate ZIP with provenance manifest:
+# Note: Defaults to v1.0.1 candidate. Overwriting the published v1.0.0 release identity is strictly prohibited.
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-release.ps1 -Version 1.0.1
+
+# Outputs:
+# - artifacts/releases/TheWhisperingWilds-v1.0.1-windows-x64.zip
+# - artifacts/releases/RELEASE_MANIFEST-v1.0.1.json
 ```
 
 ### Opening in Unity 6 Editor

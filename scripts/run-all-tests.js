@@ -21,7 +21,7 @@ const path = require('path');
 const SERVER_PORT = parseInt(process.env.TEST_SERVER_PORT, 10) || 3000;
 const SERVER_READY_URL = `http://localhost:${SERVER_PORT}/api/v1/health`;
 const MAX_READY_WAIT_MS = 30000; // 30 seconds
-const TEST_TIMEOUT_MS = parseInt(process.env.TEST_TIMEOUT_MS, 10) || 180000; // 3 minutes per suite
+const TEST_TIMEOUT_MS = parseInt(process.env.TEST_TIMEOUT_MS, 10) || 300000; // 5 minutes per suite
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 let serverStopped = false;

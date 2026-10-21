@@ -28,8 +28,14 @@ const crypto = require('crypto');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 const LAUNCHER_PS1 = path.join(PROJECT_ROOT, 'scripts', 'launch-candidate-playtest.ps1');
-const REAL_MANIFEST = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'RELEASE_MANIFEST.json');
-const REAL_ZIP = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'TheWhisperingWilds-v1.0.0-windows-x64.zip');
+const PACKAGER_PS1 = path.join(PROJECT_ROOT, 'scripts', 'package-release.ps1');
+const V101_MANIFEST = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'RELEASE_MANIFEST-v1.0.1.json');
+const V100_MANIFEST = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'RELEASE_MANIFEST.json');
+const REAL_MANIFEST = fs.existsSync(V101_MANIFEST) ? V101_MANIFEST : V100_MANIFEST;
+
+const V101_ZIP = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'TheWhisperingWilds-v1.0.1-windows-x64.zip');
+const V100_ZIP = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'TheWhisperingWilds-v1.0.0-windows-x64.zip');
+const REAL_ZIP = fs.existsSync(V101_ZIP) ? V101_ZIP : V100_ZIP;
 
 const rawTmp = os.tmpdir();
 const canonicalTmp = fs.existsSync(rawTmp) ? fs.realpathSync(rawTmp) : rawTmp;
@@ -51,6 +57,33 @@ function runPowerShell(args) {
       '-NoProfile',
       '-ExecutionPolicy', 'Bypass',
       '-File', LAUNCHER_PS1,
+      ...args
+    ], {
+      cwd: PROJECT_ROOT,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+    lastRunResult = { code: 0, stdout, stderr: '' };
+    return lastRunResult;
+  } catch (err) {
+    lastRunResult = {
+      code: err.status || 1,
+      stdout: err.stdout ? err.stdout.toString() : '',
+      stderr: err.stderr ? err.stderr.toString() : err.message
+    };
+    return lastRunResult;
+  }
+}
+
+function runPackagerPowerShell(args) {
+  if (process.platform !== 'win32') {
+    return { code: 0, stdout: 'Skipping PowerShell on non-Windows runner', stderr: '', skipped: true };
+  }
+  try {
+    const stdout = execFileSync('powershell.exe', [
+      '-NoProfile',
+      '-ExecutionPolicy', 'Bypass',
+      '-File', PACKAGER_PS1,
       ...args
     ], {
       cwd: PROJECT_ROOT,
@@ -174,6 +207,18 @@ try {
 
     const batContent = fs.readFileSync(path.join(PROJECT_ROOT, 'Play-Candidate-Build.bat'), 'utf8');
     assert(batContent.includes('launch-candidate-playtest.ps1'), 'Root BAT invokes safe PowerShell launcher');
+
+    const packagerContent = fs.readFileSync(PACKAGER_PS1, 'utf8');
+    assert(packagerContent.includes('$Version = "1.0.1"'), 'Packager defaults to candidate version 1.0.1');
+    assert(packagerContent.includes('Release safety error: v1.0.0 is the published public release'),
+      'Packager guards published v1.0.0 release identity');
+    assert(packagerContent.includes('RELEASE_MANIFEST-v$cleanVersion.json'),
+      'Packager writes version-specific manifest file');
+    assert(packagerContent.includes('Compute-FileSha256') && !packagerContent.includes('Get-FileHash'),
+      'Packager uses pure .NET SHA-256 helper without Get-FileHash dependency');
+    assert(psContent.includes('RELEASE_MANIFEST-v1.0.1.json'),
+      'Launcher checks versioned v1.0.1 candidate manifest by default');
+
     console.log('  ℹ️  Skipped Windows PowerShell execution tests on non-Windows CI runner.');
 
     console.log('\n' + '='.repeat(60));
@@ -909,6 +954,41 @@ if %ERRORLEVEL% neq 0 (
       assert((res.stderr + res.stdout).includes('duplicate normalized entry') || (res.stderr + res.stdout).includes('unsafe path traversal or absolute entry'),
         'Error identifies duplicate or unsafe entry in ZIP');
     }
+  }
+
+  // -------------------------------------------------------------
+  // Test Group 8: Release Version Safety & Packaging Guards
+  // -------------------------------------------------------------
+  console.log('\n--- Test Group 8: Release Version Safety & Packaging Guards ---');
+  {
+    const packagerContent = fs.readFileSync(PACKAGER_PS1, 'utf8');
+    assert(packagerContent.includes('$Version = "1.0.1"'), 'Packager defaults to candidate version 1.0.1');
+    assert(packagerContent.includes('Release safety error: v1.0.0 is the published public release'),
+      'Packager script guards published v1.0.0 release identity');
+    assert(packagerContent.includes('RELEASE_MANIFEST-v$cleanVersion.json'),
+      'Packager writes version-specific manifest file');
+    assert(packagerContent.includes('Compute-FileSha256') && !packagerContent.includes('Get-FileHash'),
+      'Packager uses pure .NET SHA-256 helper without Get-FileHash dependency');
+
+    const resV100 = runPackagerPowerShell(['-Version', '1.0.0']);
+    assert(resV100.code !== 0, 'Packager refuses to overwrite published v1.0.0 release identity');
+    assert((resV100.stderr + resV100.stdout).includes('Release safety error: v1.0.0 is the published public release'),
+      'Packager error identifies published v1.0.0 protection guard');
+
+    const resV100Prefix = runPackagerPowerShell(['-Version', 'v1.0.0']);
+    assert(resV100Prefix.code !== 0, 'Packager refuses prefixed v1.0.0 release identity');
+    assert((resV100Prefix.stderr + resV100Prefix.stdout).includes('Release safety error: v1.0.0 is the published public release'),
+      'Packager error identifies prefixed v1.0.0 protection guard');
+
+    const resEmpty = runPackagerPowerShell(['-Version', '   ']);
+    assert(resEmpty.code !== 0, 'Packager rejects empty version string');
+    assert((resEmpty.stderr + resEmpty.stdout).includes('Version parameter cannot be empty'),
+      'Packager error identifies empty version validation');
+
+    const resInvalid = runPackagerPowerShell(['-Version', 'not-a-semver']);
+    assert(resInvalid.code !== 0, 'Packager rejects invalid semantic version format');
+    assert((resInvalid.stderr + resInvalid.stdout).includes('Invalid semantic version format'),
+      'Packager error identifies semantic version format validation');
   }
 } finally {
   // Cleanup scratch directory

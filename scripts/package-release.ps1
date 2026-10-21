@@ -3,10 +3,49 @@ param(
     [string]$BuildDir = "unity/Build/Windows",
     [string]$ReleasesDir = "artifacts/releases",
     [string]$CommitSha = "",
+    [string]$Version = "1.0.1",
     [switch]$AllowDirty = $false
 )
 
 $ErrorActionPreference = "Stop"
+
+# 0. Pure .NET Cryptographic Hash Helper (Zero module dependencies)
+function Compute-FileSha256 {
+    param([string]$FilePath)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $stream = [System.IO.File]::OpenRead($FilePath)
+        try {
+            $bytes = $sha.ComputeHash($stream)
+            return [System.BitConverter]::ToString($bytes).Replace("-", "").ToUpperInvariant()
+        } finally {
+            $stream.Close()
+        }
+    } finally {
+        $sha.Dispose()
+    }
+}
+
+# Release Version Safety Validation
+if ([string]::IsNullOrWhiteSpace($Version)) {
+    throw "Release safety error: Version parameter cannot be empty. Specify a valid candidate version such as '1.0.1'."
+}
+$cleanVersion = $Version.Trim()
+if ($cleanVersion.StartsWith("v", [System.StringComparison]::OrdinalIgnoreCase)) {
+    $cleanVersion = $cleanVersion.Substring(1)
+}
+
+if ($cleanVersion -eq "1.0.0") {
+    throw "Release safety error: v1.0.0 is the published public release (SHA-256: 6F2D73A01F3DED83D632450C1341247ABE93F6CBFB0450C21926CEA4686A9A58). New candidate builds must target v1.0.1 or higher to prevent release provenance collision."
+}
+
+if ($cleanVersion -notmatch '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$') {
+    throw "Release safety error: Invalid semantic version format '$Version'. Expected format: X.Y.Z (e.g. 1.0.1)."
+}
+
+$packageName = "TheWhisperingWilds-v$cleanVersion-windows-x64.zip"
+$stagingDirName = "TheWhisperingWilds-v$cleanVersion-windows-x64"
+$manifestFileName = "RELEASE_MANIFEST-v$cleanVersion.json"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $rootDir = (Resolve-Path (Join-Path $scriptDir "..")).Path
@@ -39,7 +78,8 @@ if ($isDirty -and -not $AllowDirty) {
 }
 
 $releaseStatus = if ($isDirty) { "UNVERIFIED_DIRTY" } else { "VERIFIED_CLEAN" }
-Write-Host "Target Code Revision: $CommitSha ($releaseStatus)" -ForegroundColor Cyan
+Write-Host "Target Release Version: v$cleanVersion" -ForegroundColor Cyan
+Write-Host "Target Code Revision:  $CommitSha ($releaseStatus)" -ForegroundColor Cyan
 
 $resolvedBuildDir = Join-Path $rootDir $BuildDir
 $resolvedReleasesDir = Join-Path $rootDir $ReleasesDir
@@ -67,7 +107,7 @@ if (!(Test-Path $resolvedReleasesDir)) {
     New-Item -ItemType Directory -Path $resolvedReleasesDir -Force | Out-Null
 }
 
-$stagingDir = Join-Path $resolvedReleasesDir "TheWhisperingWilds-v1.0.0-windows-x64"
+$stagingDir = Join-Path $resolvedReleasesDir $stagingDirName
 if (Test-Path $stagingDir) {
     Remove-Item -Path $stagingDir -Recurse -Force
 }
@@ -99,7 +139,7 @@ Copy-Item (Join-Path $resolvedBuildDir "MonoBleedingEdge") $stagingDir -Recurse
 # Add README.txt
 $readmeContent = @"
 ======================================================================
-THE WHISPERING WILDS (காட்டு வழி) - v1.0.0 Windows x64 Standalone
+THE WHISPERING WILDS (காட்டு வழி) - v$cleanVersion Windows x64 Standalone
 ======================================================================
 Built with Unity 6000.6.3f1 (HDRP 17.7.0)
 Target Platform: Windows 10/11 64-bit (Direct3D 11 / Direct3D 12)
@@ -157,7 +197,7 @@ $readmePath = Join-Path $stagingDir "README.txt"
 [System.IO.File]::WriteAllText($readmePath, $readmeContent, [System.Text.Encoding]::UTF8)
 
 # Create ZIP archive
-$zipPath = Join-Path $resolvedReleasesDir "TheWhisperingWilds-v1.0.0-windows-x64.zip"
+$zipPath = Join-Path $resolvedReleasesDir $packageName
 if (Test-Path $zipPath) {
     Remove-Item $zipPath -Force
 }
@@ -189,14 +229,14 @@ if (-not $hasData) {
 }
 Write-Host "Verified ZIP structure ($entryCount entries, executable and data directory confirmed)." -ForegroundColor Green
 
-# Calculate checksum and size
+# Calculate checksum and size using pure .NET SHA-256 helper
 $zipItem = Get-Item $zipPath
-$zipHash = (Get-FileHash $zipPath -Algorithm SHA256).Hash
+$zipHash = Compute-FileSha256 -FilePath $zipPath
 $sizeMB = [math]::Round($zipItem.Length / 1MB, 2)
 
 $manifestData = [ordered]@{
-    package = "TheWhisperingWilds-v1.0.0-windows-x64.zip"
-    version = "1.0.0"
+    package = $packageName
+    version = $cleanVersion
     candidate = $true
     target = "Windows x64"
     unityVersion = "6000.6.3f1"
@@ -238,7 +278,7 @@ $manifestData = [ordered]@{
 }
 
 $manifestJson = $manifestData | ConvertTo-Json -Depth 5
-$manifestPath = Join-Path $resolvedReleasesDir "RELEASE_MANIFEST.json"
+$manifestPath = Join-Path $resolvedReleasesDir $manifestFileName
 [System.IO.File]::WriteAllText($manifestPath, $manifestJson, [System.Text.Encoding]::UTF8)
 
 Write-Host "`n============================================================" -ForegroundColor Green
