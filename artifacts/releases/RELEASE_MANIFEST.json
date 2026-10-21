@@ -1,18 +1,19 @@
 ﻿{
     "package":  "TheWhisperingWilds-v1.0.0-windows-x64.zip",
     "version":  "1.0.0",
+    "candidate":  true,
     "target":  "Windows x64",
     "unityVersion":  "6000.6.3f1",
     "renderPipeline":  "HDRP 17.7.0",
-    "testedCommit":  "21ed5e87f31dcd669e6aa89d11e4cd2a394de322",
-    "codeCommit":  "21ed5e87f31dcd669e6aa89d11e4cd2a394de322",
-    "headCommit":  "21ed5e87f31dcd669e6aa89d11e4cd2a394de322",
-    "isDirty":  true,
-    "status":  "UNVERIFIED_DIRTY",
-    "sizeBytes":  62868076,
+    "testedCommit":  "5056deb833a1254f0e41bf134151663a08cca5f8",
+    "codeCommit":  "5056deb833a1254f0e41bf134151663a08cca5f8",
+    "headCommit":  "5056deb833a1254f0e41bf134151663a08cca5f8",
+    "isDirty":  false,
+    "status":  "VERIFIED_CLEAN",
+    "sizeBytes":  62868410,
     "sizeMB":  59.96,
-    "sha256":  "82F25DB7F86F1F0311B0F73C27C0EF2F306C0B9429203EAE253E5D53A4B553ED",
-    "generatedAt":  "2026-10-21T04:21:52.9373822Z",
+    "sha256":  "AFF39CA7AA95516CA3E5EB8B5D7E33ACA456F877816734CD73E3CEA450705006",
+    "generatedAt":  "2026-10-21T05:32:24.1291597Z",
     "scenesIncluded":  9,
     "scenes":  [
                    "00_Boot",
@@ -31,7 +32,7 @@
                          "backend_security":  "PASS_AUTOMATED",
                          "gis_map_data":  "PASS_AUTOMATED",
                          "server_cleanup":  "PASS_AUTOMATED",
-                         "interactive_walkthrough":  "PASS_INTERACTIVE"
+                         "interactive_walkthrough":  "NOT_TESTED_HUMAN"
                      },
     "blockers":  {
                      "firebase_cloud_sync":  "BLOCKED_CREDENTIALS",
