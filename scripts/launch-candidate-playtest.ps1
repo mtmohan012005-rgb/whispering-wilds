@@ -49,6 +49,25 @@ if ([string]::IsNullOrWhiteSpace($DestinationPath)) {
 }
 
 # -----------------------------------------------------------------------------
+# 0. Pure .NET Cryptographic Hash Helper (Zero module dependencies)
+# -----------------------------------------------------------------------------
+function Compute-FileSha256 {
+    param([string]$FilePath)
+    $sha = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $stream = [System.IO.File]::OpenRead($FilePath)
+        try {
+            $bytes = $sha.ComputeHash($stream)
+            return [System.BitConverter]::ToString($bytes).Replace("-", "").ToUpperInvariant()
+        } finally {
+            $stream.Close()
+        }
+    } finally {
+        $sha.Dispose()
+    }
+}
+
+# -----------------------------------------------------------------------------
 # 1. Strict Path Safety Validation
 # -----------------------------------------------------------------------------
 function Assert-DestinationSafety {
@@ -270,7 +289,7 @@ if (-not (Test-Path $ZipPath)) {
 }
 
 $file = Get-Item $ZipPath
-$actualHash = (Get-FileHash $ZipPath -Algorithm SHA256).Hash
+$actualHash = Compute-FileSha256 -FilePath $ZipPath
 
 Write-Host "  Actual Archive Size:      $($file.Length) bytes"
 Write-Host "  Actual Archive Hash:      $actualHash"
@@ -314,24 +333,6 @@ if (($runningProcesses -and -not $TestMode) -or $SimulateProcessRunning) {
     throw "The Whispering Wilds candidate process is already running (PID: $pids). Avoid launching duplicate instances. Please switch to the running game window or close it before relaunching."
 }
 
-# -----------------------------------------------------------------------------
-# 5. Provenance & Payload Manifest Validation Function
-# -----------------------------------------------------------------------------
-function Compute-FileSha256 {
-    param([string]$FilePath)
-    $sha = [System.Security.Cryptography.SHA256]::Create()
-    try {
-        $stream = [System.IO.File]::OpenRead($FilePath)
-        try {
-            $bytes = $sha.ComputeHash($stream)
-            return [System.BitConverter]::ToString($bytes).Replace("-", "").ToUpperInvariant()
-        } finally {
-            $stream.Close()
-        }
-    } finally {
-        $sha.Dispose()
-    }
-}
 
 function Test-CandidateProvenance {
     param([string]$Dir)
