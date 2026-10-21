@@ -253,6 +253,14 @@ async function main() {
     );
     results.push(cleanupResult);
     if (cleanupResult.code !== 0) hasFailure = true;
+
+    // Candidate launcher provenance & safety regression
+    const launcherResult = await runTestSuite(
+      'Candidate Launcher Provenance & Safety Tests',
+      'scripts/verify-candidate-launcher.js'
+    );
+    results.push(launcherResult);
+    if (launcherResult.code !== 0) hasFailure = true;
     
   } catch (error) {
     console.error('❌ Test runner error:', error.message);
