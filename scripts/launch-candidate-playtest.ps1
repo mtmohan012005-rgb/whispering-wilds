@@ -2,16 +2,19 @@
 .SYNOPSIS
     The Whispering Wilds - Candidate Release Verification and Safe Launch Script
 .DESCRIPTION
-    Verifies the integrity of the candidate ZIP archive against artifacts/releases/RELEASE_MANIFEST.json,
-    enforces strict destination path allowlists and reparse-point guards, protects arbitrary user folders
-    from destructive cleanup, validates deterministic payload manifests (hashes of extracted files),
-    prevents duplicate game processes, and launches with -force-d3d11 for stable Intel UHD graphics under HDRP.
+    Verifies the integrity of the candidate ZIP archive against artifacts/releases/RELEASE_MANIFEST-v1.0.1.json
+    (or artifacts/releases/RELEASE_MANIFEST.json), enforces strict destination path allowlists and reparse-point guards,
+    protects arbitrary user folders from destructive cleanup, validates deterministic payload manifests
+    (hashes of extracted files), prevents duplicate game processes, and launches with -force-d3d11 for stable
+    Intel UHD graphics under HDRP.
 .PARAMETER DestinationPath
     Target extraction folder. Defaults to $env:USERPROFILE\Games\WhisperingWilds-Candidate-5056deb.
 .PARAMETER ZipPath
-    Path to candidate archive. Defaults to artifacts/releases/TheWhisperingWilds-v1.0.0-windows-x64.zip.
+    Path to candidate archive. Defaults to artifacts/releases/TheWhisperingWilds-v1.0.1-windows-x64.zip
+    (or artifacts/releases/TheWhisperingWilds-v1.0.0-windows-x64.zip if v1.0.1 is not present).
 .PARAMETER ManifestPath
-    Path to candidate release manifest. Defaults to artifacts/releases/RELEASE_MANIFEST.json.
+    Path to candidate release manifest. Defaults to artifacts/releases/RELEASE_MANIFEST-v1.0.1.json
+    (or artifacts/releases/RELEASE_MANIFEST.json if v1.0.1 is not present).
 .PARAMETER SkipExtract
     If specified, reuses existing destination folder ONLY if it passes full provenance and payload verification.
     If provenance verification fails, throws an error rather than refreshing.
@@ -39,10 +42,26 @@ $ErrorActionPreference = "Stop"
 $repoDir = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 
 if ([string]::IsNullOrWhiteSpace($ZipPath)) {
-    $ZipPath = Join-Path $repoDir "artifacts\releases\TheWhisperingWilds-v1.0.0-windows-x64.zip"
+    $v101Zip = Join-Path $repoDir "artifacts\releases\TheWhisperingWilds-v1.0.1-windows-x64.zip"
+    $v100Zip = Join-Path $repoDir "artifacts\releases\TheWhisperingWilds-v1.0.0-windows-x64.zip"
+    if (Test-Path $v101Zip) {
+        $ZipPath = $v101Zip
+    } elseif (Test-Path $v100Zip) {
+        $ZipPath = $v100Zip
+    } else {
+        $ZipPath = $v101Zip
+    }
 }
 if ([string]::IsNullOrWhiteSpace($ManifestPath)) {
-    $ManifestPath = Join-Path $repoDir "artifacts\releases\RELEASE_MANIFEST.json"
+    $v101Manifest = Join-Path $repoDir "artifacts\releases\RELEASE_MANIFEST-v1.0.1.json"
+    $v100Manifest = Join-Path $repoDir "artifacts\releases\RELEASE_MANIFEST.json"
+    if (Test-Path $v101Manifest) {
+        $ManifestPath = $v101Manifest
+    } elseif (Test-Path $v100Manifest) {
+        $ManifestPath = $v100Manifest
+    } else {
+        $ManifestPath = $v101Manifest
+    }
 }
 if ([string]::IsNullOrWhiteSpace($DestinationPath)) {
     $DestinationPath = Join-Path $env:USERPROFILE "Games\WhisperingWilds-Candidate-5056deb"

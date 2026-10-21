@@ -51,7 +51,8 @@ const REQUIRED_ANCHORS = [
 ];
 
 function computeSha256(content) {
-  return crypto.createHash('sha256').update(content).digest('hex');
+  const normalized = typeof content === 'string' ? content.replace(/\r\n/g, '\n') : content;
+  return crypto.createHash('sha256').update(normalized).digest('hex');
 }
 
 /**
