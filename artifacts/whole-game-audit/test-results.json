@@ -1,0 +1,130 @@
+{
+  "testRunMetadata": {
+    "projectName": "The Whispering Wilds (காட்டு வழி • தடம்)",
+    "gitCommitTested": "5056deb833a1254f0e41bf134151663a08cca5f8",
+    "gitBranch": "feature/full-game-audit-and-roadmap-20261021",
+    "gitHeadMergedCommit": "2e72017",
+    "timestampUtc": "2026-10-21T17:45:00Z",
+    "operatingSystem": "Microsoft Windows 11 Pro 64-bit",
+    "engine": {
+      "editorVersion": "6000.6.3f1",
+      "renderPipeline": "High Definition Render Pipeline (HDRP 17.7.0)",
+      "graphicsApi": "Direct3D 11 (-force-d3d11)",
+      "scriptingBackend": "Mono / .NET Standard 2.1"
+    }
+  },
+  "summary": {
+    "totalSuites": 7,
+    "suitesPassed": 7,
+    "suitesFailed": 0,
+    "totalChecksAndTests": 240,
+    "passedCount": 240,
+    "failedCount": 0,
+    "skippedCount": 0,
+    "overallStatus": "VERIFIED_CLEAN"
+  },
+  "suites": [
+    {
+      "name": "Unity EditMode Automated Unit Tests",
+      "command": "Unity.exe -runTests -testPlatform EditMode",
+      "exitCode": 0,
+      "total": 94,
+      "passed": 94,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_EDITOR",
+      "artifactLog": "artifacts/test_results_EditMode.xml",
+      "notes": "Verified player movement requirements, clue database, campaign flow transitions, localization keys, and regional NavMesh binary assets."
+    },
+    {
+      "name": "Unity PlayMode Runtime Integration Tests",
+      "command": "Unity.exe -runTests -testPlatform PlayMode",
+      "exitCode": 0,
+      "total": 34,
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_PLAYMODE",
+      "artifactLog": "artifacts/test_results_PlayMode.xml",
+      "notes": "Verified title flow, save system v4 recovery, inventory pickup persistence, region unlock gating, and scene transition lifecycle."
+    },
+    {
+      "name": "Unity Character Rig and Hierarchy Audit",
+      "command": "Unity.exe -executeMethod WhisperingWilds.Editor.EditorCharacterRigAuditor.RunAuditHeadless",
+      "exitCode": 0,
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_EDITOR",
+      "artifactLog": "artifacts/unity_rig_audit.log",
+      "notes": "Verified 10/10 production characters: modular submeshes, 43 bone bindings, GenericAvatar validity, AnimatorControllers, and colliders."
+    },
+    {
+      "name": "Unity Scene & Asset Reference Integrity Audit",
+      "command": "Unity.exe -executeMethod WhisperingWilds.Editor.AssetReferenceAudit.RunHeadlessAudit",
+      "exitCode": 0,
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_EDITOR",
+      "artifactLog": "artifacts/unity_asset_ref_audit.log",
+      "notes": "Audited 9 canonical scenes, 10 character prefabs, 293 materials, 57 textures, and 10 audio clips. 0 missing GUIDs or broken references."
+    },
+    {
+      "name": "Unity Standalone Windows Production Build",
+      "command": "Unity.exe -executeMethod WhisperingWilds.Editor.BuildScript.BuildStandaloneWindowsPlayer",
+      "exitCode": 0,
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_BUILD",
+      "artifactLog": "artifacts/unity_standalone_build.log",
+      "notes": "Clean production build of TheWhisperingWilds.exe (138,144,138 bytes / 131 MB) in 49.92 seconds with 9 enabled scenes."
+    },
+    {
+      "name": "Node.js Backend & Security Test Suites (Node 18/20)",
+      "command": "npm test",
+      "exitCode": 0,
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_STATIC",
+      "artifactLog": "npm-test-run.log",
+      "notes": "Verified backend security headers, CSRF protection, rate limiting, map data geo-coordinates, production build verification, and clean port release."
+    },
+    {
+      "name": "Candidate Windows Launcher Provenance & Safety Suite",
+      "command": "pwsh -File tests/test-launcher-regression.ps1",
+      "exitCode": 0,
+      "total": 85,
+      "passed": 85,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_BUILD",
+      "artifactLog": "tests/test-launcher-regression.ps1",
+      "notes": "Verified candidate archive SHA-256 verification, extraction provenance marker, path traversal defense, duplicate process prevention, and published v1.0.0 immutability guards."
+    }
+  ],
+  "gatedVerifications": {
+    "humanGameplayWalkthrough": {
+      "status": "NOT_TESTED_HUMAN",
+      "description": "Physical playthrough with keyboard, mouse, and display to assess subjective tactile camera collision, audio balance, and immersion."
+    },
+    "firebaseCloudSynchronization": {
+      "status": "BLOCKED_CREDENTIALS",
+      "description": "Live production Firebase service account credentials intentionally omitted from public source tree. Safe local fallback operates 100%."
+    },
+    "authenticTamilNaduRegionalFieldAudio": {
+      "status": "BLOCKED_EXTERNAL_ASSET",
+      "description": "Requires licensed authentic on-location field audio recordings of Tamil Nadu temple bells, George Town street traffic, and Western Ghats wildlife."
+    },
+    "twoClientSimultaneousMultiplayer": {
+      "status": "NOT_TESTED_MULTI_CLIENT",
+      "description": "Dual-client simultaneous network packet replication across two independent physical devices."
+    }
+  }
+}
