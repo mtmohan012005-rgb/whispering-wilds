@@ -5,7 +5,7 @@ title Game Installation & Performance Tester
 cd /d "%~dp0"
 
 rem Default game executable (override in the menu or drop your own path).
-set "DEFAULT_GAME=C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds\TheWhisperingWilds_Windows_x64_RC\TheWhisperingWilds.exe"
+set "DEFAULT_GAME=%~dp0..\unity\Build\Windows\TheWhisperingWilds.exe"
 
 cls
 echo.

@@ -118,14 +118,22 @@ namespace WhisperingWilds.World
         public static void EnterCampaignRegionFallback(string regionId)
         {
             if (string.IsNullOrEmpty(regionId)) regionId = "chennai";
+            if (!RegionUnlocks.IsUnlocked(regionId))
+            {
+                Debug.LogWarning($"[RegionalSceneManager] Cannot enter locked region '{regionId}' via fallback.");
+                return;
+            }
             if (TamilNaduGeography.TryGetRegion(regionId, out RegionGeoLocation geo) && !string.IsNullOrEmpty(geo.sceneName))
             {
                 Debug.LogWarning($"[RegionalSceneManager] No instance present; direct single-scene load for '{geo.sceneName}'.");
-                SceneManager.LoadScene(geo.sceneName);
+                if (Application.isPlaying)
+                {
+                    SceneManager.LoadScene(geo.sceneName);
+                }
             }
             else
             {
-                Debug.LogError($"[RegionalSceneManager] Cannot resolve fallback scene for region '{regionId}'.");
+                Debug.LogWarning($"[RegionalSceneManager] Cannot resolve fallback scene for region '{regionId}'.");
             }
         }
 
@@ -151,6 +159,14 @@ namespace WhisperingWilds.World
                 string errorMsg = $"Cannot enter unknown or invalid region '{regionId}'.";
                 Debug.LogError($"[RegionalSceneManager] {errorMsg}");
                 OnRegionLoadFailed?.Invoke(regionId, errorMsg);
+                return;
+            }
+
+            if (!RegionUnlocks.IsUnlocked(regionId))
+            {
+                string lockedMsg = $"Refusing campaign entry: region '{regionId}' is locked.";
+                Debug.LogError($"[RegionalSceneManager] {lockedMsg}");
+                OnRegionLoadFailed?.Invoke(regionId, lockedMsg);
                 return;
             }
 

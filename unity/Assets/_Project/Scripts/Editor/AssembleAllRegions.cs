@@ -226,6 +226,7 @@ namespace WhisperingWilds.Editor
             var hudManager = canvasObj.AddComponent<HUDManager>();
             canvasObj.AddComponent<DialogueUI>();
             canvasObj.AddComponent<StateMapUI>();
+            canvasObj.AddComponent<InGameMiniMapCompass>();
 
             // Tamil-capable font; the builtin font cannot render Tamil.
             var font = LocalizedFontProvider.Font;
@@ -391,6 +392,10 @@ namespace WhisperingWilds.Editor
             cam.transform.position = new Vector3(0f, 900f, -420f);
             cam.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
             cam.farClipPlane = 8000f;
+            camObj.AddComponent<WhisperingWilds.Geography.StateMapCameraController>();
+
+            var hudObj = new GameObject("StateMapHUD");
+            hudObj.AddComponent<WhisperingWilds.Geography.StateMapHUDController>();
 
             SetupHUD("Tamil Nadu State Map", "தமிழ்நாடு பெருவழி வரைபடம்");
 

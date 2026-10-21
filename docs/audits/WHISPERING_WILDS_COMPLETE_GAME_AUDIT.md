@@ -51,7 +51,7 @@ Following a rigorous, evidence-based technical audit executing directly on the l
 
 ### Workspace Provenance
 - **Local Directory:** `C:\Users\mohan\.gemini\antigravity-ide\scratch\whispering-wilds`
-- **Git Root:** `C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds`
+- **Git Root:** ``
 - **Active Branch:** `fix/gameplay-runtime-repair-20261019`
 - **Local HEAD SHA:** `9384def0ed5adca8da978a510723259f64df52c2`
 - **Remote `origin/main` SHA:** `9d6c5bbd5f2e0bc51f1c0d4e4c56797fb4191c0f` (Merged PR #9)

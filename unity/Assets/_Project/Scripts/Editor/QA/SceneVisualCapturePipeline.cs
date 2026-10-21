@@ -254,11 +254,22 @@ namespace WhisperingWilds.Editor.QA
                 cam = UnityEngine.Object.FindAnyObjectByType<Camera>();
             }
 
-            // If 01_StateMap, ensure TamilNaduStateMapView exists
+            if (cam != null && shortName.Contains("statemap"))
+            {
+                cam.farClipPlane = Mathf.Max(cam.farClipPlane, 8000f);
+            }
+
+            // If 01_StateMap, ensure TamilNaduStateMapView exists and is rebuilt with latest data
             if (shortName.Contains("statemap"))
             {
                 var mapData = Resources.Load<WhisperingWilds.Geography.TamilNaduMapData>("Geography/Generated/TamilNaduMapData");
-                if (mapData != null && UnityEngine.Object.FindAnyObjectByType<WhisperingWilds.Geography.TamilNaduStateMapView>() == null)
+                var existingView = UnityEngine.Object.FindAnyObjectByType<WhisperingWilds.Geography.TamilNaduStateMapView>();
+                if (existingView != null)
+                {
+                    if (mapData != null) existingView.SetMapData(mapData);
+                    else existingView.Rebuild();
+                }
+                else if (mapData != null)
                 {
                     var mapGo = new GameObject("TamilNaduStateMapView");
                     var view = mapGo.AddComponent<WhisperingWilds.Geography.TamilNaduStateMapView>();
@@ -272,7 +283,7 @@ namespace WhisperingWilds.Editor.QA
                 cam = camGo.AddComponent<Camera>();
                 cam.clearFlags = CameraClearFlags.Skybox;
                 cam.nearClipPlane = 0.1f;
-                cam.farClipPlane = 1000f;
+                cam.farClipPlane = shortName.Contains("statemap") ? 8000f : 1000f;
 
                 // Frame based on scene
                 if (shortName.Contains("boot"))
@@ -639,10 +650,11 @@ namespace WhisperingWilds.Editor.QA
         {
             string indexFile = Path.Combine(baseDir, "INDEX.md");
             string activeBranch = GitShaResolver.ResolveGitBranch();
+            string baseSha = GitShaResolver.ResolveBaseSha();
             var sb = new StringBuilder();
             sb.AppendLine("# Unity Visual QA Artifact Index");
             sb.AppendLine($"**Tested HEAD SHA:** `{headSha}`  ");
-            sb.AppendLine($"**Base Commit SHA:** `7e3955cbb92095fda94df58fa34e7ef9e80c7fd9`  ");
+            sb.AppendLine($"**Base Commit SHA:** `{baseSha}`  ");
             sb.AppendLine($"**Working Branch:** `{activeBranch}`  ");
             sb.AppendLine($"**Execution Timestamp:** {DateTime.UtcNow:o}  ");
             sb.AppendLine($"**Engine:** Unity {Application.unityVersion}, Windows x64, Direct3D 11 / HDRP 17.7.0  ");

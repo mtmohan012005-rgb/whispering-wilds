@@ -12,6 +12,7 @@
     "verify-production": "node scripts/verify-production.js",
     "validate": "node scripts/verify-game.js && node scripts/verify-production.js",
     "test": "node scripts/run-all-tests.js",
+    "test:map-data": "node scripts/verify-map-data.js",
     "test:backend": "node scripts/test-backend-security.js",
     "test:cloudsave": "node scripts/test-cloud-save-regression.js",
     "assets:validate": "node scripts/validate-assets.js",

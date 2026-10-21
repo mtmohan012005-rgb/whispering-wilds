@@ -9,32 +9,37 @@ An atmospheric open-world exploration, cultural mystery investigation, and survi
 
 ---
 
-## 🎮 1. Unity 6 Standalone PC Release
+## 🎮 1. Getting and Running the Windows PC Game
 
-The game is delivered as a standalone Windows x64 executable:
+### Option A: Download Pre-Built Release (Recommended for Players)
 
-- **Executable**: `unity/Build/Windows/TheWhisperingWilds.exe`
-- **Engine Version**: Unity 6000.6.3f1 (Release x64)
-- **Render Pipeline**: High Definition Render Pipeline (HDRP 17.7.0)
-- **Target Graphics API**: Direct3D 11 & Direct3D 12
-- **Unity Project Directory**: [`unity/`](./unity/)
-- **Architecture Documentation**: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
-- **Project Health**: [`docs/PROJECT_HEALTH.md`](./docs/PROJECT_HEALTH.md)
+Pre-built native Windows x64 packages are distributed via [GitHub Releases](https://github.com/mtmohan012005-rgb/whispering-wilds/releases):
 
-### Running the Standalone PC Game
+1. Go to [Releases](https://github.com/mtmohan012005-rgb/whispering-wilds/releases) and download `TheWhisperingWilds-v1.0.0-windows-x64.zip`.
+2. Extract the ZIP archive to any directory on Windows 10/11 x64.
+3. Double-click `TheWhisperingWilds.exe` to launch the game.
+4. Verify package checksum (SHA-256: `6F2D73A01F3DED83D632450C1341247ABE93F6CBFB0450C21926CEA4686A9A58`).
+
+### Option B: Build From Source (For Developers)
+
+The Git repository contains complete project source code, scenes, and assets (binaries are excluded from Git history):
 
 ```powershell
-# Launch using the PowerShell or Batch launcher:
-.\Launch-Game-PC.ps1
-# Or run the built executable directly:
+# 1. Build the production Windows standalone player:
+powershell -ExecutionPolicy Bypass -File scripts/run-unity-audits.ps1 -Action build
+
+# 2. Run the newly compiled standalone executable:
 & ".\unity\Build\Windows\TheWhisperingWilds.exe"
+
+# 3. (Optional) Package a distributable release ZIP with manifest:
+powershell -ExecutionPolicy Bypass -File scripts/package-release.ps1
 ```
 
 ### Opening in Unity 6 Editor
 
 1. Open **Unity Hub**.
 2. Click **Add** $\rightarrow$ **Add project from disk**.
-3. Select the `unity/` folder (or `C:\Users\mohan\My project`).
+3. Select the `unity/` folder of this repository.
 4. Ensure the Editor version is **Unity 6 (6000.6.3f1)** with HDRP.
 5. Open `Assets/_Project/Scenes/00_Boot.unity` and click **Play**.
 

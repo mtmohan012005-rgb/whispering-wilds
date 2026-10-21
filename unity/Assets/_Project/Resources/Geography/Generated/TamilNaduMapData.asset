@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1690eee9b97b6445b0e600efdc1ea67, type: 3}
   m_Name: TamilNaduMapData
-  m_EditorClassIdentifier: Assembly-CSharp::WhisperingWilds.Geography.TamilNaduMapData
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.Geography.TamilNaduMapData
   geoReference: {fileID: 11400000, guid: c8149cb3f6948b5449a7d337f377fb96, type: 2}
   stateOutline: {fileID: 4300000, guid: 77865b951b453df4dace8155f72a5edc, type: 2}
   stateOutlineSource: Natural Earth 10m admin-1 (Tamil Nadu) - public domain
@@ -26,6 +26,10 @@ MonoBehaviour:
     sourceDataset: tn_10m_rivers_lake_centerlines.geojson
     mesh: {fileID: 4300000, guid: 4b0dff660a8353a46aa539714efeeef1, type: 2}
     featureCount: 9
+  - label: Penner
+    sourceDataset: tn_10m_rivers_lake_centerlines.geojson
+    mesh: {fileID: 4300000, guid: 496d66a8e50102d43aea565c3608443f, type: 2}
+    featureCount: 1
   - label: Palar
     sourceDataset: tn_10m_rivers_lake_centerlines.geojson
     mesh: {fileID: 4300000, guid: eefca0817800ee842ac4cfb5497200ce, type: 2}
@@ -38,15 +42,15 @@ MonoBehaviour:
   - label: Major Highway
     sourceDataset: Natural Earth 10m roads (public domain)
     mesh: {fileID: 4300000, guid: 9c7c1f73ac4ae0f4ba58e882f8170934, type: 2}
-    featureCount: 8
-  - label: Road
-    sourceDataset: Natural Earth 10m roads (public domain)
-    mesh: {fileID: 4300000, guid: 46541a98880edf546a745af2eb7618dc, type: 2}
-    featureCount: 9
+    featureCount: 11
   - label: Unknown
     sourceDataset: Natural Earth 10m roads (public domain)
     mesh: {fileID: 4300000, guid: 8828831f992201a49914184217e313e6, type: 2}
-    featureCount: 3
+    featureCount: 5
+  - label: Road
+    sourceDataset: Natural Earth 10m roads (public domain)
+    mesh: {fileID: 4300000, guid: 46541a98880edf546a745af2eb7618dc, type: 2}
+    featureCount: 12
   places:
   - nameEnglish: Chennai
     nameTamil: "\u0B9A\u0BC6\u0BA9\u0BCD\u0BA9\u0BC8"
@@ -181,6 +185,34 @@ MonoBehaviour:
     longitude: 78.083337
     worldPosition: {x: -31.346987, y: 0, z: 17.853086}
     population: 153830
+  - nameEnglish: Mamallapuram
+    nameTamil: "\u0BAE\u0BBE\u0BAE\u0BB2\u0BCD\u0BB2\u0BAA\u0BC1\u0BB0\u0BAE\u0BCD"
+    kind: UNESCO granite monolith heritage center
+    latitude: 12.6186
+    longitude: 80.1983
+    worldPosition: {x: 199.92708, y: 0, z: 203.55882}
+    population: 0
+  - nameEnglish: Pichavaram
+    nameTamil: "\u0BAA\u0BBF\u0B9A\u0BCD\u0B9A\u0BBE\u0BB5\u0BB0\u0BAE\u0BCD"
+    kind: Tidal mangrove estuarine ecosystem
+    latitude: 11.4289
+    longitude: 79.7797
+    worldPosition: {x: 154.1526, y: 0, z: 71.122025}
+    population: 0
+  - nameEnglish: Chettinad
+    nameTamil: "\u0B9A\u0BC6\u0B9F\u0BCD\u0B9F\u0BBF\u0BA8\u0BBE\u0B9F\u0BC1"
+    kind: Kanadukathan merchant heritage quarter
+    latitude: 10.0673
+    longitude: 78.7844
+    worldPosition: {x: 45.3152, y: 0, z: -80.4506}
+    population: 0
+  - nameEnglish: Nilgiris
+    nameTamil: "\u0BA8\u0BC0\u0BB2\u0B95\u0BBF\u0BB0\u0BBF"
+    kind: Shola-tea montane biosphere sanctuary
+    latitude: 11.4102
+    longitude: 76.695
+    worldPosition: {x: -183.16351, y: 0, z: 69.04035}
+    population: 0
   regionCells:
   - {fileID: 11400000, guid: 538f9b1e31e1227438f76605a0155b07, type: 2}
   - {fileID: 11400000, guid: 4ee6024b0a600914c9bc5b9aa9e67b62, type: 2}
@@ -196,4 +228,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: af44f6fa6c20c21489e992e11789e201, type: 2}
   licenceSummary: Natural Earth (public domain) + OpenStreetMap (ODbL). See unity/MapData/SOURCES_AND_LICENSES.md
   generatedByPipeline: TamilNaduMapImporter v1
-  generatedAtUtc: 2026-10-02 19:38:03Z
+  generatedAtUtc: 2026-10-21 05:07:13Z

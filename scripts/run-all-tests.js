@@ -13,8 +13,9 @@
  *   TEST_TIMEOUT_MS   — Per-test-suite timeout in ms (default: 120000)
  */
 
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const http = require('http');
+const net = require('net');
 const path = require('path');
 
 const SERVER_PORT = parseInt(process.env.TEST_SERVER_PORT, 10) || 3000;
@@ -24,6 +25,7 @@ const TEST_TIMEOUT_MS = parseInt(process.env.TEST_TIMEOUT_MS, 10) || 120000; // 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
 let serverStopped = false;
+let serverProcess = null;
 
 function waitForServerReady(timeoutMs) {
   return new Promise((resolve) => {
@@ -55,6 +57,31 @@ function waitForServerReady(timeoutMs) {
     };
     
     check();
+  });
+}
+
+function verifyPortReleased(port, timeoutMs = 5000) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const tryBind = () => {
+      const tester = net.createServer();
+      tester.once('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+          if (Date.now() - start < timeoutMs) {
+            setTimeout(tryBind, 200);
+          } else {
+            reject(new Error(`Port ${port} still in use after ${timeoutMs}ms`));
+          }
+        } else {
+          resolve();
+        }
+      });
+      tester.once('listening', () => {
+        tester.close(() => resolve());
+      });
+      tester.listen(port);
+    };
+    tryBind();
   });
 }
 
@@ -97,10 +124,30 @@ function stopServer() {
   if (serverStopped) return;
   serverStopped = true;
   console.log('\n🛑 Stopping backend server...');
+  if (!serverProcess) {
+    console.log('Server process was not spawned or already null.');
+    return;
+  }
+  const pid = serverProcess.pid;
   try {
-    serverProcess.kill('SIGTERM');
+    if (process.platform === 'win32') {
+      try {
+        execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore' });
+      } catch (e) {
+        // Process might have already exited
+      }
+    } else {
+      serverProcess.kill('SIGTERM');
+      setTimeout(() => {
+        try {
+          if (!serverProcess.killed) {
+            serverProcess.kill('SIGKILL');
+          }
+        } catch (_) {}
+      }, 2000).unref();
+    }
   } catch (e) {
-    // Process may already be dead
+    console.warn(`[run-all-tests] Notice stopping server: ${e.message}`);
   }
 }
 
@@ -111,7 +158,6 @@ async function main() {
   console.log('Starting backend server...');
   
   // Start the backend server
-  let serverProcess;
   try {
     serverProcess = spawn('node', ['server.js'], {
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -191,13 +237,36 @@ async function main() {
     );
     results.push(assetsResult);
     if (assetsResult.code !== 0) hasFailure = true;
+
+    // Tamil Nadu Map Data verification
+    const mapDataResult = await runTestSuite(
+      'Tamil Nadu Map Data Verification',
+      'scripts/verify-map-data.js'
+    );
+    results.push(mapDataResult);
+    if (mapDataResult.code !== 0) hasFailure = true;
+
+    // Server cleanup regression
+    const cleanupResult = await runTestSuite(
+      'Server Cleanup Regression',
+      'scripts/verify-server-cleanup.js'
+    );
+    results.push(cleanupResult);
+    if (cleanupResult.code !== 0) hasFailure = true;
     
   } catch (error) {
     console.error('❌ Test runner error:', error.message);
     hasFailure = true;
   } finally {
-    // Stop the server
+    // Stop the server and verify port is released
     stopServer();
+    try {
+      await verifyPortReleased(SERVER_PORT, 5000);
+      console.log(`✅ Test server stopped; port ${SERVER_PORT} is free and reusable.`);
+    } catch (e) {
+      console.error(`⚠️ Port release check failed: ${e.message}`);
+      hasFailure = true;
+    }
   }
   
   // Print summary
