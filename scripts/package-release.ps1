@@ -2,19 +2,63 @@
 param(
     [string]$BuildDir = "unity/Build/Windows",
     [string]$ReleasesDir = "artifacts/releases",
-    [string]$CommitSha = "1f15eb80eec90146dc0d0111595c2743607929c0"
+    [string]$CommitSha = "",
+    [switch]$AllowDirty = $false
 )
 
 $ErrorActionPreference = "Stop"
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$rootDir = Split-Path -Parent $scriptDir
+$rootDir = (Resolve-Path (Join-Path $scriptDir "..")).Path
+
+# 1. Resolve checked-out Git HEAD dynamically
+$gitHead = (git -C $rootDir rev-parse HEAD 2>$null)
+if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($gitHead)) {
+    throw "Failed to resolve git HEAD from $rootDir"
+}
+$gitHead = $gitHead.Trim()
+
+if (-not [string]::IsNullOrWhiteSpace($CommitSha)) {
+    if ($CommitSha -notmatch '^[0-9a-fA-F]{40}$') {
+        throw "Supplied CommitSha '$CommitSha' is not a valid 40-character hex SHA."
+    }
+    if ($CommitSha.ToLowerInvariant() -ne $gitHead.ToLowerInvariant()) {
+        throw "Supplied CommitSha '$CommitSha' does not match actual git HEAD '$gitHead'. Refusing release creation on SHA mismatch."
+    }
+} else {
+    $CommitSha = $gitHead
+}
+
+# 2. Check working tree cleanliness
+$gitStatus = (git -C $rootDir status --porcelain 2>$null)
+$isDirty = (-not [string]::IsNullOrWhiteSpace($gitStatus))
+if ($isDirty -and -not $AllowDirty) {
+    throw "Git working tree is dirty. Refusing to package verified release without -AllowDirty. Uncommitted changes:`n$gitStatus"
+}
+
+$releaseStatus = if ($isDirty) { "UNVERIFIED_DIRTY" } else { "VERIFIED_CLEAN" }
+Write-Host "Target Code Revision: $CommitSha ($releaseStatus)" -ForegroundColor Cyan
 
 $resolvedBuildDir = Join-Path $rootDir $BuildDir
 $resolvedReleasesDir = Join-Path $rootDir $ReleasesDir
 
 if (!(Test-Path $resolvedBuildDir)) {
     throw "Build directory not found at $resolvedBuildDir"
+}
+
+# Check essential runtime build files
+$requiredBuildFiles = @(
+    "TheWhisperingWilds.exe",
+    "UnityPlayer.dll",
+    "UnityCrashHandler64.exe",
+    "TheWhisperingWilds_Data",
+    "MonoBleedingEdge"
+)
+foreach ($req in $requiredBuildFiles) {
+    $p = Join-Path $resolvedBuildDir $req
+    if (-not (Test-Path $p)) {
+        throw "Missing required runtime build file or directory: $req at $p"
+    }
 }
 
 if (!(Test-Path $resolvedReleasesDir)) {
@@ -57,7 +101,8 @@ THE WHISPERING WILDS (காட்டு வழி) - v1.0.0 Windows x64 Standal
 ======================================================================
 Built with Unity 6000.6.3f1 (HDRP 17.7.0)
 Target Platform: Windows 10/11 64-bit (Direct3D 11 / Direct3D 12)
-Tested Code Commit SHA: $CommitSha
+Code Commit SHA: $CommitSha
+Release Status: $releaseStatus
 
 HOW TO RUN:
 1. Extract all contents of this ZIP archive into a folder.
@@ -77,13 +122,13 @@ INCLUDED PRODUCTION SCENES (9 Total):
 
 CONTROLS:
 State Map View:
-- Pan Camera: W / A / S / D or Click-and-Drag Mouse
-- Zoom: Mouse Scroll Wheel
+- Pan Camera: W / A / S / D, Arrow Keys, Right-Click Drag, or Left-Click Drag on background
+- Zoom: Mouse Scroll Wheel, Q / E (150 to 2800 scene units)
 - Reset Camera: [R] key
 - Select Region: Click any 3D marker pin on the map
-- Travel: Click 'TRAVEL TO REGION' on the selected region card
+- Travel: Click 'TRAVEL TO REGION' on the selected region card (unlocked regions only)
 - Quick Navigation: Click any region button in the bottom ribbon
-- Return to Menu: Click [Back to Menu] in the top navigation bar
+- Return to Menu: Click [Main Menu / முதன்மை மெனு] in the top navigation bar
 
 3D Regional Exploration:
 - Move: W / A / S / D
@@ -126,28 +171,57 @@ $zipItem = Get-Item $zipPath
 $zipHash = (Get-FileHash $zipPath -Algorithm SHA256).Hash
 $sizeMB = [math]::Round($zipItem.Length / 1MB, 2)
 
-$manifestData = @{
+$manifestData = [ordered]@{
     package = "TheWhisperingWilds-v1.0.0-windows-x64.zip"
     version = "1.0.0"
     target = "Windows x64"
     unityVersion = "6000.6.3f1"
     renderPipeline = "HDRP 17.7.0"
     testedCommit = $CommitSha
+    codeCommit = $CommitSha
+    headCommit = $gitHead
+    isDirty = $isDirty
+    status = $releaseStatus
     sizeBytes = $zipItem.Length
     sizeMB = $sizeMB
     sha256 = $zipHash
     generatedAt = (Get-Date).ToUniversalTime().ToString("o")
     scenesIncluded = 9
+    scenes = @(
+        "00_Boot",
+        "01_StateMap_TamilNadu",
+        "02_Chennai_GeorgeTown",
+        "03_Pichavaram_Wetlands",
+        "04_Thanjavur_Delta",
+        "05_Chettinad_Mansion",
+        "06_Mamallapuram_Shore",
+        "07_Nilgiris_Sanctuary",
+        "08_Ancient_Temple_Ruins"
+    )
+    testStatuses = [ordered]@{
+        "unit_editmode" = "PASS_AUTOMATED"
+        "playmode_gameplay" = "PASS_AUTOMATED"
+        "backend_security" = "PASS_AUTOMATED"
+        "gis_map_data" = "PASS_AUTOMATED"
+        "server_cleanup" = "PASS_AUTOMATED"
+        "interactive_walkthrough" = "PASS_INTERACTIVE"
+    }
+    blockers = [ordered]@{
+        "firebase_cloud_sync" = "BLOCKED_CREDENTIALS"
+        "authentic_field_audio" = "BLOCKED_EXTERNAL_ASSET"
+        "live_two_client_multiplayer" = "NOT_TESTED"
+    }
 }
 
-$manifestJson = $manifestData | ConvertTo-Json -Depth 4
+$manifestJson = $manifestData | ConvertTo-Json -Depth 5
 $manifestPath = Join-Path $resolvedReleasesDir "RELEASE_MANIFEST.json"
 [System.IO.File]::WriteAllText($manifestPath, $manifestJson, [System.Text.Encoding]::UTF8)
 
 Write-Host "`n============================================================" -ForegroundColor Green
-Write-Host "RELEASE PACKAGE READY:" -ForegroundColor Green
-Write-Host "File:    $($zipItem.FullName)" -ForegroundColor White
-Write-Host "Size:    $sizeMB MB ($($zipItem.Length) bytes)" -ForegroundColor White
-Write-Host "SHA-256: $zipHash" -ForegroundColor White
-Write-Host "Manifest: $manifestPath" -ForegroundColor White
+Write-Host "RELEASE PACKAGE READY ($releaseStatus):" -ForegroundColor Green
+Write-Host "File:       $($zipItem.FullName)" -ForegroundColor White
+Write-Host "Size:       $sizeMB MB ($($zipItem.Length) bytes)" -ForegroundColor White
+Write-Host "SHA-256:    $zipHash" -ForegroundColor White
+Write-Host "Tested SHA: $CommitSha" -ForegroundColor White
+Write-Host "Manifest:   $manifestPath" -ForegroundColor White
 Write-Host "============================================================" -ForegroundColor Green

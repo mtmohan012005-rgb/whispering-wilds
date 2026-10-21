@@ -1,0 +1,107 @@
+{
+  "pipelineVersion": "1.0.0",
+  "generatedAtUtc": "2026-10-21T03:39:52.727Z",
+  "projection": {
+    "canonicalOrigin": {
+      "latitude": 10.79,
+      "longitude": 78.37,
+      "description": "Tiruchirappalli geographic center"
+    },
+    "scaleUnitsPerMetre": 0.001,
+    "scaleDescription": "1 scene unit = 1 kilometre (1000 metres)",
+    "axes": "+X = East, +Z = North, +Y = Elevation",
+    "zoomLimits": {
+      "minHeightSceneUnits": 150,
+      "maxHeightSceneUnits": 2800
+    },
+    "model": "Equirectangular projection with cosine latitude correction (cos 10.79 deg)"
+  },
+  "sources": {
+    "admin1": {
+      "name": "Natural Earth 10m Admin-1 States & Provinces",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson",
+      "license": "Public Domain",
+      "version": "v5.1.2 / git:master",
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+    },
+    "coastline": {
+      "name": "Natural Earth 10m Coastline",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_coastline.geojson",
+      "license": "Public Domain",
+      "version": "v5.1.2 / git:master",
+      "attribution": "Made with Natural Earth. Free vector and raster map data @ naturalearthdata.com."
+    },
+    "rivers": {
+      "name": "Natural Earth 10m Rivers & Lake Centerlines",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_lake_centerlines.geojson",
+      "license": "Public Domain / OSM ODbL",
+      "version": "v5.1.2 / git:master",
+      "attribution": "Made with Natural Earth and OpenStreetMap contributors."
+    },
+    "roads": {
+      "name": "Natural Earth 10m Roads & Highways",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_roads.geojson",
+      "license": "Public Domain / OSM ODbL",
+      "version": "v5.1.2 / git:master",
+      "attribution": "Made with Natural Earth and OpenStreetMap contributors."
+    },
+    "geography": {
+      "name": "Natural Earth 10m Physical Geography Regions",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_geography_regions_polys.geojson",
+      "license": "Public Domain",
+      "version": "v5.1.2 / git:master",
+      "attribution": "Made with Natural Earth."
+    },
+    "places": {
+      "name": "Natural Earth 10m Populated Places",
+      "url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_populated_places.geojson",
+      "license": "Public Domain",
+      "version": "v5.1.2 / git:master",
+      "attribution": "Made with Natural Earth."
+    }
+  },
+  "datasets": {
+    "tn_boundary.geojson": {
+      "source": "admin1",
+      "featureCount": 1,
+      "coordinateCount": 1071,
+      "sha256": "9c287073e505ff7654d399f9720b4d967960e61a76a5f07f283ff0a8fd4c8c39",
+      "sizeBytes": 95629
+    },
+    "tn_10m_coastline.geojson": {
+      "source": "coastline",
+      "featureCount": 5,
+      "coordinateCount": 853,
+      "sha256": "dfc13e2d965fde33efcdfda9221578045a311f49c9b74c0d7c700ee4ae0f6441",
+      "sizeBytes": 66463
+    },
+    "tn_10m_rivers_lake_centerlines.geojson": {
+      "source": "rivers",
+      "featureCount": 6,
+      "coordinateCount": 517,
+      "sha256": "f257adedc760cd7df553a8427fac76943e96e6c1f5bc28bc52e226c3719e81e6",
+      "sizeBytes": 41112
+    },
+    "tn_10m_roads.geojson": {
+      "source": "roads",
+      "featureCount": 28,
+      "coordinateCount": 720,
+      "sha256": "88585c0783d36e70af043a182462ac900b6f1b2ed628ced2bddfbd80a3fad226",
+      "sizeBytes": 76458
+    },
+    "tn_10m_geography_regions_polys.geojson": {
+      "source": "geography",
+      "featureCount": 3,
+      "coordinateCount": 17,
+      "sha256": "f00a9d646ecb92f5e111e15211dea1dfaf870256c183b0bfbc70223335f58cf9",
+      "sizeBytes": 2171
+    },
+    "tn_10m_populated_places.geojson": {
+      "source": "places",
+      "featureCount": 12,
+      "coordinateCount": 12,
+      "sha256": "2a1ed25cd1382719e0280d63b985e1b837f2cfa8af01fc400b737cc1238bc408",
+      "sizeBytes": 6175
+    }
+  }
+}

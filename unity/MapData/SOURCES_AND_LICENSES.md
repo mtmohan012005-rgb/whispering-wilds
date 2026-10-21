@@ -32,22 +32,28 @@ All raw geographic datasets utilized in this pipeline are derived from public do
   - West Longitude: `76.20° E` (Nilgiris / Kerala border)
   - East Longitude: `80.35° E` (Coromandel Coast / Point Calimere)
 - **Local Origin (LocalOrigin in `TamilNaduGeoReference`):**
-  - Latitude: `11.0° N`
-  - Longitude: `78.5° E` (Geographic center of Tamil Nadu near Tiruchirappalli)
+  - Latitude: `10.79° N`
+  - Longitude: `78.37° E` (Geographic center of Tamil Nadu near Tiruchirappalli)
 - **Projection Model:**
-  - Equirectangular projection with latitude cosine correction ($\cos(11^\circ) \approx 0.981627$) centered at $(11^\circ\text{ N}, 78.5^\circ\text{ E})$.
-  - Ground scale: 1 unit = 100 meters (or 10 units = 1 km).
+  - Equirectangular projection with latitude cosine correction ($\cos(10.79^\circ) \approx 0.98233$) centered at $(10.79^\circ\text{ N}, 78.37^\circ\text{ E})$.
+  - Ground scale: 1 scene unit = 1 kilometre (`unitsPerMetre = 0.001`).
+  - Orientation: `+X` = East, `+Z` = North, `+Y` = Elevation (metres scaled by `unitsPerMetre`).
+  - Interactive Camera Zoom Range: 150 scene units (regional detail) to 2800 scene units (entire state overview).
 
-## 4. Raw Files (`unity/MapData/Raw/`)
-| File | Format | Features | Description |
+## 4. Raw Files (`unity/MapData/Raw/`) and Provenance Manifest
+All datasets are clipped and verified via `unity/MapData/Tools/clip-to-tamilnadu.mjs` and documented in `unity/MapData/Raw/sources_manifest.json`:
+
+| File | Format | Upstream Source | Description |
 | :--- | :--- | :--- | :--- |
-| `tn_boundary.geojson` | GeoJSON Polygon | State boundary | Outer boundary polygon of Tamil Nadu |
-| `tn_10m_coastline.geojson` | GeoJSON MultiLineString | Coastline | Coromandel and Gulf of Mannar coastlines |
-| `tn_10m_rivers_lake_centerlines.geojson` | GeoJSON FeatureCollection | Rivers | Cauvery, Kollidam, Palar, Vaigai rivers |
-| `tn_10m_roads.geojson` | GeoJSON FeatureCollection | Roads & Highways | Major National Highways connecting all playable regions |
-| `tn_10m_geography_regions_polys.geojson` | GeoJSON FeatureCollection | Physiographic regions | Nilgiris Biosphere and Western Ghats ranges |
-| `tn_10m_populated_places.geojson` | GeoJSON FeatureCollection | Populated places | 12 key historic and regional centers with bilingual names |
+| `tn_boundary.geojson` | GeoJSON Polygon | Natural Earth 10m Admin 1 (`ne_10m_admin_1_states_provinces`) | Traceable state boundary polygon of Tamil Nadu |
+| `tn_10m_coastline.geojson` | GeoJSON MultiLineString | Natural Earth 10m Coastline (`ne_10m_coastline`) | Coromandel and Gulf of Mannar coastlines |
+| `tn_10m_rivers_lake_centerlines.geojson` | GeoJSON FeatureCollection | Natural Earth 10m Rivers & OSM | Cauvery, Kollidam, Palar, Vaigai, Tamirabarani rivers |
+| `tn_10m_roads.geojson` | GeoJSON FeatureCollection | OpenStreetMap / Natural Earth 10m Roads | Major National Highways (NH 16, 32, 81, 83, 38, 181) connecting playable regions |
+| `tn_10m_geography_regions_polys.geojson` | GeoJSON FeatureCollection | Natural Earth 10m Physical Geography | Nilgiris Biosphere and Western Ghats mountain ranges |
+| `tn_10m_populated_places.geojson` | GeoJSON FeatureCollection | Natural Earth 10m Populated Places & Project Anchors | 12 key historic and regional centers with bilingual names |
+| `sources_manifest.json` | JSON Manifest | Upstream metadata | Pinned source URLs, licenses, versions, and SHA-256 checksums |
 
 ## 5. Verification and Regeneration
-- Run `node scripts/verify-map-data.js` to validate RFC 7946 compliance, bounding coordinates, and feature attributes.
-- In Unity Editor, execute menu: `Whispering Wilds -> Geography -> Import Tamil Nadu Map Data` to regenerate runtime ScriptableObjects and meshes.
+- Run `node scripts/verify-map-data.js` (or `npm run test:map-data`) to validate RFC 7946 compliance, bounding coordinates, coordinate finiteness, polygon ring closure, SHA-256 checksums, and anchor coordinates.
+- Run `node unity/MapData/Tools/clip-to-tamilnadu.mjs` to deterministically regenerate `unity/MapData/Raw/*.geojson` from upstream data.
+- In Unity Editor, execute menu: `Whispering Wilds -> Geography -> Import Tamil Nadu Map Data` to regenerate runtime ScriptableObjects and meshes under `Assets/_Project/Resources/Geography/Generated/`.

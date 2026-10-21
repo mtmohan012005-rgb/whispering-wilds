@@ -88,6 +88,8 @@ namespace WhisperingWilds.Geography
             }
         }
 
+        private bool _showCreditsModal = false;
+
         public void OnMarkerHoverExit(StateMapRegionMarker marker)
         {
             if (hoveredRegionName.StartsWith(marker.englishName))
@@ -98,10 +100,37 @@ namespace WhisperingWilds.Geography
 
         public void TravelToSelectedRegion()
         {
-            if (selectedMarker == null) return;
+            if (selectedMarker == null)
+            {
+                Debug.LogWarning("[StateMapHUD] Cannot travel: no region selected.");
+                return;
+            }
 
             string regionId = selectedMarker.regionId;
-            string sceneName = selectedMarker.sceneName;
+            if (string.IsNullOrEmpty(regionId))
+            {
+                Debug.LogWarning("[StateMapHUD] Cannot travel: selected marker has null or empty regionId.");
+                return;
+            }
+
+            if (!TamilNaduGeography.TryGetRegion(regionId, out RegionGeoLocation geo))
+            {
+                Debug.LogWarning($"[StateMapHUD] Cannot travel: unknown region '{regionId}'.");
+                return;
+            }
+
+            if (!selectedMarker.isUnlocked || !RegionUnlocks.IsUnlocked(regionId))
+            {
+                Debug.LogWarning($"[StateMapHUD] Travel rejected: region '{regionId}' is locked.");
+                return;
+            }
+
+            string sceneName = string.IsNullOrEmpty(selectedMarker.sceneName) ? geo.sceneName : selectedMarker.sceneName;
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                Debug.LogWarning($"[StateMapHUD] Cannot travel: no scene assigned for region '{regionId}'.");
+                return;
+            }
 
             Debug.Log($"[StateMapHUD] Initiating travel to region '{regionId}' (Scene: {sceneName})");
 
@@ -109,20 +138,22 @@ namespace WhisperingWilds.Geography
             {
                 RegionalSceneManager.Instance.TravelToRegion(regionId);
             }
-            else if (!string.IsNullOrEmpty(sceneName))
-            {
-                SceneManager.LoadScene(sceneName);
-            }
             else
             {
-                Debug.LogError($"[StateMapHUD] Cannot travel: no scene assigned for region '{regionId}'.");
+                if (Application.isPlaying)
+                {
+                    SceneManager.LoadScene(sceneName);
+                }
             }
         }
 
         public void ReturnToBootMenu()
         {
             Debug.Log("[StateMapHUD] Returning to Main Menu (00_Boot)...");
-            SceneManager.LoadScene("00_Boot");
+            if (Application.isPlaying)
+            {
+                SceneManager.LoadScene("00_Boot");
+            }
         }
 
         private void InitStyles()
@@ -216,6 +247,11 @@ namespace WhisperingWilds.Geography
 
             GUILayout.FlexibleSpace();
 
+            if (GUILayout.Button("Map Data & Credits / வரைபடம்", _buttonStyle, GUILayout.Width(220), GUILayout.Height(36)))
+            {
+                _showCreditsModal = !_showCreditsModal;
+            }
+
             if (GUILayout.Button("Main Menu / முதன்மை மெனு [Esc]", _buttonStyle, GUILayout.Width(220), GUILayout.Height(36)))
             {
                 ReturnToBootMenu();
@@ -224,12 +260,12 @@ namespace WhisperingWilds.Geography
             GUILayout.EndArea();
 
             // 2. Controls & Legend (Top Right)
-            float legendW = 280;
-            float legendH = 175;
+            float legendW = 310;
+            float legendH = 185;
             GUILayout.BeginArea(new Rect(screenW - legendW - 16, 80, legendW, legendH), _panelStyle);
             GUILayout.Label("<b>CONTROLS & LEGEND</b>", _cardSubStyle);
-            GUILayout.Label("• <b>Pan:</b> WASD, Arrows, or Right-Drag", _legendStyle);
-            GUILayout.Label("• <b>Zoom:</b> Scroll Wheel or Q / E", _legendStyle);
+            GUILayout.Label("• <b>Pan:</b> WASD, Arrows, Right-Drag, or Left-Drag", _legendStyle);
+            GUILayout.Label("• <b>Zoom:</b> Scroll Wheel or Q / E (150–2800 units)", _legendStyle);
             GUILayout.Label("• <b>Reset View:</b> [R] key", _legendStyle);
             GUILayout.Space(6);
             GUILayout.Label("<color=#70A0D0>━</color> Coastline & Rivers (Cauvery/Palar)", _legendStyle);
@@ -322,6 +358,39 @@ namespace WhisperingWilds.Geography
 
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
+
+            // 6. Map Data & Credits Modal
+            if (_showCreditsModal)
+            {
+                float modalW = Mathf.Min(680, screenW - 64);
+                float modalH = Mathf.Min(480, screenH - 64);
+                float modalX = (screenW - modalW) / 2f;
+                float modalY = (screenH - modalH) / 2f;
+
+                GUI.depth = -100;
+                GUILayout.BeginArea(new Rect(modalX, modalY, modalW, modalH), _panelStyle);
+                GUILayout.Label("<b>Map Data & Credits (வரைபட தரவு மற்றும் உரிமங்கள்)</b>", _cardTitleStyle);
+                GUILayout.Space(8);
+
+                GUILayout.Label("<b>Natural Earth (Public Domain):</b>", _legendStyle);
+                GUILayout.Label("State outline, coastline, rivers, physical geography, and populated places derived from Natural Earth 10m public domain datasets (naturalearthdata.com).", _bodyStyle);
+                GUILayout.Space(6);
+
+                GUILayout.Label("<b>OpenStreetMap Contributors (ODbL 1.0):</b>", _legendStyle);
+                GUILayout.Label("Major highway corridors (NH 16, NH 32, NH 81, NH 83, NH 38, NH 181) and river centerlines. Contains information from OpenStreetMap, licensed under Open Database License (ODbL) 1.0.", _bodyStyle);
+                GUILayout.Space(6);
+
+                GUILayout.Label("<b>Geographic Coordinate System & Canonical Projection:</b>", _legendStyle);
+                GUILayout.Label("• Canonical Origin: 10.79° N, 78.37° E (Tiruchirappalli center)\n• Scale: 1 scene unit = 1 kilometre (0.001 units/metre)\n• Orientation: +X = East, +Z = North, +Y = Elevation\n• Projection: Equirectangular with cosine latitude correction", _bodyStyle);
+                GUILayout.Space(10);
+
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Close / மூடு [X]", _buttonStyle, GUILayout.Height(36)))
+                {
+                    _showCreditsModal = false;
+                }
+                GUILayout.EndArea();
+            }
         }
 
         private string GetRegionBiomeDesc(string regionId)

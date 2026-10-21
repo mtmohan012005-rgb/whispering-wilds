@@ -29,13 +29,27 @@ namespace WhisperingWilds.Geography
         [SerializeField] private float smoothDampTime = 0.08f;
 
         [Header("Height / Zoom Limits")]
+        [Tooltip("Minimum camera height / closest zoom (150 scene units).")]
         [SerializeField] private float minHeight = 150f;
+        [Tooltip("Maximum camera height / state overview (2800 scene units).")]
         [SerializeField] private float maxHeight = 2800f;
 
         [Header("Map Extents / Clamping")]
         [SerializeField] private bool enableClamping = true;
         [SerializeField] private Vector2 mapCenter = new Vector2(0f, 0f);
         [SerializeField] private Vector2 mapExtents = new Vector2(1500f, 1800f);
+
+        public float MinHeight => minHeight;
+        public float MaxHeight => maxHeight;
+        public Vector3 TargetPosition => _targetPosition;
+        public Vector3 InitialPosition => _initialPosition;
+        public bool IsClampingEnabled => enableClamping;
+
+        public void SetTargetPositionForTesting(Vector3 pos)
+        {
+            _targetPosition = pos;
+            ClampTargetPosition();
+        }
 
         private Camera _camera;
         private Vector3 _targetPosition;
@@ -44,6 +58,7 @@ namespace WhisperingWilds.Geography
         private Quaternion _initialRotation;
         private Vector3 _lastMousePosition;
         private bool _isDragging = false;
+        private bool _leftDragAllowed = false;
 
         private void Awake()
         {
@@ -98,8 +113,35 @@ namespace WhisperingWilds.Geography
         private void HandleMouseDrag()
         {
             // Right-click or Middle-click drag always pans
-            // Left-click pans if not clicking on an interactive marker UI
-            bool dragRequested = Input.GetMouseButton(1) || Input.GetMouseButton(2);
+            // Left-click pans when initiated on non-interactive background (not over markers or UI)
+            if (Input.GetMouseButtonDown(0))
+            {
+                bool hitInteractive = false;
+                if (UnityEngine.EventSystems.EventSystem.current != null &&
+                    UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                {
+                    hitInteractive = true;
+                }
+                else if (_camera != null)
+                {
+                    Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+                    if (Physics.Raycast(ray, out RaycastHit hit, 5000f))
+                    {
+                        if (hit.collider.GetComponent<StateMapRegionMarker>() != null)
+                        {
+                            hitInteractive = true;
+                        }
+                    }
+                }
+                _leftDragAllowed = !hitInteractive;
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                _leftDragAllowed = false;
+            }
+
+            bool dragRequested = Input.GetMouseButton(1) || Input.GetMouseButton(2) || (Input.GetMouseButton(0) && _leftDragAllowed);
 
             if (dragRequested)
             {

@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet("rig", "asset", "scenes", "capture", "build", "editmode", "playmode")]
+    [ValidateSet("rig", "asset", "scenes", "capture", "build", "editmode", "playmode", "map")]
     [string]$Action
 )
 
@@ -54,6 +54,11 @@ switch ($Action) {
     "playmode" {
         $logName = "unity_playmode_tests.log"
         $extraArgs += @("-runTests", "-testPlatform", "PlayMode", "-testResults", (Join-Path $artifactsDir "test_results_PlayMode.xml"))
+    }
+    "map" {
+        $method = "WhisperingWilds.Editor.Geography.TamilNaduMapImporter.ImportAll"
+        $logName = "unity_map_import.log"
+        $extraArgs += @("-quit", "-nographics")
     }
 }
 
