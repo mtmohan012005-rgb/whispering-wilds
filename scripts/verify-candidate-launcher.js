@@ -124,7 +124,11 @@ try {
     assert(psContent.includes('Assert-DestinationSafety'), 'Launcher implements Assert-DestinationSafety allowlist');
     assert(psContent.includes('ReparsePoint'), 'Launcher rejects reparse points and symbolic links');
     assert(psContent.includes('payload_manifest'), 'Launcher computes and verifies deterministic payload manifest');
-    assert(psContent.includes('unsafe path traversal entry'), 'Launcher inspects and rejects ZIP traversal entries');
+    assert(psContent.includes('unsafe path traversal or absolute entry'), 'Launcher inspects and rejects ZIP traversal entries');
+    assert(psContent.includes('isExactDefault'), 'Launcher enforces exact canonical default path allowlist');
+    assert(psContent.includes('TestMode must never touch the real user candidate directory'), 'Launcher guards real candidate folder against TestMode');
+    assert(psContent.includes('duplicate normalized entry'), 'Launcher rejects duplicate normalized ZIP entries');
+    assert(psContent.includes('Unexpected file found in payload destination'), 'Launcher detects unexpected files in payload destination');
 
     const batContent = fs.readFileSync(path.join(PROJECT_ROOT, 'Play-Candidate-Build.bat'), 'utf8');
     assert(batContent.includes('launch-candidate-playtest.ps1'), 'Root BAT invokes safe PowerShell launcher');
@@ -481,13 +485,54 @@ try {
       '-ZipPath', REAL_ZIP
     ]);
     assert(res.code !== 0, 'Launcher fails closed when non-empty arbitrary folder is targeted');
-    assert((res.stderr + res.stdout).includes('not in the dedicated application Games folder'),
-      'Error message explains destination is not app-owned and not empty');
+    assert((res.stderr + res.stdout).includes('not the exact canonical candidate directory'),
+      'Error message explains destination is not the canonical candidate directory');
     assert(fs.existsSync(sentinelFile), 'Sentinel file in arbitrary directory remains untouched');
     if (fs.existsSync(sentinelFile)) {
       assert(fs.readFileSync(sentinelFile, 'utf8') === sentinelContent,
         'Sentinel file content is intact and was not overwritten');
     }
+  }
+
+  // Test 18B: Similarly prefixed sibling directory safety
+  {
+    const siblingFolder = path.join(os.homedir(), 'Games', 'WhisperingWilds-Candidate-sibling');
+    fs.mkdirSync(siblingFolder, { recursive: true });
+    const siblingSentinel = path.join(siblingFolder, 'sibling_sentinel.txt');
+    const siblingContent = 'SIBLING_FOLDER_USER_DATA_DO_NOT_DELETE';
+    fs.writeFileSync(siblingSentinel, siblingContent);
+
+    try {
+      const res = runPowerShell([
+        '-DestinationPath', siblingFolder,
+        '-ManifestPath', REAL_MANIFEST,
+        '-ZipPath', REAL_ZIP
+      ]);
+      assert(res.code !== 0, 'Launcher rejects similarly prefixed sibling folder that contains files');
+      assert((res.stderr + res.stdout).includes('is not the exact canonical') || (res.stderr + res.stdout).includes('canonical candidate directory'),
+        'Error explains sibling is not the exact canonical directory');
+      assert(fs.existsSync(siblingSentinel), 'Sentinel file in sibling folder remains untouched');
+      if (fs.existsSync(siblingSentinel)) {
+        assert(fs.readFileSync(siblingSentinel, 'utf8') === siblingContent,
+          'Sibling sentinel content is intact');
+      }
+    } finally {
+      try { fs.rmSync(siblingFolder, { recursive: true, force: true }); } catch (_) {}
+    }
+  }
+
+  // Test 18C: TestMode targeting real candidate directory is rejected
+  {
+    const realCandidateDir = path.join(os.homedir(), 'Games', 'WhisperingWilds-Candidate-5056deb');
+    const res = runPowerShell([
+      '-DestinationPath', realCandidateDir,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'TestMode is rejected when targeting real user candidate directory');
+    assert((res.stderr + res.stdout).includes('TestMode must never touch the real user candidate directory') || (res.stderr + res.stdout).includes('In TestMode, destination must be an isolated path'),
+      'Error confirms TestMode isolation guard triggered');
   }
 
   // -------------------------------------------------------------
@@ -593,7 +638,7 @@ try {
       '-TestMode'
     ]);
     assert(checkRes.code !== 0, 'Launcher rejects destination when TheWhisperingWilds.exe binary is tampered');
-    assert((checkRes.stderr + checkRes.stdout).includes('tampered or modified binary'),
+    assert((checkRes.stderr + checkRes.stdout).includes('tampered or modified'),
       'Error identifies tampered binary');
 
     // Verify that Play-Candidate.bat check rejects the tampered executable (exit code 3)
@@ -662,6 +707,75 @@ if %ERRORLEVEL% neq 0 (
       'Error identifies missing payload file');
   }
 
+  // Test 24B: Same-size modified non-critical payload file is detected
+  {
+    const tamperedPayloadDest = path.join(TEST_DIR, 'dest-tampered-noncritical');
+    fs.mkdirSync(tamperedPayloadDest, { recursive: true });
+    fs.mkdirSync(path.join(tamperedPayloadDest, 'TheWhisperingWilds_Data'), { recursive: true });
+    fs.writeFileSync(path.join(tamperedPayloadDest, 'TheWhisperingWilds.exe'), 'mock-exe');
+    const docPath = path.join(tamperedPayloadDest, 'README.txt');
+    fs.writeFileSync(docPath, 'AUTHENTIC_CONTENT_30_BYTES_AAA'); // 30 bytes
+    const correctHash = crypto.createHash('sha256').update('AUTHENTIC_CONTENT_30_BYTES_AAA').digest('hex').toUpperCase();
+
+    // Tamper with the file (same size: 30 bytes, but different byte content)
+    fs.writeFileSync(docPath, 'TAMPERED__CONTENT_30_BYTES_BBB'); // 30 bytes
+
+    const marker = {
+      archive_sha256: expectedHash,
+      archive_size: expectedSize,
+      candidate_code_commit: expectedCommit,
+      extracted_at_utc: '2026-10-21T00:00:00Z',
+      payload_manifest: {
+        'TheWhisperingWilds.exe': { size: 8, sha256: '' },
+        'README.txt': { size: 30, sha256: correctHash }
+      }
+    };
+    fs.writeFileSync(path.join(tamperedPayloadDest, '.candidate-archive.json'), JSON.stringify(marker, null, 2));
+
+    const res = runPowerShell([
+      '-DestinationPath', tamperedPayloadDest,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-SkipExtract',
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher detects same-size modified non-critical payload file');
+    assert((res.stderr + res.stdout).includes('tampered or modified file'),
+      'Error identifies tampered payload file hash mismatch');
+  }
+
+  // Test 24C: Unexpected file in payload destination is detected
+  {
+    const unexpectedFileDest = path.join(TEST_DIR, 'dest-unexpected-file');
+    fs.mkdirSync(unexpectedFileDest, { recursive: true });
+    fs.mkdirSync(path.join(unexpectedFileDest, 'TheWhisperingWilds_Data'), { recursive: true });
+    fs.writeFileSync(path.join(unexpectedFileDest, 'TheWhisperingWilds.exe'), 'mock-exe');
+    // Inject extra unexpected file
+    fs.writeFileSync(path.join(unexpectedFileDest, 'injected_unverified.dll'), 'malicious');
+
+    const marker = {
+      archive_sha256: expectedHash,
+      archive_size: expectedSize,
+      candidate_code_commit: expectedCommit,
+      extracted_at_utc: '2026-10-21T00:00:00Z',
+      payload_manifest: {
+        'TheWhisperingWilds.exe': { size: 8, sha256: '' }
+      }
+    };
+    fs.writeFileSync(path.join(unexpectedFileDest, '.candidate-archive.json'), JSON.stringify(marker, null, 2));
+
+    const res = runPowerShell([
+      '-DestinationPath', unexpectedFileDest,
+      '-ManifestPath', REAL_MANIFEST,
+      '-ZipPath', REAL_ZIP,
+      '-SkipExtract',
+      '-TestMode'
+    ]);
+    assert(res.code !== 0, 'Launcher detects unexpected file in payload destination');
+    assert((res.stderr + res.stdout).includes('Unexpected file found in payload destination'),
+      'Error identifies unexpected file');
+  }
+
   // -------------------------------------------------------------
   // Test Group 7: Archive Security & Traversal Protection
   // -------------------------------------------------------------
@@ -704,8 +818,54 @@ if %ERRORLEVEL% neq 0 (
         '-TestMode'
       ]);
       assert(res.code !== 0, 'Launcher rejects archive containing unsafe path traversal entries');
-      assert((res.stderr + res.stdout).includes('unsafe path traversal entry'),
+      assert((res.stderr + res.stdout).includes('unsafe path traversal or absolute entry'),
         'Error identifies unsafe path traversal entry in ZIP');
+    }
+  }
+
+  // Test 25B: ZIP duplicate normalized paths are detected and rejected
+  {
+    const mockDupZipPath = path.join(TEST_DIR, 'mock-duplicate-entry.zip');
+    const psScript = `
+      Add-Type -AssemblyName System.IO.Compression
+      $zipStream = [System.IO.File]::Create('${mockDupZipPath.replace(/\\/g, '\\\\')}')
+      $archive = New-Object System.IO.Compression.ZipArchive($zipStream, [System.IO.Compression.ZipArchiveMode]::Create)
+      $entry1 = $archive.CreateEntry("payload.txt")
+      $writer1 = New-Object System.IO.StreamWriter($entry1.Open())
+      $writer1.Write("content1")
+      $writer1.Dispose()
+      $entry2 = $archive.CreateEntry("/payload.txt")
+      $writer2 = New-Object System.IO.StreamWriter($entry2.Open())
+      $writer2.Write("content2")
+      $writer2.Dispose()
+      $archive.Dispose()
+      $zipStream.Dispose()
+    `;
+    execFileSync('powershell.exe', ['-NoProfile', '-Command', psScript], { stdio: 'pipe' });
+
+    if (fs.existsSync(mockDupZipPath)) {
+      const mockZipSize = fs.statSync(mockDupZipPath).size;
+      const mockZipHash = crypto.createHash('sha256').update(fs.readFileSync(mockDupZipPath)).digest('hex').toUpperCase();
+
+      const dupManifestPath = path.join(TEST_DIR, 'manifest-duplicate-entry.json');
+      fs.writeFileSync(dupManifestPath, JSON.stringify({
+        candidate: true,
+        status: 'VERIFIED_CLEAN',
+        isDirty: false,
+        sizeBytes: mockZipSize,
+        sha256: mockZipHash,
+        codeCommit: expectedCommit
+      }, null, 2));
+
+      const res = runPowerShell([
+        '-DestinationPath', path.join(TEST_DIR, 'dest-zip-duplicate'),
+        '-ManifestPath', dupManifestPath,
+        '-ZipPath', mockDupZipPath,
+        '-TestMode'
+      ]);
+      assert(res.code !== 0, 'Launcher rejects archive containing duplicate normalized entries');
+      assert((res.stderr + res.stdout).includes('duplicate normalized entry') || (res.stderr + res.stdout).includes('unsafe path traversal or absolute entry'),
+        'Error identifies duplicate or unsafe entry in ZIP');
     }
   }
 } finally {

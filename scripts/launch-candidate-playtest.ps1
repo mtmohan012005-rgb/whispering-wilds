@@ -119,6 +119,10 @@ function Assert-DestinationSafety {
 
     # In TestMode: destination must be an isolated temporary path under OS temp directory
     if ($InTestMode) {
+        $canonicalDefault = [System.IO.Path]::GetFullPath((Join-Path $env:USERPROFILE "Games\WhisperingWilds-Candidate-5056deb")).TrimEnd('\', '/')
+        if ($canonical.TrimEnd('\', '/') -eq $canonicalDefault) {
+            throw "Safety guard (-TestMode): TestMode must never touch the real user candidate directory: '$canonical'."
+        }
         $tempRoot = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\', '/')
         if (-not $canonical.StartsWith($tempRoot + '\', [System.StringComparison]::OrdinalIgnoreCase)) {
             throw "Safety guard (-TestMode): In TestMode, destination must be an isolated path under the OS temp directory: '$canonical'."
@@ -126,15 +130,15 @@ function Assert-DestinationSafety {
         return $canonical
     }
 
-    # In normal launch mode: must match the application-owned candidate directory pattern
-    $allowedGamesPrefix = [System.IO.Path]::GetFullPath((Join-Path $env:USERPROFILE "Games\WhisperingWilds-Candidate-")).TrimEnd('\', '/')
-    $isAllowedPrefix = $canonical.StartsWith($allowedGamesPrefix, [System.StringComparison]::OrdinalIgnoreCase)
+    # In normal launch mode: permit destructive refresh only for the exact canonical default path
+    $canonicalDefault = [System.IO.Path]::GetFullPath((Join-Path $env:USERPROFILE "Games\WhisperingWilds-Candidate-5056deb")).TrimEnd('\', '/')
+    $isExactDefault = ($canonical.TrimEnd('\', '/') -eq $canonicalDefault)
 
-    if (-not $isAllowedPrefix) {
+    if (-not $isExactDefault) {
         if (Test-Path $canonical) {
             $existingItems = Get-ChildItem -LiteralPath $canonical -Force -ErrorAction SilentlyContinue
             if ($existingItems -and $existingItems.Count -gt 0) {
-                throw "Safety guard: Destination '$canonical' is not in the dedicated application Games folder ($allowedGamesPrefix*) and is not empty. A missing or malformed provenance marker must never authorize recursive deletion of an arbitrary existing folder. Please choose an empty directory or use the default candidate location."
+                throw "Safety guard: Destination '$canonical' is not the exact canonical candidate directory ('$canonicalDefault') and already contains files. To prevent accidental data loss, destructive refresh is restricted exclusively to the canonical candidate directory. For alternate locations, please supply an empty directory."
             }
         }
     }
@@ -217,15 +221,21 @@ if ($actualHash.ToUpperInvariant() -ne $expectedHash.ToUpperInvariant()) {
     throw "Candidate ZIP verification FAILED: SHA-256 hash mismatch. Actual $actualHash != Expected $expectedHash."
 }
 
-# Inspect ZIP entries for path traversal vulnerabilities
+# Inspect ZIP entries for path traversal and duplicate normalized path vulnerabilities
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zipArchive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $ZipPath).Path)
 try {
+    $seenEntries = New-Object System.Collections.Generic.HashSet[string]([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($entry in $zipArchive.Entries) {
         $entryName = $entry.FullName
         if ($entryName -match '^\s*[/\\]' -or $entryName -match '\.\.[/\\]' -or $entryName -match '^[a-zA-Z]:') {
-            throw "Security check failed: Candidate ZIP contains unsafe path traversal entry: '$entryName'."
+            throw "Security check failed: Candidate ZIP contains unsafe path traversal or absolute entry: '$entryName'."
         }
+        $normalizedEntry = $entryName.Replace('\', '/').TrimStart('/')
+        if ($seenEntries.Contains($normalizedEntry)) {
+            throw "Security check failed: Candidate ZIP contains duplicate normalized entry: '$entryName'."
+        }
+        $seenEntries.Add($normalizedEntry) | Out-Null
     }
 } finally {
     $zipArchive.Dispose()
@@ -318,12 +328,23 @@ function Test-CandidateProvenance {
                 return @{ Valid = $false; Reason = "Payload file size mismatch for $relPath (Expected: $($expectedFileInfo.size), Found: $($currentFile.Length))" }
             }
 
-            # Check hash on critical binaries
-            if ($expectedFileInfo.sha256 -and ($relPath -eq "TheWhisperingWilds.exe" -or $relPath.StartsWith("TheWhisperingWilds_Data/") -or $relPath -eq "UnityPlayer.dll")) {
+            # Check hash on every payload file
+            if ($expectedFileInfo.sha256) {
                 $actualFileHash = Compute-FileSha256 -FilePath $targetFilePath
                 if ($actualFileHash -ne $expectedFileInfo.sha256) {
-                    return @{ Valid = $false; Reason = "Payload file hash mismatch for $relPath (tampered or modified binary)" }
+                    $kind = if ($relPath -match '\.(exe|dll)$') { "binary" } else { "file" }
+                    return @{ Valid = $false; Reason = "Payload file hash mismatch for $relPath (tampered or modified $kind)" }
                 }
+            }
+        }
+
+        # Check for unexpected files in destination that are not in the payload manifest
+        $currentOnDiskFiles = Get-ChildItem -Path $Dir -Recurse -File |
+            Where-Object { $_.Name -ne ".candidate-archive.json" -and $_.Name -ne "Play-Candidate.bat" -and $_.Extension -ne ".log" }
+        foreach ($f in $currentOnDiskFiles) {
+            $rel = $f.FullName.Substring($Dir.Length + 1).Replace('\', '/')
+            if (-not $marker.payload_manifest.PSObject.Properties[$rel]) {
+                return @{ Valid = $false; Reason = "Unexpected file found in payload destination: $rel" }
             }
         }
     }
@@ -417,11 +438,8 @@ if ($needExtract) {
     $payloadDict = [ordered]@{ }
     foreach ($ef in $extractedFiles) {
         $rel = $ef.FullName.Substring($destCanonical.Length + 1).Replace('\', '/')
-        $fileHash = ""
-        # Hash critical executables and data
-        if ($rel -eq "TheWhisperingWilds.exe" -or $rel.StartsWith("TheWhisperingWilds_Data/") -or $rel -eq "UnityPlayer.dll") {
-            $fileHash = Compute-FileSha256 -FilePath $ef.FullName
-        }
+        # Compute SHA-256 hash for every payload file
+        $fileHash = Compute-FileSha256 -FilePath $ef.FullName
         $payloadDict[$rel] = [ordered]@{
             size = $ef.Length
             sha256 = $fileHash
