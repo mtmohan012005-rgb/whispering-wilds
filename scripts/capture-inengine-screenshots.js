@@ -3,9 +3,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const brainDir = 'C:/Users/mohan/.gemini/antigravity-ide/brain/e6bbfaa3-5961-457f-97c6-30c32fe741e4';
-const projectDir = 'C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds';
-const edgePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+const projectDir = path.resolve(__dirname, '..');
+const brainDir = process.env.BRAIN_DIR || path.join(projectDir, 'artifacts');
+const edgePath = process.env.EDGE_PATH || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 
 async function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

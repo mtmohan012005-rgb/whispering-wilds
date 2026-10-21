@@ -93,6 +93,17 @@ namespace WhisperingWilds.Geography
             BuildPlaceMarkers();
         }
 
+        private static readonly Dictionary<string, (string regionId, string sceneName)> KnownRegionScenes = new Dictionary<string, (string, string)>(System.StringComparer.OrdinalIgnoreCase)
+        {
+            { "chennai", ("chennai", "02_Chennai_GeorgeTown") },
+            { "mamallapuram", ("mamallapuram", "06_Mamallapuram_Shore") },
+            { "pichavaram", ("pichavaram", "03_Pichavaram_Wetlands") },
+            { "thanjavur", ("thanjavur", "04_Thanjavur_Delta") },
+            { "delta", ("delta", "04_Thanjavur_Delta") },
+            { "chettinad", ("chettinad", "05_Chettinad_Mansion") },
+            { "nilgiris", ("nilgiris", "07_Nilgiris_Sanctuary") }
+        };
+
         private void BuildPlaceMarkers()
         {
             if (!showPlaceLabels || mapData == null) return;
@@ -111,6 +122,31 @@ namespace WhisperingWilds.Geography
                 renderer.sharedMaterial = LayerMaterial("Marker", Color32(0.95f, 0.93f, 0.85f, 1f));
                 renderer.shadowCastingMode = ShadowCastingMode.Off;
                 renderer.receiveShadows = false;
+
+                // Add interactive collider for mouse selection & raycasting
+                var col = go.AddComponent<SphereCollider>();
+                col.isTrigger = true;
+                col.radius = Mathf.Max(labelSize * 6f, 15f);
+
+                // Add interactive region marker script
+                var regionMarker = go.AddComponent<StateMapRegionMarker>();
+                string lookup = Sanitize(place.nameEnglish).ToLowerInvariant();
+                if (KnownRegionScenes.TryGetValue(lookup, out var entry))
+                {
+                    regionMarker.regionId = entry.regionId;
+                    regionMarker.sceneName = entry.sceneName;
+                    regionMarker.isUnlocked = WhisperingWilds.World.RegionUnlocks.IsUnlocked(entry.regionId);
+                }
+                else
+                {
+                    regionMarker.regionId = lookup;
+                    regionMarker.sceneName = "";
+                    regionMarker.isUnlocked = false;
+                }
+                regionMarker.englishName = place.nameEnglish;
+                regionMarker.tamilName = place.nameTamil;
+                regionMarker.latitude = place.latitude;
+                regionMarker.longitude = place.longitude;
 
                 var label = new MapLabel { English = place.nameEnglish, Tamil = place.nameTamil };
                 go.AddComponent<MapLabelBillboard>().Bind(label);

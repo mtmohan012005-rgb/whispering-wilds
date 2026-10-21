@@ -254,6 +254,11 @@ namespace WhisperingWilds.Editor.QA
                 cam = UnityEngine.Object.FindAnyObjectByType<Camera>();
             }
 
+            if (cam != null && shortName.Contains("statemap"))
+            {
+                cam.farClipPlane = Mathf.Max(cam.farClipPlane, 8000f);
+            }
+
             // If 01_StateMap, ensure TamilNaduStateMapView exists
             if (shortName.Contains("statemap"))
             {
@@ -272,7 +277,7 @@ namespace WhisperingWilds.Editor.QA
                 cam = camGo.AddComponent<Camera>();
                 cam.clearFlags = CameraClearFlags.Skybox;
                 cam.nearClipPlane = 0.1f;
-                cam.farClipPlane = 1000f;
+                cam.farClipPlane = shortName.Contains("statemap") ? 8000f : 1000f;
 
                 // Frame based on scene
                 if (shortName.Contains("boot"))

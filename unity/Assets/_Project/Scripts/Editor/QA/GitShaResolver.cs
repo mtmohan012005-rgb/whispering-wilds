@@ -114,7 +114,7 @@ namespace WhisperingWilds.Editor.QA
                         proc.WaitForExit();
                         if (proc.ExitCode == 0 && !string.IsNullOrEmpty(branch))
                         {
-                            return branch;
+                            return branch.Equals("HEAD", StringComparison.OrdinalIgnoreCase) ? "detached-HEAD" : branch;
                         }
                     }
                 }
@@ -124,7 +124,7 @@ namespace WhisperingWilds.Editor.QA
                 Debug.LogWarning($"[GitShaResolver] Could not resolve branch from git: {ex.Message}");
             }
 
-            return "fix/qa-evidence-head-integrity";
+            return "UNVERIFIED";
         }
 
         private static string QueryGitHead(string repoRoot)

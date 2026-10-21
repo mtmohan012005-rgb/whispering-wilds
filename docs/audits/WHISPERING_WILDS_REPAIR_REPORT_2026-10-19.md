@@ -26,7 +26,7 @@ This implementation pass executes targeted repairs across the eight high-value a
 ## 2. Section 0: Local Work Protection & Git Safety
 
 - **Local Working Tree Verification:**
-  - `git rev-parse --show-toplevel`: `C:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds`
+  - `git rev-parse --show-toplevel`: ``
   - Base Commit: `9d6c5bbd5f2e0bc51f1c0d4e4c56797fb4191c0f` (matches verified GitHub remote `origin/main`).
   - Active Working Branch: `fix/temple-realism-assets-ci` (created from `origin/main` to safeguard all work).
 - **Protection of Untracked Files:**
@@ -172,12 +172,12 @@ AUTOMATED PASS RATE               :  98.81%
 ## 10. Audit Deliverables Index
 
 All deliverables are generated and tracked under `docs/audits/`:
-1. [`WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.md)
-2. [`WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.txt`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.txt)
-3. [`WHISPERING_WILDS_ASSET_REFERENCE_RECONCILIATION.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHISPERING_WILDS_ASSET_REFERENCE_RECONCILIATION.csv)
-4. [`WHISPERING_WILDS_AUDIO_LICENSE_AUDIT.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHISPERING_WILDS_AUDIO_LICENSE_AUDIT.csv)
-5. [`WHISPERING_WILDS_PERFORMANCE_RESULTS.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHISPERING_WILDS_PERFORMANCE_RESULTS.md)
-6. [`WHISPERING_WILDS_TEST_RESULTS.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHISPERING_WILDS_TEST_RESULTS.md)
+1. [`WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.md`](docs/audits/WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.md)
+2. [`WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.txt`](docs/audits/WHISPERING_WILDS_REPAIR_REPORT_2026-10-19.txt)
+3. [`WHISPERING_WILDS_ASSET_REFERENCE_RECONCILIATION.csv`](docs/audits/WHISPERING_WILDS_ASSET_REFERENCE_RECONCILIATION.csv)
+4. [`WHISPERING_WILDS_AUDIO_LICENSE_AUDIT.csv`](docs/audits/WHISPERING_WILDS_AUDIO_LICENSE_AUDIT.csv)
+5. [`WHISPERING_WILDS_PERFORMANCE_RESULTS.md`](docs/audits/WHISPERING_WILDS_PERFORMANCE_RESULTS.md)
+6. [`WHISPERING_WILDS_TEST_RESULTS.md`](docs/audits/WHISPERING_WILDS_TEST_RESULTS.md)
 7. Raw Telemetry & Evidence: `artifacts/qa/20261019-190300-repair/`
 
 ---

@@ -24,15 +24,15 @@
   - **Editor Character Rig Audit:**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.EditorCharacterRigAuditor.RunBatchAudit" -logFile "artifacts/unity_rig_audit.log"`
     - Exit Code: `0`
-    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders, dynamic Git SHA stamped `069b04b3fb791275c63f64888efa3fd31bbca699`).
+    - Output: [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](EDITOR_CHARACTER_RIG_AUDIT.json) (**10/10 PASS_EDITOR**, 43 bone bindings, active colliders, dynamic Git SHA stamped `069b04b3fb791275c63f64888efa3fd31bbca699`).
   - **Asset Reference Audit:**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -nographics -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.AssetReferenceAudit.RunBatchAudit" -logFile "artifacts/unity_asset_ref_audit.log"`
     - Exit Code: `0`
-    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 9 release scenes deeply inspected, 293 materials, 57 textures, 10 audio clips**).
+    - Output: [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](UNITY_ASSET_REFERENCE_AUDIT.json) (**0 errors, 0 warnings across 9 release scenes deeply inspected, 293 materials, 57 textures, 10 audio clips**).
   - **Authentic In-Engine Visual Evidence (Graphics-Enabled Direct3D 11 Render):**
     - Command: `"C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe" -batchmode -quit -projectPath "unity" -executeMethod "WhisperingWilds.Editor.QA.SceneVisualCapturePipeline.RunBatchCapture" -logFile "artifacts/unity_visual_capture.log"`
     - Exit Code: `0`
-    - Visual Artifact Index: [`artifacts/unity-visual-qa/069b04b3fb791275c63f64888efa3fd31bbca699/INDEX.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/unity-visual-qa/069b04b3fb791275c63f64888efa3fd31bbca699/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, SHA-256 validation, and 100% repository-relative paths).
+    - Visual Artifact Index: [`artifacts/unity-visual-qa/069b04b3fb791275c63f64888efa3fd31bbca699/INDEX.md`](../../artifacts/unity-visual-qa/069b04b3fb791275c63f64888efa3fd31bbca699/INDEX.md) (**19/19 captures PASS_RENDERED** with camera coordinates, pixel variance, SHA-256 validation, and 100% repository-relative paths).
   - **9 Culturally Grounded Environment Models Wired Into Scenes:**
     - `temple_gate.glb` (Dravidian Torana Gateway), `temple_wall.glb` (Ashlar precinct walls), `temple_urn.glb` (Kalasam finials), `temple_well.glb` (Stepped theertham Kalyani tank), `kuthu_vilakku.glb`, `stone_inscription.glb` instantiated into `08_Ancient_Temple_Ruins.unity`.
     - `stone_sculpture.glb` (Mamallapuram Bas-Relief Monolith) and `stone_carving_tools.glb` instantiated into `06_Mamallapuram_Shore.unity`.
@@ -77,7 +77,7 @@
 In accordance with the repository truth standard, static checks and unit tests are strictly distinguished from runtime, editor, and visual evaluations:
 
 1. **Character Rigs & Distinct 3D Meshes:**
-   - Real Unity Editor API inspection (`AssetDatabase`, `PrefabUtility`, `Animator`, `Avatar`, colliders) executed in native Unity 6 batchmode via `EditorCharacterRigAuditor.RunBatchAudit`: **10 / 10 PASS_EDITOR** recorded in [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json).
+   - Real Unity Editor API inspection (`AssetDatabase`, `PrefabUtility`, `Animator`, `Avatar`, colliders) executed in native Unity 6 batchmode via `EditorCharacterRigAuditor.RunBatchAudit`: **10 / 10 PASS_EDITOR** recorded in [`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`](EDITOR_CHARACTER_RIG_AUDIT.json).
    - Distinct 3D head meshes generated and assigned for all story characters:
      - *Murugan*: Madurai/Chennai chevron moustache (`Meesai`) and sideburns.
      - *Velu*: Handlebar moustache with pointed upturned tips and auto driver forehead cloth wrap.
@@ -91,15 +91,15 @@ In accordance with the repository truth standard, static checks and unit tests a
      - *Player (Arun Kumar)*: Clean modern explorer hairline.
    - All 10 prefabs have active colliders (`CharacterController` on Player; `CapsuleCollider` on NPCs) and valid `GenericAvatar` bindings.
 2. **Asset Reference Integrity:**
-   - Verified 0 missing scripts, 0 null materials, 0 magenta error shaders, and 0 missing audio clips across all 9 release scenes in [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json).
+   - Verified 0 missing scripts, 0 null materials, 0 magenta error shaders, and 0 missing audio clips across all 9 release scenes in [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](UNITY_ASSET_REFERENCE_AUDIT.json).
 3. **Quality Gaps Analysis:**
-   - 15 specific 3D quality gaps catalogued with severity and owner recommendations in [`docs/audits/REAL_3D_QUALITY_GAPS.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/REAL_3D_QUALITY_GAPS.csv), with NPC head geometry now verified `PASS_EDITOR_VERIFIED`.
+   - 15 specific 3D quality gaps catalogued with severity and owner recommendations in [`docs/audits/REAL_3D_QUALITY_GAPS.csv`](REAL_3D_QUALITY_GAPS.csv), with NPC head geometry now verified `PASS_EDITOR_VERIFIED`.
 4. **Scene Visual Acceptance:**
-   - Visual criteria for all 9 enabled release scenes and 4 benchmark scenes documented in [`docs/audits/SCENE_VISUAL_ACCEPTANCE.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/SCENE_VISUAL_ACCEPTANCE.csv).
+   - Visual criteria for all 9 enabled release scenes and 4 benchmark scenes documented in [`docs/audits/SCENE_VISUAL_ACCEPTANCE.csv`](SCENE_VISUAL_ACCEPTANCE.csv).
 5. **Whole-Game Test Matrix:**
-   - Comprehensive traceability across 16 test rows maintained in [`docs/audits/WHOLE_GAME_TEST_MATRIX.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHOLE_GAME_TEST_MATRIX.csv).
+   - Comprehensive traceability across 16 test rows maintained in [`docs/audits/WHOLE_GAME_TEST_MATRIX.csv`](WHOLE_GAME_TEST_MATRIX.csv).
 6. **Campaign Checklist:**
-   - 60 manual campaign gameplay checks reconciled to 100% total in [`docs/audits/MANUAL_CAMPAIGN_TEST_RECORD.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/MANUAL_CAMPAIGN_TEST_RECORD.md): 38 `PASS_PLAYMODE`, 14 `PASS_STANDALONE`, 2 `PASS_STATIC`, 5 `NOT_TESTED_HUMAN_TACTILE`, 1 `BLOCKED_CREDENTIALS`.
+   - 60 manual campaign gameplay checks reconciled to 100% total in [`docs/audits/MANUAL_CAMPAIGN_TEST_RECORD.md`](MANUAL_CAMPAIGN_TEST_RECORD.md): 38 `PASS_PLAYMODE`, 14 `PASS_STANDALONE`, 2 `PASS_STATIC`, 5 `NOT_TESTED_HUMAN_TACTILE`, 1 `BLOCKED_CREDENTIALS`.
 7. **Live Cloud Save Integration:**
    - 1 live Firebase test classified as `SKIPPED / BLOCKED_CREDENTIALS` because external Google Cloud / Firebase service account secrets are not stored in repository code. Local persistence passed 100%.
 8. **Multiplayer Synchronized Play:**

@@ -191,6 +191,14 @@ async function main() {
     );
     results.push(assetsResult);
     if (assetsResult.code !== 0) hasFailure = true;
+
+    // Tamil Nadu Map Data verification
+    const mapDataResult = await runTestSuite(
+      'Tamil Nadu Map Data Verification',
+      'scripts/verify-map-data.js'
+    );
+    results.push(mapDataResult);
+    if (mapDataResult.code !== 0) hasFailure = true;
     
   } catch (error) {
     console.error('❌ Test runner error:', error.message);

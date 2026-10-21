@@ -34,7 +34,7 @@ The game is delivered as a standalone Windows x64 executable:
 
 1. Open **Unity Hub**.
 2. Click **Add** $\rightarrow$ **Add project from disk**.
-3. Select the `unity/` folder (or `C:\Users\mohan\My project`).
+3. Select the `unity/` folder of this repository.
 4. Ensure the Editor version is **Unity 6 (6000.6.3f1)** with HDRP.
 5. Open `Assets/_Project/Scenes/00_Boot.unity` and click **Play**.
 

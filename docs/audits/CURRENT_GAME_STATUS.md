@@ -71,13 +71,13 @@
 
 ## 3. Authoritative Audit Document Index
 All authoritative reports are maintained in `docs/audits/`:
-1. [`docs/audits/CURRENT_GAME_STATUS.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/CURRENT_GAME_STATUS.md) (This document — Single source of truth)
-2. [`docs/audits/REAL_3D_QUALITY_GAPS.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/REAL_3D_QUALITY_GAPS.csv) (15-item 3D quality gap analysis with severity and actions)
-3. [`docs/audits/SCENE_VISUAL_ACCEPTANCE.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/SCENE_VISUAL_ACCEPTANCE.csv) (13-scene visual acceptance criteria & performance targets)
-4. [`docs/audits/WHOLE_GAME_TEST_MATRIX.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/WHOLE_GAME_TEST_MATRIX.csv) (Comprehensive 16-row test matrix with truth labels & blockers)
-5. [`docs/audits/CHARACTER_RUNTIME_VALIDATION.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/CHARACTER_RUNTIME_VALIDATION.csv) (Dynamically measured character rig values with honest truth labels)
-6. [`docs/audits/ASSET_DUPLICATE_DECISIONS.csv`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/ASSET_DUPLICATE_DECISIONS.csv) (15-group duplicate binary disposition matrix)
-7. [`docs/audits/MANUAL_CAMPAIGN_TEST_RECORD.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/MANUAL_CAMPAIGN_TEST_RECORD.md) (60-point campaign checklist evaluation)
-8. [`docs/audits/CURRENT_HEAD_QA_RESULTS.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/CURRENT_HEAD_QA_RESULTS.md) (Test execution evidence & telemetry)
-9. [`docs/audits/REMAINING_RELEASE_BLOCKERS.md`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/REMAINING_RELEASE_BLOCKERS.md) (Honest roadmap of remaining work)
-10. [`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json) (Editor asset database reference audit)
+1. [`CURRENT_GAME_STATUS.md`](CURRENT_GAME_STATUS.md) (This document — Single source of truth)
+2. [`REAL_3D_QUALITY_GAPS.csv`](REAL_3D_QUALITY_GAPS.csv) (15-item 3D quality gap analysis with severity and actions)
+3. [`SCENE_VISUAL_ACCEPTANCE.csv`](SCENE_VISUAL_ACCEPTANCE.csv) (13-scene visual acceptance criteria & performance targets)
+4. [`WHOLE_GAME_TEST_MATRIX.csv`](WHOLE_GAME_TEST_MATRIX.csv) (Comprehensive 16-row test matrix with truth labels & blockers)
+5. [`CHARACTER_RUNTIME_VALIDATION.csv`](CHARACTER_RUNTIME_VALIDATION.csv) (Dynamically measured character rig values with honest truth labels)
+6. [`ASSET_DUPLICATE_DECISIONS.csv`](ASSET_DUPLICATE_DECISIONS.csv) (15-group duplicate binary disposition matrix)
+7. [`MANUAL_CAMPAIGN_TEST_RECORD.md`](MANUAL_CAMPAIGN_TEST_RECORD.md) (60-point campaign checklist evaluation)
+8. [`CURRENT_HEAD_QA_RESULTS.md`](CURRENT_HEAD_QA_RESULTS.md) (Test execution evidence & telemetry)
+9. [`REMAINING_RELEASE_BLOCKERS.md`](REMAINING_RELEASE_BLOCKERS.md) (Honest roadmap of remaining work)
+10. [`UNITY_ASSET_REFERENCE_AUDIT.json`](UNITY_ASSET_REFERENCE_AUDIT.json) (Editor asset database reference audit)

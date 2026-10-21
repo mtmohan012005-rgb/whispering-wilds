@@ -33,6 +33,8 @@ namespace WhisperingWilds.Tests.Editor
         {
             string branch = GitShaResolver.ResolveGitBranch();
             Assert.IsFalse(string.IsNullOrEmpty(branch), "Branch name must not be empty");
+            Assert.AreNotEqual("HEAD", branch, "Detached HEAD must be mapped to descriptive value");
+            Assert.AreNotEqual("fix/qa-evidence-head-integrity", branch, "Must not return stale hardcoded fallback branch name");
         }
 
         [Test]

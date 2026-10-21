@@ -55,6 +55,16 @@ namespace WhisperingWilds.Geography
             {
                 // Frame the whole state from above rather than relying on scene-authored framing.
                 FrameCamera(mapData, Camera.main);
+
+                var camCtrl = Camera.main.GetComponent<StateMapCameraController>();
+                if (camCtrl == null) camCtrl = Camera.main.gameObject.AddComponent<StateMapCameraController>();
+                camCtrl.SetInitialFrame(Camera.main.transform.position, Camera.main.transform.rotation);
+            }
+
+            if (Object.FindAnyObjectByType<StateMapHUDController>() == null)
+            {
+                var hudObj = new GameObject("StateMapHUD");
+                hudObj.AddComponent<StateMapHUDController>();
             }
 
             Debug.Log($"[TamilNaduStateMap] attached (places={mapData.places.Count}, " +

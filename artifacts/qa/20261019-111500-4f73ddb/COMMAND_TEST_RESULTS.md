@@ -18,13 +18,13 @@ Every command listed in this document was executed directly in PowerShell on the
 | **5** | `npm run assets:validate` | Project Root | `0` | ~1.8s | 36/36 assets | `PASS_STATIC` | Terminal output |
 | **6** | `npm run animations:validate` | Project Root | `0` | ~1.6s | 43 tracks | `PASS_STATIC` | Terminal output |
 | **7** | `npm run textures:validate` | Project Root | `0` | ~1.5s | 35 textures | `PASS_STATIC` | Terminal output |
-| **8** | `npm run build-report` | Project Root | `0` | ~8.0s | 1 build report | `PASS_RUNTIME` | [BUILD_REPORT.json](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/qa/20261019-111500-4f73ddb/BUILD_REPORT.json) |
+| **8** | `npm run build-report` | Project Root | `0` | ~8.0s | 1 build report | `PASS_RUNTIME` | [BUILD_REPORT.json](artifacts/qa/20261019-111500-4f73ddb/BUILD_REPORT.json) |
 | **9** | `npm run test:backend` | Project Root | `0` | ~3.8s | 34 passed, 0 failed | `PASS_RUNTIME` | Live server PID 5544 |
 | **10** | `npm run test:cloudsave` | Project Root | `0` | ~4.2s | 20 passed, 2 skipped | `PASS_RUNTIME` | Schema v4, SQLite auth |
 | **11** | `npm test` | Project Root | `0` | ~11.5s | 5 suites passed | `PASS_RUNTIME` | Comprehensive suite |
-| **12** | `.\scripts\Run-QaTests.ps1 -TestMode EditMode -ArtifactDir ...` | Project Root | `0` | ~25.4s | 78 passed, 0 failed | `PASS_RUNTIME` | [test_results_EditMode_20261019_164327.xml](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/qa/20261019-111500-4f73ddb/test_results_EditMode_20261019_164327.xml) |
-| **13** | `.\scripts\Run-QaTests.ps1 -TestMode PlayMode -ArtifactDir ...` | Project Root | `0` | ~52.1s | 34 passed, 0 failed | `PASS_RUNTIME` | [test_results_PlayMode_20261019_164627.xml](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/qa/20261019-111500-4f73ddb/test_results_PlayMode_20261019_164627.xml) |
-| **14** | `Start-Process unity/Build/Windows/TheWhisperingWilds.exe` | Project Root | `0` | 10.0s smoke | 1 process smoke | `PASS_RUNTIME` | [Player.log](file:///c:/Users/mohan/.gemini/antigravity-ide/scratch/whispering-wilds/artifacts/qa/20261019-111500-4f73ddb/Player.log) |
+| **12** | `.\scripts\Run-QaTests.ps1 -TestMode EditMode -ArtifactDir ...` | Project Root | `0` | ~25.4s | 78 passed, 0 failed | `PASS_RUNTIME` | [test_results_EditMode_20261019_164327.xml](artifacts/qa/20261019-111500-4f73ddb/test_results_EditMode_20261019_164327.xml) |
+| **13** | `.\scripts\Run-QaTests.ps1 -TestMode PlayMode -ArtifactDir ...` | Project Root | `0` | ~52.1s | 34 passed, 0 failed | `PASS_RUNTIME` | [test_results_PlayMode_20261019_164627.xml](artifacts/qa/20261019-111500-4f73ddb/test_results_PlayMode_20261019_164627.xml) |
+| **14** | `Start-Process unity/Build/Windows/TheWhisperingWilds.exe` | Project Root | `0` | 10.0s smoke | 1 process smoke | `PASS_RUNTIME` | [Player.log](artifacts/qa/20261019-111500-4f73ddb/Player.log) |
 
 ---
 
