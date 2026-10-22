@@ -137,8 +137,104 @@ namespace WhisperingWilds.Editor.QA
             return report;
         }
 
-        private static CharacterRigCheckResult AuditPrefab(string path)
+        /// <summary>
+        /// Walks every clip referenced by the animator controller and verifies that each authored
+        /// curve path resolves to a transform inside the prefab. This is the check that catches
+        /// clips bound to a stale bone path (the character plays but never animates).
+        /// </summary>
+        private static void ValidateClipBindings(Animator anim, CharacterRigCheckResult result)
         {
+            var controller = anim.runtimeAnimatorController as AnimatorController;
+            if (controller == null) return;
+
+            var clips = new HashSet<AnimationClip>();
+            foreach (var layer in controller.layers)
+            {
+                if (layer.stateMachine == null) continue;
+                CollectClips(layer.stateMachine, clips);
+            }
+
+            int checkedClips = 0;
+            foreach (var clip in clips)
+            {
+                checkedClips++;
+                var bindings = AnimationUtility.GetCurveBindings(clip);
+                if (bindings.Length == 0)
+                {
+                    result.errors.Add($"Clip '{clip.name}' has no animation curves");
+                    continue;
+                }
+
+                for (int i = 0; i < bindings.Length; i++)
+                {
+                    string bindingPath = bindings[i].path;
+                    if (string.IsNullOrEmpty(bindingPath)) continue;
+
+                    if (ResolvePath(anim.transform, bindingPath) == null)
+                    {
+                        result.errors.Add($"Clip '{clip.name}' curve targets missing transform path '{bindingPath}'");
+                        break;
+                    }
+                }
+            }
+
+            if (checkedClips > 0)
+            {
+                result.findings.Add($"Validated curve paths of {checkedClips} clips against the prefab rig");
+            }
+        }
+
+        private static void CollectClips(AnimatorStateMachine stateMachine, HashSet<AnimationClip> clips)
+        {
+            foreach (var childState in stateMachine.states)
+            {
+                CollectMotionClips(childState.state.motion, clips);
+            }
+
+            foreach (var childMachine in stateMachine.stateMachines)
+            {
+                CollectClips(childMachine.stateMachine, clips);
+            }
+        }
+
+        private static void CollectMotionClips(Motion motion, HashSet<AnimationClip> clips)
+        {
+            if (motion == null) return;
+
+            if (motion is AnimationClip clip)
+            {
+                clips.Add(clip);
+                return;
+            }
+
+            if (motion is BlendTree tree)
+            {
+                foreach (var child in tree.children)
+                {
+                    CollectMotionClips(child.motion, clips);
+                }
+            }
+        }
+
+        /// <summary>Resolves an animator relative transform path, mirroring Transform.Find semantics.</summary>
+        private static Transform ResolvePath(Transform root, string path)
+        {
+            if (string.IsNullOrEmpty(path)) return root;
+
+            Transform current = root;
+            string[] segments = path.Split('/');
+            for (int i = 0; i < segments.Length; i++)
+            {
+                if (string.IsNullOrEmpty(segments[i])) continue;
+
+                Transform next = current.Find(segments[i]);
+                if (next == null) return null;
+                current = next;
+            }
+            return current;
+        }
+
+        private static CharacterRigCheckResult AuditPrefab(string path)        {
             string charId = Path.GetFileNameWithoutExtension(path).ToLowerInvariant();
             var result = new CharacterRigCheckResult
             {
@@ -296,6 +392,10 @@ namespace WhisperingWilds.Editor.QA
                     {
                         result.errors.Add("Animator present but runtimeAnimatorController is null");
                     }
+
+                    // Every authored curve must address a transform that exists in the rig. A curve
+                    // that targets a missing path binds to nothing and the character never moves.
+                    ValidateClipBindings(anim, result);
 
                     if (anim.avatar != null)
                     {

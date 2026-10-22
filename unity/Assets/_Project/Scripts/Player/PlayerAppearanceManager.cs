@@ -65,10 +65,29 @@ namespace WhisperingWilds.Player
 
         // Cached physics references (TryGetComponent guarded)
         private VeshtiClothPhysicsController clothController;
+        private Transform visualRoot;
+        private CharacterController characterController;
 
         private void Awake()
         {
-            TryGetComponent(out clothController);
+            ResolveReferences();
+        }
+
+        /// <summary>
+        /// The garment controller is added by the movement controller, and the order of Awake calls
+        /// between components on the same GameObject is not defined, so the reference is resolved
+        /// lazily instead of only once.
+        /// </summary>
+        private void ResolveReferences()
+        {
+            if (clothController == null) TryGetComponent(out clothController);
+            if (characterController == null) TryGetComponent(out characterController);
+
+            if (visualRoot == null)
+            {
+                var animator = GetComponentInChildren<Animator>();
+                if (animator != null) visualRoot = animator.transform;
+            }
         }
 
         /// <summary>
@@ -86,6 +105,7 @@ namespace WhisperingWilds.Player
 
             remainingPermanentChanges--;
             currentProfile = newProfile;
+            ApplyHeightScale();
 
             Debug.Log($"<color=#00FF88><b>[Appearance]</b></color> Permanent change applied successfully. Remaining changes: {remainingPermanentChanges}/{MaxPermanentAppearanceChanges}");
             OnPermanentAppearanceChanged?.Invoke(currentProfile, remainingPermanentChanges);
@@ -121,6 +141,34 @@ namespace WhisperingWilds.Player
         }
 
         /// <summary>
+        /// Applies the body scale of the current profile to the visual rig and keeps the character
+        /// collider in sync with it, so a taller or shorter build still fits through the world.
+        /// </summary>
+        private void ApplyHeightScale()
+        {
+            float scale = currentProfile.heightScale;
+            if (scale <= 0f) scale = 1f;
+            scale = math.clamp(scale, 0.8f, 1.25f);
+
+            if (visualRoot == null)
+            {
+                var animator = GetComponentInChildren<Animator>();
+                if (animator != null) visualRoot = animator.transform;
+            }
+
+            if (visualRoot != null)
+            {
+                visualRoot.localScale = new Vector3(scale, scale, scale);
+            }
+
+            if (characterController != null)
+            {
+                characterController.height = 1.8f * scale;
+                characterController.center = new Vector3(0f, 0.9f * scale, 0f);
+            }
+        }
+
+        /// <summary>
         /// Restores state from versioned save data.
         /// </summary>
         public void RestoreState(int remainingChanges, AppearanceProfile profile, RegionalOutfitType outfit)
@@ -128,6 +176,7 @@ namespace WhisperingWilds.Player
             remainingPermanentChanges = math.clamp(remainingChanges, 0, MaxPermanentAppearanceChanges);
             currentProfile = profile;
             currentOutfit = outfit;
+            ApplyHeightScale();
 
             if (clothController == null)
             {

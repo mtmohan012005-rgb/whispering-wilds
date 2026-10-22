@@ -118,11 +118,13 @@ namespace WhisperingWilds.Editor.Characters
             var lowerSari = LoadOrCreateMesh("Mesh_LowerSariSkirt", CharacterFactory.BuildLowerSariSkirtMesh);
             var thunduMesh = LoadOrCreateMesh("Mesh_AccessoryThundu", CharacterFactory.BuildAccessoryThunduMesh);
             var palluMesh = LoadOrCreateMesh("Mesh_AccessoryPallu", CharacterFactory.BuildAccessoryPalluMesh);
-            UnityEngine.Object.DestroyImmediate(refRig);
-
+            // Clips must be authored while the reference rig is still alive: the curve paths are
+            // derived from the real bone hierarchy (RigRoot/CharacterOffset/Root/Hips/...).
             var clips = LoadOrBuildClips(boneCache);
             var playerController = LoadOrBuildPlayerController(clips);
             var npcController = LoadOrBuildNpcController(clips);
+
+            UnityEngine.Object.DestroyImmediate(refRig);
 
             // ---- prefabs (rewritten in place every run) ----
             EnsureDirectory(CharacterPrefabCatalog.CharacterPrefabRoot);
@@ -436,19 +438,43 @@ namespace WhisperingWilds.Editor.Characters
         {
             var result = new Dictionary<string, AnimationClip>();
             EnsureDirectory(ClipDir);
-            var built = CharacterFactory.BuildClips(bones);
-            foreach (var pair in built)
+
+            // Clips are re-authored into the existing .anim assets instead of being recreated:
+            // the asset GUID has to stay stable because the animator controllers and every
+            // character prefab reference these clips.
+            var clips = CharacterFactory.BuildClips(bones, (name, duration) =>
             {
-                string path = $"{ClipDir}/{pair.Key}.anim";
+                string path = $"{ClipDir}/{name}.anim";
                 var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
                 if (clip == null)
                 {
-                    AssetDatabase.CreateAsset(pair.Value, path);
-                    AssetDatabase.SaveAssets();
-                    clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+                    clip = new AnimationClip
+                    {
+                        name = name,
+                        frameRate = CharacterFactory.ClipFrameRate,
+                        wrapMode = WrapMode.Loop
+                    };
+                    AssetDatabase.CreateAsset(clip, path);
                 }
+                return clip;
+            });
+
+            foreach (var pair in clips)
+            {
+                var clip = pair.Value;
+                // m_LoopTime drives the Animator: without it a locomotion clip plays once and
+                // freezes on its last frame instead of cycling.
+                AnimationClipSettings settings = AnimationUtility.GetAnimationClipSettings(clip);
+                settings.loopTime = CharacterFactory.ClipShouldLoop(pair.Key);
+                settings.loopBlend = true;
+                AnimationUtility.SetAnimationClipSettings(clip, settings);
+
+                EditorUtility.SetDirty(clip);
                 result[pair.Key] = clip;
             }
+
+            AssetDatabase.SaveAssets();
+            AssetDatabase.ImportAsset(ClipDir, ImportAssetOptions.ForceUpdate);
             return result;
         }
 

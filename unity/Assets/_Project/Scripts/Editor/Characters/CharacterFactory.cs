@@ -43,6 +43,13 @@ namespace WhisperingWilds.Editor.Characters
 
         public const string CharacterOffsetNode = "CharacterOffset";
         public const string RootBone = "Root";
+        public const int ClipFrameRate = 30;
+
+        /// <summary>
+        /// Resolves the clip an author callback should write into. Set for the duration of
+        /// <see cref="BuildClips(Dictionary{string, Transform}, Func{string, float, AnimationClip})"/>.
+        /// </summary>
+        private static Func<string, float, AnimationClip> s_ClipProvider;
 
         private static readonly (string name, string parent, Vector3 pos)[] RigDef =
         {
@@ -642,15 +649,71 @@ namespace WhisperingWilds.Editor.Characters
             public readonly AnimationClip Clip;
             public readonly Dictionary<string, Transform> Bones;
             public readonly float Duration;
+            public readonly Transform AnimatorRoot;
+            public readonly string OffsetPath;
 
             public ClipContext(AnimationClip clip, Dictionary<string, Transform> bones, float duration)
             {
                 Clip = clip;
                 Bones = bones;
                 Duration = duration;
+
+                // RigRoot/CharacterOffset/Root/<bone chain>. The animator sits on RigRoot, so every
+                // curve path is relative to that node.
+                AnimatorRoot = null;
+                OffsetPath = CharacterOffsetNode;
+                if (bones != null && bones.TryGetValue(RootBone, out Transform rootBone) && rootBone != null)
+                {
+                    Transform offsetNode = rootBone.parent;
+                    AnimatorRoot = offsetNode != null ? offsetNode.parent : null;
+                    string resolvedOffset = RelativePath(offsetNode, AnimatorRoot);
+                    if (!string.IsNullOrEmpty(resolvedOffset)) OffsetPath = resolvedOffset;
+                }
             }
 
-            public string Path(string bone) => CharacterOffsetNode + "/" + bone;
+            /// <summary>
+            /// Transform path of an animated bone relative to the animator root.
+            /// The rig is RigRoot/CharacterOffset/Root/&lt;bone chain&gt;, so a path has to spell out
+            /// every intermediate bone: a flat "CharacterOffset/Root/LeftUpperLeg" addresses a
+            /// transform that does not exist (LeftUpperLeg hangs off Hips) and the clip silently
+            /// binds to nothing.
+            /// </summary>
+            public string Path(string bone)
+            {
+                string relative = null;
+                if (Bones != null && Bones.TryGetValue(bone, out Transform boneTransform))
+                {
+                    relative = RelativePath(boneTransform, AnimatorRoot);
+                }
+
+                // Never fall back to a guessed path: a curve bound to a non-existent transform is
+                // invisible at runtime and is exactly the defect this builder exists to prevent.
+                if (string.IsNullOrEmpty(relative))
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot resolve the animation curve path for bone '{bone}'. The rig used to author clips is missing or already destroyed - author clips while the reference rig is alive.");
+                }
+
+                return relative;
+            }
+
+            private static string RelativePath(Transform target, Transform root)
+            {
+                if (target == null) return null;
+
+                var segments = new List<string>();
+                Transform current = target;
+                while (current != null && current != root)
+                {
+                    segments.Add(current.name);
+                    current = current.parent;
+                }
+
+                if (current != root) return null;
+
+                segments.Reverse();
+                return string.Join("/", segments);
+            }
 
             public void Rotate(string bone, Func<float, Vector3> eulerFunc)
             {
@@ -664,12 +727,12 @@ namespace WhisperingWilds.Editor.Characters
 
             public void OffsetRotation(Func<float, Quaternion> rotFunc)
             {
-                AuthorQuat(Clip, CharacterOffsetNode, rotFunc, Duration);
+                AuthorQuat(Clip, OffsetPath, rotFunc, Duration);
             }
 
             public void OffsetPositionY(Func<float, float> yFunc)
             {
-                AuthorPositionY(Clip, CharacterOffsetNode, yFunc, Duration);
+                AuthorPositionY(Clip, OffsetPath, yFunc, Duration);
             }
         }
 
@@ -733,7 +796,21 @@ namespace WhisperingWilds.Editor.Characters
 
         private static AnimationClip MakeClip(string name, Dictionary<string, Transform> bones, float duration, Action<ClipContext> author)
         {
-            var clip = new AnimationClip { name = name, frameRate = 30, wrapMode = WrapMode.Loop };
+            // A provider lets the caller hand back an existing .anim asset so the clips can be
+            // re-authored in place: the asset GUID has to survive because animator controllers
+            // and prefabs reference these clips.
+            AnimationClip clip = s_ClipProvider != null ? s_ClipProvider(name, duration) : null;
+            if (clip == null)
+            {
+                clip = new AnimationClip { name = name, frameRate = ClipFrameRate, wrapMode = WrapMode.Loop };
+            }
+            else
+            {
+                clip.ClearCurves();
+                clip.name = name;
+                clip.frameRate = ClipFrameRate;
+                clip.wrapMode = WrapMode.Loop;
+            }
             var ctx = new ClipContext(clip, bones, duration);
             author(ctx);
             return clip;
@@ -744,7 +821,19 @@ namespace WhisperingWilds.Editor.Characters
 
         public static Dictionary<string, AnimationClip> BuildClips(Dictionary<string, Transform> bones)
         {
+            return BuildClips(bones, null);
+        }
+
+        /// <summary>
+        /// Authors every locomotion clip. When <paramref name="provider"/> is supplied it is asked for
+        /// the clip to author into (name + duration); returning null creates a fresh in-memory clip.
+        /// </summary>
+        public static Dictionary<string, AnimationClip> BuildClips(Dictionary<string, Transform> bones, Func<string, float, AnimationClip> provider)
+        {
             var clips = new Dictionary<string, AnimationClip>();
+            s_ClipProvider = provider;
+            try
+            {
 
             clips["PlayerIdle"] = MakeClip("PlayerIdle", bones, 2.0f, ctx =>
             {
@@ -913,6 +1002,27 @@ namespace WhisperingWilds.Editor.Characters
             });
 
             return clips;
+            }
+            finally
+            {
+                s_ClipProvider = null;
+            }
+        }
+
+        /// <summary>
+        /// Clips that describe a single discrete action must not loop; every other clip is cyclic
+        /// (idle, walk, run, work, talk, ...).
+        /// </summary>
+        public static bool ClipShouldLoop(string clipName)
+        {
+            switch (clipName)
+            {
+                case "PlayerJump":
+                case "PlayerLand":
+                    return false;
+                default:
+                    return true;
+            }
         }
 
         private static void ApplyLand(ClipContext ctx, float duration)

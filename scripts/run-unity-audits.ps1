@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet("rig", "asset", "scenes", "capture", "build", "benchmark", "editmode", "playmode", "map")]
+    [ValidateSet("rig", "asset", "scenes", "characters", "capture", "build", "benchmark", "editmode", "playmode", "map")]
     [string]$Action
 )
 
@@ -34,6 +34,11 @@ switch ($Action) {
     "scenes" {
         $method = "WhisperingWilds.Editor.BuildPipelineAutomation.RegenerateAllScenesFromCommandLine"
         $logName = "unity_scene_regen.log"
+        $extraArgs += @("-quit", "-nographics")
+    }
+    "characters" {
+        $method = "WhisperingWilds.Editor.Characters.CharacterAssetBuilder.BuildAllCharactersBatch"
+        $logName = "unity_character_build.log"
         $extraArgs += @("-quit", "-nographics")
     }
     "capture" {

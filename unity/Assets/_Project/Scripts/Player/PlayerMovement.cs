@@ -44,7 +44,9 @@ namespace WhisperingWilds.Player
         [SerializeField] private float maxStepSlopeAngle = 45f;
 
         [Header("Root Motion & Animation")]
-        [SerializeField] private bool useRootMotion = true;
+        [Tooltip("The locomotion clips carry no root motion curves, so translation is owned by the " +
+                 "CharacterController. Enabling this would move the character twice.")]
+        [SerializeField] private bool useRootMotion = false;
         [SerializeField] private Animator animator;
         [SerializeField] private Transform visualRoot;
 
@@ -54,6 +56,9 @@ namespace WhisperingWilds.Player
         [Tooltip("Maximum torso lean / banking angle in degrees when cornering at speed.")]
         [SerializeField] private float maxBankAngle = 8.5f;
         [Range(1f, 30f)] [SerializeField] private float bankSmoothRate = 12f;
+        [Tooltip("Maximum forward/backward torso lean in degrees when accelerating or braking.")]
+        [SerializeField] private float maxLeanAngle = 11f;
+        [Range(1f, 30f)] [SerializeField] private float leanSmoothRate = 9f;
 
         [Header("Crouch Dimensions")]
         [SerializeField] private float standingHeight = 1.8f;
@@ -91,9 +96,11 @@ namespace WhisperingWilds.Player
 
         // Dynamic body momentum & banking
         private float currentBankAngle = 0f;
+        private float currentLeanAngle = 0f;
         private float previousYaw = 0f;
         private float landingImpactRecovery = 0f;
         private float previousVerticalVelocity = 0f;
+        private Vector3 previousPlanarVelocity = Vector3.zero;
 
         // Timers
         private float jumpTimeoutDelta;
@@ -109,6 +116,9 @@ namespace WhisperingWilds.Player
         public Vector3 GroundNormal => groundNormal;
         public float BodyMass => bodyMass;
 
+        /// <summary>The resolved walkable layer mask shared with the foot IK and cloth solvers.</summary>
+        public LayerMask WalkableMask => cachedGroundMask;
+
         private void Awake()
         {
             TryGetComponent(out controller);
@@ -123,6 +133,13 @@ namespace WhisperingWilds.Player
             if (visualRoot == null && animator != null)
             {
                 visualRoot = animator.transform;
+            }
+
+            // The procedural clips author no root motion, the CharacterController owns the
+            // translation. Leaving applyRootMotion on would move the character twice.
+            if (animator != null)
+            {
+                animator.applyRootMotion = false;
             }
 
             if (Camera.main != null)
@@ -150,15 +167,19 @@ namespace WhisperingWilds.Player
             if (!TryGetComponent<PlayerIKRiggedController>(out var ik))
             {
                 ik = gameObject.AddComponent<PlayerIKRiggedController>();
-                ik.groundLayerMask = cachedGroundMask;
-                ik.footWeight = 1.0f;
                 ik.enableFootIK = true;
+                ik.footWeight = 1.0f;
             }
 
-            if (!TryGetComponent<VeshtiClothPhysicsController>(out _))
+            // The foot probes must not hit the character's own colliders.
+            ik.SetGroundMask(cachedGroundMask);
+
+            if (!TryGetComponent<VeshtiClothPhysicsController>(out var cloth))
             {
-                gameObject.AddComponent<VeshtiClothPhysicsController>();
+                cloth = gameObject.AddComponent<VeshtiClothPhysicsController>();
             }
+
+            cloth.groundLayerMask = cachedGroundMask;
 
             if (!TryGetComponent<Characters.CharacterRagdollController>(out _))
             {
@@ -232,10 +253,13 @@ namespace WhisperingWilds.Player
 
         /// <summary>
         /// Applies root motion when available and grounded for hyper-realistic foot placement cadence.
+        /// The production clips carry no root motion curves, so this stays off by default and the
+        /// CharacterController remains the single owner of the translation.
         /// </summary>
         private void OnAnimatorMove()
         {
             if (!useRootMotion || animator == null || controller == null) return;
+            if (!animator.applyRootMotion) return;
             if (!isGrounded || !IsLocomotionAllowed()) return;
 
             Vector3 rootDelta = animator.deltaPosition;
@@ -370,7 +394,9 @@ namespace WhisperingWilds.Player
             currentSpeed = math.lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, math.saturate(dt * effectiveAccel));
             currentSpeed = math.round(currentSpeed * 1000f) / 1000f;
 
-            animationBlend = math.lerp(animationBlend, targetSpeed, math.saturate(dt * speedChangeRate));
+            // The locomotion blend tree is driven by the real horizontal speed so the pose never
+            // lies about how fast the character is actually moving.
+            animationBlend = math.lerp(animationBlend, currentSpeed, math.saturate(dt * speedChangeRate * 1.5f));
             if (animationBlend < 0.01f) animationBlend = 0f;
 
             // Camera-relative steering
@@ -457,11 +483,16 @@ namespace WhisperingWilds.Player
         }
 
         /// <summary>
-        /// Simulates dynamic weight distribution and banking lean when turning at high speeds.
+        /// Simulates dynamic weight distribution: the body banks into corners and leans with the
+        /// acceleration, which is what sells the weight of the character at speed.
         /// </summary>
         private void UpdateDynamicProceduralMomentum(float dt)
         {
-            if (visualRoot == null) return;
+            if (visualRoot == null || controller == null) return;
+
+            Vector3 planarVelocity = new Vector3(controller.velocity.x, 0f, controller.velocity.z);
+            Vector3 acceleration = (planarVelocity - previousPlanarVelocity) / math.max(1e-4f, dt);
+            previousPlanarVelocity = planarVelocity;
 
             float currentYaw = transform.eulerAngles.y;
             float yawDelta = Mathf.DeltaAngle(previousYaw, currentYaw) / dt;
@@ -471,10 +502,16 @@ namespace WhisperingWilds.Player
             float speedRatio = math.clamp(currentSpeed / sprintSpeed, 0f, 1f);
             float targetBank = math.clamp(-yawDelta * speedRatio * 0.22f, -maxBankAngle, maxBankAngle);
 
-            currentBankAngle = math.lerp(currentBankAngle, targetBank, math.saturate(dt * bankSmoothRate));
+            // Forward lean follows the acceleration along the facing direction.
+            float forwardAcceleration = Vector3.Dot(acceleration, transform.forward);
+            float targetLean = math.clamp(forwardAcceleration * 0.45f, -maxLeanAngle, maxLeanAngle);
 
-            // Apply roll banking to visual character model without turning the physical collider
-            visualRoot.localRotation = Quaternion.Euler(0f, 0f, currentBankAngle);
+            currentBankAngle = math.lerp(currentBankAngle, targetBank, math.saturate(dt * bankSmoothRate));
+            currentLeanAngle = math.lerp(currentLeanAngle, targetLean, math.saturate(dt * leanSmoothRate));
+
+            // Apply roll banking and lean to the visual character model without turning the
+            // physical collider. The foot IK solves in world space, so the feet stay planted.
+            visualRoot.localRotation = Quaternion.Euler(currentLeanAngle, 0f, currentBankAngle);
         }
 
         private void OnDrawGizmosSelected()
