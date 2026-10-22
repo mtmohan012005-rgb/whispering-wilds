@@ -8,7 +8,10 @@
 **Date:** 22 October 2026  
 **Current Audited Git Commit:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
 **Historical Unity In-Engine Tested Commit:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
-**Automated Verification Reconciliation:** 391 total executions: 389 passed, 0 failed, 2 skipped (148 historical Unity Editor verifications: 148 passed, 0 failed, 0 skipped on commit `5056deb`; 243 repository/launcher checks: 241 passed, 0 failed, 2 skipped on commit `defec34`).
+**Automated Verification Reconciliation:**
+- Historical Unity Editor evidence: 148 executions, 148 passed, 0 failed, 0 skipped, tested on commit 5056deb833a1254f0e41bf134151663a08cca5f8.
+- Repository and launcher checks: 243 executions, 241 passed, 0 failed, 2 skipped, tested on commit defec347fa570533c3a6b8ef1facee49a1c3db76.
+- Grand total: 391 executions, 389 passed, 0 failed, 2 skipped.
 **Status:** Milestones M0 through M7 Verified Clean; M8 Gated for Human Acceptance Walkthrough.
 
 ---

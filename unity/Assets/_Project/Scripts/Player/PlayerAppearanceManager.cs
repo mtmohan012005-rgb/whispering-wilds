@@ -1,10 +1,11 @@
 using System;
 using UnityEngine;
+using Unity.Mathematics;
 
 namespace WhisperingWilds.Player
 {
     [System.Serializable]
-    public struct AppearanceProfile
+    public struct AppearanceProfile : IEquatable<AppearanceProfile>
     {
         public string hairstyleId;
         public string skinToneId;
@@ -12,6 +13,19 @@ namespace WhisperingWilds.Player
         public string culturalMarkingId;
         public float heightScale;
         public string genderPresentation;
+
+        public bool Equals(AppearanceProfile other)
+        {
+            return hairstyleId == other.hairstyleId &&
+                   skinToneId == other.skinToneId &&
+                   facialFeaturesId == other.facialFeaturesId &&
+                   culturalMarkingId == other.culturalMarkingId &&
+                   Mathf.Approximately(heightScale, other.heightScale) &&
+                   genderPresentation == other.genderPresentation;
+        }
+
+        public override bool Equals(object obj) => obj is AppearanceProfile other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(hairstyleId, skinToneId, heightScale);
     }
 
     public enum RegionalOutfitType
@@ -26,6 +40,7 @@ namespace WhisperingWilds.Player
     /// <summary>
     /// Enforces the strict rule: MAXIMUM 5 PERMANENT APPEARANCE CHANGES.
     /// Manages permanent physical customization and unrestricted regional outfits.
+    /// Employs TryGetComponent protection and allocation-free state transitions.
     /// </summary>
     [DisallowMultipleComponent]
     public class PlayerAppearanceManager : MonoBehaviour
@@ -47,6 +62,14 @@ namespace WhisperingWilds.Player
         public event Action<AppearanceProfile, int> OnPermanentAppearanceChanged;
         public event Action OnAppearanceLimitReached;
         public event Action<RegionalOutfitType> OnOutfitChanged;
+
+        // Cached physics references (TryGetComponent guarded)
+        private VeshtiClothPhysicsController clothController;
+
+        private void Awake()
+        {
+            TryGetComponent(out clothController);
+        }
 
         /// <summary>
         /// Attempts to apply a permanent character appearance change.
@@ -85,6 +108,16 @@ namespace WhisperingWilds.Player
             currentOutfit = outfit;
             Debug.Log($"<color=#00D2FF><b>[Appearance]</b></color> Equipped regional outfit: {outfit}");
             OnOutfitChanged?.Invoke(currentOutfit);
+
+            if (clothController == null)
+            {
+                TryGetComponent(out clothController);
+            }
+
+            if (clothController != null)
+            {
+                clothController.ApplyAttirePreset(outfit);
+            }
         }
 
         /// <summary>
@@ -92,17 +125,24 @@ namespace WhisperingWilds.Player
         /// </summary>
         public void RestoreState(int remainingChanges, AppearanceProfile profile, RegionalOutfitType outfit)
         {
-            // Clamp remaining changes between 0 and 5
-            remainingPermanentChanges = Mathf.Clamp(remainingChanges, 0, MaxPermanentAppearanceChanges);
+            remainingPermanentChanges = math.clamp(remainingChanges, 0, MaxPermanentAppearanceChanges);
             currentProfile = profile;
             currentOutfit = outfit;
+
+            if (clothController == null)
+            {
+                TryGetComponent(out clothController);
+            }
+
+            if (clothController != null)
+            {
+                clothController.ApplyAttirePreset(outfit);
+            }
         }
 
         /// <summary>
         /// Returns the player to a brand new campaign's appearance: the full permanent change
-        /// allowance, a default profile, and the Chennai everyday outfit. Regional outfits are
-        /// temporary attire, so the everyday outfit is the correct new-game starting state.
-        /// Called by New Game so a restarted campaign does not inherit a previous run's look.
+        /// allowance, a default profile, and the Chennai everyday outfit.
         /// </summary>
         public void ResetToNewGameDefaults()
         {
@@ -112,6 +152,16 @@ namespace WhisperingWilds.Player
 
             OnPermanentAppearanceChanged?.Invoke(currentProfile, remainingPermanentChanges);
             OnOutfitChanged?.Invoke(currentOutfit);
+
+            if (clothController == null)
+            {
+                TryGetComponent(out clothController);
+            }
+
+            if (clothController != null)
+            {
+                clothController.ApplyAttirePreset(currentOutfit);
+            }
         }
     }
 }

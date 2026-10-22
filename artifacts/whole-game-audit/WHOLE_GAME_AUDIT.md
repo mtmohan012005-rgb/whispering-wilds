@@ -19,6 +19,10 @@
 This audit was conducted directly on the real project files of *The Whispering Wilds*. Rather than relying on static assumptions or web mock-ups, every subsystem was inspected, executed, and reconciled against underlying test outputs and engine logs.
 
 ### 1.1 Automated Verification Check Reconciliation (391 Total Executions: 389 Passed, 0 Failed, 2 Skipped)
+- Historical Unity Editor evidence: 148 executions, 148 passed, 0 failed, 0 skipped, tested on commit 5056deb833a1254f0e41bf134151663a08cca5f8.
+- Repository and launcher checks: 243 executions, 241 passed, 0 failed, 2 skipped, tested on commit defec347fa570533c3a6b8ef1facee49a1c3db76.
+- Grand total: 391 executions, 389 passed, 0 failed, 2 skipped.
+
 The test figures have been forensically reconciled into two distinct, documented verification tiers:
 
 1. **Tier 1: Historical In-Engine Unity Editor Test & Audit Suite (Tested on Unity 6000.6.3f1, Direct3D 11, Commit `5056deb`):**
@@ -42,9 +46,18 @@ The test figures have been forensically reconciled into two distinct, documented
 
 **Grand Total Automated Checks:** **391 total executions: 389 passed, 0 failed, 2 skipped** across in-engine Unity runs and repository regression suites.
 
+### 1.2 Fresh Verification on Current Commit (`fde57cdde324fedb83275932d78ffbd4c2051eb7`)
+In addition to the historical baseline, full in-engine suites were executed directly in Unity 6 (`6000.6.3f1`) against current source:
+- **Fresh EditMode Tests:** 94 passed, 0 failed, 0 skipped (`artifacts/test_results_EditMode_current.xml`)
+- **Fresh PlayMode Tests:** 34 passed, 0 failed, 0 skipped (`artifacts/test_results_PlayMode_current.xml`)
+- **Fresh Character Rig Audit:** 10 production characters passed, 0 failed (`docs/audits/EDITOR_CHARACTER_RIG_AUDIT.json`)
+- **Fresh Asset Reference Audit:** 9 scenes, 10 prefabs, 293 materials, 57 textures, 10 audio clips, 0 broken references (`docs/audits/UNITY_ASSET_REFERENCE_AUDIT.json`)
+- **Automated Evidence Validator (`scripts/verify-audit-evidence.js`):** 61 passed assertions, 0 failed
+- **Overall Test Runner (`npm test`):** 9/9 suites passed, 100% exit code 0, server port released
+
 > [!IMPORTANT]
 > **Static CI vs Unity In-Engine Execution:**  
-> The GitHub Actions CI job `unity-static-checks` (running in 11–13 seconds on an Ubuntu runner) is a static repository sanity check (validating file existence, GUIDs, and assembly definitions). It is **not** an actual Unity Editor execution of the 34 PlayMode and 94 EditMode suites on the current commit. The PlayMode and EditMode suites were executed directly in Unity Editor 6000.6.3f1 on commit `5056deb` and are cataloged as historical in-engine runtime evidence.
+> The GitHub Actions CI job `unity-static-checks` (running in 11–13 seconds on an Ubuntu runner) is a static repository sanity check (validating file existence, GUIDs, and assembly definitions). It is **not** an actual Unity Editor execution of the 34 PlayMode and 94 EditMode suites on the current commit. The historical PlayMode and EditMode suites were executed directly in Unity Editor 6000.6.3f1 on commit `5056deb` and are cataloged as historical in-engine runtime evidence, with current-commit execution confirmed locally on `fde57cd`.
 
 ---
 

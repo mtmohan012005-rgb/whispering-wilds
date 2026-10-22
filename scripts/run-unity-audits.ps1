@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet("rig", "asset", "scenes", "capture", "build", "editmode", "playmode", "map")]
+    [ValidateSet("rig", "asset", "scenes", "capture", "build", "benchmark", "editmode", "playmode", "map")]
     [string]$Action
 )
 
@@ -45,6 +45,11 @@ switch ($Action) {
     "build" {
         $method = "WhisperingWilds.Editor.BuildPipelineAutomation.BuildProductionWindowsFromCommandLine"
         $logName = "unity_standalone_build.log"
+        $extraArgs += @("-quit", "-nographics", "-gitSha", $currentSha)
+    }
+    "benchmark" {
+        $method = "WhisperingWilds.Editor.BuildPipelineAutomation.BuildQABenchmarkWindowsFromCommandLine"
+        $logName = "unity_benchmark_build.log"
         $extraArgs += @("-quit", "-nographics", "-gitSha", $currentSha)
     }
     "editmode" {

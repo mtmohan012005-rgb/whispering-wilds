@@ -21,38 +21,44 @@ if ($hasPlayerGlb) {
 
 # 2. Links Audit
 $indexHtml = Join-Path $baseDir "index.html"
-$content = [System.IO.File]::ReadAllText($indexHtml)
-$scriptRegex = [regex]'<script\s+[^>]*src="([^"]+)"'
-$linkRegex = [regex]'<link\s+[^>]*href="([^"]+)"'
-
-$scriptMatches = $scriptRegex.Matches($content)
-$linkMatches = $linkRegex.Matches($content)
-
+$totalLinks = 0
 $missingLinks = @()
-foreach ($m in $scriptMatches) {
-    $src = $m.Groups[1].Value
-    if (-not ($src.StartsWith("http://") -or $src.StartsWith("https://"))) {
-        $cleanSrc = ($src -split "\?")[0]
-        $localFile = Join-Path $baseDir ($cleanSrc.TrimStart('/').Replace('/', '\'))
-        if (-not (Test-Path $localFile)) {
-            $missingLinks += "Script: $src"
+
+if (Test-Path $indexHtml) {
+    $content = [System.IO.File]::ReadAllText($indexHtml)
+    $scriptRegex = [regex]'<script\s+[^>]*src="([^"]+)"'
+    $linkRegex = [regex]'<link\s+[^>]*href="([^"]+)"'
+
+    $scriptMatches = $scriptRegex.Matches($content)
+    $linkMatches = $linkRegex.Matches($content)
+
+    foreach ($m in $scriptMatches) {
+        $src = $m.Groups[1].Value
+        if (-not ($src.StartsWith("http://") -or $src.StartsWith("https://"))) {
+            $cleanSrc = ($src -split "\?")[0]
+            $localFile = Join-Path $baseDir ($cleanSrc.TrimStart('/').Replace('/', '\'))
+            if (-not (Test-Path $localFile)) {
+                $missingLinks += "Script: $src"
+            }
         }
     }
-}
 
-foreach ($m in $linkMatches) {
-    $href = $m.Groups[1].Value
-    if (-not ($href.StartsWith("http://") -or $href.StartsWith("https://"))) {
-        $cleanHref = ($href -split "\?")[0]
-        $localFile = Join-Path $baseDir ($cleanHref.TrimStart('/').Replace('/', '\'))
-        if (-not (Test-Path $localFile)) {
-            $missingLinks += "Stylesheet: $href"
+    foreach ($m in $linkMatches) {
+        $href = $m.Groups[1].Value
+        if (-not ($href.StartsWith("http://") -or $href.StartsWith("https://"))) {
+            $cleanHref = ($href -split "\?")[0]
+            $localFile = Join-Path $baseDir ($cleanHref.TrimStart('/').Replace('/', '\'))
+            if (-not (Test-Path $localFile)) {
+                $missingLinks += "Stylesheet: $href"
+            }
         }
     }
-}
 
-$totalLinks = $scriptMatches.Count + $linkMatches.Count
-Write-Host "HTML Script & Link Dependencies: $totalLinks audited" -ForegroundColor Green
+    $totalLinks = $scriptMatches.Count + $linkMatches.Count
+    Write-Host "HTML Script & Link Dependencies: $totalLinks audited" -ForegroundColor Green
+} else {
+    Write-Host "Legacy web index.html: Not present (Standalone Unity 6 Native target active)" -ForegroundColor Green
+}
 
 if ($missingLinks.Count -gt 0) {
     Write-Host "Missing Links: $($missingLinks.Count)" -ForegroundColor Red

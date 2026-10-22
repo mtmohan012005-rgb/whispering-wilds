@@ -145,6 +145,15 @@ function verifyDocNumbers(docPath, docName) {
     assert(has148, `${docName} discloses 148 historical Unity verifications`);
     assert(has243, `${docName} discloses 243 repository/launcher checks`);
     assert(has241, `${docName} discloses 241 repository/launcher passed checks`);
+
+    // Check for exact required evidence summary lines
+    const expectedHistoricalLine = 'Historical Unity Editor evidence: 148 executions, 148 passed, 0 failed, 0 skipped, tested on commit 5056deb833a1254f0e41bf134151663a08cca5f8.';
+    const expectedRepoLine = 'Repository and launcher checks: 243 executions, 241 passed, 0 failed, 2 skipped, tested on commit defec347fa570533c3a6b8ef1facee49a1c3db76.';
+    const expectedGrandLine = 'Grand total: 391 executions, 389 passed, 0 failed, 2 skipped.';
+
+    assert(content.includes(expectedHistoricalLine), `${docName} discloses exact historical Unity Editor evidence line`);
+    assert(content.includes(expectedRepoLine), `${docName} discloses exact repository and launcher checks line`);
+    assert(content.includes(expectedGrandLine), `${docName} discloses exact grand total line`);
 }
 
 verifyDocNumbers(AUDIT_MD_PATH, 'WHOLE_GAME_AUDIT.md');

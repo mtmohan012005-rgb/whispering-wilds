@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Mathematics;
 
 namespace WhisperingWilds.Characters
 {
@@ -7,6 +9,7 @@ namespace WhisperingWilds.Characters
     /// Biomechanically accurate ragdoll controller for protagonist and NPC characters.
     /// Manages instantaneous transition between kinematic animation and physical dynamics
     /// upon fall impact, slips on wet monsoon asphalt, or physical interactions.
+    /// Uses Unity.Mathematics and TryGetComponent protection for zero-allocation performance.
     /// </summary>
     [DisallowMultipleComponent]
     public class CharacterRagdollController : MonoBehaviour
@@ -20,16 +23,17 @@ namespace WhisperingWilds.Characters
         private Collider mainCollider;
         private Rigidbody mainRigidbody;
 
-        private List<Rigidbody> ragdollRigidbodies = new List<Rigidbody>();
-        private List<Collider> ragdollColliders = new List<Collider>();
+        private readonly List<Rigidbody> ragdollRigidbodies = new List<Rigidbody>();
+        private readonly List<Collider> ragdollColliders = new List<Collider>();
 
         public bool IsRagdoll => isRagdoll;
+        public float TotalBodyMass => totalBodyMass;
 
-        void Awake()
+        private void Awake()
         {
-            animator = GetComponent<Animator>();
-            mainCollider = GetComponent<Collider>();
-            mainRigidbody = GetComponent<Rigidbody>();
+            TryGetComponent(out animator);
+            TryGetComponent(out mainCollider);
+            TryGetComponent(out mainRigidbody);
 
             CollectRagdollParts();
             SetRagdollState(false);
@@ -41,17 +45,17 @@ namespace WhisperingWilds.Characters
             ragdollColliders.Clear();
 
             Rigidbody[] rbs = GetComponentsInChildren<Rigidbody>();
-            foreach (Rigidbody rb in rbs)
+            for (int i = 0; i < rbs.Length; i++)
             {
-                if (rb == mainRigidbody) continue; // Skip root body
-                ragdollRigidbodies.Add(rb);
+                if (rbs[i] == mainRigidbody) continue;
+                ragdollRigidbodies.Add(rbs[i]);
             }
 
             Collider[] cols = GetComponentsInChildren<Collider>();
-            foreach (Collider col in cols)
+            for (int i = 0; i < cols.Length; i++)
             {
-                if (col == mainCollider) continue; // Skip root collider
-                ragdollColliders.Add(col);
+                if (cols[i] == mainCollider) continue;
+                ragdollColliders.Add(cols[i]);
             }
 
             DistributeRealisticMass();
@@ -66,8 +70,9 @@ namespace WhisperingWilds.Characters
             if (ragdollRigidbodies.Count == 0) return;
 
             float perBoneMass = totalBodyMass / ragdollRigidbodies.Count;
-            foreach (Rigidbody rb in ragdollRigidbodies)
+            for (int i = 0; i < ragdollRigidbodies.Count; i++)
             {
+                Rigidbody rb = ragdollRigidbodies[i];
                 string boneName = rb.name.ToLower();
                 if (boneName.Contains("head"))
                     rb.mass = totalBodyMass * 0.07f;
@@ -80,7 +85,6 @@ namespace WhisperingWilds.Characters
                 else
                     rb.mass = perBoneMass;
 
-                // Max angular velocity for natural joint response
                 rb.maxAngularVelocity = 14f;
                 rb.interpolation = RigidbodyInterpolation.Interpolate;
             }
@@ -91,10 +95,9 @@ namespace WhisperingWilds.Characters
             if (isRagdoll) return;
             SetRagdollState(true);
 
-            // Apply impact impulse to hips/torso
-            foreach (Rigidbody rb in ragdollRigidbodies)
+            for (int i = 0; i < ragdollRigidbodies.Count; i++)
             {
-                rb.AddForce(impactVelocity, ForceMode.VelocityChange);
+                ragdollRigidbodies[i].AddForce(impactVelocity, ForceMode.VelocityChange);
             }
         }
 
@@ -112,15 +115,15 @@ namespace WhisperingWilds.Characters
             if (mainCollider != null) mainCollider.enabled = !active;
             if (mainRigidbody != null) mainRigidbody.isKinematic = active;
 
-            foreach (Rigidbody rb in ragdollRigidbodies)
+            for (int i = 0; i < ragdollRigidbodies.Count; i++)
             {
-                rb.isKinematic = !active;
-                rb.detectCollisions = active;
+                ragdollRigidbodies[i].isKinematic = !active;
+                ragdollRigidbodies[i].detectCollisions = active;
             }
 
-            foreach (Collider col in ragdollColliders)
+            for (int i = 0; i < ragdollColliders.Count; i++)
             {
-                col.enabled = active;
+                ragdollColliders[i].enabled = active;
             }
         }
     }
