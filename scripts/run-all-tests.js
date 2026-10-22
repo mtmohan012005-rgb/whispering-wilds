@@ -261,6 +261,14 @@ async function main() {
     );
     results.push(launcherResult);
     if (launcherResult.code !== 0) hasFailure = true;
+
+    // Audit evidence integrity & reconciliation validator
+    const auditEvidenceResult = await runTestSuite(
+      'Audit Evidence Integrity & Count Reconciliation',
+      'scripts/verify-audit-evidence.js'
+    );
+    results.push(auditEvidenceResult);
+    if (auditEvidenceResult.code !== 0) hasFailure = true;
     
   } catch (error) {
     console.error('❌ Test runner error:', error.message);

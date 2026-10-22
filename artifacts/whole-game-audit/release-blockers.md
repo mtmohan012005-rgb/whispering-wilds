@@ -4,9 +4,8 @@
 **Target Release:** Windows Candidate `v1.0.1`  
 **Current Audited Git Commit:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
 **Historical Unity In-Engine Tested Commit:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
-**Main Branch HEAD:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
 **Engine:** Unity 6 (`6000.6.3f1`), HDRP 17.7.0, Direct3D 11 (`-force-d3d11`)  
-**Automated Verification Reconciliation:** 389 automated test verifications passing (148 Unity in-engine tests & audits on commit `5056deb` + 241 Node.js/Windows launcher regression checks on commit `defec34`).
+**Automated Verification Reconciliation:** 391 total executions: 389 passed, 0 failed, 2 skipped (148 historical Unity Editor verifications: 148 passed, 0 failed, 0 skipped on commit `5056deb`; 243 repository/launcher checks: 241 passed, 0 failed, 2 skipped on commit `defec34`).
 
 ---
 

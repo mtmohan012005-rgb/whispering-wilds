@@ -10,6 +10,7 @@
     "verify-game": "node scripts/verify-game.js",
     "verify-assets": "node scripts/verify-assets.js",
     "verify-production": "node scripts/verify-production.js",
+    "verify-audit-evidence": "node scripts/verify-audit-evidence.js",
     "validate": "node scripts/verify-game.js && node scripts/verify-production.js",
     "test": "node scripts/run-all-tests.js",
     "test:candidate-launcher": "node scripts/verify-candidate-launcher.js",
