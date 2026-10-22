@@ -32,6 +32,17 @@ const PACKAGER_PS1 = path.join(PROJECT_ROOT, 'scripts', 'package-release.ps1');
 const V101_MANIFEST = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'RELEASE_MANIFEST-v1.0.1.json');
 const V100_MANIFEST = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'RELEASE_MANIFEST.json');
 const REAL_MANIFEST = fs.existsSync(V101_MANIFEST) ? V101_MANIFEST : V100_MANIFEST;
+const REAL_MANIFEST_EXISTS = fs.existsSync(REAL_MANIFEST);
+// Generated release artifacts are gitignored; fall back to a synthetic manifest so launcher
+// safety logic can still be exercised on clean CI checkouts.
+const FALLBACK_MANIFEST = {
+  candidate: true,
+  status: 'VERIFIED_CLEAN',
+  isDirty: false,
+  sizeBytes: 0,
+  sha256: '0'.repeat(64),
+  codeCommit: '5056deb833a1254f0e41bf134151663a08cca5f8'
+};
 
 const V101_ZIP = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'TheWhisperingWilds-v1.0.1-windows-x64.zip');
 const V100_ZIP = path.join(PROJECT_ROOT, 'artifacts', 'releases', 'TheWhisperingWilds-v1.0.0-windows-x64.zip');
@@ -128,7 +139,7 @@ console.log(`   Scratch Directory: ${TEST_DIR}\n`);
 let activeManifestPath = REAL_MANIFEST;
 let activeZipPath = REAL_ZIP;
 if (process.platform === 'win32' && !fs.existsSync(REAL_ZIP)) {
-  const sourceManifest = readJsonFile(REAL_MANIFEST);
+  const sourceManifest = REAL_MANIFEST_EXISTS ? readJsonFile(REAL_MANIFEST) : FALLBACK_MANIFEST;
   const fixtureRoot = path.join(TEST_DIR, 'candidate-fixture');
   const fixtureData = path.join(fixtureRoot, 'TheWhisperingWilds_Data');
   fs.mkdirSync(fixtureData, { recursive: true });
@@ -159,7 +170,7 @@ if (process.platform === 'win32' && !fs.existsSync(REAL_ZIP)) {
 
 try {
   // Read real manifest metadata for reference
-  const realManifestContent = readJsonFile(activeManifestPath);
+  const realManifestContent = fs.existsSync(activeManifestPath) ? readJsonFile(activeManifestPath) : FALLBACK_MANIFEST;
   const expectedHash = realManifestContent.sha256;
   const expectedSize = realManifestContent.sizeBytes;
   const expectedCommit = realManifestContent.codeCommit || realManifestContent.testedCommit;
@@ -177,13 +188,15 @@ try {
     const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex').toUpperCase();
     assert(hash === expectedHash.toUpperCase(), 'Real candidate ZIP SHA-256 matches manifest',
       `hash: ${hash}`);
-  } else {
+  } else if (REAL_MANIFEST_EXISTS) {
     console.log('  ℹ️  CI Environment: Candidate ZIP not present in git checkout (gitignored). Validating manifest schema.');
     assert(expectedSize === 62868410, 'Manifest expected size matches release specification', `size: ${expectedSize}`);
     assert(expectedHash === 'AFF39CA7AA95516CA3E5EB8B5D7E33ACA456F877816734CD73E3CEA450705006',
       'Manifest expected SHA-256 matches release specification', `hash: ${expectedHash}`);
     assert(expectedCommit === '5056deb833a1254f0e41bf134151663a08cca5f8',
       'Manifest candidate code commit matches candidate specification', `commit: ${expectedCommit}`);
+  } else {
+    console.log('  ℹ️  CI Environment: candidate manifest and ZIP are generated artifacts and are not committed; skipping archive identity assertions.');
   }
 
   if (process.platform !== 'win32') {
