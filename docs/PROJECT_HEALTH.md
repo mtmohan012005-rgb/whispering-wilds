@@ -1,14 +1,22 @@
 # Project Health — The Whispering Wilds
 
-**Last updated:** 2026-10-19
-**Commit:** a376c92 (Test runner, campaign checklist, audit plan update)
+**Last updated:** 2026-10-22
+**Base commit:** `6d3b09f` (Merge PR #24 — Unity audit reconciliation and character evidence)
 **GitHub:** https://github.com/mtmohan012005-rgb/whispering-wilds
 
-## Current Status (2026-10-19)
+## Current Status (2026-10-22)
 
 **Verdict:** ⚠️ PLAYABLE GAME WITH KNOWN GAPS
 
-**Summary:** Core single-player loop works. All 132+ automated tests pass. Cloud save contract fixed end-to-end. Temple scene created with puzzle mechanics. Backend security verified.
+**Summary:** Core single-player loop works. Repository validation suites pass (game, production, assets, map data, audit evidence, launcher, backend). Historical and current audit evidence is reconciled at 391 executions / 389 passed / 2 skipped. Remaining gaps are external assets and human verification, not repository hygiene.
+
+**Repository status (verified 2026-10-22):**
+- ✅ `main` fast-forwarded to `origin/main` (`6d3b09f`); repository hygiene changes are applied on top.
+- ✅ GitHub Actions active: **Backend CI** and **Unity Validation**.
+- ✅ GitHub Pages live at <https://mtmohan012005-rgb.github.io/whispering-wilds/> (served from the `gh-pages` branch).
+- ✅ MIT `LICENSE` file present at the repository root.
+- ✅ `npm run validate` covers game, production, and game-data manifest checks.
+- ⚠️ No GitHub Release is published yet; `README.md` now directs players to build from source until one exists.
 
 **What works:**
 - ✅ Game launches at 60 FPS, intro plays, menu displays
@@ -23,7 +31,7 @@
 - ✅ Temple scene with puzzle, audio, player, camera
 
 **Critical gaps (all external, not code bugs):**
-1. **CI workflows** — Files exist locally but GitHub PAT lacks `workflow` scope to push
+1. **Published release** — No GitHub Release asset is published yet; players must build from source
 2. **NPC quality** — All 9 NPCs are placeholder models (need rigged 3D characters)
 3. **Firebase credentials** — Cloud saves need Firebase project credentials (user action)
 4. **NavMesh baking** — Needs Unity Editor to bake navigation data

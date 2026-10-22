@@ -1,0 +1,65 @@
+# Deploy Landing Page — The Whispering Wilds
+# Publishes docs/landing/ to the gh-pages branch, which is the branch GitHub
+# Pages is configured to serve. This works with the repository's existing
+# "Deploy from a branch" Pages setting and does not require switching the
+# Pages source to GitHub Actions.
+
+name: Deploy Landing Page
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/landing/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Publish docs/landing to gh-pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify landing page exists
+        run: |
+          test -f docs/landing/index.html || { echo "::error::docs/landing/index.html not found"; exit 1; }
+          echo "Landing page found"
+
+      - name: Publish to gh-pages branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          rm -rf pages-worktree
+          git clone --depth 1 --branch gh-pages \
+            "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            pages-worktree
+
+          cp -R docs/landing/. pages-worktree/
+          touch pages-worktree/.nojekyll
+
+          cd pages-worktree
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No landing page changes to publish."
+            exit 0
+          fi
+
+          git commit -m "deploy: publish landing page from ${GITHUB_SHA::7}"
+          git push origin gh-pages

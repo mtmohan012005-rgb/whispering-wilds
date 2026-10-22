@@ -35,7 +35,7 @@ The Whispering Wilds (காட்டு வழி • தடம்) is an open-
 | Investigation | `InvestigationManager`, `ClueData` | Clue discovery, deduction system |
 | Economy | `InventoryManager`, `VendorInteraction`, `NPCWallet` | Trading, currency, items |
 | World | `RegionalSceneManager`, `WeatherSystem`, `WorldSimulationManager` | Scene transitions, weather, day/night |
-| Quality | `GraphicsPerformanceManager`, `QualityPresetManager`, `AdaptiveQualityManager` | HDRP quality, dynamic resolution |
+| Quality | `GraphicsPerformanceManager`, `QualityPresetManager`, `MemoryManager` | HDRP quality profiles, hardware auto-detection, dynamic resolution, memory budgets |
 | Cloud Save | `CloudSaveManager` | Firebase-backed cloud persistence (optional) |
 
 ### Regional Scenes

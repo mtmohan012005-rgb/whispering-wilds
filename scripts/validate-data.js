@@ -1,143 +1,285 @@
 #!/usr/bin/env node
 /**
- * The Whispering Wilds (Kaattu Vazhi) - Game Data & Cross-Reference Validator
- * Validates NPCs, wildlife, quests, items, recipes, regions, landmarks, festivals, food, wardrobe.
- * Detects: duplicate IDs, missing references, invalid enums, empty required fields.
+ * The Whispering Wilds — Game Data & Manifest Cross-Reference Validator
+ *
+ * Validates the authoritative JSON manifests that ship with the Unity project:
+ *   - assets/manifest.json                       (curated runtime asset manifest)
+ *   - PRODUCTION_3D_ASSET_MANIFEST.json          (production 3D asset manifest)
+ *   - assets/audio/audio-manifest.json           (audio inventory + sha256)
+ *   - assets/characters/player/CHARACTER_MANIFEST.json (hero rig contract)
+ *
+ * Detects: malformed JSON, duplicate IDs, missing required fields, READY assets
+ * with no physical file, filePresent/sha256 drift, and dangling hero-model paths.
+ *
+ * The previous implementation read `js/data/*.js`, which was deleted when the
+ * browser client was removed. It silently audited 0 entities and always passed;
+ * this version fails loudly when its inputs are missing.
  */
 
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
-const DATA_DIR = path.join(ROOT_DIR, 'js', 'data');
+const REPORT_PATH = path.join(ROOT_DIR, 'DATA_AUDIT_REPORT.json');
 
-function loadDataFile(filename) {
-  const filePath = path.join(DATA_DIR, filename);
-  if (!fs.existsSync(filePath)) return null;
-  const content = fs.readFileSync(filePath, 'utf8');
+const errors = [];
+const warnings = [];
+const stats = [];
 
-  // Simple sandbox evaluation for window.* assignment
-  const sandbox = { window: {} };
+function readJson(relPath) {
+  const abs = path.join(ROOT_DIR, relPath);
+  if (!fs.existsSync(abs)) {
+    errors.push(`Missing manifest: ${relPath}`);
+    return null;
+  }
   try {
-    const fn = new Function('window', content);
-    fn(sandbox.window);
-    return sandbox.window;
+    return JSON.parse(fs.readFileSync(abs, 'utf8'));
   } catch (err) {
-    console.error(`Failed to parse ${filename}:`, err.message);
+    errors.push(`Invalid JSON in ${relPath}: ${err.message}`);
     return null;
   }
 }
 
-function runDataValidation() {
-  console.log('====================================================');
-  console.log('THE WHISPERING WILDS - GAME DATA & CROSS-REFERENCE AUDIT');
-  console.log('====================================================\n');
+function resolveInsideRepo(relPath) {
+  const abs = path.resolve(ROOT_DIR, relPath);
+  const rel = path.relative(ROOT_DIR, abs);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    errors.push(`Path escapes repository root: ${relPath}`);
+    return null;
+  }
+  return abs;
+}
 
-  const errors = [];
-  const warnings = [];
-  const allIds = new Map(); // id -> source
+function fileSize(relPath) {
+  const abs = resolveInsideRepo(relPath);
+  if (!abs) return 0;
+  try {
+    const stat = fs.statSync(abs);
+    return stat.isFile() ? stat.size : 0;
+  } catch {
+    return 0;
+  }
+}
 
-  function registerId(id, type) {
-    if (!id) return;
-    if (allIds.has(id)) {
-      errors.push(`Duplicate ID detected: "${id}" in ${type} (previously registered in ${allIds.get(id)})`);
+function sha256(relPath) {
+  const abs = resolveInsideRepo(relPath);
+  if (!abs) return null;
+  return crypto.createHash('sha256').update(fs.readFileSync(abs)).digest('hex').toUpperCase();
+}
+
+function validateManifest(label, manifest, options) {
+  const {
+    entriesKey = 'assets',
+    idField = 'id',
+    pathField = 'path',
+    readyStatuses = ['READY'],
+    statusField = 'status',
+  } = options;
+
+  if (!manifest || typeof manifest !== 'object') return;
+
+  const entries = manifest[entriesKey];
+  if (!Array.isArray(entries) || entries.length === 0) {
+    errors.push(`${label}: "${entriesKey}" must be a non-empty array`);
+    return;
+  }
+
+  const seen = new Map();
+  let ready = 0;
+  let blocked = 0;
+  let present = 0;
+
+  for (const [index, entry] of entries.entries()) {
+    const where = `${label}[${index}]`;
+    const id = entry[idField];
+    const relPath = entry[pathField];
+    const status = entry[statusField];
+
+    if (!id) {
+      errors.push(`${where}: missing "${idField}"`);
+    } else if (seen.has(id)) {
+      errors.push(`${label}: duplicate id "${id}" (first at index ${seen.get(id)})`);
     } else {
-      allIds.set(id, type);
+      seen.set(id, index);
+    }
+
+    if (!relPath) {
+      errors.push(`${where}: missing "${pathField}"`);
+      continue;
+    }
+
+    const size = fileSize(relPath);
+    if (size > 0) present += 1;
+
+    if (readyStatuses.includes(status)) {
+      ready += 1;
+      if (size === 0) {
+        errors.push(`${where} (${id || 'NO_ID'}): status ${status} but file is missing or empty: ${relPath}`);
+      }
+    } else if (status === 'BLOCKED') {
+      blocked += 1;
     }
   }
 
-  // 1. Quests & Chapters
-  const questData = loadDataFile('quest-progression-data.js') || {};
-  const chapters = questData.QUEST_PRODUCTION_CHAPTERS || [];
-  const quests = questData.QUEST_PRODUCTION_DATA || [];
+  stats.push({ manifest: label, entries: entries.length, ready, blocked, filesPresent: present });
+}
 
-  console.log(`Auditing Quests: ${quests.length} quests in ${chapters.length} chapters...`);
-  chapters.forEach(ch => {
-    if (!ch.id || !ch.title) errors.push(`Chapter missing required id or title: ${JSON.stringify(ch)}`);
-    registerId(ch.id, 'Chapter');
-  });
+function validateAudioManifest() {
+  const label = 'assets/audio/audio-manifest.json';
+  const manifest = readJson(label);
+  if (!manifest || !Array.isArray(manifest.assets)) {
+    if (manifest) errors.push(`${label}: "assets" must be an array`);
+    return;
+  }
 
-  quests.forEach(q => {
-    if (!q.id || !q.title || !q.region) {
-      errors.push(`Quest missing required fields: ${q.id || 'NO_ID'}`);
+  const seen = new Set();
+  let present = 0;
+  let blocked = 0;
+
+  for (const [index, entry] of manifest.assets.entries()) {
+    const where = `${label}[${index}]`;
+    if (!entry.id) errors.push(`${where}: missing "id"`);
+    else if (seen.has(entry.id)) errors.push(`${label}: duplicate id "${entry.id}"`);
+    else seen.add(entry.id);
+
+    if (!entry.path) {
+      errors.push(`${where}: missing "path"`);
+      continue;
     }
-    registerId(q.id, 'Quest');
+
+    const onDisk = fileSize(entry.path) > 0;
+    if (onDisk) present += 1;
+    if (entry.status === 'BLOCKED') blocked += 1;
+
+    if (entry.filePresent === true && !onDisk) {
+      errors.push(`${where} (${entry.id}): filePresent=true but file is missing or empty: ${entry.path}`);
+    }
+    if (entry.filePresent === false && onDisk) {
+      errors.push(`${where} (${entry.id}): filePresent=false but file exists on disk: ${entry.path}`);
+    }
+    if (entry.filePresent === true && onDisk && entry.sha256) {
+      const actual = sha256(entry.path);
+      if (actual && actual !== entry.sha256.toUpperCase()) {
+        errors.push(`${where} (${entry.id}): sha256 drift for ${entry.path}`);
+      }
+    }
+  }
+
+  stats.push({
+    manifest: label,
+    entries: manifest.assets.length,
+    ready: manifest.assets.filter((a) => a.status === 'PLACEHOLDER' || a.status === 'READY').length,
+    blocked,
+    filesPresent: present,
+  });
+}
+
+function validateCharacterManifest() {
+  const label = 'assets/characters/player/CHARACTER_MANIFEST.json';
+  const manifest = readJson(label);
+  if (!manifest) return;
+
+  if (!manifest.characterId) errors.push(`${label}: missing "characterId"`);
+  if (!manifest.targetFile) {
+    errors.push(`${label}: missing "targetFile"`);
+  } else if (fileSize(manifest.targetFile) === 0) {
+    errors.push(`${label}: targetFile is missing or empty: ${manifest.targetFile}`);
+  }
+
+  const bones = manifest.rig && manifest.rig.standardBones;
+  if (!Array.isArray(bones) || bones.length === 0) {
+    errors.push(`${label}: "rig.standardBones" must be a non-empty array`);
+  }
+
+  const animations = manifest.animations;
+  if (animations != null && !Array.isArray(animations)) {
+    errors.push(`${label}: "animations" must be an array when present`);
+  }
+
+  stats.push({
+    manifest: label,
+    entries: 1,
+    ready: 1,
+    blocked: 0,
+    filesPresent: fileSize(manifest.targetFile || '') > 0 ? 1 : 0,
+    bones: Array.isArray(bones) ? bones.length : 0,
+  });
+}
+
+function runDataValidation() {
+  console.log('====================================================');
+  console.log('THE WHISPERING WILDS - GAME DATA & MANIFEST AUDIT');
+  console.log('====================================================\n');
+
+  validateManifest('assets/manifest.json', readJson('assets/manifest.json'), {
+    entriesKey: 'assets',
+    pathField: 'path',
+    readyStatuses: ['READY'],
   });
 
-  // 2. Wardrobe & Outfits
-  const wardrobeData = loadDataFile('wardrobe-data.js') || {};
-  const wardrobeItems = wardrobeData.WARDROBE_ITEMS || [];
-  console.log(`Auditing Wardrobe: ${wardrobeItems.length} items...`);
-  wardrobeItems.forEach(item => {
-    if (!item.id || !item.name) errors.push(`Wardrobe item missing id or name: ${JSON.stringify(item)}`);
-    registerId(item.id, 'Wardrobe');
+  validateManifest('PRODUCTION_3D_ASSET_MANIFEST.json', readJson('PRODUCTION_3D_ASSET_MANIFEST.json'), {
+    entriesKey: 'assets',
+    pathField: 'file',
+    readyStatuses: ['READY'],
   });
 
-  // 3. Food Culture Data
-  const foodData = loadDataFile('food-culture-data.js') || {};
-  const foods = foodData.FOOD_CULTURE_DATA || [];
-  console.log(`Auditing Food Culture: ${foods.length} culinary items...`);
-  foods.forEach(f => {
-    if (!f.id || !f.name || !f.region) errors.push(`Food item missing id/name/region: ${JSON.stringify(f)}`);
-    registerId(f.id, 'Food');
-  });
+  validateAudioManifest();
+  validateCharacterManifest();
 
-  // 4. Cultural Life Data
-  const culturalData = loadDataFile('cultural-life-data.js') || {};
-  const festivals = culturalData.FESTIVALS_DATA || [];
-  const npcs = culturalData.LIVING_WORLD_NPCS || [];
-  const wildlife = culturalData.LIVING_WORLD_WILDLIFE || [];
-  console.log(`Auditing Living World: ${npcs.length} NPCs, ${wildlife.length} Wildlife species, ${festivals.length} Festivals...`);
+  let totalEntries = 0;
+  let totalPresent = 0;
+  for (const row of stats) {
+    totalEntries += row.entries;
+    totalPresent += row.filesPresent;
+    console.log(
+      `  ${row.manifest}: ${row.entries} entries ` +
+        `(${row.ready} ready/placeholder, ${row.blocked} blocked, ${row.filesPresent} files present)`
+    );
+  }
 
-  npcs.forEach(npc => {
-    if (!npc.id || !npc.name) errors.push(`NPC missing id/name: ${JSON.stringify(npc)}`);
-    registerId(npc.id, 'NPC');
-  });
-
-  wildlife.forEach(w => {
-    if (!w.id || !w.name) errors.push(`Wildlife missing id/name: ${JSON.stringify(w)}`);
-    registerId(w.id, 'Wildlife');
-  });
-
-  // 5. Exploration & Puzzles
-  const puzzleData = loadDataFile('puzzle-data.js') || {};
-  const puzzles = puzzleData.PUZZLE_DATA || [];
-  console.log(`Auditing Puzzles: ${puzzles.length} environmental mechanisms...`);
-  puzzles.forEach(p => {
-    if (!p.id || !p.title) errors.push(`Puzzle missing id/title: ${JSON.stringify(p)}`);
-    registerId(p.id, 'Puzzle');
-  });
-
-  console.log(`\nData Integrity Audit Summary:`);
-  console.log(`  Total Registered Entities : ${allIds.size}`);
-  console.log(`  Errors Detected           : ${errors.length}`);
-  console.log(`  Warnings Detected         : ${warnings.length}`);
+  console.log('\nData Integrity Audit Summary:');
+  console.log(`  Manifests Audited        : ${stats.length}`);
+  console.log(`  Total Entries            : ${totalEntries}`);
+  console.log(`  Files Verified On Disk   : ${totalPresent}`);
+  console.log(`  Errors Detected          : ${errors.length}`);
+  console.log(`  Warnings Detected        : ${warnings.length}`);
 
   if (errors.length > 0) {
     console.error('\nErrors:');
-    errors.forEach(e => console.error(`  ✗ ${e}`));
+    errors.forEach((e) => console.error(`  x ${e}`));
+  }
+  if (warnings.length > 0) {
+    console.warn('\nWarnings:');
+    warnings.forEach((w) => console.warn(`  ! ${w}`));
   }
 
   const report = {
     timestamp: new Date().toISOString(),
-    totalEntities: allIds.size,
+    manifests: stats,
+    totalEntries,
+    filesVerified: totalPresent,
     errorsCount: errors.length,
     warningsCount: warnings.length,
     errors,
-    warnings
+    warnings,
   };
 
-  fs.writeFileSync(path.join(ROOT_DIR, 'DATA_AUDIT_REPORT.json'), JSON.stringify(report, null, 2));
-  console.log('Report written to DATA_AUDIT_REPORT.json\n');
+  fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2));
+  console.log('\nReport written to DATA_AUDIT_REPORT.json');
+
+  if (errors.length === 0) {
+    console.log('\nSUCCESS: All game data manifests and cross-references are consistent.');
+  } else {
+    console.error('\nFAILURE: Game data manifest audit found inconsistencies.');
+  }
 
   return { success: errors.length === 0, errors, warnings };
 }
 
 if (require.main === module) {
   const result = runDataValidation();
-  if (!result.success) {
-    process.exit(1);
-  }
+  if (!result.success) process.exit(1);
 }
 
 module.exports = { runDataValidation };

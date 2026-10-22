@@ -41,6 +41,9 @@ jobs:
       - name: Verify asset scopes
         run: npm run verify-assets
 
+      - name: Validate game data manifests
+        run: npm run test:data
+
       - name: Run all tests (server auto-started)
         run: npm test
         env:

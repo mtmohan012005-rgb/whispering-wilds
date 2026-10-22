@@ -246,6 +246,14 @@ async function main() {
     results.push(mapDataResult);
     if (mapDataResult.code !== 0) hasFailure = true;
 
+    // Game data manifest & cross-reference validation
+    const dataResult = await runTestSuite(
+      'Game Data Manifest & Cross-Reference Validation',
+      'scripts/validate-data.js'
+    );
+    results.push(dataResult);
+    if (dataResult.code !== 0) hasFailure = true;
+
     // Server cleanup regression
     const cleanupResult = await runTestSuite(
       'Server Cleanup Regression',
