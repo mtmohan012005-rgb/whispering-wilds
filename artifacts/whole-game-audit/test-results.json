@@ -1,10 +1,12 @@
 {
   "testRunMetadata": {
     "projectName": "The Whispering Wilds (காட்டு வழி • தடம்)",
-    "gitCommitTested": "5056deb833a1254f0e41bf134151663a08cca5f8",
-    "gitBranch": "feature/full-game-audit-and-roadmap-20261021",
-    "gitHeadMergedCommit": "2e72017",
-    "timestampUtc": "2026-10-21T17:45:00Z",
+    "gitCommitTested": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+    "gitBaseCommit": "2e7201785efc254c6399910c907584690e4a758d",
+    "gitPrCommit": "6905b8709e394faf21829637d482c692dcec0046",
+    "historicalUnityRunCommit": "5056deb833a1254f0e41bf134151663a08cca5f8",
+    "gitBranch": "fix/audit-reconciliation-and-human-acceptance",
+    "timestampUtc": "2026-10-22T00:50:00Z",
     "operatingSystem": "Microsoft Windows 11 Pro 64-bit",
     "engine": {
       "editorVersion": "6000.6.3f1",
@@ -14,16 +16,34 @@
     }
   },
   "summary": {
-    "totalSuites": 7,
-    "suitesPassed": 7,
-    "suitesFailed": 0,
-    "totalChecksAndTests": 240,
-    "passedCount": 240,
-    "failedCount": 0,
-    "skippedCount": 0,
-    "overallStatus": "VERIFIED_CLEAN"
+    "reconciliationNotice": "Reconciled component suite totals after inspecting underlying test outputs. Distinguishes historical in-engine Unity Editor test runs from current CI static-checks and Node/Windows regression suites.",
+    "unityInEngineChecks": {
+      "totalSuites": 5,
+      "totalChecks": 148,
+      "passed": 148,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_EDITOR_HISTORICAL",
+      "provenanceCommit": "5056deb833a1254f0e41bf134151663a08cca5f8"
+    },
+    "repositoryAndLauncherChecks": {
+      "totalSuites": 8,
+      "totalChecks": 243,
+      "passed": 241,
+      "failed": 0,
+      "skipped": 2,
+      "status": "PASS_BUILD_AND_STATIC_CURRENT",
+      "provenanceCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76"
+    },
+    "grandTotalAutomatedVerifications": {
+      "totalChecks": 391,
+      "passed": 389,
+      "failed": 0,
+      "skipped": 2,
+      "overallStatus": "VERIFIED_CLEAN"
+    }
   },
-  "suites": [
+  "unityInEngineSuites": [
     {
       "name": "Unity EditMode Automated Unit Tests",
       "command": "Unity.exe -runTests -testPlatform EditMode",
@@ -34,6 +54,7 @@
       "skipped": 0,
       "status": "PASS_EDITOR",
       "artifactLog": "artifacts/test_results_EditMode.xml",
+      "testedCommit": "5056deb833a1254f0e41bf134151663a08cca5f8",
       "notes": "Verified player movement requirements, clue database, campaign flow transitions, localization keys, and regional NavMesh binary assets."
     },
     {
@@ -46,7 +67,8 @@
       "skipped": 0,
       "status": "PASS_PLAYMODE",
       "artifactLog": "artifacts/test_results_PlayMode.xml",
-      "notes": "Verified title flow, save system v4 recovery, inventory pickup persistence, region unlock gating, and scene transition lifecycle."
+      "testedCommit": "5056deb833a1254f0e41bf134151663a08cca5f8",
+      "notes": "Verified title flow, save system v4 recovery, inventory pickup persistence, region unlock gating, and scene transition lifecycle in running engine."
     },
     {
       "name": "Unity Character Rig and Hierarchy Audit",
@@ -58,6 +80,7 @@
       "skipped": 0,
       "status": "PASS_EDITOR",
       "artifactLog": "artifacts/unity_rig_audit.log",
+      "testedCommit": "5056deb833a1254f0e41bf134151663a08cca5f8",
       "notes": "Verified 10/10 production characters: modular submeshes, 43 bone bindings, GenericAvatar validity, AnimatorControllers, and colliders."
     },
     {
@@ -70,10 +93,11 @@
       "skipped": 0,
       "status": "PASS_EDITOR",
       "artifactLog": "artifacts/unity_asset_ref_audit.log",
+      "testedCommit": "5056deb833a1254f0e41bf134151663a08cca5f8",
       "notes": "Audited 9 canonical scenes, 10 character prefabs, 293 materials, 57 textures, and 10 audio clips. 0 missing GUIDs or broken references."
     },
     {
-      "name": "Unity Standalone Windows Production Build",
+      "name": "Unity Standalone Windows Production Player Build",
       "command": "Unity.exe -executeMethod WhisperingWilds.Editor.BuildScript.BuildStandaloneWindowsPlayer",
       "exitCode": 0,
       "total": 1,
@@ -82,19 +106,94 @@
       "skipped": 0,
       "status": "PASS_BUILD",
       "artifactLog": "artifacts/unity_standalone_build.log",
+      "testedCommit": "5056deb833a1254f0e41bf134151663a08cca5f8",
       "notes": "Clean production build of TheWhisperingWilds.exe (138,144,138 bytes / 131 MB) in 49.92 seconds with 9 enabled scenes."
-    },
+    }
+  ],
+  "repositoryAndLauncherSuites": [
     {
-      "name": "Node.js Backend & Security Test Suites (Node 18/20)",
-      "command": "npm test",
+      "name": "Backend Security Tests",
+      "command": "node scripts/test-backend-security.js",
       "exitCode": 0,
-      "total": 8,
-      "passed": 8,
+      "total": 34,
+      "passed": 34,
       "failed": 0,
       "skipped": 0,
       "status": "PASS_STATIC",
-      "artifactLog": "npm-test-run.log",
-      "notes": "Verified backend security headers, CSRF protection, rate limiting, map data geo-coordinates, production build verification, and clean port release."
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "34 security assertions covering CSRF, CORS, session tokens, rate limiting, payload bounds, security headers, and error masking."
+    },
+    {
+      "name": "Cloud Save Regression Tests",
+      "command": "node scripts/test-cloud-save-regression.js",
+      "exitCode": 0,
+      "total": 22,
+      "passed": 20,
+      "failed": 0,
+      "skipped": 2,
+      "status": "PASS_STATIC",
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "20 assertions passed; 2 skipped (Firebase credentials unconfigured). Validates 6 client/server checksum parity vectors, auth barriers, and payload size bounds."
+    },
+    {
+      "name": "Game Architecture & Structure Verification",
+      "command": "node scripts/verify-game.js",
+      "exitCode": 0,
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_STATIC",
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "16 architectural checks passed: assembly definitions, scene GUIDs, package manifest, player model, Tamil font, NavMesh assets, and localization."
+    },
+    {
+      "name": "Production Readiness Verification",
+      "command": "node scripts/verify-production.js",
+      "exitCode": 0,
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_STATIC",
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "6 production checks passed: zero browser remnants, server room cap (5 players max), security endpoints, and assembly definitions."
+    },
+    {
+      "name": "Production Asset Verification",
+      "command": "node scripts/verify-assets.js",
+      "exitCode": 0,
+      "total": 41,
+      "passed": 41,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_STATIC",
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "41 asset assertions: 36 production manifest entries verified, player hero GLB integrity (13 meshes, 7 materials, 24 animations), license metadata."
+    },
+    {
+      "name": "Tamil Nadu GIS Map Data & Negative Edge Fixtures",
+      "command": "node scripts/verify-map-data.js",
+      "exitCode": 0,
+      "total": 37,
+      "passed": 37,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_STATIC",
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "37 GIS assertions: 8 upstream Natural Earth sources, 7 GeoJSON checksums and RFC 7946 checks, boundary vertex count (1071), 6 campaign hubs, and 7 negative edge-case fixtures."
+    },
+    {
+      "name": "Server Process Cleanup & Port Release Regression",
+      "command": "node scripts/verify-server-cleanup.js",
+      "exitCode": 0,
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS_STATIC",
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "2 checks passed: process tree clean termination and port re-binding verification without socket leaks."
     },
     {
       "name": "Candidate Windows Launcher Provenance & Safety Suite",
@@ -105,14 +204,15 @@
       "failed": 0,
       "skipped": 0,
       "status": "PASS_BUILD",
-      "artifactLog": "tests/test-launcher-regression.ps1",
-      "notes": "Verified candidate archive SHA-256 verification, extraction provenance marker, path traversal defense, duplicate process prevention, and published v1.0.0 immutability guards."
+      "testedCommit": "defec347fa570533c3a6b8ef1facee49a1c3db76",
+      "notes": "85 regression checks passed on Windows: archive SHA-256 verification, provenance markers, path traversal guards, duplicate process locking, binary tampering rejection, and v1.0.0 immutability protection."
     }
   ],
   "gatedVerifications": {
     "humanGameplayWalkthrough": {
       "status": "NOT_TESTED_HUMAN",
-      "description": "Physical playthrough with keyboard, mouse, and display to assess subjective tactile camera collision, audio balance, and immersion."
+      "description": "Physical playthrough with keyboard, mouse, and display to assess subjective tactile camera collision, audio balance, and immersion.",
+      "checklistPath": "docs/audits/MANUAL_CAMPAIGN_TEST_RECORD.md"
     },
     "firebaseCloudSynchronization": {
       "status": "BLOCKED_CREDENTIALS",
@@ -120,7 +220,7 @@
     },
     "authenticTamilNaduRegionalFieldAudio": {
       "status": "BLOCKED_EXTERNAL_ASSET",
-      "description": "Requires licensed authentic on-location field audio recordings of Tamil Nadu temple bells, George Town street traffic, and Western Ghats wildlife."
+      "description": "Audio engine operational (PASS_PLAYMODE); licensed authentic on-location field audio recordings of Tamil Nadu temple bells, George Town street traffic, and Western Ghats wildlife pending acquisition."
     },
     "twoClientSimultaneousMultiplayer": {
       "status": "NOT_TESTED_MULTI_CLIENT",

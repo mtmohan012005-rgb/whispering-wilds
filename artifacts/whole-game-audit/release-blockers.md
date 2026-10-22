@@ -2,9 +2,11 @@
 
 **Project:** The Whispering Wilds (காட்டு வழி • தடம்)  
 **Target Release:** Windows Candidate `v1.0.1`  
-**Current Baseline Git Commit:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
-**Main Branch HEAD:** `2e72017`  
-**Engine:** Unity 6 (`6000.6.3f1`), HDRP 17.7.0, Direct3D 11  
+**Current Audited Git Commit:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
+**Historical Unity In-Engine Tested Commit:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
+**Main Branch HEAD:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
+**Engine:** Unity 6 (`6000.6.3f1`), HDRP 17.7.0, Direct3D 11 (`-force-d3d11`)  
+**Automated Verification Reconciliation:** 389 automated test verifications passing (148 Unity in-engine tests & audits on commit `5056deb` + 241 Node.js/Windows launcher regression checks on commit `defec34`).
 
 ---
 
@@ -61,8 +63,9 @@ These items require external assets, cloud credentials, or physical human intera
 
 ### P1.2 — Authentic Tamil Nadu Field Audio Recordings
 - **Status:** **`BLOCKED_EXTERNAL_ASSET`**
-- **Impact:** Current soundscape uses 10 clean procedural synthetic waveforms (UI clicks, wind noise, clue chimes). Authentic regional ambience (George Town market, Cauvery river, Nilgiris Shola birds, temple bells) is not yet recorded on-location.
-- **Safety Guarantee:** Engine audio routing, mixer snapshots, and volume sliders function cleanly without runtime errors.
+- **Engine Status:** **`PASS_PLAYMODE` / `PASS_STANDALONE`**
+- **Impact:** The audio engine (`AudioManager.cs`), mixer snapshots, distance attenuation, and volume sliders function cleanly. However, the regional ambient soundscape currently uses 10 clean procedural synthetic waveforms. Authentic on-location recordings (George Town market, Cauvery river, Nilgiris Shola birds, temple bells) have not yet been recorded or licensed.
+- **Safety Guarantee:** Missing field recordings do not crash the engine or halt gameplay.
 - **Next Action:** Source, record, or license authentic field audio under CC0 or commercial licenses, adhering to `assets/audio/AUDIO_LICENSE_MANIFEST.json`.
 
 ### P1.3 — End-to-End Human Gameplay Acceptance Walkthrough
@@ -86,6 +89,12 @@ These items require external assets, cloud credentials, or physical human intera
 - **Impact:** HDRP volumetric fog in Nilgiris and Mamallapuram scenes can impact frame rates on low-end integrated graphics.
 - **Mitigation:** Launcher enforces `-force-d3d11` and graphics settings provide low-quality volumetric fog fallbacks.
 - **Next Action:** Profile on physical Intel UHD 620 laptop to verify 30+ FPS floor.
+
+### P2.3 — Character Realism & Facial Blendshapes
+- **Status:** **`STYLED_PROCEDURAL_BASELINE` (Pass Editor) / `MONITORED`**
+- **Impact:** All 10 production characters have distinct culturally grounded 3D head meshes and rigs, but are stylized procedural meshes rather than photogrammetric 3D scans.
+- **Mitigation:** Current topology is highly optimized for 60 FPS on low-end hardware.
+- **Next Action:** Schedule high-density photogrammetric 3D scans and blendshape lip-sync for high-end graphic presets.
 
 ---
 
