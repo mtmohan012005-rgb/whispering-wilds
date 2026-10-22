@@ -1,6 +1,8 @@
 using System;
-using UnityEngine;
+using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace WhisperingWilds.Player
 {
@@ -77,6 +79,10 @@ namespace WhisperingWilds.Player
 
         private readonly LegState[] legs = new LegState[LegCount];
 
+        private NativeArray<FootIkInput> ikInputs;
+        private NativeArray<FootIkOutput> ikOutputs;
+        private bool ikBuffersReady;
+
         private Transform hipsBone;
         private Animator animator;
         private CharacterController characterController;
@@ -108,6 +114,7 @@ namespace WhisperingWilds.Player
         {
             SyncScalabilityWithQualitySettings();
             ResolveReferences();
+            EnsureIkBuffers();
         }
 
         private void Start()
@@ -118,6 +125,17 @@ namespace WhisperingWilds.Player
         private void OnEnable()
         {
             ResolveReferences();
+            EnsureIkBuffers();
+        }
+
+        private void OnDisable()
+        {
+            DisposeIkBuffers();
+        }
+
+        private void OnDestroy()
+        {
+            DisposeIkBuffers();
         }
 
         /// <summary>
@@ -218,8 +236,7 @@ namespace WhisperingWilds.Player
                 UpdatePelvis(dt, grounded);
             }
 
-            SolveLeg(LeftLeg);
-            SolveLeg(RightLeg);
+            SolveLegs();
 
             IsSolved = true;
         }
@@ -366,95 +383,95 @@ namespace WhisperingWilds.Player
             appliedPelvisShift = shift;
         }
 
-        private void SolveLeg(int index)
+        private void EnsureIkBuffers()
+        {
+            if (ikBuffersReady) return;
+
+            ikInputs = new NativeArray<FootIkInput>(LegCount, Allocator.Persistent, NativeArrayOptions.ClearMemory);
+            ikOutputs = new NativeArray<FootIkOutput>(LegCount, Allocator.Persistent, NativeArrayOptions.ClearMemory);
+            ikBuffersReady = true;
+        }
+
+        private void DisposeIkBuffers()
+        {
+            if (!ikBuffersReady) return;
+
+            ikInputs.Dispose();
+            ikOutputs.Dispose();
+            ikBuffersReady = false;
+        }
+
+        /// <summary>
+        /// Gathers both legs, solves them in parallel on the job workers, then applies the
+        /// resulting rotations. Only the gather/apply touches Transforms; the maths runs off the
+        /// main thread and the buffers are reused every frame.
+        /// </summary>
+        private void SolveLegs()
+        {
+            EnsureIkBuffers();
+
+            for (int i = 0; i < LegCount; i++)
+            {
+                ikInputs[i] = BuildLegInput(i);
+            }
+
+            new FootIkSolverJob
+            {
+                inputs = ikInputs,
+                outputs = ikOutputs
+            }.Schedule(LegCount, 1).Complete();
+
+            for (int i = 0; i < LegCount; i++)
+            {
+                ApplyLegOutput(i, ikOutputs[i]);
+            }
+        }
+
+        private FootIkInput BuildLegInput(int index)
         {
             LegState leg = legs[index];
-            if (leg.upper == null || leg.lower == null || leg.foot == null) return;
 
             float weight = math.clamp(footWeight, 0f, 1f);
             if (!leg.hasGround) weight = 0f;
-            if (weight <= 0.001f) return;
 
-            Vector3 hip = leg.upper.position;
-            Vector3 target = leg.target;
+            float3 hip = leg.upper.position;
+            float3 knee = leg.lower.position;
+            float3 ankle = leg.foot.position;
 
-            float upperLength = Vector3.Distance(leg.upper.position, leg.lower.position);
-            float lowerLength = Vector3.Distance(leg.lower.position, leg.foot.position);
-            if (upperLength < 1e-4f || lowerLength < 1e-4f) return;
-
-            Vector3 toTarget = target - hip;
-            float distance = toTarget.magnitude;
-            if (distance < 1e-4f) return;
-
-            float minReach = Mathf.Abs(upperLength - lowerLength) + 1e-3f;
-            float maxReach = (upperLength + lowerLength) * 0.995f;
-            float reach = Mathf.Clamp(distance, minReach, maxReach);
-            Vector3 direction = toTarget / distance;
-
-            // Knee bend at the hip (law of cosines).
-            float cosHip = (upperLength * upperLength + reach * reach - lowerLength * lowerLength)
-                           / (2f * upperLength * reach);
-            float hipAngle = Mathf.Acos(Mathf.Clamp(cosHip, -1f, 1f));
-
-            // Pole vector: knees point along the character forward axis.
-            Vector3 bend = transform.forward - direction * Vector3.Dot(transform.forward, direction);
-            if (bend.sqrMagnitude < 1e-6f)
+            return new FootIkInput
             {
-                bend = Vector3.Cross(direction, Vector3.up);
-                if (bend.sqrMagnitude < 1e-6f) bend = Vector3.right;
-            }
-            bend.Normalize();
+                hip = hip,
+                target = leg.target,
+                targetNormal = leg.targetNormal,
+                forward = transform.forward,
+                footUp = leg.foot.rotation * Vector3.up,
+                upperLength = math.distance(hip, knee),
+                lowerLength = math.distance(knee, ankle),
+                weight = weight,
+                clothPitch = ClothThighPitch(),
+                maxAnkleAngle = maxAnkleAngle
+            };
+        }
 
-            Vector3 thighDirection = (direction * Mathf.Cos(hipAngle) + bend * Mathf.Sin(hipAngle)).normalized;
+        private void ApplyLegOutput(int index, FootIkOutput output)
+        {
+            if (output.valid == 0 || output.weight <= 0.001f) return;
 
-            // The thigh bone runs hip -> knee, so its local +Y points back at the hip.
-            Quaternion desiredThigh = Quaternion.LookRotation(bend, -thighDirection);
+            LegState leg = legs[index];
+            float weight = math.clamp(output.weight, 0f, 1f);
 
-            float clothPitch = ClothThighPitch();
-            if (Mathf.Abs(clothPitch) > 0.001f)
-            {
-                Vector3 pitchAxis = Vector3.Cross(direction, bend);
-                if (pitchAxis.sqrMagnitude > 1e-8f)
-                {
-                    desiredThigh = Quaternion.AngleAxis(clothPitch, pitchAxis.normalized) * desiredThigh;
-                }
-            }
+            leg.upper.rotation = Quaternion.Slerp(leg.upper.rotation, ToQuaternion(output.thighRotation), weight);
+            leg.lower.rotation = Quaternion.Slerp(leg.lower.rotation, ToQuaternion(output.shinRotation), weight);
 
-            leg.upper.rotation = Quaternion.Slerp(leg.upper.rotation, desiredThigh, weight);
-
-            // The knee followed the thigh, now solve the shin so the ankle reaches the target.
-            Vector3 knee = leg.lower.position;
-            Vector3 shinDirection = target - knee;
-            if (shinDirection.sqrMagnitude < 1e-8f) return;
-            shinDirection = shinDirection.normalized;
-
-            Vector3 shinBend = bend - shinDirection * Vector3.Dot(bend, shinDirection);
-            if (shinBend.sqrMagnitude < 1e-6f)
-            {
-                shinBend = Vector3.Cross(shinDirection, Vector3.up);
-                if (shinBend.sqrMagnitude < 1e-6f) shinBend = Vector3.right;
-            }
-            shinBend.Normalize();
-
-            Quaternion desiredShin = Quaternion.LookRotation(shinBend, -shinDirection);
-            leg.lower.rotation = Quaternion.Slerp(leg.lower.rotation, desiredShin, weight);
-
-            // Ankle: align with the ground normal but stay inside the human ankle range.
             Vector3 currentUp = leg.foot.rotation * Vector3.up;
-            Vector3 desiredUp = leg.targetNormal;
-            float deviation = Vector3.Angle(currentUp, desiredUp);
-            if (deviation > maxAnkleAngle)
-            {
-                Vector3 axis = Vector3.Cross(currentUp, desiredUp);
-                if (axis.sqrMagnitude > 1e-8f)
-                {
-                    axis.Normalize();
-                    desiredUp = Quaternion.AngleAxis(maxAnkleAngle, axis) * currentUp;
-                }
-            }
-
+            Vector3 desiredUp = new Vector3(output.footUp.x, output.footUp.y, output.footUp.z);
             Quaternion desiredFoot = Quaternion.FromToRotation(currentUp, desiredUp) * leg.foot.rotation;
             leg.foot.rotation = Quaternion.Slerp(leg.foot.rotation, desiredFoot, weight);
+        }
+
+        private static Quaternion ToQuaternion(quaternion value)
+        {
+            return new Quaternion(value.value.x, value.value.y, value.value.z, value.value.w);
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 param (
     [Parameter(Mandatory=$true)]
-    [ValidateSet("rig", "asset", "scenes", "characters", "capture", "build", "benchmark", "editmode", "playmode", "map")]
+    [ValidateSet("rig", "asset", "scenes", "compile", "characters", "capture", "build", "benchmark", "editmode", "playmode", "map")]
     [string]$Action
 )
 
@@ -34,6 +34,12 @@ switch ($Action) {
     "scenes" {
         $method = "WhisperingWilds.Editor.BuildPipelineAutomation.RegenerateAllScenesFromCommandLine"
         $logName = "unity_scene_regen.log"
+        $extraArgs += @("-quit", "-nographics")
+    }
+    "compile" {
+        # No -executeMethod: Unity imports/compiles the whole project, then quits.
+        # The log is searched for CS errors by the caller/CI.
+        $logName = "unity_compile.log"
         $extraArgs += @("-quit", "-nographics")
     }
     "characters" {

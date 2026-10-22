@@ -60,6 +60,10 @@ namespace WhisperingWilds.Quality
         private int bufferIndex = 0;
         private Camera trackedCamera;
 
+        private Volume ssrVolume;
+        private VolumeProfile ssrProfile;
+        private ScreenSpaceReflection ssrComponent;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -81,6 +85,24 @@ namespace WhisperingWilds.Quality
         private void OnDisable()
         {
             UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+
+            if (ssrVolume != null)
+            {
+                Destroy(ssrVolume.gameObject);
+            }
+
+            if (ssrProfile != null)
+            {
+                Destroy(ssrProfile);
+            }
         }
 
         private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
@@ -334,6 +356,9 @@ namespace WhisperingWilds.Quality
             {
                 drSettings.enabled = true;
             }
+            // Mip bias keeps the upscaled frame from shimmering when the adaptive loop steps
+            // below native resolution.
+            drSettings.useMipBias = true;
             drSettings.minPercentage = minRenderScale * 100f;
             drSettings.maxPercentage = maxRenderScale * 100f;
             settings.dynamicResolutionSettings = drSettings;
@@ -459,6 +484,8 @@ namespace WhisperingWilds.Quality
             QualitySettings.streamingMipmapsMemoryBudget = settings.textureStreamingBudgetMB;
             QualitySettings.streamingMipmapsRenderersPerFrame = 512;
             QualitySettings.streamingMipmapsMaxLevelReduction = tier <= QualityTier.Low ? 3 : 2;
+            QualitySettings.streamingMipmapsAddAllCameras = true;
+            QualitySettings.streamingMipmapsMaxFileIORequests = tier <= QualityTier.Low ? 256 : 1024;
 
             // 4. Filtering & Anti-Aliasing
             QualitySettings.anisotropicFiltering = settings.anisotropicFiltering ? AnisotropicFiltering.Enable : AnisotropicFiltering.Disable;
@@ -471,12 +498,94 @@ namespace WhisperingWilds.Quality
             DynamicStepOffset = 0;
             ApplyEngineRenderResolution(CurrentRenderScale);
 
+            // 6. HDRP feature scalability (SSR runs on High/Ultra only)
+            ApplyHdrpFeatureScalability(tier);
+
             // Persist setting
             PlayerPrefs.SetInt("WW_QualityTier", (int)tier);
             PlayerPrefs.Save();
 
             Debug.Log($"<color=#00FF99><b>[GraphicsPerformanceManager]</b></color> Authoritative profile applied: {tier} ({settings.name}) - ShadowDist: {settings.shadowDistance}m, Budget: {settings.textureStreamingBudgetMB}MB");
             OnQualityProfileChanged?.Invoke(tier, settings);
+        }
+
+        /// <summary>
+        /// Enables screen-space reflections on High/Ultra and forces them off on lower tiers.
+        /// The project's HDRP assets advertise SSR support; this volume is the runtime switch
+        /// that makes the scalability preset actually honour it instead of running SSR always-on.
+        /// </summary>
+        private void ApplyHdrpFeatureScalability(QualityTier tier)
+        {
+            ApplyCameraFrameSettings(tier);
+
+            EnsureSsrVolume();
+            if (ssrComponent == null) return;
+
+            ssrComponent.enabled.Override(true);
+            ssrComponent.enabled.value = tier >= QualityTier.High;
+        }
+
+        /// <summary>
+        /// Applies the tier's HDRP camera frame settings. The HDRP asset only advertises which
+        /// features are *supported*; the camera frame settings decide what actually runs. Without
+        /// this, SSR/SSS stay at their authored default regardless of tier, so the volume switch
+        /// above and the material diffusion profiles never reached the render graph.
+        /// </summary>
+        private void ApplyCameraFrameSettings(QualityTier tier)
+        {
+            Camera cam = trackedCamera != null ? trackedCamera : Camera.main;
+            if (cam == null) return;
+
+            if (!cam.TryGetComponent(out HDAdditionalCameraData hdCamera))
+            {
+                hdCamera = cam.gameObject.AddComponent<HDAdditionalCameraData>();
+            }
+
+            QualityPresetSettings settings = GetPresetSettings(tier);
+            bool highEnd = tier >= QualityTier.High;
+            bool balanced = tier >= QualityTier.Medium;
+
+            hdCamera.customRenderingSettings = true;
+
+            ref FrameSettings frameSettings = ref hdCamera.renderingPathCustomFrameSettings;
+            frameSettings.SetEnabled(FrameSettingsField.SSR, highEnd);
+            frameSettings.SetEnabled(FrameSettingsField.TransparentSSR, highEnd);
+            frameSettings.SetEnabled(FrameSettingsField.SubsurfaceScattering, balanced);
+            frameSettings.SetEnabled(FrameSettingsField.Volumetrics, settings.volumetricEffects);
+            frameSettings.SetEnabled(FrameSettingsField.ScreenSpaceShadows, balanced);
+
+            // Skin needs the densest SSS sample budget the asset exposes (20/40/80 here).
+            frameSettings.sssQualityMode = SssQualityMode.OverrideQualitySettings;
+            frameSettings.sssQualityLevel = tier >= QualityTier.Ultra ? 2 : (highEnd ? 1 : 0);
+
+            FrameSettingsOverrideMask mask = hdCamera.renderingPathCustomFrameSettingsOverrideMask;
+            mask.mask[(uint)FrameSettingsField.SSR] = true;
+            mask.mask[(uint)FrameSettingsField.TransparentSSR] = true;
+            mask.mask[(uint)FrameSettingsField.SubsurfaceScattering] = true;
+            mask.mask[(uint)FrameSettingsField.Volumetrics] = true;
+            mask.mask[(uint)FrameSettingsField.ScreenSpaceShadows] = true;
+            hdCamera.renderingPathCustomFrameSettingsOverrideMask = mask;
+        }
+
+        private void EnsureSsrVolume()
+        {
+            if (ssrVolume != null) return;
+
+            ssrProfile = ScriptableObject.CreateInstance<VolumeProfile>();
+            ssrProfile.name = "WW HDRP Scalability Profile";
+            ssrComponent = ssrProfile.Add<ScreenSpaceReflection>();
+            ssrComponent.enabled.Override(true);
+            ssrComponent.enabled.value = false;
+
+            var volumeObject = new GameObject("WW HDRP Scalability Volume")
+            {
+                hideFlags = HideFlags.HideAndDontSave
+            };
+            ssrVolume = volumeObject.AddComponent<Volume>();
+            ssrVolume.isGlobal = true;
+            ssrVolume.priority = 1000f;
+            ssrVolume.profile = ssrProfile;
+            DontDestroyOnLoad(volumeObject);
         }
 
         /// <summary>

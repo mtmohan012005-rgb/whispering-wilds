@@ -223,6 +223,9 @@ namespace WhisperingWilds.Quality
                 QualitySettings.streamingMipmapsMemoryBudget = settings.textureStreamingBudgetMB;
                 QualitySettings.streamingMipmapsRenderersPerFrame = 512;
                 QualitySettings.streamingMipmapsMaxLevelReduction = tier <= QualityTier.Low ? 3 : 2;
+                QualitySettings.streamingMipmapsAddAllCameras = true;
+                QualitySettings.streamingMipmapsMaxFileIORequests = tier <= QualityTier.Low ? 256 : 1024;
+
 
                 // Aniso & AA
                 QualitySettings.anisotropicFiltering = settings.anisotropicFiltering ? AnisotropicFiltering.Enable : AnisotropicFiltering.Disable;
