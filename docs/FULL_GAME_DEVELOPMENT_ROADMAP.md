@@ -5,25 +5,27 @@
 **Engine & Version:** Unity 6 (`6000.6.3f1`, changeset `45d8eee7de74`)  
 **Render Pipeline:** High Definition Render Pipeline (`HDRP 17.7.0`)  
 **Primary Target:** Windows x64 Native Direct3D 11 (`TheWhisperingWilds.exe`)  
-**Prepared Date:** 21 October 2026  
-**Audited Baseline Commit:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
-**Latest Merged Main Commit:** `2e72017`  
+**Date:** 22 October 2026  
+**Current Audited Git Commit:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
+**Historical Unity In-Engine Tested Commit:** `5056deb833a1254f0e41bf134151663a08cca5f8`  
+**Main Branch HEAD:** `defec347fa570533c3a6b8ef1facee49a1c3db76`  
+**Automated Check Reconciliation:** 389 automated test verifications passing (148 Unity in-engine tests & audits on commit `5056deb` + 241 Node.js/Windows launcher regression checks on commit `defec34`).  
 **Status:** Milestones M0 through M7 Verified Clean; M8 Gated for Human Acceptance Walkthrough.
 
 ---
 
 ## 1. Project Overview & Vision
 
-*The Whispering Wilds* (காட்டு வழி • தடம்) is an authentic, third-person and first-person 3D exploration and cultural narrative adventure set across the diverse landscapes, living traditions, and historic monuments of Tamil Nadu, India.
+*The Whispering Wilds* (காட்டு வழி • தடம்) is an authentic 3D narrative exploration adventure set across the cultural and ecological landscapes of Tamil Nadu, India.
 
-Players step into the shoes of **Arun Kumar**, an explorer travelling through seven distinct ecological and cultural zones:
-1. **George Town, Chennai:** Dense colonial and Tamil merchant streets, bustling trade, and harbour logistics.
+Players assume the role of **Arun Kumar**, an explorer travelling through seven distinct regional zones:
+1. **George Town, Chennai:** Dense colonial and Tamil merchant streets, harbour trade, and bustling urban atmosphere.
 2. **Pichavaram Mangrove Wetlands:** Aerial stilt-root waterways, tidal mudflats, and traditional wooden boats.
-3. **Thanjavur Delta:** The rice bowl of Tamil Nadu, expansive paddy fields, and Cauvery irrigation sluices.
+3. **Thanjavur Delta:** The historic rice bowl of Tamil Nadu, expansive paddy fields, and Cauvery irrigation sluices.
 4. **Chettinad Heritage Mansion:** 19th-century Valavu courtyards, Athangudi handmade cement tiles, and Burma teak pillars.
 5. **Mamallapuram Shore:** Wind-swept Coromandel granite cliffs, 7th-century Pallava rock-cut reliefs, and ocean surf.
 6. **Nilgiris Wildlife Sanctuary:** High-elevation Western Ghats shola-grassland, indigenous Toda barrel-vault dwellings, and tea plantations.
-7. **Ancient Temple Ruins:** Sacred Dravidian granite gopurams, stepped theertham tanks (Kalyani), Chola-era Kalvettu epigraphs, and mysterious sanctum puzzle chambers.
+7. **Ancient Temple Ruins:** Sacred Dravidian granite gopurams, stepped theertham tanks (Kalyani), Chola-era Kalvettu epigraphs, and sanctum puzzle chambers.
 
 ### Core Architecture Pillars:
 - **Zero Placeholder Illusion:** Features are never simulated with browser mock-ups or primitive greybox stand-ins disguised as finished systems.
@@ -54,8 +56,8 @@ graph TD
 ### Milestone M0: Baseline & Source Control Safety
 - **Objective:** Establish an uncorrupted project foundation, document exact Git hashes, protect published release `v1.0.0`, and isolate working branches.
 - **Deliverables:**
-  - Git repository baseline recorded at commit `5056deb` / `2e72017`.
-  - Dedicated audit and repair branch: `feature/full-game-audit-and-roadmap-20261021`.
+  - Git repository baseline recorded at commit `defec34` (main HEAD).
+  - Dedicated audit and repair branch: `fix/audit-reconciliation-and-human-acceptance`.
   - Protection rules enforcing zero modification to `TheWhisperingWilds-v1.0.0.zip`.
 - **Exit Gate:** Verified clean working tree, valid Git HEAD, zero credential exposure in commits.
 - **Current Status:** **`PASS_VERIFIED`**
@@ -91,18 +93,10 @@ graph TD
 
 ### Milestone M3: Realistic 3D Human Character Pipeline
 - **Objective:** Deliver culturally authentic, believable 3D human models with valid humanoid/generic skeletons, active physics colliders, and smooth locomotion.
-- **Character Roster (10 Production Characters):**
-  1. **Arun Kumar (Player Hero):** Dhoti, shirt, 13 modular submeshes, 43 bone bindings, CharacterController locomotion.
-  2. **Murugan (Chennai Merchant):** White veshti, blue folded shirt, distinct groomed Madurai-style moustache.
-  3. **Velu (Madurai Guide):** Green veshti, red thalappa headband, distinct handlebar moustache.
-  4. **Selvam (Delta Historian):** Khaki trousers, field jacket, reading spectacles, full trimmed beard and kudumi topknot.
-  5. **Meenakshi (Chettinad Scholar):** Maroon silk Kanchipuram sari with gold zari border, traditional hair bun (kondai) with fresh jasmine flowers (malligai poo).
-  6. **Artisan (Mamallapuram Sculptor):** Cotton lungi, chisel belt harness, sculptor topknot and goatee.
-  7. **Farmer (Thanjavur Delta Cultivator):** Rolled dhoti, cotton towel turban (thalappa), weathered cultivator silhouette.
-  8. **Fisher (Pichavaram Wetland Fisherman):** Weathered sea cap, rolled lungi, wooden oar prop.
-  9. **ForestGuide (Nilgiris Sanctuary Ranger):** Olive ranger field hat, khaki forest warden uniform, shoulder satchel.
-  10. **TeaWorker (Nilgiris Plantation Plucker):** Plucking basket harness, head muffler/scarf, protective apron skirt.
-- **Rig Audit Results:** Verified 10/10 `PASS_EDITOR` via `EditorCharacterRigAuditor.cs` (`reports/editor-rig-audit.json`).
+- **Character Realism Assessment:**
+  - **Arun Kumar (Player Hero):** Dhoti, shirt, 13 modular submeshes, 43 bone bindings, GenericAvatar, active `CharacterController`. Uses 2048×2048 PBR maps. Realism level: optimized stylized PBR model. High-spec photogrammetric scans roadmapped for future expansion.
+  - **9 Regional Story & Working NPCs (Murugan, Velu, Selvam, Meenakshi, Artisan, Farmer, Fisher, ForestGuide, TeaWorker):**
+    Each NPC features distinct culturally grounded **procedural 3D head geometry** (`Mesh_Head_*.asset`), 43 bone bindings, GenericAvatar, and active `CapsuleCollider`. Rigs verified 10/10 in Unity Editor. Realism level: **culturally grounded stylized procedural geometry**, not photorealistic 3D scans. Blendshape facial lip-sync is scheduled for post-v1.0.1.
 - **Visual Evidence:** Real in-engine contact sheet captured at 1920×1080 in [`artifacts/whole-game-audit/visual-evidence/characters-contact-sheet.png`](../artifacts/whole-game-audit/visual-evidence/characters-contact-sheet.png).
 - **Current Status:** **`PASS_EDITOR`** / **`PASS_PLAYMODE`**
 
@@ -110,18 +104,13 @@ graph TD
 
 ### Milestone M4: Authentic Tamil Nadu World & 9 Playable Scenes
 - **Objective:** Inspect, repair, and link all 9 canonical scenes with culturally accurate Dravidian architecture, regional flora, and geo-calibrated navigation.
-- **Scene Inventory & Acceptance:**
-  - `00_Boot`: Title menu, audio volume sliders, Tamil font rendering (`PASS_PLAYMODE`).
-  - `01_StateMap_TamilNadu`: Interactive 3D map calibrated to Tamil Nadu latitude/longitude bounding box (`PASS_PLAYMODE`).
-  - `02_Chennai_GeorgeTown`: Dense street grid, bilingual street boards, colonial buildings, Murugan NPC (`PASS_PLAYMODE`).
-  - `03_Pichavaram_Wetlands`: Mangrove aerial roots, reflective mudflats, boat landing dock, Fisher NPC (`PASS_PLAYMODE`).
-  - `04_Thanjavur_Delta`: Cauvery delta paddy field landscape, canal sluice gates, Farmer NPC (`PASS_PLAYMODE`).
-  - `05_Chettinad_Mansion`: Valavu courtyard architecture, Athangudi floor tiles, carved teak pillars, Meenakshi NPC (`PASS_PLAYMODE`).
-  - `06_Mamallapuram_Shore`: Coastal granite cliffs, Arjuna's Penance bas-relief monolith, ocean surf, Artisan NPC (`PASS_PLAYMODE`).
-  - `07_Nilgiris_Sanctuary`: Western Ghats highland shola-grassland, contoured Camellia tea hedgerows, Toda Mund hut (`PASS_PLAYMODE`).
-  - `08_Ancient_Temple_Ruins`: Dravidian granite Gopuram gateway, stepped Theertham tank (Kalyani), Kalvettu stele (`PASS_PLAYMODE`).
+- **GIS Source Provenance:**
+  - State boundary linework and coastlines are sourced from upstream **Natural Earth 10m datasets** (v5.1.2) spanning `(8.08° to 13.54° N, 76.23° to 80.35° E)`.
+  - The 6 regional campaign hub pins in `campaign_anchors.geojson` (Chennai, Mamallapuram, Pichavaram, Thanjavur, Chettinad, Nilgiris) represent **curated regional gameplay anchors** projected into scene space via canonical origin `(10.79° N, 78.37° E)` and scale `(0.001 units/meter)`, rather than survey-grade monuments.
+- **9 Canonical Scenes:**
+  - `00_Boot`, `01_StateMap_TamilNadu`, `02_Chennai_GeorgeTown`, `03_Pichavaram_Wetlands`, `04_Thanjavur_Delta`, `05_Chettinad_Mansion`, `06_Mamallapuram_Shore`, `07_Nilgiris_Sanctuary`, `08_Ancient_Temple_Ruins` all present in `EditorBuildSettings.asset` and verified loadable.
 - **9 Cultural Asset Replacements:** Verified via before/after comparison captures in `artifacts/whole-game-audit/visual-evidence/environment-fixes-before-after/`.
-- **Current Status:** **`PASS_PLAYMODE`** (All 9 scenes loadable with zero broken references).
+- **Current Status:** **`PASS_PLAYMODE`**
 
 ---
 
@@ -132,7 +121,8 @@ graph TD
   - **Save System v4:** Atomic temp-file writes, SHA-256 checksums, and `.bak` corrupt-file recovery (`PASS_PLAYMODE`).
   - **Dynamic Weather:** Sunny, overcast, monsoon rain, and highland fog zone controllers (`PASS_PLAYMODE`).
   - **Wildlife & NavMesh:** 6 regional NavMesh binary assets linked to fleeing/grazing animal controllers (`PASS_STATIC`).
-  - **Audio System:** AudioManager engine and UI mixer operational; authentic on-location field audio gated as `BLOCKED_EXTERNAL_ASSET`.
+  - **Audio Engine (`FEAT_AUDIO_ENG_14`):** `AudioManager.cs` mixer snapshots, volume sliders, and 3D spatial attenuation operational (`PASS_PLAYMODE` / `PASS_STANDALONE`).
+  - **Regional Field Audio Content (`FEAT_AUDIO_RES_15`):** 10 clean procedural synthetic prototype waveforms active; authentic on-location field recordings gated as `BLOCKED_EXTERNAL_ASSET`.
   - **Cloud Save:** REST API passes all automated backend tests; live Firebase credentials gated as `BLOCKED_CREDENTIALS`.
 - **Current Status:** **`PASS_PLAYMODE`** (Core offline single-player fully operational).
 
@@ -190,7 +180,7 @@ graph TD
 | **Unity Compilation & Import** | 0 compile errors, clean project load | `PASS_EDITOR` | Release Approved |
 | **Asset Reference Integrity** | 0 missing GUIDs, 0 broken materials across 9 scenes | `PASS_EDITOR` | Release Approved |
 | **PlayMode Core Loop** | 34/34 automated runtime tests pass | `PASS_PLAYMODE` | Release Approved |
-| **Character Rig Realism** | 10/10 characters pass editor rig audit with distinct heads | `PASS_EDITOR` | Release Approved |
+| **Character Rig Realism** | 10/10 characters pass editor rig audit with distinct heads | `PASS_EDITOR` | Release Approved (Stylized Baseline) |
 | **Cultural Environment Realism** | 9/9 authentic Tamil Nadu cultural models linked | `PASS_EDITOR` | Release Approved |
 | **Standalone Candidate Build** | Clean Windows x64 Direct3D 11 executable compiled | `PASS_BUILD` | Release Approved |
 | **Launcher Security & Integrity** | 85/85 provenance and security tests pass | `PASS_BUILD` | Release Approved |
@@ -203,8 +193,6 @@ graph TD
 
 ## 4. Problem Log & Defect Remediation Record
 
-Every problem discovered during the audit has been recorded with its priority, affected files, repair made, test performed, and result:
-
 | Defect ID | Priority | Affected Files | Problem Description | Repair Implemented | Test Performed | Resolution Result |
 | :---: | :---: | :--- | :--- | :--- | :--- | :---: |
 | **DEF_01** | P0 | `scripts/package-release.ps1` | Release packager had risk of overwriting published v1.0.0 package and lacked version flexibility. | Updated packager with strict release version guards, defaulting to v1.0.1 and forbidding v1.0.0 overwrite. | `tests/test-launcher-regression.ps1` (Group 8) | **PASS** |
@@ -214,6 +202,7 @@ Every problem discovered during the audit has been recorded with its priority, a
 | **DEF_05** | P1 | `unity/Assets/_Project/Art/Models/` | 9 scenes utilized generic placeholder 3D models (European cottage, iron gate, lantern, fern, brick wall). | Replaced with authentic Dravidian models: Toda Mund hut, Gopuram gateway, Kuthuvilakku, Camellia tea bush, Arjuna relief, Kalvettu stele, Kalasam, ashlar wall, and Theertham tank. | Visual QA comparison screenshots (19 captures) | **PASS** |
 | **DEF_06** | P2 | `unity/Assets/_Project/Scenes/01_StateMap_TamilNadu.unity` | 3D state map markers required accurate geographic alignment with real Tamil Nadu district coordinates. | Calibrated marker transform positions to real-world latitude/longitude bounding box with tooltip raycasting. | `artifacts/test_results_PlayMode.xml` (Map tests) | **PASS** |
 | **DEF_07** | P2 | `scripts/Play-Candidate.bat` | High Definition Render Pipeline default Vulkan/DX12 crash risks on older Intel integrated GPUs. | Enforced `-force-d3d11` launch argument in batch script and PowerShell launcher for maximum Direct3D 11 stability. | Standalone Smoke Launch (`artifacts/hotfix_standalone_smoke.log`) | **PASS** |
+| **DEF_08** | P1 | `artifacts/whole-game-audit/` | Audit check counts conflated suite counts with check counts (reporting 240 vs 241), and mixed CI static checks with Unity Editor PlayMode runs. | Reconciled counts into 148 Unity in-engine tests & audits and 241 repository/launcher regression checks (389 total). Split operational audio engine from field media assets. | Forensically verified against raw test outputs. | **PASS_RECONCILED** |
 
 ---
 

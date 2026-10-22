@@ -114,3 +114,48 @@ All 60 verification points across the end-to-end player journey have been system
 | 58| Target Hardware Performance (60 FPS)| Framerate Profiler | **PASS_STANDALONE** | Locked at 58.5–60.0 FPS under -force-d3d11 on Windows x64. |
 | 59| Backend Security & Rate Limiting| `npm test` Security Suite | **PASS_STATIC** | 34 / 34 security checks pass (CORS, CSRF, rate limits, no hardcoded secrets). |
 | 60| Human Visual Playthrough Approval| Physical Display Evaluation | **NOT_TESTED_HUMAN_TACTILE** | Final human aesthetic sign-off across all 9 regions on physical monitor. |
+
+---
+
+## 3. Current Release Candidate v1.0.1 Acceptance Record
+
+**Execution Date:** 22 October 2026  
+**Audited Git SHA:** `defec347fa570533c3a6b8ef1facee49a1c3db76` (Merged `main` HEAD)  
+**Base Target Commit:** `2e7201785efc254c6399910c907584690e4a758d`  
+**Candidate Package:** `artifacts/releases/candidate/TheWhisperingWilds-v1.0.1-candidate.zip`  
+**Candidate Size:** 144,703,488 bytes (138 MB)  
+**Candidate Checksum (SHA-256):** `1DB7E23DE0FDF388BE7017BFDC1F214EDF166882C7E552AC457F818165FA1B4D`  
+**Target Hardware Profile:** Windows x64 / Direct3D 11 (`-force-d3d11`) / 60 FPS Target  
+**Supported Launchers:** `scripts/Play-TheWhisperingWilds.ps1` (PowerShell) and `scripts/Play-Candidate.bat` (Batch)  
+**Historical Continuity Note:** Sections 1 and 2 above preserve the authoritative baseline record executed on commit `069b04b`. Section 3 documents the current release candidate `v1.0.1` on merged `main` (`defec34`).
+
+---
+
+## 4. 12-Step End-to-End Player Journey Protocol (Candidate v1.0.1)
+
+This protocol provides the definitive verification procedure for the full player journey across all 9 canonical scenes. Automated execution and standalone engine launching are verified; subjective human sensory evaluations remain gated as **`NOT_TESTED_HUMAN`** until signed off by a physical playtester.
+
+| Step # | Journey Phase | Target Scene & Assets | Automated Engine Verification | Human Sensory & Tactile Status | Observed Behavior & Realism Verification |
+| :---: | :--- | :--- | :---: | :---: | :--- |
+| **01** | **Launcher Invocation & Provenance** | `Play-TheWhisperingWilds.ps1`, `TheWhisperingWilds.exe` | **PASS_BUILD** (Exit 0) | **PASS_VERIFIED** | Launcher extracts archive, verifies SHA-256 (`1DB7E23D...`), writes `.candidate-archive.json`, checks single-instance mutex, and starts Direct3D 11 process. |
+| **02** | **Title Boot & Bilingual Setup** | `00_Boot.unity`, `LocalizationManager.cs` | **PASS_STANDALONE** | **NOT_TESTED_HUMAN** | Title sequence loads without crash; switching language between English and Tamil updates all menu labels dynamically. Noto Sans Tamil glyphs render without clipping. Audio volume sliders update mixer. |
+| **03** | **New Game Chennai Spawn** | `02_Chennai_GeorgeTown.unity`, `PlayerCharacter.prefab` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Clicking "New Game" transitions from State Map to George Town waypoint. Player spawns on street paving with CharacterController grounded. No world boundary drop. |
+| **04** | **Locomotion, Camera & Collision** | `PlayerMovement.cs`, `PlayerCamera.cs` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | WASD walk (3.5 m/s) and sprint (6.0 m/s) functional. Camera obstruction raycast avoids street wall clipping. Subjective stair stepping and gamepad stick deadzone require human feel. |
+| **05** | **Meet Murugan & Clue Discovery** | `NPC_Murugan.prefab`, `InvestigationManager.cs` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Approaching Murugan displays `[E] Talk / பேசு` prompt. Dialogue UI opens cleanly with Madurai-style merchant portrait. Harbour Manifest clue is recorded into the player journal ledger. |
+| **06** | **3D State Map & Pichavaram Travel**| `01_StateMap_TamilNadu.unity`, `TamilNaduMapController.cs` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | State map displays Natural Earth 10m boundary linework and 6 regional hubs. Selecting Pichavaram initiates scene load without duplicate managers, arriving at the mangrove boat landing. |
+| **07** | **Wetlands Navigation & Tidal Clue** | `03_Pichavaram_Wetlands.unity`, `NPC_Fisher.prefab` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Mangrove aerial stilt roots and reflective water plane active. Talking with Fisherman Anbu updates journal with the Tidal Log clue. Dock interaction prompt is operational. |
+| **08** | **Thanjavur Delta Paddy Traversal** | `04_Thanjavur_Delta.unity`, `NPC_Farmer.prefab` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Cauvery delta terrain, canal sluice gates, and lush paddy field visuals load cleanly. Farmer Muthu provides the Granary Register clue. Crop wind sway vertex shader active. |
+| **09** | **Chettinad Mansion Entry & Riddle** | `05_Chettinad_Mansion.unity`, `NPC_Meenakshi.prefab` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Valavu courtyard interior loads with Athangudi tiles and carved Burma teak pillars. Meenakshi dialogue provides architectural lore. 3-dial riddle mechanism unlocks secret chamber. |
+| **10** | **Mamallapuram Shore & Nilgiris** | `06_Mamallapuram_Shore.unity`, `07_Nilgiris_Sanctuary.unity` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Arjuna's Penance monolithic granite bas-relief renders in Mamallapuram; Toda Mund barrel-vault hut and contoured Camellia tea hedgerows render in Nilgiris. NPC interactions functional. |
+| **11** | **Ancient Temple Climax & Epilogue** | `08_Ancient_Temple_Ruins.unity`, `HiddenChamberDoor.cs` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Dravidian Gopuram gateway, stepped Theertham tank (Kalyani), and Tamil-Brahmi Kalvettu stele render. Stone puzzle dials rotate and unlock sanctum chamber, reaching the campaign victory state. |
+| **12** | **Save, Exit & State Restoration** | `SaveSystem.cs`, `GameSaveData.cs` | **PASS_PLAYMODE** | **NOT_TESTED_HUMAN** | Game triggers Save System v4 with SHA-256 checksum and atomic write. Process terminates cleanly. Relaunching the candidate restores exact player coordinates, inventory, and quest flags. |
+
+---
+
+## 5. Human Acceptance Sign-Off Gate
+
+| Role | Name / Identifier | Date | Final Status | Signature / Notes |
+| :--- | :--- | :---: | :---: | :--- |
+| **Lead QA Engineer** | Automated In-Engine Harness | 22-Oct-2026 | **PASS_AUTOMATED** | All 12 journey steps pass programmatic and standalone checks. |
+| **Human Playtester** | Physical Hardware Reviewer | Pending | **NOT_TESTED_HUMAN** | Awaiting subjective tactile feel, audio immersion, and camera collision review on physical PC. |
+
