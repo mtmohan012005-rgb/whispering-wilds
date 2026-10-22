@@ -241,11 +241,18 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 4294967295
+  maxStepSlopeAngle: 45
+  useRootMotion: 1
   animator: {fileID: 0}
+  visualRoot: {fileID: 0}
+  bodyMass: 72
+  maxBankAngle: 8.5
+  bankSmoothRate: 12
   standingHeight: 1.8
   crouchHeight: 1.2
   standingCenter: {x: 0, y: 0.9, z: 0}
   crouchCenter: {x: 0, y: 0.6, z: 0}
+  scalabilityTier: 3
 --- !u!114 &677180
 MonoBehaviour:
   m_ObjectHideFlags: 0
