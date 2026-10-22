@@ -835,7 +835,12 @@ namespace WhisperingWilds.Editor
 
             if (velu == null) return;
 
-            var npc = velu.AddComponent<NPCCharacter>();
+            // NPC_Velu.prefab already carries the component; AddComponent on a
+            // [DisallowMultipleComponent] type returns null and would throw below.
+            var npc = velu.GetComponent<NPCCharacter>();
+            if (npc == null) npc = velu.AddComponent<NPCCharacter>();
+            if (npc == null) return;
+
             npc.SetCharacterProfile(
                 "Velu (Housekeeper)",
                 "வேலு (வீட்டுக்காரி)",

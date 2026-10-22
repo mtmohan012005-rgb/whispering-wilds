@@ -645,7 +645,12 @@ namespace WhisperingWilds.Editor
 
             if (obj == null) return;
 
-            var npc = obj.AddComponent<NPCCharacter>();
+            // Authored character prefabs already carry the component; AddComponent on a
+            // [DisallowMultipleComponent] type returns null and would throw below.
+            var npc = obj.GetComponent<NPCCharacter>();
+            if (npc == null) npc = obj.AddComponent<NPCCharacter>();
+            if (npc == null) return;
+
             npc.SetCharacterProfile(nameEn, nameTa, "Mamallapuram", description);
 
             var npcSo = new SerializedObject(npc);

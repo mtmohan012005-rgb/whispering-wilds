@@ -70,6 +70,10 @@ namespace WhisperingWilds.Editor
             catch (Exception ex)
             {
                 Debug.LogError($"[AssembleAllRegions] Fatal scene generation error: {ex}");
+
+                // Batch/CI must not ship the previous, stale scenes when generation aborts
+                // halfway through the region list.
+                if (Application.isBatchMode) throw;
             }
         }
 
