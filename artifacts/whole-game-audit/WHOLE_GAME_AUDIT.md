@@ -18,8 +18,8 @@
 
 This audit was conducted directly on the real project files of *The Whispering Wilds*. Rather than relying on static assumptions or web mock-ups, every subsystem was inspected, executed, and reconciled against underlying test outputs and engine logs.
 
-### 1.1 Automated Verification Check Reconciliation (389 Checks Reconciled)
-The previously cited test figures have been forensically reconciled into two distinct, documented verification tiers:
+### 1.1 Automated Verification Check Reconciliation (391 Total Executions: 389 Passed, 0 Failed, 2 Skipped)
+The test figures have been forensically reconciled into two distinct, documented verification tiers:
 
 1. **Tier 1: Historical In-Engine Unity Editor Test & Audit Suite (Tested on Unity 6000.6.3f1, Direct3D 11, Commit `5056deb`):**
    - **EditMode Unit Tests:** 94 passed, 0 failed, 0 skipped ([`artifacts/test_results_EditMode.xml`](../../artifacts/test_results_EditMode.xml))
@@ -27,7 +27,7 @@ The previously cited test figures have been forensically reconciled into two dis
    - **Character Rig & Hierarchy Audit:** 10 production characters passed, 0 failed ([`artifacts/unity_character_rig_audit.log`](../../artifacts/unity_character_rig_audit.log) / `editor-rig-audit.json`)
    - **Scene & Asset Reference Integrity Audit:** 9 canonical scenes verified, 0 broken references across 293 materials, 57 textures, and 10 audio clips ([`artifacts/unity_asset_ref_audit.log`](../../artifacts/unity_asset_ref_audit.log) / `asset-reference-audit.json`)
    - **Standalone Windows Player Production Build:** 1 production build verified, 94 build steps clean, exit code 0 ([`artifacts/unity_standalone_build.log`](../../artifacts/unity_standalone_build.log) / `BUILD_REPORT.json`)
-   - *Subtotal Unity In-Engine Checks:* **148 verified checks**.
+   - *Subtotal Unity In-Engine Checks:* **148 verified executions (148 passed, 0 failed, 0 skipped)**.
 
 2. **Tier 2: Repository Automation, Security & Launcher Regression Suites (Tested on Node 18/20, Windows CI, Commit `defec34` / `6905b87`):**
    - **Backend Security Tests (`test-backend-security.js`):** 34 passed assertions (CSRF, CORS, session tokens, rate limiting, security headers)
@@ -38,9 +38,9 @@ The previously cited test figures have been forensically reconciled into two dis
    - **Tamil Nadu GIS Map Data & Negative Edge Fixtures (`verify-map-data.js`):** 37 passed checks (8 Natural Earth sources + 7 GeoJSON checksums/RFC 7946 + 2 extent + 6 hubs + 7 negative fixtures)
    - **Server Cleanup Regression (`verify-server-cleanup.js`):** 2 passed checks (process tree kill and port 3199 rebinding)
    - **Candidate Windows Launcher Provenance & Safety (`verify-candidate-launcher.js` / `tests/test-launcher-regression.ps1`):** 85 passed checks on Windows (archive SHA-256 validation, provenance markers, path traversal guards, duplicate process locking, binary tampering rejection, published v1.0.0 immutability guards)
-   - *Subtotal Node.js / Windows Launcher Checks:* **241 passed checks (2 skipped)**.
+   - *Subtotal Node.js / Windows Launcher Checks:* **243 verified executions: 241 passed, 0 failed, 2 skipped**.
 
-**Grand Total Automated Checks:** **389 automated checks passed (2 skipped)** across in-engine Unity runs and repository regression suites.
+**Grand Total Automated Checks:** **391 total executions: 389 passed, 0 failed, 2 skipped** across in-engine Unity runs and repository regression suites.
 
 > [!IMPORTANT]
 > **Static CI vs Unity In-Engine Execution:**  
