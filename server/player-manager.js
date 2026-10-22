@@ -3,6 +3,9 @@
 // ============================================================================
 
 const Validation = require('./validation');
+const config = require('./config');
+
+const OUTFIT_SLOTS = ['upper', 'lower', 'head', 'accessory'];
 
 class PlayerManager {
     constructor() {
@@ -10,7 +13,7 @@ class PlayerManager {
         this.players = new Map();
     }
 
-    createPlayer(socketId, name, role = 'EXPLORER', roomCode = 'CHENNAI_EXP') {
+    createPlayer(socketId, name, role = 'EXPLORER', roomCode = null) {
         const sanitizedName = Validation.sanitizePlayerName(name);
         const player = {
             id: socketId,
@@ -49,7 +52,16 @@ class PlayerManager {
         const player = this.players.get(socketId);
         if (!player) return null;
 
-        const val = Validation.validateMovement(player.position, position, deltaTime);
+        // Elapsed time is measured server-side. The client-supplied deltaTime
+        // describes a render frame, not the network interval, so trusting it
+        // would reject legitimate movement and let a cheater inflate it.
+        const now = Date.now();
+        const elapsedSec = Math.min(1, Math.max(
+            config.TICK_INTERVAL_MS / 1000,
+            (now - player.lastUpdated) / 1000
+        ));
+
+        const val = Validation.validateMovement(player.position, position, elapsedSec);
         if (!val.valid) {
             return { error: val.reason, player };
         }
@@ -79,9 +91,27 @@ class PlayerManager {
             return check;
         }
 
+        const sanitizedOutfit = {};
+        if (outfit !== undefined) {
+            if (!outfit || typeof outfit !== 'object' || Array.isArray(outfit)) {
+                return { valid: false, reason: 'Invalid outfit payload' };
+            }
+            for (const slot of OUTFIT_SLOTS) {
+                if (outfit[slot] === undefined) continue;
+                const value = outfit[slot];
+                if (typeof value !== 'string' || value.length === 0 || value.length > 40) {
+                    return { valid: false, reason: `Invalid outfit value for ${slot}` };
+                }
+                sanitizedOutfit[slot] = value;
+            }
+            if (Object.keys(outfit).some((key) => !OUTFIT_SLOTS.includes(key))) {
+                return { valid: false, reason: 'Unknown outfit slot' };
+            }
+        }
+
         player.customizationChangesCount = newChangeCount;
-        if (outfit && typeof outfit === 'object') {
-            player.outfit = Object.assign({}, player.outfit, outfit);
+        if (Object.keys(sanitizedOutfit).length > 0) {
+            player.outfit = Object.assign({}, player.outfit, sanitizedOutfit);
         }
 
         return { valid: true, player, remaining: check.remaining };

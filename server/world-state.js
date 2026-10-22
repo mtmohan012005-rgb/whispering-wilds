@@ -2,6 +2,39 @@
 // THE WHISPERING WILDS - ROOM-LEVEL STATEFUL WORLD SYNC
 // ============================================================================
 
+function asIntInRange(min, max) {
+    return (value) => {
+        const n = Number(value);
+        if (!Number.isFinite(n) || !Number.isInteger(n) || n < min || n > max) return undefined;
+        return n;
+    };
+}
+
+function asBoolean(value) {
+    if (typeof value !== 'boolean') return undefined;
+    return value;
+}
+
+function asNumberInRange(min, max) {
+    return (value) => {
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < min || n > max) return undefined;
+        return n;
+    };
+}
+
+const MECHANISM_RULES = {
+    waterwheel: {
+        dialA: asIntInRange(0, 9),
+        dialB: asIntInRange(0, 9),
+        dialC: asIntInRange(0, 9)
+    },
+    campfire: {
+        lit: asBoolean,
+        fuelLevel: asNumberInRange(0, 100)
+    }
+};
+
 class RoomWorldState {
     constructor(roomCode, seed = 12345) {
         this.roomCode = roomCode;
@@ -35,13 +68,44 @@ class RoomWorldState {
         return JSON.parse(JSON.stringify(this.state));
     }
 
+    /**
+     * Apply a client mechanism update through a strict per-mechanism allowlist.
+     * Unknown mechanism IDs, unknown fields and out-of-range values are rejected
+     * rather than merged into room state.
+     */
     updateMechanism(mechanismId, payload) {
-        if (!this.state.mechanisms[mechanismId]) {
-            this.state.mechanisms[mechanismId] = {};
+        const rule = MECHANISM_RULES[mechanismId];
+        if (!rule) {
+            return { valid: false, reason: 'Unknown mechanism' };
         }
-        Object.assign(this.state.mechanisms[mechanismId], payload);
+        if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+            return { valid: false, reason: 'Invalid mechanism payload' };
+        }
 
-        // Auto-check Chola waterwheel solution (e.g. 3, 2, 4 aligns sluice)
+        const suppliedFields = Object.keys(payload);
+        const unknownField = suppliedFields.find((field) => !Object.prototype.hasOwnProperty.call(rule, field));
+        if (unknownField) {
+            return { valid: false, reason: `Field "${unknownField}" is not permitted on ${mechanismId}` };
+        }
+
+        const accepted = {};
+        for (const [field, sanitizer] of Object.entries(rule)) {
+            if (!Object.prototype.hasOwnProperty.call(payload, field)) continue;
+            const value = sanitizer(payload[field]);
+            if (value === undefined) {
+                return { valid: false, reason: `Invalid value for ${field}` };
+            }
+            accepted[field] = value;
+        }
+
+        if (Object.keys(accepted).length === 0) {
+            return { valid: false, reason: 'No permitted mechanism fields supplied' };
+        }
+
+        Object.assign(this.state.mechanisms[mechanismId], accepted);
+
+        // Auto-check Chola waterwheel solution (e.g. 3, 2, 4 aligns sluice).
+        // Clients can never set solved state directly.
         if (mechanismId === 'waterwheel') {
             const ww = this.state.mechanisms.waterwheel;
             if (ww.dialA === 3 && ww.dialB === 2 && ww.dialC === 4) {
@@ -49,7 +113,7 @@ class RoomWorldState {
                 ww.solved = true;
             }
         }
-        return this.state.mechanisms[mechanismId];
+        return { valid: true, state: this.state.mechanisms[mechanismId] };
     }
 
     unlockRegion(regionId) {

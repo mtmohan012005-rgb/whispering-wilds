@@ -1,19 +1,30 @@
-using System;
-using System.Collections;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Net.WebSockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace WhisperingWilds.Online
 {
     /// <summary>
-    /// Lightweight Socket.IO v4 client for Unity.
-    /// Uses WebSocket transport after Engine.IO v4 handshake.
-    /// Supports emit, on, disconnect, and rooms.
-    /// 
-    /// Protocol: Engine.IO v4 with JSON handshake response.
-    /// Server path: /socket.io/ (default Socket.IO path).
+    /// Minimal Socket.IO v4 client for Unity over a direct Engine.IO v4
+    /// WebSocket transport.
+    ///
+    /// Handshake:
+    ///   server -> 0{"sid":...}   (Engine.IO open)
+    ///   client -> 40             (Socket.IO connect to "/")
+    ///   server -> 40{"sid":...}  (namespace connected)
+    ///   server -> 2              (ping)
+    ///   client -> 3              (pong)
+    ///   server -> 42["event", {...}]
+    ///
+    /// No HTTP polling session is created, so the transport cannot be left in a
+    /// half-upgraded polling state. All Unity API access remains on the main
+    /// thread; network callbacks only enqueue data.
     /// </summary>
     public class SocketIOClient : MonoBehaviour
     {
@@ -35,53 +46,242 @@ namespace WhisperingWilds.Online
         public bool PingAutomatically { get; set; } = true;
 
         private string _baseUrl;
-        private string _namespace = "/";
-        private WebSocket _webSocket;
-        private int _packetId;
-        private float _pingTimer;
-        private float _pongTimer; // Separate timer for pong timeout
-        private float _pingInterval = 10f; // 10 seconds default (matches server config)
-        private float _pongTimeout = 5f; // 5 seconds default (matches server config)
-        private bool _pongExpected;
-        private Dictionary<string, List<Action<object[]>>> _eventHandlers = new Dictionary<string, List<Action<object[]>>>();
-        private Coroutine _connectCoroutine;
+        private ClientWebSocket _webSocket;
+        private CancellationTokenSource _lifetime;
+        private Task _receiveTask;
+        private Task _sendTask;
+        private bool _opened;
+        private bool _disconnectNotified;
 
-        /// <summary>
-        /// Connects to the Socket.IO server at the given URL.
-        /// </summary>
+        private readonly ConcurrentQueue<string> _incomingMessages = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<string> _incomingErrors = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<string> _incomingCloses = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<string> _outgoing = new ConcurrentQueue<string>();
+        private readonly SemaphoreSlim _sendSignal = new SemaphoreSlim(0);
+        private readonly Dictionary<string, List<Action<object[]>>> _eventHandlers =
+            new Dictionary<string, List<Action<object[]>>>();
+
         public void Connect(string url)
         {
-            if (_connectCoroutine != null)
+            if (State == ConnectionState.Connecting || State == ConnectionState.Connected)
             {
-                StopCoroutine(_connectCoroutine);
+                return;
             }
-            _baseUrl = url.TrimEnd('/');
-            _connectCoroutine = StartCoroutine(ConnectSequence());
+
+            ResetTransport();
+            _disconnectNotified = false;
+            _opened = false;
+            _baseUrl = string.IsNullOrWhiteSpace(url) ? "http://localhost:3000" : url.Trim();
+            State = ConnectionState.Connecting;
+            _lifetime = new CancellationTokenSource();
+            _ = ConnectAsync(_lifetime.Token);
         }
 
-        /// <summary>
-        /// Disconnects from the server.
-        /// </summary>
+        private async Task ConnectAsync(CancellationToken token)
+        {
+            var socket = new ClientWebSocket();
+            _webSocket = socket;
+
+            try
+            {
+                string wsUrl = BuildWebSocketUrl(_baseUrl);
+                Debug.Log($"[SocketIO] Connecting to {wsUrl}");
+                await socket.ConnectAsync(new Uri(wsUrl), token).ConfigureAwait(false);
+
+                if (token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                _receiveTask = Task.Run(() => ReceiveLoop(socket, token), token);
+                _sendTask = Task.Run(() => SendLoop(socket, token), token);
+
+                // The Socket.IO connect packet is sent only after the Engine.IO
+                // open packet arrives (handled on the main thread in Update).
+                await WaitForNamespaceConnectAsync(token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected during disconnect.
+            }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _incomingErrors.Enqueue(ex.GetBaseException().Message);
+                }
+            }
+        }
+
+        private async Task WaitForNamespaceConnectAsync(CancellationToken token)
+        {
+            DateTime deadline = DateTime.UtcNow.AddSeconds(8);
+            while (!token.IsCancellationRequested &&
+                   State == ConnectionState.Connecting &&
+                   DateTime.UtcNow < deadline)
+            {
+                await Task.Delay(25, token).ConfigureAwait(false);
+            }
+
+            if (!token.IsCancellationRequested && State == ConnectionState.Connecting)
+            {
+                _incomingErrors.Enqueue("Socket.IO namespace connect timed out");
+            }
+        }
+
         public void Disconnect()
         {
-            if (_connectCoroutine != null)
+            if (State == ConnectionState.Disconnected && _webSocket == null) return;
+
+            try
             {
-                StopCoroutine(_connectCoroutine);
-                _connectCoroutine = null;
+                if (_webSocket != null && _webSocket.State == WebSocketState.Open && _opened)
+                {
+                    _outgoing.Enqueue("41");
+                }
             }
-            SendSocketIOPacket(SocketIOPacketType.Disconnect, _namespace);
-            CloseWebSocket();
+            catch (Exception)
+            {
+                // Best-effort disconnect packet.
+            }
+
+            ResetTransport();
             State = ConnectionState.Disconnected;
+            NotifyDisconnected();
+        }
+
+        private void ResetTransport()
+        {
+            try { _lifetime?.Cancel(); } catch (Exception) { }
+            try
+            {
+                if (_webSocket != null &&
+                    (_webSocket.State == WebSocketState.Open || _webSocket.State == WebSocketState.CloseReceived))
+                {
+                    _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "closing", CancellationToken.None)
+                        .GetAwaiter().GetResult();
+                }
+            }
+            catch (Exception) { }
+            try { _webSocket?.Dispose(); } catch (Exception) { }
+            _webSocket = null;
+            _lifetime?.Dispose();
+            _lifetime = null;
+            _receiveTask = null;
+            _sendTask = null;
+            _opened = false;
+            while (_outgoing.TryDequeue(out _)) { }
+        }
+
+        private async Task SendLoop(ClientWebSocket socket, CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested && socket.State == WebSocketState.Open)
+                {
+                    await _sendSignal.WaitAsync(token).ConfigureAwait(false);
+                    while (_outgoing.TryDequeue(out string packet))
+                    {
+                        byte[] bytes = Encoding.UTF8.GetBytes(packet);
+                        await socket.SendAsync(
+                            new ArraySegment<byte>(bytes),
+                            WebSocketMessageType.Text,
+                            true,
+                            token).ConfigureAwait(false);
+                    }
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _incomingErrors.Enqueue($"send: {ex.GetBaseException().Message}");
+                }
+            }
+        }
+
+        private async Task ReceiveLoop(ClientWebSocket socket, CancellationToken token)
+        {
+            var buffer = new byte[16384];
+            var assembled = new System.IO.MemoryStream();
+            try
+            {
+                while (!token.IsCancellationRequested && socket.State == WebSocketState.Open)
+                {
+                    WebSocketReceiveResult result = await socket.ReceiveAsync(
+                        new ArraySegment<byte>(buffer), token).ConfigureAwait(false);
+
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        _incomingCloses.Enqueue("server closed the connection");
+                        return;
+                    }
+
+                    assembled.Write(buffer, 0, result.Count);
+                    if (!result.EndOfMessage) continue;
+
+                    string message = Encoding.UTF8.GetString(
+                        assembled.GetBuffer(), 0, (int)assembled.Length);
+                    assembled.SetLength(0);
+                    _incomingMessages.Enqueue(message);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception ex)
+            {
+                if (!token.IsCancellationRequested)
+                {
+                    _incomingErrors.Enqueue($"receive: {ex.GetBaseException().Message}");
+                }
+            }
+            finally
+            {
+                assembled.Dispose();
+            }
+        }
+
+        private void Update()
+        {
+            DrainIncoming();
+        }
+
+        private void DrainIncoming()
+        {
+            while (_incomingErrors.TryDequeue(out string error))
+            {
+                Debug.LogError($"[SocketIO] {error}");
+                OnError?.Invoke(error);
+                if (State != ConnectionState.Connected)
+                {
+                    State = ConnectionState.Disconnected;
+                }
+            }
+
+            while (_incomingCloses.TryDequeue(out string reason))
+            {
+                if (State != ConnectionState.Disconnected)
+                {
+                    Debug.LogWarning($"[SocketIO] Connection closed: {reason}");
+                    State = ConnectionState.Disconnected;
+                    NotifyDisconnected();
+                }
+            }
+
+            while (_incomingMessages.TryDequeue(out string message))
+            {
+                HandleEnginePacket(message);
+            }
+        }
+
+        private void NotifyDisconnected()
+        {
+            if (_disconnectNotified) return;
+            _disconnectNotified = true;
             OnDisconnected?.Invoke();
         }
 
-        /// <summary>
-        /// Emits an event to the server.
-        /// Supports two formats:
-        /// 1. Emit("eventName", arg1, arg2, ...) — positional arguments
-        /// 2. Emit("eventName", "key1", val1, "key2", val2, ...) — key-value pairs (converted to JSON object)
-        /// </summary>
-        public void Emit(string eventName, params object[] data)
+        public void Emit(string eventName, object payload = null)
         {
             if (State != ConnectionState.Connected)
             {
@@ -89,587 +289,183 @@ namespace WhisperingWilds.Online
                 return;
             }
 
-            // Detect key-value pair pattern: alternating string keys and values
-            if (data.Length >= 2 && data.Length % 2 == 0 && data[0] is string)
-            {
-                bool allKeysAreStrings = true;
-                for (int i = 0; i < data.Length; i += 2)
-                {
-                    if (data[i] is string == false)
-                    {
-                        allKeysAreStrings = false;
-                        break;
-                    }
-                }
-                if (allKeysAreStrings)
-                {
-                    // Build JSON object from key-value pairs
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("{");
-                    for (int i = 0; i < data.Length; i += 2)
-                    {
-                        if (i > 0) sb.Append(",");
-                        sb.Append("\"");
-                        sb.Append(((string)data[i]).Replace("\\", "\\\\").Replace("\"", "\\\""));
-                        sb.Append("\":");
-                        sb.Append(ToJson(data[i + 1]));
-                    }
-                    sb.Append("}");
-                    SendSocketIOPacket(SocketIOPacketType.Event, _namespace, eventName, sb.ToString());
-                    return;
-                }
-            }
-
-            // Positional arguments — wrap in array
-            SendSocketIOPacket(SocketIOPacketType.Event, _namespace, eventName, data);
+            string json = payload == null ? "null" : MiniJson.Serialize(payload);
+            string packet = "42[" + MiniJson.Serialize(eventName) + "," + json + "]";
+            Enqueue(packet);
         }
 
-        /// <summary>
-        /// Registers a handler for an event from the server.
-        /// </summary>
         public void On(string eventName, Action<object[]> handler)
         {
-            if (!_eventHandlers.ContainsKey(eventName))
+            if (!_eventHandlers.TryGetValue(eventName, out List<Action<object[]>> handlers))
             {
-                _eventHandlers[eventName] = new List<Action<object[]>>();
+                handlers = new List<Action<object[]>>();
+                _eventHandlers[eventName] = handlers;
             }
-            _eventHandlers[eventName].Add(handler);
+            handlers.Add(handler);
         }
 
-        /// <summary>
-        /// Joins a Socket.IO room.
-        /// </summary>
-        public void JoinRoom(string room)
+        public void JoinRoom(string roomCode)
         {
-            Emit("joinRoom", room);
+            Emit("joinRoom", new Dictionary<string, object> { { "roomCode", roomCode } });
         }
 
-        /// <summary>
-        /// Leaves a Socket.IO room.
-        /// </summary>
-        public void LeaveRoom(string room)
+        public void LeaveRoom()
         {
-            Emit("leaveRoom", room);
+            Emit("leaveRoom", null);
         }
 
-        private void Update()
+        private void Enqueue(string packet)
         {
-            if (State != ConnectionState.Connected || !PingAutomatically) return;
+            _outgoing.Enqueue(packet);
+            try { _sendSignal.Release(); } catch (ObjectDisposedException) { }
+        }
 
-            _pingTimer += Time.unscaledDeltaTime;
+        private void HandleEnginePacket(string frame)
+        {
+            if (string.IsNullOrEmpty(frame)) return;
 
-            if (_pingTimer >= _pingInterval)
+            string[] packets = frame.Split('\u001e');
+            foreach (string packet in packets)
             {
-                _pingTimer = 0f;
-                SendEngineIOPacket("2"); // Engine.IO Ping
-                _pongExpected = true;
-                _pongTimer = 0f; // Start pong timeout timer
-            }
-
-            if (_pongExpected)
-            {
-                _pongTimer += Time.unscaledDeltaTime;
-                if (_pongTimer >= _pongTimeout)
+                if (string.IsNullOrEmpty(packet)) continue;
+                switch (packet[0])
                 {
-                    Debug.LogWarning("[SocketIO] Pong timeout — server may be unreachable");
-                    _pongExpected = false;
+                    case '0': // Engine.IO open
+                        ParseOpenPacket(packet.Substring(1));
+                        Enqueue("40");
+                        break;
+                    case '1': // Engine.IO close
+                        _incomingCloses.Enqueue("engine close");
+                        break;
+                    case '2': // ping
+                        Enqueue("3");
+                        break;
+                    case '3': // pong
+                        break;
+                    case '4': // Socket.IO message
+                        HandleSocketIOPacket(packet.Substring(1));
+                        break;
+                    default:
+                        break;
                 }
             }
         }
 
-        private void OnDestroy()
+        private void ParseOpenPacket(string json)
         {
-            Disconnect();
-        }
-
-        private IEnumerator ConnectSequence()
-        {
-            State = ConnectionState.Connecting;
-            Debug.Log($"[SocketIO] Connecting to {_baseUrl}");
-
-            // Step 1: Engine.IO v4 handshake via HTTP polling
-            // Socket.IO default path is /socket.io/, not /engine.io/
-            string handshakeUrl = $"{_baseUrl}/socket.io/?EIO=4&transport=polling";
-
-            using (var uwr = new UnityWebRequest(handshakeUrl, "GET"))
-            {
-                uwr.downloadHandler = new DownloadHandlerBuffer();
-                uwr.uploadHandler = new UploadHandlerRaw(new byte[0]);
-                uwr.timeout = 10;
-
-                yield return uwr.SendWebRequest();
-
-                if (uwr.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.LogError($"[SocketIO] Handshake failed: {uwr.error}");
-                    OnError?.Invoke(uwr.error);
-                    State = ConnectionState.Disconnected;
-                    yield break;
-                }
-
-                string response = uwr.downloadHandler.text;
-                // Engine.IO v4 returns JSON: {"sid":"...","upgrades":["websocket"],"pingInterval":10000,"pingTimeout":5000}
-                ParseHandshake(response);
-
-                if (string.IsNullOrEmpty(SocketId))
-                {
-                    Debug.LogError($"[SocketIO] Handshake did not return sid. Response: {response}");
-                    OnError?.Invoke("Invalid handshake response");
-                    State = ConnectionState.Disconnected;
-                    yield break;
-                }
-
-                Debug.Log($"[SocketIO] Engine.IO handshake successful, sid={SocketId}");
-            }
-
-            // Step 2: Upgrade to WebSocket transport
-            string wsUrl = $"{_baseUrl.Replace("http://", "ws://").Replace("https://", "wss://")}/socket.io/?EIO=4&transport=websocket&sid={SocketId}";
-
-            _webSocket = new WebSocket();
-            _webSocket.OnMessage += HandleWebSocketMessage;
-            _webSocket.OnClose += HandleWebSocketClose;
-            _webSocket.OnError += HandleWebSocketError;
-
-            yield return _webSocket.Connect(wsUrl);
-
-            if (_webSocket.State == WebSocketState.Open)
-            {
-                // Send Socket.IO connect packet (type 0)
-                SendSocketIOPacket(SocketIOPacketType.Connect, _namespace);
-
-                // Socket.IO connection confirmed by '0' connect packet from server
-                // We'll handle this in the message handler
-                Debug.Log($"[SocketIO] WebSocket connected, awaiting Socket.IO connect confirmation");
-            }
-            else
-            {
-                Debug.LogError($"[SocketIO] WebSocket connection failed: {_webSocket.State}");
-                OnError?.Invoke("WebSocket connection failed");
-                State = ConnectionState.Disconnected;
-            }
-        }
-
-        private void ParseHandshake(string response)
-        {
-            // Engine.IO v4 returns JSON:
-            // {"sid":"abc123","upgrades":["websocket"],"pingInterval":10000,"pingTimeout":5000}
-            // Parse manually to avoid dependency on UnityEngine.JsonUtility for simple objects
-            
-            if (string.IsNullOrEmpty(response) || response[0] != '{')
-            {
-                Debug.LogWarning($"[SocketIO] Invalid handshake response (not JSON): {response}");
-                return;
-            }
-
-            // Extract sid
-            int sidIdx = response.IndexOf("\"sid\"");
-            if (sidIdx >= 0)
-            {
-                int colonIdx = response.IndexOf(':', sidIdx);
-                int quoteStart = response.IndexOf('"', colonIdx + 1);
-                int quoteEnd = response.IndexOf('"', quoteStart + 1);
-                if (quoteStart >= 0 && quoteEnd > quoteStart)
-                {
-                    SocketId = response.Substring(quoteStart + 1, quoteEnd - quoteStart - 1);
-                }
-            }
-
-            // Extract pingInterval (milliseconds)
-            int pingIdx = response.IndexOf("\"pingInterval\"");
-            if (pingIdx >= 0)
-            {
-                int colonIdx = response.IndexOf(':', pingIdx);
-                int numStart = colonIdx + 1;
-                while (numStart < response.Length && char.IsWhiteSpace(response[numStart])) numStart++;
-                int numEnd = numStart;
-                while (numEnd < response.Length && char.IsDigit(response[numEnd])) numEnd++;
-                if (numEnd > numStart)
-                {
-                    int ms;
-                    if (int.TryParse(response.Substring(numStart, numEnd - numStart), out ms))
-                    {
-                        _pingInterval = ms / 1000f;
-                    }
-                }
-            }
-
-            // Extract pingTimeout (milliseconds)
-            int timeoutIdx = response.IndexOf("\"pingTimeout\"");
-            if (timeoutIdx >= 0)
-            {
-                int colonIdx = response.IndexOf(':', timeoutIdx);
-                int numStart = colonIdx + 1;
-                while (numStart < response.Length && char.IsWhiteSpace(response[numStart])) numStart++;
-                int numEnd = numStart;
-                while (numEnd < response.Length && char.IsDigit(response[numEnd])) numEnd++;
-                if (numEnd > numStart)
-                {
-                    int ms;
-                    if (int.TryParse(response.Substring(numStart, numEnd - numStart), out ms))
-                    {
-                        _pongTimeout = ms / 1000f;
-                    }
-                }
-            }
-
-            Debug.Log($"[SocketIO] Handshake parsed: sid={SocketId}, pingInterval={_pingInterval}s, pongTimeout={_pongTimeout}s");
-        }
-
-        private enum SocketIOPacketType
-        {
-            Connect = 0,
-            Disconnect = 1,
-            Event = 2,
-            Ack = 3,
-            Error = 4,
-            BinaryConnect = 5,
-            BinaryDisconnect = 6,
-            BinaryEvent = 7,
-            BinaryAck = 8
-        }
-
-        /// <summary>
-        /// Sends a raw Engine.IO control frame (e.g. ping "2", pong "3").
-        /// </summary>
-        private void SendEngineIOPacket(string packet)
-        {
-            if (_webSocket == null || _webSocket.State != WebSocketState.Open) return;
-            _webSocket.Send(packet);
-        }
-
-        /// <summary>
-        /// Sends a Socket.IO packet wrapped in an Engine.IO message frame ("4").
-        /// Engine.IO requires this prefix or the server will not route the packet
-        /// to the Socket.IO layer.
-        /// </summary>
-        private void SendSocketIOPacket(SocketIOPacketType type, string ns = "", params object[] data)
-        {
-            if (_webSocket == null || _webSocket.State != WebSocketState.Open) return;
-
-            string socketPacket;
-            switch (type)
-            {
-                case SocketIOPacketType.Connect:
-                    socketPacket = "0" + (string.IsNullOrEmpty(ns) ? "" : ns); // Socket.IO connect
-                    break;
-                case SocketIOPacketType.Disconnect:
-                    socketPacket = "1" + (string.IsNullOrEmpty(ns) ? "" : ns); // Socket.IO disconnect
-                    break;
-                case SocketIOPacketType.Event:
-                    socketPacket = BuildEventPacket(ns, data);
-                    break;
-                default:
-                    return;
-            }
-
-            _webSocket.Send("4" + socketPacket);
-        }
-
-        /// <summary>
-        /// Overload for Emit with eventName as separate parameter.
-        /// </summary>
-        private void SendSocketIOPacket(SocketIOPacketType type, string ns, string eventName, params object[] data)
-        {
-            if (_webSocket == null || _webSocket.State != WebSocketState.Open) return;
-
-            string socketPacket;
-            switch (type)
-            {
-                case SocketIOPacketType.Event:
-                    socketPacket = BuildEventPacket(ns, eventName, data);
-                    break;
-                default:
-                    return;
-            }
-
-            _webSocket.Send("4" + socketPacket);
-        }
-
-        /// <summary>
-        /// Builds a Socket.IO event packet from legacy data array format.
-        /// Format: 2["eventName",arg1,arg2,...]
-        /// </summary>
-        private string BuildEventPacket(string ns, object[] data)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("2");
-            if (!string.IsNullOrEmpty(ns)) sb.Append(ns);
-            sb.Append("[\"");
-            sb.Append(data.Length > 0 ? ((string)data[0]) : "");
-            sb.Append("\"");
-            if (data.Length > 1)
-            {
-                for (int i = 1; i < data.Length; i++)
-                {
-                    sb.Append(',');
-                    sb.Append(ToJson(data[i]));
-                }
-            }
-            sb.Append("]");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Builds a Socket.IO event packet with explicit eventName.
-        /// Format: 2["eventName",data] or 2["eventName"]
-        /// </summary>
-        private string BuildEventPacket(string ns, string eventName, params object[] data)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("2");
-            if (!string.IsNullOrEmpty(ns)) sb.Append(ns);
-            sb.Append("[\"");
-            sb.Append(eventName.Replace("\\", "\\\\").Replace("\"", "\\\""));
-            sb.Append("\"");
-            if (data != null && data.Length > 0)
-            {
-                sb.Append(',');
-                for (int i = 0; i < data.Length; i++)
-                {
-                    if (i > 0) sb.Append(',');
-                    sb.Append(ToJson(data[i]));
-                }
-            }
-            sb.Append("]");
-            return sb.ToString();
-        }
-
-        private void HandleWebSocketMessage(string message)
-        {
-            if (string.IsNullOrEmpty(message)) return;
-
-            char type = message[0];
-
-            switch (type)
-            {
-                case '2': // Engine.IO Ping
-                    SendPong();
-                    break;
-                case '3': // Engine.IO Pong
-                    _pongExpected = false;
-                    break;
-                case '4': // Engine.IO Message (Socket.IO packet)
-                    HandleSocketIOPacket(message.Substring(1));
-                    break;
-            }
+            _opened = true;
+            var obj = MiniJson.AsObject(MiniJson.Deserialize(json));
+            SocketId = MiniJson.GetString(obj, "sid", string.Empty);
+            Debug.Log($"[SocketIO] Engine.IO open, sid={SocketId}");
         }
 
         private void HandleSocketIOPacket(string packet)
         {
             if (string.IsNullOrEmpty(packet)) return;
 
-            char socketType = packet[0];
+            char type = packet[0];
+            string rest = packet.Length > 1 ? packet.Substring(1) : string.Empty;
 
-            switch (socketType)
+            // Namespaced packets start with "/", e.g. 0/nsp,{"sid":...}. The
+            // backend uses the default namespace, but tolerate the prefix.
+            if (rest.StartsWith("/", StringComparison.Ordinal))
             {
-                case '0': // Connect
+                int comma = rest.IndexOf(',');
+                rest = comma >= 0 ? rest.Substring(comma + 1) : string.Empty;
+            }
+
+            switch (type)
+            {
+                case '0':
+                    var ack = MiniJson.AsObject(MiniJson.Deserialize(rest));
+                    string sid = MiniJson.GetString(ack, "sid", SocketId);
+                    if (!string.IsNullOrEmpty(sid)) SocketId = sid;
                     if (State != ConnectionState.Connected)
                     {
                         State = ConnectionState.Connected;
-                        Debug.Log("[SocketIO] Connected to server");
+                        Debug.Log("[SocketIO] Namespace connected");
                         OnConnected?.Invoke();
                     }
                     break;
-                case '1': // Disconnect
-                    State = ConnectionState.Disconnected;
-                    OnDisconnected?.Invoke();
+                case '1':
+                    _incomingCloses.Enqueue("socket.io disconnect");
                     break;
-                case '2': // Event
-                    ParseEventPacket(packet);
+                case '2':
+                    ParseEventPacket(rest);
                     break;
-                case '4': // Error
-                    string errorMsg = packet.Substring(1);
-                    Debug.LogError($"[SocketIO] Server error: {errorMsg}");
-                    OnError?.Invoke(errorMsg);
+                case '4':
+                    _incomingErrors.Enqueue($"socket.io error: {rest}");
                     break;
             }
         }
 
-        private void ParseEventPacket(string packet)
+        private void ParseEventPacket(string payload)
         {
-            // Format: ["eventName",data] or ["eventName"]
-            int start = packet.IndexOf('[');
-            int end = packet.LastIndexOf(']');
-            if (start < 0 || end < 0) return;
+            int start = payload.IndexOf('[');
+            int end = payload.LastIndexOf(']');
+            if (start < 0 || end <= start) return;
 
-            string content = packet.Substring(start + 1, end - start - 1);
+            string arrayJson = payload.Substring(start, end - start + 1);
+            var args = MiniJson.AsArray(MiniJson.Deserialize(arrayJson));
+            if (args == null || args.Count == 0) return;
 
-            // Find the closing quote of the event name
-            int firstQuote = content.IndexOf('"');
-            int secondQuote = content.IndexOf('"', firstQuote + 1);
-            if (firstQuote < 0 || secondQuote < 0) return;
+            string eventName = args[0] as string;
+            if (string.IsNullOrEmpty(eventName)) return;
 
-            string eventName = content.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
-
-            // Extract data after the event name
-            string dataStr = content.Substring(secondQuote + 1).TrimStart(',');
-
-            object[] args;
-            if (string.IsNullOrEmpty(dataStr) || dataStr == "null")
+            var eventArgs = new object[Math.Max(0, args.Count - 1)];
+            for (int i = 1; i < args.Count; i++)
             {
-                args = new object[0];
-            }
-            else
-            {
-                // Simple JSON parse for common types
-                args = new object[] { dataStr };
+                eventArgs[i - 1] = args[i];
             }
 
-            // Dispatch to registered handlers
-            if (_eventHandlers.ContainsKey(eventName))
+            if (_eventHandlers.TryGetValue(eventName, out List<Action<object[]>> handlers))
             {
-                foreach (var handler in _eventHandlers[eventName])
+                foreach (Action<object[]> handler in handlers)
                 {
                     try
                     {
-                        handler.Invoke(args);
+                        handler.Invoke(eventArgs);
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        Debug.LogError($"[SocketIO] Error in handler for '{eventName}': {e.Message}");
+                        Debug.LogError($"[SocketIO] Handler for '{eventName}' failed: {ex}");
                     }
                 }
             }
 
-            OnEvent?.Invoke(eventName, args);
-            Debug.Log($"[SocketIO] Event: {eventName}");
+            OnEvent?.Invoke(eventName, eventArgs);
         }
 
-        private void SendPong()
+        private static string BuildWebSocketUrl(string baseUrl)
         {
-            if (_webSocket != null && _webSocket.State == WebSocketState.Open)
+            string url = baseUrl.TrimEnd('/');
+            if (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
-                _webSocket.Send("3"); // Engine.IO Pong
+                url = "wss://" + url.Substring("https://".Length);
             }
-        }
-
-        private void HandleWebSocketClose(int code, string reason)
-        {
-            State = ConnectionState.Disconnected;
-            Debug.LogWarning($"[SocketIO] WebSocket closed: {code} - {reason}");
-            OnDisconnected?.Invoke();
-        }
-
-        private void HandleWebSocketError(string error)
-        {
-            Debug.LogError($"[SocketIO] WebSocket error: {error}");
-            OnError?.Invoke(error);
-        }
-
-        private void CloseWebSocket()
-        {
-            if (_webSocket != null)
+            else if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
             {
-                _webSocket.OnMessage -= HandleWebSocketMessage;
-                _webSocket.OnClose -= HandleWebSocketClose;
-                _webSocket.OnError -= HandleWebSocketError;
-                _webSocket.Close();
-                _webSocket = null;
+                url = "ws://" + url.Substring("http://".Length);
             }
-        }
-
-        private string ToJson(object obj)
-        {
-            if (obj == null) return "null";
-            if (obj is string s) return "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
-            if (obj is int || obj is float || obj is double || obj is bool) return obj.ToString().ToLowerInvariant();
-            if (obj is Vector3 v) return $"{{\"x\":{v.x},\"y\":{v.y},\"z\":{v.z}}}";
-            return "\"" + obj.ToString() + "\"";
-        }
-
-        /// <summary>
-        /// Minimal WebSocket implementation for Unity.
-        /// Uses UnityWebRequest for the WebSocket upgrade handshake and
-        /// System.Net.WebSockets.ClientWebSocket for the connection.
-        /// </summary>
-        private class WebSocket
-        {
-            public event Action<string> OnMessage;
-            public event Action<int, string> OnClose;
-            public event Action<string> OnError;
-
-            public WebSocketState State { get; private set; } = WebSocketState.Closed;
-
-            private System.Net.WebSockets.ClientWebSocket _ws = new System.Net.WebSockets.ClientWebSocket();
-            private string _url;
-            private bool _isRunning;
-
-            public System.Threading.Tasks.Task Connect(string url)
+            else if (!url.StartsWith("ws://", StringComparison.OrdinalIgnoreCase) &&
+                     !url.StartsWith("wss://", StringComparison.OrdinalIgnoreCase))
             {
-                _url = url;
-                State = WebSocketState.Connecting;
-                return _ws.ConnectAsync(new Uri(url), System.Threading.CancellationToken.None)
-                    .ContinueWith(t =>
-                    {
-                        if (t.IsFaulted)
-                        {
-                            State = WebSocketState.Closed;
-                            OnError?.Invoke(t.Exception?.GetBaseException().Message ?? "Connection failed");
-                            return;
-                        }
-                        State = WebSocketState.Open;
-                        _isRunning = true;
-                        System.Threading.Tasks.Task.Run(ReceiveLoop);
-                    });
+                url = "ws://" + url;
             }
 
-            public void Send(string message)
+            if (url.IndexOf("/socket.io", StringComparison.OrdinalIgnoreCase) < 0)
             {
-                if (State != WebSocketState.Open) return;
-                var bytes = Encoding.UTF8.GetBytes(message);
-                _ws.SendAsync(
-                    new System.ArraySegment<byte>(bytes),
-                    System.Net.WebSockets.WebSocketMessageType.Text,
-                    true,
-                    System.Threading.CancellationToken.None);
+                url += "/socket.io/";
             }
 
-            public void Close()
-            {
-                _isRunning = false;
-                State = WebSocketState.Closed;
-                _ws.CloseAsync(
-                    System.Net.WebSockets.WebSocketCloseStatus.NormalClosure,
-                    "Closing",
-                    System.Threading.CancellationToken.None);
-            }
-
-            private async void ReceiveLoop()
-            {
-                var buffer = new byte[4096];
-                while (_isRunning && State == WebSocketState.Open)
-                {
-                    try
-                    {
-                        var result = await _ws.ReceiveAsync(
-                            new System.ArraySegment<byte>(buffer),
-                            System.Threading.CancellationToken.None);
-
-                        if (result.MessageType == System.Net.WebSockets.WebSocketMessageType.Close)
-                        {
-                            State = WebSocketState.Closed;
-                            OnClose?.Invoke((int)(result.CloseStatus ?? System.Net.WebSockets.WebSocketCloseStatus.NormalClosure), "Closed");
-                            break;
-                        }
-
-                        string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                        OnMessage?.Invoke(message);
-                    }
-                    catch (Exception e)
-                    {
-                        State = WebSocketState.Closed;
-                        OnError?.Invoke(e.Message);
-                        break;
-                    }
-                }
-            }
+            url += url.IndexOf('?') >= 0 ? "&" : "?";
+            url += "EIO=4&transport=websocket";
+            return url;
         }
 
-        private enum WebSocketState
+        private void OnDestroy()
         {
-            Closed,
-            Connecting,
-            Open
+            Disconnect();
         }
     }
 }

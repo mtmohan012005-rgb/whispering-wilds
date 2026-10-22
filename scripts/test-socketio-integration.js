@@ -185,28 +185,24 @@ async function testRoomJoin() {
         socket.on('connect', () => {
             clearTimeout(timeout);
             
-            let responseReceived = false;
-            
-            // Listen for server response
-            socket.on('joinedSuccess', () => {
-                responseReceived = true;
-            });
-            socket.on('roomFull', () => {
-                // Room full is also a valid response
-                responseReceived = true;
-            });
-            
-            // Emit joinRoom event as the Unity client would
-            socket.emit('joinRoom', {
-                roomCode: 'test-room-' + Date.now(),
-                playerName: 'TestPlayer'
-            });
-            
-            setTimeout(() => {
-                assert(true, 'joinRoom event emitted without error');
+            socket.on('joinedSuccess', (payload) => {
+                assert(/^[A-HJ-NP-Z2-9]{6}$/.test(payload.roomCode),
+                    `Server issued six-character code (${payload.roomCode})`);
+                assert(payload.isHost === true, 'Creator is host');
                 socket.disconnect();
                 resolve();
-            }, 1000);
+            });
+            socket.on('joinRejected', (payload) => {
+                assert(false, `Create room rejected: ${payload.reason}`);
+                socket.disconnect();
+                resolve();
+            });
+
+            // Rooms must be created explicitly before joining.
+            socket.emit('createRoom', {
+                playerName: 'TestPlayer',
+                maxPlayers: 5
+            });
         });
         
         socket.on('connect_error', (err) => {

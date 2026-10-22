@@ -28,6 +28,14 @@ const config = {
     MAX_PLAYERS_PER_ROOM: 5,
     MIN_PLAYERS_PER_ROOM: 2,
 
+    // Server-generated invite codes: exactly six characters using an
+    // ambiguity-reduced alphabet. Allocation retries a bounded number of
+    // times before failing closed instead of silently reusing a code.
+    ROOM_CODE: {
+        LENGTH: 6,
+        MAX_ALLOCATION_ATTEMPTS: 25
+    },
+
     // ------------------------------------------------------------------------
     // GAME LOOP
     // ------------------------------------------------------------------------

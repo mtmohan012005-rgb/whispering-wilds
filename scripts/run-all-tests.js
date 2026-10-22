@@ -254,6 +254,14 @@ async function main() {
     results.push(dataResult);
     if (dataResult.code !== 0) hasFailure = true;
 
+    // Room lifecycle: six-character codes, create/join, isolation, host handoff
+    const roomLifecycleResult = await runTestSuite(
+      'Room Lifecycle & Invite Code Tests',
+      'scripts/verify-room-lifecycle.js'
+    );
+    results.push(roomLifecycleResult);
+    if (roomLifecycleResult.code !== 0) hasFailure = true;
+
     // Server cleanup regression
     const cleanupResult = await runTestSuite(
       'Server Cleanup Regression',
