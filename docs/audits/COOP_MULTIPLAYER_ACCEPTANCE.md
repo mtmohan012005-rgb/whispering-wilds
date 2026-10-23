@@ -1,7 +1,7 @@
 # Co-op Multiplayer Acceptance
 
 Status date: 2026-10-23
-Branch: `fix/coop-six-char-room-lifecycle-20261022`
+Branch: `fix/coop-preserve-room-on-failed-join-20261023`
 
 ## Scope
 
@@ -20,14 +20,16 @@ Branch: `fix/coop-six-char-room-lifecycle-20261022`
 
 | Check | Command | Result |
 | --- | --- | --- |
-| Invite code + room lifecycle (38 assertions) | `npm run test:room-lifecycle` | 38 passed, 0 failed |
+| Invite code + room lifecycle (46 assertions) | `npm run test:room-lifecycle` | 46 passed, 0 failed |
 | Full repository suite (11 suites) | `npm test` | 11 passed, 0 failed |
 | Unity C# compilation | `powershell -ExecutionPolicy Bypass -File scripts/run-unity-audits.ps1 -Action compile` | exit 0 |
 
 Server coverage includes code format and uniqueness, create/join separation, rejection of
 short, unknown and legacy codes, no auto-create, capacity clamp at five, movement isolation,
 host reassignment, empty-room cleanup, explicit leave, mechanism allowlist, and chat
-sanitization.
+sanitization. Failed joins against a missing code or a full room are verified to preserve
+the player's current room: the peer still receives movement, and the old room receives no
+`playerLeft` or `roomRoster` churn.
 
 ## Manual Acceptance Matrix
 

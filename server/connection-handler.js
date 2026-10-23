@@ -160,6 +160,24 @@ function registerSocketHandlers(io, socket, roomManager, playerManager) {
             }
         }
 
+        // Preflight the destination before touching the current membership.
+        // A missing or full room must reject the join without evicting the
+        // player from a party they already belong to.
+        const targetRoom = roomManager.getRoom(code);
+        if (!targetRoom) {
+            emitJoinFailure('No expedition found with that invite code.', 'ROOM_NOT_FOUND');
+            return;
+        }
+        if (!targetRoom.players.has(socket.id) && targetRoom.players.size >= targetRoom.maxPlayers) {
+            emitJoinFailure(
+                `Expedition lobby is full (max ${targetRoom.maxPlayers} players).`,
+                'ROOM_FULL'
+            );
+            return;
+        }
+
+        // Preflight passed: release the previous room, then let the room
+        // manager perform the authoritative capacity check and insertion.
         leaveCurrentRoom();
 
         const joinRes = roomManager.joinRoom(code, socket.id);
