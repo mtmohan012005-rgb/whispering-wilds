@@ -4,6 +4,7 @@
 
 const RoomWorldState = require('./world-state');
 const config = require('./config');
+const { generateRoomCode, normalizeRoomCode } = require('./room-code');
 
 class RoomManager {
     constructor() {
@@ -12,51 +13,94 @@ class RoomManager {
     }
 
     getRoom(roomCode) {
-        return this.rooms.get(roomCode) || null;
+        const code = normalizeRoomCode(roomCode);
+        return (code && this.rooms.get(code)) || null;
     }
 
-    getOrCreateRoom(roomCode, hostSocketId, maxPlayers = config.DEFAULT_ROOM_CAP) {
-        const code = (roomCode || 'CHENNAI_EXP').trim().toUpperCase();
-        if (!this.rooms.has(code)) {
-            const cap = Math.min(config.MAX_PLAYERS_PER_ROOM, Math.max(config.MIN_PLAYERS_PER_ROOM, maxPlayers));
-            const room = {
-                code: code,
-                hostId: hostSocketId,
-                createdAt: Date.now(),
-                maxPlayers: cap,
-                players: new Set(),
-                worldState: new RoomWorldState(code)
-            };
-            this.rooms.set(code, room);
+    /**
+     * Create a room with a server-generated, collision-checked invite code.
+     * The requesting socket becomes the host and is registered immediately.
+     * Fails closed when a unique code cannot be allocated within the bounded
+     * attempt count; a code is never silently reused.
+     */
+    createRoom(hostSocketId, maxPlayers = config.DEFAULT_ROOM_CAP) {
+        const cap = Math.min(
+            config.MAX_PLAYERS_PER_ROOM,
+            Math.max(config.MIN_PLAYERS_PER_ROOM, Number.isFinite(Number(maxPlayers))
+                ? Math.floor(Number(maxPlayers))
+                : config.DEFAULT_ROOM_CAP)
+        );
+
+        const attempts = Math.max(1, config.ROOM_CODE.MAX_ALLOCATION_ATTEMPTS || 25);
+        let code = null;
+        for (let i = 0; i < attempts; i++) {
+            const candidate = generateRoomCode();
+            if (!this.rooms.has(candidate)) {
+                code = candidate;
+                break;
+            }
         }
-        return this.rooms.get(code);
+
+        if (!code) {
+            return { success: false, reason: 'Unable to allocate a unique room code. Try again.' };
+        }
+
+        const room = {
+            code: code,
+            hostId: hostSocketId,
+            createdAt: Date.now(),
+            maxPlayers: cap,
+            players: new Set([hostSocketId]),
+            worldState: new RoomWorldState(code)
+        };
+        this.rooms.set(code, room);
+
+        return { success: true, room, code };
     }
 
-    addPlayer(roomCode, socketId) {
-        const room = this.rooms.get(roomCode);
-        if (!room) return { success: false, reason: 'Room does not exist' };
+    /**
+     * Join an existing room. Never creates a room.
+     * The capacity check and insertion are performed synchronously so two
+     * concurrent joins cannot both slip past the cap.
+     */
+    joinRoom(roomCode, socketId) {
+        const code = normalizeRoomCode(roomCode);
+        if (!code) {
+            return { success: false, code: 'INVALID_ROOM_CODE', reason: 'That invite code is not valid.' };
+        }
 
-        if (room.players.size >= room.maxPlayers && !room.players.has(socketId)) {
+        const room = this.rooms.get(code);
+        if (!room) {
+            return { success: false, code: 'ROOM_NOT_FOUND', reason: 'No expedition found with that invite code.' };
+        }
+
+        if (!room.players.has(socketId) && room.players.size >= room.maxPlayers) {
             return {
                 success: false,
-                reason: `Expedition lobby is full (Max ${room.maxPlayers} players reached).`
+                code: 'ROOM_FULL',
+                reason: `Expedition lobby is full (max ${room.maxPlayers} players).`
             };
         }
 
         room.players.add(socketId);
-        return { success: true, room };
+        return { success: true, room, code };
+    }
+
+    addPlayer(roomCode, socketId) {
+        return this.joinRoom(roomCode, socketId);
     }
 
     removePlayer(roomCode, socketId) {
-        const room = this.rooms.get(roomCode);
+        const code = normalizeRoomCode(roomCode);
+        const room = code ? this.rooms.get(code) : null;
         if (!room) return null;
 
         room.players.delete(socketId);
 
         // If no players remain, clean up room
         if (room.players.size === 0) {
-            this.rooms.delete(roomCode);
-            return { disbanded: true, roomCode };
+            this.rooms.delete(code);
+            return { disbanded: true, roomCode: code };
         }
 
         // If the host left, reassign to next available explorer
@@ -76,7 +120,8 @@ class RoomManager {
     }
 
     getRoomSnapshot(roomCode, playerManager) {
-        const room = this.rooms.get(roomCode);
+        const code = normalizeRoomCode(roomCode);
+        const room = code ? this.rooms.get(code) : null;
         if (!room) return null;
 
         const playersObj = {};

@@ -14,6 +14,7 @@
     "validate": "node scripts/verify-game.js && node scripts/verify-production.js && node scripts/validate-data.js",
     "test": "node scripts/run-all-tests.js",
     "test:candidate-launcher": "node scripts/verify-candidate-launcher.js",
+    "test:room-lifecycle": "node scripts/verify-room-lifecycle.js",
     "test:map-data": "node scripts/verify-map-data.js",
     "test:data": "node scripts/validate-data.js",
     "test:backend": "node scripts/test-backend-security.js",

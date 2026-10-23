@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.Localization;
+using WhisperingWilds.Online;
 
 namespace WhisperingWilds.UI
 {
@@ -18,6 +19,7 @@ namespace WhisperingWilds.UI
         [Header("Menu Buttons")]
         [SerializeField] private Button loginButton;
         [SerializeField] private Button newGameButton;
+        [SerializeField] private Button coopButton;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button quitButton;
@@ -50,8 +52,11 @@ namespace WhisperingWilds.UI
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
+            EnsureCoopButton();
+
             if (loginButton != null) loginButton.onClick.AddListener(OnLoginClicked);
             if (newGameButton != null) newGameButton.onClick.AddListener(OnNewGameClicked);
+            if (coopButton != null) coopButton.onClick.AddListener(OnCoopClicked);
             if (continueButton != null)
             {
                 continueButton.onClick.AddListener(OnContinueClicked);
@@ -131,6 +136,7 @@ namespace WhisperingWilds.UI
         {
             SetButtonLabel(loginButton, "menu.login");
             SetButtonLabel(newGameButton, "menu.new_game");
+            SetButtonLabel(coopButton, "menu.coop");
             SetButtonLabel(continueButton, "menu.continue");
             SetButtonLabel(settingsButton, "menu.settings");
             SetButtonLabel(quitButton, "menu.quit");
@@ -194,6 +200,28 @@ namespace WhisperingWilds.UI
             label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
         }
 
+        private void EnsureCoopButton()
+        {
+            if (coopButton != null || newGameButton == null) return;
+
+            coopButton = Instantiate(newGameButton, newGameButton.transform.parent, false);
+            coopButton.name = "Button_Coop";
+            coopButton.onClick.RemoveAllListeners();
+            coopButton.onClick.AddListener(OnCoopClicked);
+            coopButton.transform.SetSiblingIndex(newGameButton.transform.GetSiblingIndex() + 1);
+
+            RectTransform container = coopButton.transform.parent as RectTransform;
+            if (container != null)
+            {
+                container.sizeDelta = new Vector2(container.sizeDelta.x, container.sizeDelta.y + 52f);
+            }
+        }
+
+        public void OnCoopClicked()
+        {
+            CoopLobbyUI.Show();
+        }
+
         public void OnLoginClicked()
         {
             if (loginUI != null)
@@ -226,6 +254,7 @@ namespace WhisperingWilds.UI
 
         private void ExecuteNewGame()
         {
+            RealtimeManager.Instance?.EnterSoloMode();
             Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> Starting New Game -> Loading Chennai George Town...");
 
             if (campaignFlow != null)
@@ -244,6 +273,7 @@ namespace WhisperingWilds.UI
 
         public void OnContinueClicked()
         {
+            RealtimeManager.Instance?.EnterSoloMode();
             if (campaignFlow != null)
             {
                 // ContinueGame returns false when the save is missing or corrupt; the player stays

@@ -4,6 +4,8 @@
 
 const config = require('./config');
 
+const roomCode = require('./room-code');
+
 const Validation = {
     /**
      * Sanitize and validate player display name.
@@ -17,13 +19,41 @@ const Validation = {
     },
 
     /**
-     * Sanitize and format room code.
+     * Normalize and validate a room code.
+     * Returns the canonical six-character code, or null when invalid.
+     * There is deliberately no fallback room: invalid input must fail closed.
      */
     sanitizeRoomCode(rawCode) {
-        if (!rawCode || typeof rawCode !== 'string') return 'CHENNAI_EXP';
-        const clean = rawCode.replace(/[^a-zA-Z0-9_-]/g, '').trim().toUpperCase();
-        if (clean.length < 3) return 'CHENNAI_EXP';
-        return clean.slice(0, 16);
+        return roomCode.normalizeRoomCode(rawCode);
+    },
+
+    isValidRoomCode(rawCode) {
+        return roomCode.isValidRoomCode(rawCode);
+    },
+
+    /**
+     * Clamp a requested room capacity to the configured allowed range.
+     */
+    clampRoomCapacity(requested) {
+        const parsed = Number(requested);
+        const fallback = config.DEFAULT_ROOM_CAP;
+        if (!Number.isFinite(parsed)) return fallback;
+        return Math.min(
+            config.MAX_PLAYERS_PER_ROOM,
+            Math.max(config.MIN_PLAYERS_PER_ROOM, Math.floor(parsed))
+        );
+    },
+
+    /**
+     * Sanitize a chat message: strip markup, collapse whitespace, trim, cap length.
+     */
+    sanitizeChatText(rawText, maxLength = 160) {
+        if (typeof rawText !== 'string') return '';
+        return rawText
+            .replace(/<[^>]*>?/gm, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, maxLength);
     },
 
     /**

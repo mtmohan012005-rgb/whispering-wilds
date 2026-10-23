@@ -1,156 +1,78 @@
 // ============================================================================
 // THE WHISPERING WILDS - SOCKET CONNECTION & EVENT HANDLERS
 // ============================================================================
+//
+// Room membership is always derived from socket.currentRoom and re-checked
+// against the authoritative room set. Client-supplied room codes on gameplay
+// events are deliberately ignored so a client cannot address another room.
+// ============================================================================
 
 const Validation = require('./validation');
 const rateLimiter = require('./rate-limiter');
 const Logger = require('./logger');
+const config = require('./config');
 
 function registerSocketHandlers(io, socket, roomManager, playerManager) {
-    const clientIp = socket.handshake.address || socket.id;
+    let leaving = false;
 
-    // 1. Join or Host Room
-    socket.on('joinRoom', (payload = {}) => {
-        const { roomCode, playerName, maxPlayers } = payload;
-        const code = Validation.sanitizeRoomCode(roomCode);
-        const name = Validation.sanitizePlayerName(playerName);
+    const getActiveRoom = () => {
+        const code = socket.currentRoom;
+        if (!code) return null;
+        const room = roomManager.getRoom(code);
+        if (!room || !room.players.has(socket.id)) return null;
+        return room;
+    };
 
-        const room = roomManager.getOrCreateRoom(code, socket.id, maxPlayers);
-        const joinRes = roomManager.addPlayer(code, socket.id);
+    const emitJoinFailure = (reason, code, message) => {
+        const payload = {
+            code,
+            reason,
+            message: message || reason
+        };
+        socket.emit('joinRejected', payload);
+        if (code === 'ROOM_NOT_FOUND') socket.emit('roomNotFound', payload);
+        if (code === 'ROOM_FULL') socket.emit('roomFull', payload);
+    };
 
-        if (!joinRes.success) {
-            socket.emit('roomFull', { message: joinRes.reason });
-            return;
-        }
+    const registerPlayerInRoom = (room, name, role) => {
+        const player = playerManager.createPlayer(socket.id, name, role, room.code);
+        socket.join(room.code);
+        socket.currentRoom = room.code;
+        return player;
+    };
 
-        const isHost = (room.hostId === socket.id);
-        const role = isHost ? 'HOST' : 'EXPLORER';
-        const player = playerManager.createPlayer(socket.id, name, role, code);
-
-        socket.join(code);
-        socket.currentRoom = code;
-
-        const snapshot = roomManager.getRoomSnapshot(code, playerManager);
-
-        socket.emit('joinedSuccess', {
-            roomCode: code,
+    const emitJoined = (room, player, isHost) => {
+        const snapshot = roomManager.getRoomSnapshot(room.code, playerManager);
+        const payload = {
+            roomCode: room.code,
             playerId: socket.id,
+            playerName: player.name,
             isHost: isHost,
-            role: role,
+            role: isHost ? 'HOST' : 'EXPLORER',
             currentPlayers: snapshot.players,
             maxPlayers: room.maxPlayers,
             worldState: snapshot.worldState
+        };
+        socket.emit('joinedSuccess', payload);
+        io.to(room.code).emit('roomRoster', {
+            roomCode: room.code,
+            hostId: room.hostId,
+            maxPlayers: room.maxPlayers,
+            playerCount: snapshot.playerCount,
+            players: snapshot.players
         });
+        return payload;
+    };
 
-        socket.to(code).emit('playerJoined', player);
-        Logger.info(`[Room ${code}] Player joined: ${name} (${role}). Active: ${snapshot.playerCount}/${room.maxPlayers}`);
-    });
-
-    // 2. Real-Time Transform Sync (Position, Rotation, Animation)
-    socket.on('playerMove', (data = {}) => {
-        const code = data.roomCode || socket.currentRoom;
-        if (!code) return;
-
-        // Rate limit movement packets
-        if (!rateLimiter.check(socket.id, 'movement', 40, 1000)) {
-            return; // Drop excess packet
-        }
-
-        const update = playerManager.updateTransform(
-            socket.id,
-            data.position,
-            data.rotationY,
-            data.currentAnim,
-            data.deltaTime
-        );
-
-        if (update && !update.error) {
-            socket.to(code).emit('playerMoved', {
-                id: socket.id,
-                position: update.player.position,
-                rotationY: update.player.rotationY,
-                currentAnim: update.player.currentAnim
-            });
-        }
-    });
-
-    // 3. Player Customization Sync (Authoritative <= 5 Limit)
-    socket.on('updateCustomization', (data = {}) => {
+    const leaveCurrentRoom = () => {
         const code = socket.currentRoom;
-        if (!code) return;
+        if (!code || leaving) return;
+        leaving = true;
 
-        const res = playerManager.updateCustomization(socket.id, data.outfit, data.changeCount);
-        if (!res.valid) {
-            socket.emit('customizationRejected', { reason: res.reason });
-            return;
-        }
-
-        socket.emit('customizationAccepted', {
-            outfit: res.player.outfit,
-            remainingChanges: res.remaining
-        });
-
-        socket.to(code).emit('playerCustomized', {
-            id: socket.id,
-            outfit: res.player.outfit
-        });
-    });
-
-    // 4. Stateful Environmental / Puzzle Mechanism Interaction
-    socket.on('interactMechanism', (data = {}) => {
-        const code = socket.currentRoom;
-        if (!code) return;
-
-        const room = roomManager.getRoom(code);
-        if (!room) return;
-
-        const updated = room.worldState.updateMechanism(data.mechanismId, data.payload || {});
-        io.to(code).emit('mechanismUpdated', {
-            mechanismId: data.mechanismId,
-            state: updated
-        });
-    });
-
-    // 5. Rate-Limited Chat Broadcast
-    socket.on('chatMessage', (data = {}) => {
-        const code = socket.currentRoom;
-        if (!code) return;
-
-        if (!rateLimiter.check(socket.id, 'chat', 5, 10000)) {
-            socket.emit('rateLimited', { message: 'Chat rate limit reached. Please wait.' });
-            return;
-        }
-
-        const player = playerManager.getPlayer(socket.id);
-        const name = player ? player.name : 'Explorer';
-        const text = String(data.text || '').replace(/<[^>]*>?/gm, '').trim().slice(0, 160);
-
-        if (text.length > 0) {
-            io.to(code).emit('chatMessage', {
-                senderId: socket.id,
-                senderName: name,
-                text: text,
-                timestamp: Date.now()
-            });
-        }
-    });
-
-    // 6. Telemetry Ping/Pong
-    socket.on('pingCheck', (clientTime) => {
-        socket.emit('pongCheck', {
-            clientTime: clientTime,
-            serverTime: Date.now()
-        });
-    });
-
-    // 7. Disconnect & Host Reassignment
-    const handleLeave = () => {
-        const code = socket.currentRoom;
-        if (!code) return;
-
-        rateLimiter.reset(socket.id);
         const player = playerManager.removePlayer(socket.id);
         const leaveRes = roomManager.removePlayer(code, socket.id);
+        socket.currentRoom = null;
+        rateLimiter.reset(socket.id);
 
         if (leaveRes) {
             if (leaveRes.disbanded) {
@@ -168,13 +90,208 @@ function registerSocketHandlers(io, socket, roomManager, playerManager) {
                     }
                 }
                 io.to(code).emit('playerLeft', { id: socket.id });
+                const snapshot = roomManager.getRoomSnapshot(code, playerManager);
+                if (snapshot) {
+                    io.to(code).emit('roomRoster', {
+                        roomCode: code,
+                        hostId: snapshot.hostId,
+                        maxPlayers: snapshot.maxPlayers,
+                        playerCount: snapshot.playerCount,
+                        players: snapshot.players
+                    });
+                }
                 Logger.info(`[Room ${code}] Player left: ${player ? player.name : socket.id}. Remaining: ${leaveRes.remainingCount}`);
             }
         }
+
+        try {
+            socket.leave(code);
+        } catch (_) {
+            // Socket may already be disconnecting; membership is already removed.
+        }
+        leaving = false;
     };
 
-    socket.on('disconnecting', handleLeave);
-    socket.on('disconnect', () => {});
+    // 1. Create a room. The invite code is always generated by the server.
+    socket.on('createRoom', (rawPayload = {}) => {
+        const payload = rawPayload && typeof rawPayload === 'object' ? rawPayload : {};
+        if (!rateLimiter.check(socket.id, 'room', 5, 10000)) {
+            emitJoinFailure('Too many room attempts. Please wait.', 'RATE_LIMITED');
+            return;
+        }
+
+        leaveCurrentRoom();
+
+        const name = Validation.sanitizePlayerName(payload.playerName);
+        const maxPlayers = Validation.clampRoomCapacity(payload.maxPlayers);
+        const result = roomManager.createRoom(socket.id, maxPlayers);
+
+        if (!result.success) {
+            socket.emit('roomCreationFailed', { reason: result.reason });
+            return;
+        }
+
+        const player = registerPlayerInRoom(result.room, name, 'HOST');
+        const joined = emitJoined(result.room, player, true);
+        socket.emit('roomCreated', { roomCode: joined.roomCode });
+        Logger.info(`[Room ${joined.roomCode}] Created by ${name}. Max: ${result.room.maxPlayers}`);
+    });
+
+    // 2. Join an existing room. Never creates one.
+    socket.on('joinRoom', (rawPayload = {}) => {
+        const payload = rawPayload && typeof rawPayload === 'object' ? rawPayload : {};
+        if (!rateLimiter.check(socket.id, 'room', 5, 10000)) {
+            emitJoinFailure('Too many room attempts. Please wait.', 'RATE_LIMITED');
+            return;
+        }
+
+        const code = Validation.sanitizeRoomCode(payload.roomCode);
+        if (!code) {
+            emitJoinFailure('Enter the six-character invite code.', 'INVALID_ROOM_CODE');
+            return;
+        }
+
+        if (socket.currentRoom === code) {
+            const existingRoom = roomManager.getRoom(code);
+            const existingPlayer = playerManager.getPlayer(socket.id);
+            if (existingRoom && existingPlayer) {
+                emitJoined(existingRoom, existingPlayer, existingRoom.hostId === socket.id);
+                return;
+            }
+        }
+
+        leaveCurrentRoom();
+
+        const joinRes = roomManager.joinRoom(code, socket.id);
+        if (!joinRes.success) {
+            emitJoinFailure(joinRes.reason, joinRes.code);
+            return;
+        }
+
+        const name = Validation.sanitizePlayerName(payload.playerName);
+        const isHost = joinRes.room.hostId === socket.id;
+        const player = registerPlayerInRoom(joinRes.room, name, isHost ? 'HOST' : 'EXPLORER');
+        emitJoined(joinRes.room, player, isHost);
+
+        socket.to(code).emit('playerJoined', player);
+        Logger.info(`[Room ${code}] Player joined: ${name} (${player.role}). Active: ${joinRes.room.players.size}/${joinRes.room.maxPlayers}`);
+    });
+
+    // 3. Explicit leave (menu / lobby exit).
+    socket.on('leaveRoom', () => {
+        leaveCurrentRoom();
+        socket.emit('leftRoom');
+    });
+
+    // 4. Real-Time Transform Sync (Position, Rotation, Animation).
+    // The room is authoritative: a client cannot redirect updates by supplying
+    // a different roomCode in the payload.
+    socket.on('playerMove', (data = {}) => {
+        const room = getActiveRoom();
+        if (!room) return;
+
+        if (!rateLimiter.check(socket.id, 'movement', 40, 1000)) {
+            return;
+        }
+
+        const update = playerManager.updateTransform(
+            socket.id,
+            data.position,
+            data.rotationY,
+            data.currentAnim,
+            data.deltaTime
+        );
+
+        if (update && !update.error) {
+            socket.to(room.code).emit('playerMoved', {
+                id: socket.id,
+                position: update.player.position,
+                rotationY: update.player.rotationY,
+                currentAnim: update.player.currentAnim
+            });
+        }
+    });
+
+    // 5. Player Customization Sync (Authoritative <= 5 Limit).
+    socket.on('updateCustomization', (data = {}) => {
+        const room = getActiveRoom();
+        if (!room) return;
+
+        const res = playerManager.updateCustomization(socket.id, data.outfit, data.changeCount);
+        if (!res.valid) {
+            socket.emit('customizationRejected', { reason: res.reason });
+            return;
+        }
+
+        socket.emit('customizationAccepted', {
+            outfit: res.player.outfit,
+            remainingChanges: res.remaining
+        });
+
+        socket.to(room.code).emit('playerCustomized', {
+            id: socket.id,
+            outfit: res.player.outfit
+        });
+    });
+
+    // 6. Stateful Environmental / Puzzle Mechanism Interaction.
+    socket.on('interactMechanism', (data = {}) => {
+        const room = getActiveRoom();
+        if (!room) return;
+
+        if (!rateLimiter.check(socket.id, 'mechanism', 10, 1000)) {
+            return;
+        }
+
+        const result = room.worldState.updateMechanism(data.mechanismId, data.payload || {});
+        if (!result.valid) {
+            socket.emit('mechanismRejected', { reason: result.reason });
+            return;
+        }
+
+        io.to(room.code).emit('mechanismUpdated', {
+            mechanismId: data.mechanismId,
+            state: result.state
+        });
+    });
+
+    // 7. Rate-Limited Chat Broadcast.
+    socket.on('chatMessage', (data = {}) => {
+        const room = getActiveRoom();
+        if (!room) return;
+
+        if (!rateLimiter.check(socket.id, 'chat', 5, 10000)) {
+            socket.emit('rateLimited', { message: 'Chat rate limit reached. Please wait.' });
+            return;
+        }
+
+        const player = playerManager.getPlayer(socket.id);
+        const name = player ? player.name : 'Explorer';
+        const text = Validation.sanitizeChatText(data.text, 160);
+
+        if (text.length > 0) {
+            io.to(room.code).emit('chatMessage', {
+                senderId: socket.id,
+                senderName: name,
+                text: text,
+                timestamp: Date.now()
+            });
+        }
+    });
+
+    // 8. Telemetry Ping/Pong.
+    socket.on('pingCheck', (clientTime) => {
+        socket.emit('pongCheck', {
+            clientTime: clientTime,
+            serverTime: Date.now()
+        });
+    });
+
+    // 9. Disconnect & Host Reassignment.
+    socket.on('disconnecting', leaveCurrentRoom);
+    socket.on('disconnect', () => {
+        if (socket.currentRoom) leaveCurrentRoom();
+    });
 }
 
 module.exports = { registerSocketHandlers };
