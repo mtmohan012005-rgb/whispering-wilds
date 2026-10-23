@@ -65,6 +65,22 @@ function once(socket, event, timeoutMs = 3000) {
     });
 }
 
+function onceMatching(socket, event, predicate, timeoutMs = 3000) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            socket.off(event, handler);
+            reject(new Error(`Timed out waiting for matching "${event}"`));
+        }, timeoutMs);
+        const handler = (payload) => {
+            if (!predicate(payload)) return;
+            clearTimeout(timer);
+            socket.off(event, handler);
+            resolve(payload);
+        };
+        socket.on(event, handler);
+    });
+}
+
 function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -151,6 +167,71 @@ async function testInvalidAndMissingRooms() {
     const legacy = once(legacySocket, 'joinRejected');
     legacySocket.emit('joinRoom', { roomCode: 'CHENNAI_EXP', playerName: 'Nope' });
     check((await legacy).code === 'INVALID_ROOM_CODE', 'legacy fallback code rejected');
+}
+
+async function testFailedJoinPreservesMembership() {
+    console.log('\n[Test] Failed joins preserve existing room membership');
+    const a1 = await connectClient();
+    const a2 = await connectClient();
+    const roomA = await createRoom(a1, 'KeepA1', 5);
+    // Consume the roster update caused by the successful join so later
+    // assertions only observe churn from the rejected switch attempts.
+    const initialRoster = onceMatching(a1, 'roomRoster', (payload) => payload.playerCount === 2);
+    await joinRoom(a2, roomA.roomCode, 'KeepA2');
+    await initialRoster;
+
+    // A rejected switch must not evict the player or notify the old room.
+    let oldRoomLeaveEvents = 0;
+    let oldRoomRosterEvents = 0;
+    const onOldRoomLeave = () => { oldRoomLeaveEvents++; };
+    const onOldRoomRoster = () => { oldRoomRosterEvents++; };
+    a1.on('playerLeft', onOldRoomLeave);
+    a1.on('roomRoster', onOldRoomRoster);
+
+    const notFound = once(a2, 'joinRejected');
+    a2.emit('joinRoom', { roomCode: 'ZZZZZZ', playerName: 'KeepA2' });
+    check((await notFound).code === 'ROOM_NOT_FOUND', 'missing code rejected');
+
+    const peerMove = once(a1, 'playerMoved');
+    a2.emit('playerMove', {
+        position: { x: -249.5, y: 0, z: 0.5 },
+        rotationY: 45,
+        currentAnim: 'walk'
+    });
+    check((await peerMove).id === a2.id, 'ROOM_NOT_FOUND keeps player in original room');
+
+    const bHost = await connectClient();
+    const roomB = await createRoom(bHost, 'FullB1', 5);
+    for (let i = 2; i <= 5; i++) {
+        const member = await connectClient();
+        await joinRoom(member, roomB.roomCode, `FullB${i}`);
+    }
+
+    let leaked = false;
+    bHost.on('playerMoved', (payload) => {
+        if (payload && payload.id === a2.id) leaked = true;
+    });
+
+    const fullRejected = once(a2, 'joinRejected');
+    a2.emit('joinRoom', { roomCode: roomB.roomCode, playerName: 'KeepA2' });
+    check((await fullRejected).code === 'ROOM_FULL', 'full room rejected');
+
+    const peerMoveAgain = once(a1, 'playerMoved');
+    a2.emit('playerMove', {
+        position: { x: -249, y: 0, z: 0.5 },
+        rotationY: 60,
+        currentAnim: 'walk'
+    });
+    check((await peerMoveAgain).id === a2.id, 'ROOM_FULL keeps player in original room');
+
+    await delay(250);
+    check(leaked === false, 'rejected player never leaks movement into the full room');
+    check(oldRoomLeaveEvents === 0, 'failed joins emit no playerLeft in the original room');
+    check(oldRoomRosterEvents === 0, 'failed joins emit no roster churn in the original room');
+    check(a2.connected === true, 'player stays connected after both failed joins');
+
+    a1.off('playerLeft', onOldRoomLeave);
+    a1.off('roomRoster', onOldRoomRoster);
 }
 
 async function testCapacity() {
@@ -279,6 +360,7 @@ async function main() {
         await testCodeFormat();
         await testCreateAndJoin();
         await testInvalidAndMissingRooms();
+        await testFailedJoinPreservesMembership();
         await testCapacity();
         await testRoomIsolation();
         await testHostReassignmentAndCleanup();
