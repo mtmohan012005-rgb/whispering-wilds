@@ -764,7 +764,9 @@ if %ERRORLEVEL% neq 0 (
     fs.writeFileSync(path.join(tamperedDest, 'Play-Candidate.bat'), batContent);
 
     try {
-      execFileSync('cmd.exe', ['/c', 'Play-Candidate.bat'], {
+      // Use an explicit relative path: when NoDefaultCurrentDirectoryInExePath=1 is set in the
+      // environment, cmd.exe will not resolve a bare 'Play-Candidate.bat' from the working directory.
+      execFileSync('cmd.exe', ['/c', '.\\Play-Candidate.bat'], {
         cwd: tamperedDest,
         encoding: 'utf8',
         stdio: ['pipe', 'pipe', 'pipe']
