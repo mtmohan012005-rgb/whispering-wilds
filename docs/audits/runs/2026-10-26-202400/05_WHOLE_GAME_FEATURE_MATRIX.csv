@@ -1,0 +1,13 @@
+Module,FeatureName,Status,VerificationType,UserImpact,TestCoverage,EvidenceSource
+Core,Game Boot & Scene Loader,PASS — runtime verified,Runtime In-Engine,Player can start game smoothly,13 build scenes tested,00_Boot.unity
+Core,Settings & Performance Presets,PASS — runtime verified,Runtime Benchmark,Low/Medium/High/Ultra tier scaling,DisplaySettingsManager & QualityPresetManager,Player.log
+Player,Locomotion & Controller,PASS — runtime verified,Runtime In-Engine,Walk/Run/Sprint/Crouch locomotion,34 PlayMode test cases,PlayerMovement.cs
+Investigation,Temple Folklore Puzzle,PASS — runtime verified,Runtime In-Engine,Three-dial sequence and door trigger,TempleFolklorePuzzleController tests,08_Ancient_Temple_Ruins.unity
+Investigation,Artifact Collection & Ledger,PASS — runtime verified,Runtime In-Engine,Kaveri Star Seal pickup & journal update,HiddenArtifactPickup tests,AncientTempleLevelController.cs
+World,Tamil Nadu State Map,PASS — runtime verified,Automated In-Engine,Accurate coordinates & campaign hubs,TamilNaduMapVerificationTests (11 cases),01_StateMap_TamilNadu.unity
+Audio,3D Positional Audio & Mix,PASS — automated verified,In-Engine Audio Audit,Positional falloff and mixing active,10 physical WAVs tested,AudioManager.cs
+Audio,Authentic Field Recordings,PARTIAL,Physical Asset Audit,Placeholder sine tones in use for dev,Manifest catalogued as PLACEHOLDER,AUDIO_LICENSE_MANIFEST.json
+Online,Local Co-op Room Lifecycle,PASS — automated verified,Automated Suite,Invite codes & room join/leave lifecycle,46 unit assertions passing,verify-room-lifecycle.js
+Online,Backend Security & CSRF,PASS — automated verified,Automated Suite,Input sanitization & rate limits,34 security assertions passing,test-backend-security.js
+Online,Cloud Save Regression,PASS — automated verified,Automated Suite,Save serialization & backup recovery,20 assertions passing (2 live skipped),test-cloud-save-regression.js
+Release,Candidate Launcher & Safety,PASS — automated verified,Automated Suite,Archive validation & execution safety,85 regression assertions passing,verify-candidate-launcher.js
