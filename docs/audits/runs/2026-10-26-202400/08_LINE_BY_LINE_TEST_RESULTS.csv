@@ -1,0 +1,12 @@
+TestId,Suite,MethodOrCaseName,Environment,ExitCode,Result,Duration,EvidencePath
+T01,Unity EditMode,CampaignProgressionTests,Windows 11 / Unity 6000.6.3f1,0,PASS,0.22s,artifacts/qa/20261026-202400-master-audit/test_results_EditMode_20261026_202355.xml
+T02,Unity EditMode,SaveSystemTests,Windows 11 / Unity 6000.6.3f1,0,PASS,0.18s,artifacts/qa/20261026-202400-master-audit/test_results_EditMode_20261026_202355.xml
+T03,Unity EditMode,TamilNaduMapVerificationTests,Windows 11 / Unity 6000.6.3f1,0,PASS,0.31s,artifacts/qa/20261026-202400-master-audit/test_results_EditMode_20261026_202355.xml
+T04,Unity PlayMode,PlayerMovementPlayModeTests,Windows 11 / Unity 6000.6.3f1,0,PASS,0.28s,artifacts/qa/20261026-202400-master-audit/test_results_PlayMode_20261026_202812.xml
+T05,Unity PlayMode,TemplePuzzlePlayModeTests,Windows 11 / Unity 6000.6.3f1,0,PASS,0.15s,artifacts/qa/20261026-202400-master-audit/test_results_PlayMode_20261026_202812.xml
+T06,Backend,BackendSecurityTests (34 cases),Node.js v24.19.0,0,PASS,0.85s,task logs (npm test)
+T07,CloudSave,CloudSaveRegression (20 pass / 2 skipped),Node.js v24.19.0,0,PASS (2 Skipped),0.92s,task logs (npm test)
+T08,Launcher,CandidateLauncherProvenance (85 cases),Windows PowerShell,0,PASS,12.5s,task logs (npm run test:candidate-launcher)
+T09,MapData,TamilNaduGISVerification (37 checks),Node.js v24.19.0,0,PASS,0.35s,task logs (npm run test:map-data)
+T10,RoomLifecycle,RoomLifecycleTests (46 assertions),Node.js v24.19.0,0,PASS,1.10s,task logs (npm test)
+T11,AuditReconciliation,AuditEvidenceIntegrity (70 checks),Node.js v24.19.0,0,PASS,0.40s,artifacts/whole-game-audit/test-results.json

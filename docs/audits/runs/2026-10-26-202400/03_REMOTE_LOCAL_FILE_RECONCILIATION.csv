@@ -1,0 +1,13 @@
+Path,RemoteStatus,LocalStatus,Classification,ActionRequired,Notes
+.github/workflows/backend-ci.yml,Tracked,Tracked,Same content,None,Valid CI configuration
+.github/workflows/unity-validation.yml,Tracked,Tracked,Same content,None,Valid CI configuration
+.github/workflows/pages.yml,Tracked,Tracked,Same content,None,Static GitHub pages deploy
+scripts/verify-candidate-launcher.js,Tracked,Tracked,Same content,None,Updated with explicit .\Play-Candidate.bat path in PR #27
+reports/production-3d-asset-report.json,Tracked,Tracked,Same content,None,Updated with 43 textures in PR #27
+reports/production-3d-asset-report.md,Tracked,Tracked,Same content,None,Updated with 43 textures in PR #27
+BuildOutput/,Ignored,Present on disk,Generated/cache/build-only,Preserve,Local standalone build output
+unity/Assets/_Recovery/,Ignored,Present on disk,Local recovery backups,Preserve,User recovery scenes
+unity/Library/,Ignored,Present on disk,Generated Unity cache,Preserve local only,Do not stage to Git
+node_modules/,Ignored,Present on disk,Generated npm dependencies,Preserve local only,Do not stage to Git
+server/data/auth_database.json,Tracked,Tracked,Same content,None,Clean production database without test user clutter
+unity/ProjectSettings/EditorBuildSettings.asset,Tracked,Tracked,Same content,None,13 build scenes configured cleanly
