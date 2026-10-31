@@ -31,6 +31,7 @@ namespace WhisperingWilds.UI
 
         [Header("Navigation")]
         [SerializeField] private Button backButton;
+        [SerializeField] private Button guestButton;
         [SerializeField] private Button switchToRegisterButton;
         [SerializeField] private Button switchToSignInButton;
 
@@ -76,6 +77,7 @@ namespace WhisperingWilds.UI
 
         private UnityAction _signInClick;
         private UnityAction _backClick;
+        private UnityAction _guestClick;
         private UnityAction _switchToRegisterClick;
         private UnityAction _switchToSignInClick;
         private UnityAction _registerClick;
@@ -85,6 +87,7 @@ namespace WhisperingWilds.UI
         {
             _signInClick = OnSignInClicked;
             _backClick = OnBackClicked;
+            _guestClick = OnGuestClicked;
             _switchToRegisterClick = OnSwitchToRegisterClicked;
             _switchToSignInClick = OnSwitchToSignInClicked;
             _registerClick = OnRegisterClicked;
@@ -92,6 +95,7 @@ namespace WhisperingWilds.UI
 
             if (signInButton != null) signInButton.onClick.AddListener(_signInClick);
             if (backButton != null) backButton.onClick.AddListener(_backClick);
+            if (guestButton != null) guestButton.onClick.AddListener(_guestClick);
             if (switchToRegisterButton != null) switchToRegisterButton.onClick.AddListener(_switchToRegisterClick);
             if (switchToSignInButton != null) switchToSignInButton.onClick.AddListener(_switchToSignInClick);
             if (registerButton != null) registerButton.onClick.AddListener(_registerClick);
@@ -102,6 +106,7 @@ namespace WhisperingWilds.UI
         {
             if (signInButton != null) signInButton.onClick.RemoveListener(_signInClick);
             if (backButton != null) backButton.onClick.RemoveListener(_backClick);
+            if (guestButton != null) guestButton.onClick.RemoveListener(_guestClick);
             if (switchToRegisterButton != null) switchToRegisterButton.onClick.RemoveListener(_switchToRegisterClick);
             if (switchToSignInButton != null) switchToSignInButton.onClick.RemoveListener(_switchToSignInClick);
             if (registerButton != null) registerButton.onClick.RemoveListener(_registerClick);
@@ -292,6 +297,13 @@ namespace WhisperingWilds.UI
             }
         }
 
+                public void OnGuestClicked()
+        {
+            Debug.Log("<color=#00D2FF><b>[LoginUI]</b></color> Continuing in Guest / Play Offline mode.");
+            SetVisible(false);
+            OnBackToMenu?.Invoke();
+        }
+
         private void OnBackClicked()
         {
             ClearFields();
@@ -344,6 +356,7 @@ namespace WhisperingWilds.UI
 
             SetButtonText(signInButton, "login.sign_in");
             SetButtonText(backButton, "login.back");
+            SetButtonText(guestButton, "menu.guest");
             SetButtonText(switchToRegisterButton, "login.no_account");
             SetButtonText(switchToSignInButton, "login.have_account");
             SetButtonText(registerButton, "login.create_account");

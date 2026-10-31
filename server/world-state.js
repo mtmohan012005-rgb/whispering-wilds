@@ -32,6 +32,19 @@ const MECHANISM_RULES = {
     campfire: {
         lit: asBoolean,
         fuelLevel: asNumberInRange(0, 100)
+    },
+    temple_folklore: {
+        dial0: asIntInRange(0, 2),
+        dial1: asIntInRange(0, 2),
+        dial2: asIntInRange(0, 2)
+    },
+    navagraha_shadow: {
+        pedestal0Angle: asNumberInRange(0, 360),
+        pedestal1Angle: asNumberInRange(0, 360),
+        pedestal2Angle: asNumberInRange(0, 360)
+    },
+    acoustic_pillar: {
+        struckPillar: asIntInRange(0, 4)
     }
 };
 
@@ -57,6 +70,23 @@ class RoomWorldState {
                 campfire: {
                     lit: false,
                     fuelLevel: 0
+                },
+                temple_folklore: {
+                    dial0: 0,
+                    dial1: 0,
+                    dial2: 0,
+                    solved: false
+                },
+                navagraha_shadow: {
+                    pedestal0Angle: 0,
+                    pedestal1Angle: 0,
+                    pedestal2Angle: 0,
+                    solved: false
+                },
+                acoustic_pillar: {
+                    currentStep: 0,
+                    lastStruck: -1,
+                    solved: false
                 }
             },
             unlockedRegions: ['chennai'],
@@ -111,6 +141,32 @@ class RoomWorldState {
             if (ww.dialA === 3 && ww.dialB === 2 && ww.dialC === 4) {
                 ww.sluiceOpen = true;
                 ww.solved = true;
+            }
+        } else if (mechanismId === 'temple_folklore') {
+            const tf = this.state.mechanisms.temple_folklore;
+            if (tf.dial0 === 0 && tf.dial1 === 2 && tf.dial2 === 1) {
+                tf.solved = true;
+            }
+        } else if (mechanismId === 'navagraha_shadow') {
+            const ns = this.state.mechanisms.navagraha_shadow;
+            const d0 = Math.abs((ns.pedestal0Angle % 360) - 45);
+            const d1 = Math.abs((ns.pedestal1Angle % 360) - 90);
+            const d2 = Math.abs((ns.pedestal2Angle % 360) - 135);
+            if (d0 <= 5 && d1 <= 5 && d2 <= 5) {
+                ns.solved = true;
+            }
+        } else if (mechanismId === 'acoustic_pillar') {
+            const ap = this.state.mechanisms.acoustic_pillar;
+            const expectedSequence = [0, 2, 3, 1, 4];
+            if (accepted.struckPillar === expectedSequence[ap.currentStep]) {
+                ap.currentStep++;
+                ap.lastStruck = accepted.struckPillar;
+                if (ap.currentStep >= expectedSequence.length) {
+                    ap.solved = true;
+                }
+            } else {
+                ap.currentStep = (accepted.struckPillar === expectedSequence[0]) ? 1 : 0;
+                ap.lastStruck = accepted.struckPillar;
             }
         }
         return { valid: true, state: this.state.mechanisms[mechanismId] };

@@ -1,0 +1,12 @@
+flowchart TD
+    A["M0 — Lock baseline, release hashes and branch safety"] --> B["M1 — Import, compile, GUID and asset integrity"]
+    B --> C["M2 — Verify core loop: boot → explore → clues → save/load"]
+    C --> D["M3 — Verify character rigs and NPC interactions"]
+    D --> E["M4 — Verify Tamil Nadu map, six hubs and unlock gates"]
+    E --> F["M5 — Verify quests, weather, wildlife, inventory and localization"]
+    F --> G["M6 — Verify audio provenance, cloud security and multiplayer"]
+    G --> H["M7 — Build Windows candidate and verify archive hashes"]
+    H --> I["M8 — Human full-campaign acceptance walkthrough"]
+    I --> J{"M9 — Release decision"}
+    J -->|All gates pass| K["Production release (v1.0.1)"]
+    J -->|Evidence or external blockers remain| L["Gated candidate; fix and re-test"]
