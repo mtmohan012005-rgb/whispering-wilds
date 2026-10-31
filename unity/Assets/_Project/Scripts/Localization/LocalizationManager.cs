@@ -56,6 +56,18 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("menu.new_game_confirm", "Starting a New Game will erase your current save and progress. Continue?",
                                                         "புதிய விளையாட்டு தொடங்குதலுந் உம்க் தற்போதிக் சேவ் மற்றும் முன்னேற்வை நீக்கிடும். தொடரவா?"),
             new LocalizationEntry("menu.coop",            "Co-op Expedition",     "கூட்டுப் பயணம்"),
+            new LocalizationEntry("menu.saved_games",     "Load Game",            "விளையாட்டை ஏற்று"),
+            new LocalizationEntry("menu.load_game",       "Load Game",            "விளையாட்டை ஏற்று"),
+            new LocalizationEntry("menu.exit_game",       "Exit Game",            "வெளியேறு"),
+            new LocalizationEntry("menu.credits",         "Credits",              "பங்களிப்பாளர்கள்"),
+            new LocalizationEntry("menu.guest",           "Play Offline / Guest", "விருந்தினராக தொடரவும்"),
+            new LocalizationEntry("saved_games.title",    "Saved Campaigns",      "சேமிக்கப்பட்ட பயணங்கள்"),
+            new LocalizationEntry("saved_games.no_saves", "No saved campaigns found.", "சேமிக்கப்பட்ட பயணங்கள் ஏதுமில்லை."),
+            new LocalizationEntry("saved_games.current_region", "Current Region", "தற்போதைய பகுதி"),
+            new LocalizationEntry("saved_games.saved_on", "Saved",                "சேமிக்கப்பட்ட நேரம்"),
+            new LocalizationEntry("saved_games.clues_found", "Clues Discovered",  "கண்டறியப்பட்ட குறிப்புகள்"),
+            new LocalizationEntry("saved_games.quests_done", "Quests Completed",  "முடிக்கப்பட்ட பணிகள்"),
+            new LocalizationEntry("credits.title",        "Credits & Heritage Acknowledgements", "பங்களிப்பாளர்கள் & கலாச்சார நன்றிகள்"),
 
             // ---- Co-op lobby -------------------------------------------------
             new LocalizationEntry("coop.title",           "Co-op Expedition",     "கூட்டுப் பயணம்"),

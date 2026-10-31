@@ -22,6 +22,12 @@ namespace WhisperingWilds.World
         [Tooltip("The folklore puzzle controller for this temple.")]
         public TempleFolklorePuzzleController puzzleController;
 
+        [Tooltip("The astronomical sunlight alignment puzzle in the courtyard.")]
+        public NavagrahaShadowPuzzle navagrahaPuzzle;
+
+        [Tooltip("The Dravidian acoustic musical resonance pillar puzzle in the mandapa.")]
+        public AcousticPillarPuzzle acousticPuzzle;
+
         [Tooltip("The hidden artifact pickup component.")]
         public HiddenArtifactPickup artifactPickup;
 
@@ -59,6 +65,20 @@ namespace WhisperingWilds.World
                 puzzleController.Initialize();
             }
 
+            // Initialize Navagraha solar puzzle if present
+            if (navagrahaPuzzle != null)
+            {
+                navagrahaPuzzle.Initialize();
+                navagrahaPuzzle.OnNavagrahaSolved += CheckAllChambersUnlocked;
+            }
+
+            // Initialize Acoustic musical pillar puzzle if present
+            if (acousticPuzzle != null)
+            {
+                acousticPuzzle.Initialize();
+                acousticPuzzle.OnAcousticSolved += CheckAllChambersUnlocked;
+            }
+
             // Initialize artifact pickup if reference exists
             if (artifactPickup != null)
             {
@@ -71,11 +91,22 @@ namespace WhisperingWilds.World
                 AudioManager.Instance.PlayAmbient(templeAmbienceClip);
             }
 
+            // Register co-op multiplayer mechanism listeners
+            if (WhisperingWilds.Online.RealtimeManager.Instance != null)
+            {
+                WhisperingWilds.Online.RealtimeManager.Instance.OnMechanismUpdated += HandleRemoteMechanismUpdate;
+            }
+
             Debug.Log($"[AncientTemple] Level initialized. Puzzle completed: {_puzzleCompleted}, Artifact collected: {_artifactCollected}");
         }
 
         private void OnDestroy()
         {
+            if (WhisperingWilds.Online.RealtimeManager.Instance != null)
+            {
+                WhisperingWilds.Online.RealtimeManager.Instance.OnMechanismUpdated -= HandleRemoteMechanismUpdate;
+            }
+
             // Stop ambience when leaving the scene
             if (AudioManager.Instance != null)
             {
@@ -142,6 +173,23 @@ namespace WhisperingWilds.World
         public bool IsPuzzleCompleted() => _puzzleCompleted;
         public bool IsArtifactCollected() => _artifactCollected;
 
+        public bool AreAllTemplePuzzlesSolved()
+        {
+            bool folkloreOk = _puzzleCompleted || (puzzleController == null || puzzleController.IsPuzzleCompleted());
+            bool solarOk = (navagrahaPuzzle == null || navagrahaPuzzle.IsSolved());
+            bool acousticOk = (acousticPuzzle == null || acousticPuzzle.IsSolved());
+            return folkloreOk && solarOk && acousticOk;
+        }
+
+        private void CheckAllChambersUnlocked()
+        {
+            if (AreAllTemplePuzzlesSolved())
+            {
+                Debug.Log("[AncientTemple] All three Dravidian temple puzzle chambers solved! Unlocking inner garbhagriha.");
+                OpenHiddenChamber();
+            }
+        }
+
         /// <summary>
         /// Opens the hidden chamber door when the puzzle is solved.
         /// Called by TempleFolklorePuzzleController after correct solution.
@@ -156,6 +204,45 @@ namespace WhisperingWilds.World
             else
             {
                 Debug.LogWarning("[AncientTemple] hiddenChamberDoor reference is null — door cannot open.");
+            }
+        }
+
+        private void HandleRemoteMechanismUpdate(string mechanismId, System.Collections.Generic.Dictionary<string, object> state)
+        {
+            if (state == null) return;
+
+            bool solved = WhisperingWilds.Online.MiniJson.GetBool(state, "solved", false);
+            if (solved)
+            {
+                if (mechanismId == "temple_folklore")
+                {
+                    OnPuzzleCompleted();
+                }
+                else if (mechanismId == "navagraha_shadow" && navagrahaPuzzle != null && !navagrahaPuzzle.IsSolved())
+                {
+                    navagrahaPuzzle.SetPedestalAngle(0, 45);
+                    navagrahaPuzzle.SetPedestalAngle(1, 90);
+                    navagrahaPuzzle.SetPedestalAngle(2, 135);
+                    navagrahaPuzzle.CheckAlignment();
+                }
+                else if (mechanismId == "acoustic_pillar" && acousticPuzzle != null && !acousticPuzzle.IsSolved())
+                {
+                    acousticPuzzle.StrikePillar(0);
+                    acousticPuzzle.StrikePillar(2);
+                    acousticPuzzle.StrikePillar(3);
+                    acousticPuzzle.StrikePillar(1);
+                    acousticPuzzle.StrikePillar(4);
+                }
+                CheckAllChambersUnlocked();
+            }
+        }
+
+        public void BroadcastMechanismInteraction(string mechanismId, System.Collections.Generic.Dictionary<string, object> payload)
+        {
+            if (WhisperingWilds.Online.RealtimeManager.Instance != null &&
+                WhisperingWilds.Online.RealtimeManager.Instance.IsConnected)
+            {
+                WhisperingWilds.Online.RealtimeManager.Instance.SendMechanismInteraction(mechanismId, payload);
             }
         }
     }

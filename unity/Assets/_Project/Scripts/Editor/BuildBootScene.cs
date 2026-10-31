@@ -226,6 +226,24 @@ namespace WhisperingWilds.Editor
                 menuRootRect.offsetMin = Vector2.zero;
                 menuRootRect.offsetMax = Vector2.zero;
 
+                // App Logo above Game Title
+                var logoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
+                if (logoSprite != null)
+                {
+                    var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
+                    logoObj.transform.SetParent(menuRoot.transform, false);
+                    var logoRect = logoObj.GetComponent<RectTransform>();
+                    logoRect.anchorMin = new Vector2(0.5f, 0.88f);
+                    logoRect.anchorMax = new Vector2(0.5f, 0.88f);
+                    logoRect.pivot = new Vector2(0.5f, 0.5f);
+                    logoRect.anchoredPosition = Vector2.zero;
+                    logoRect.sizeDelta = new Vector2(120f, 120f);
+                    var logoImg = logoObj.GetComponent<Image>();
+                    logoImg.sprite = logoSprite;
+                    logoImg.preserveAspect = true;
+                    logoImg.raycastTarget = false;
+                }
+
                 // Game Title & Tamil Subtitle — STEP 71: Centered in upper half of screen
                 var titleObj = CreateText("GameTitle", menuRoot.transform, new Vector2(0f, 0.72f), new Vector2(1f, 0.72f), Vector2.zero, new Vector2(1400, 100), font, 56, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
                 var titleText = titleObj.GetComponent<Text>();
@@ -246,7 +264,7 @@ namespace WhisperingWilds.Editor
                 menuRect.anchorMax = new Vector2(0.5f, 0.5f);
                 menuRect.pivot = new Vector2(0.5f, 0.5f);
                 menuRect.anchoredPosition = new Vector2(0f, -40f);
-                menuRect.sizeDelta = new Vector2(320, 240);
+                menuRect.sizeDelta = new Vector2(340, 360);
 
                 var layout = menuContainer.GetComponent<VerticalLayoutGroup>();
                 layout.spacing = 12f;
@@ -492,6 +510,7 @@ namespace WhisperingWilds.Editor
                 serializedLoginUI.FindProperty("registerButton").objectReferenceValue = registerBtn.GetComponent<Button>();
                 serializedLoginUI.FindProperty("registerStatusText").objectReferenceValue = regStatus.GetComponent<Text>();
                 serializedLoginUI.FindProperty("backButton").objectReferenceValue = backBtn.GetComponent<Button>();
+                serializedLoginUI.FindProperty("guestButton").objectReferenceValue = guestBtn.GetComponent<Button>();
                 serializedLoginUI.FindProperty("switchToRegisterButton").objectReferenceValue = switchToRegBtn.GetComponent<Button>();
                 serializedLoginUI.FindProperty("switchToSignInButton").objectReferenceValue = switchToSignInBtn.GetComponent<Button>();
                 serializedLoginUI.FindProperty("signedInLabel").objectReferenceValue = signedInLabel.GetComponent<Text>();
@@ -514,6 +533,11 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
                 serializedTitle.FindProperty("mainMenuAnimator").objectReferenceValue = menuAnimator;
+                var ambientClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Ambience/temple_ambience.wav");
+                if (ambientClip != null)
+                {
+                    serializedTitle.FindProperty("menuAmbienceClip").objectReferenceValue = ambientClip;
+                }
                 serializedTitle.ApplyModifiedProperties();
 
                 // Save Boot Scene
@@ -1206,4 +1230,129 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             if (managersObj.GetComponent<WhisperingWilds.QA.RuntimeEcologyAcceptanceTest>() == null) managersObj.AddComponent<WhisperingWilds.QA.RuntimeEcologyAcceptanceTest>();
         }
     }
+
+        private static GameObject BuildSavedGamesPanel(Transform parent, Font font)
+        {
+            var root = new GameObject("SavedGamesPanel", typeof(RectTransform), typeof(Image));
+            root.transform.SetParent(parent, false);
+            var rect = root.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var bg = root.GetComponent<Image>();
+            bg.color = new Color(0.04f, 0.06f, 0.08f, 0.97f);
+
+            var ui = root.AddComponent<SavedGamesUI>();
+
+            var title = CreateText("Title", root.transform,
+                new Vector2(0.5f, 0.85f), new Vector2(0.5f, 0.85f), Vector2.zero, new Vector2(600f, 50f),
+                font, 28, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+
+            var noSave = CreateText("NoSaveText", root.transform,
+                new Vector2(0.5f, 0.55f), new Vector2(0.5f, 0.55f), Vector2.zero, new Vector2(600f, 60f),
+                font, 20, TextAnchor.MiddleCenter, new Color(0.7f, 0.75f, 0.8f));
+
+            var card = new GameObject("SaveCard", typeof(RectTransform), typeof(Image));
+            card.transform.SetParent(root.transform, false);
+            var cardRect = card.GetComponent<RectTransform>();
+            cardRect.anchorMin = new Vector2(0.5f, 0.55f);
+            cardRect.anchorMax = new Vector2(0.5f, 0.55f);
+            cardRect.pivot = new Vector2(0.5f, 0.5f);
+            cardRect.sizeDelta = new Vector2(560f, 180f);
+            var cardBg = card.GetComponent<Image>();
+            cardBg.color = new Color(0.1f, 0.14f, 0.18f, 0.9f);
+
+            var region = CreateText("RegionText", card.transform,
+                new Vector2(0.5f, 0.75f), new Vector2(0.5f, 0.75f), Vector2.zero, new Vector2(500f, 36f),
+                font, 20, TextAnchor.MiddleCenter, Color.white);
+
+            var timestamp = CreateText("TimestampText", card.transform,
+                new Vector2(0.5f, 0.45f), new Vector2(0.5f, 0.45f), Vector2.zero, new Vector2(500f, 30f),
+                font, 16, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
+
+            var stats = CreateText("StatsText", card.transform,
+                new Vector2(0.5f, 0.18f), new Vector2(0.5f, 0.18f), Vector2.zero, new Vector2(500f, 30f),
+                font, 15, TextAnchor.MiddleCenter, new Color(0.3f, 0.85f, 0.7f));
+
+            var btnLoad = CreateButton("Btn_Load", root.transform, font, "Continue", new Color(0.2f, 0.5f, 0.35f));
+            var loadRect = btnLoad.GetComponent<RectTransform>();
+            loadRect.anchorMin = new Vector2(0.38f, 0.28f);
+            loadRect.anchorMax = new Vector2(0.38f, 0.28f);
+            loadRect.pivot = new Vector2(0.5f, 0.5f);
+            loadRect.sizeDelta = new Vector2(160f, 44f);
+
+            var btnDelete = CreateButton("Btn_Delete", root.transform, font, "Delete", new Color(0.5f, 0.2f, 0.2f));
+            var delRect = btnDelete.GetComponent<RectTransform>();
+            delRect.anchorMin = new Vector2(0.62f, 0.28f);
+            delRect.anchorMax = new Vector2(0.62f, 0.28f);
+            delRect.pivot = new Vector2(0.5f, 0.5f);
+            delRect.sizeDelta = new Vector2(160f, 44f);
+
+            var btnClose = CreateButton("Btn_Close", root.transform, font, "Back", new Color(0.25f, 0.3f, 0.35f));
+            var closeRect = btnClose.GetComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(0.5f, 0.15f);
+            closeRect.anchorMax = new Vector2(0.5f, 0.15f);
+            closeRect.pivot = new Vector2(0.5f, 0.5f);
+            closeRect.sizeDelta = new Vector2(200f, 44f);
+
+            var so = new SerializedObject(ui);
+            so.FindProperty("titleText").objectReferenceValue = title.GetComponent<Text>();
+            so.FindProperty("regionText").objectReferenceValue = region.GetComponent<Text>();
+            so.FindProperty("timestampText").objectReferenceValue = timestamp.GetComponent<Text>();
+            so.FindProperty("statsText").objectReferenceValue = stats.GetComponent<Text>();
+            so.FindProperty("noSaveText").objectReferenceValue = noSave.GetComponent<Text>();
+            so.FindProperty("saveInfoCard").objectReferenceValue = card;
+            so.FindProperty("loadButton").objectReferenceValue = btnLoad.GetComponent<Button>();
+            so.FindProperty("deleteButton").objectReferenceValue = btnDelete.GetComponent<Button>();
+            so.FindProperty("closeButton").objectReferenceValue = btnClose.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            root.SetActive(false);
+            return root;
+        }
+
+        private static GameObject BuildCreditsPanel(Transform parent, Font font)
+        {
+            var root = new GameObject("CreditsPanel", typeof(RectTransform), typeof(Image));
+            root.transform.SetParent(parent, false);
+            var rect = root.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var bg = root.GetComponent<Image>();
+            bg.color = new Color(0.04f, 0.06f, 0.08f, 0.97f);
+
+            var ui = root.AddComponent<CreditsUI>();
+
+            var title = CreateText("Title", root.transform,
+                new Vector2(0.5f, 0.9f), new Vector2(0.5f, 0.9f), Vector2.zero, new Vector2(800f, 50f),
+                font, 28, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+
+            var body = CreateText("CreditsBody", root.transform,
+                new Vector2(0.5f, 0.52f), new Vector2(0.5f, 0.52f), Vector2.zero, new Vector2(900f, 540f),
+                font, 16, TextAnchor.MiddleCenter, new Color(0.9f, 0.92f, 0.95f));
+            var bodyText = body.GetComponent<Text>();
+            bodyText.lineSpacing = 1.25f;
+
+            var btnClose = CreateButton("Btn_Close", root.transform, font, "Back", new Color(0.25f, 0.3f, 0.35f));
+            var closeRect = btnClose.GetComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(0.5f, 0.1f);
+            closeRect.anchorMax = new Vector2(0.5f, 0.1f);
+            closeRect.pivot = new Vector2(0.5f, 0.5f);
+            closeRect.sizeDelta = new Vector2(220f, 44f);
+
+            var so = new SerializedObject(ui);
+            so.FindProperty("titleText").objectReferenceValue = title.GetComponent<Text>();
+            so.FindProperty("creditsBodyText").objectReferenceValue = body.GetComponent<Text>();
+            so.FindProperty("closeButton").objectReferenceValue = btnClose.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            root.SetActive(false);
+            return root;
+        }
+
 }

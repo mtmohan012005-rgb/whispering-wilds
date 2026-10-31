@@ -71,6 +71,7 @@ namespace WhisperingWilds.Online
         public event Action<string> OnPlayerLeft;
         public event Action<string, Vector3, float> OnPlayerMoved;
         public event Action<string, string, string> OnChatMessage;
+        public event Action<string, Dictionary<string, object>> OnMechanismUpdated;
 
         private float tickInterval;
         private float tickTimer;
@@ -270,6 +271,15 @@ namespace WhisperingWilds.Online
             {
                 var payload = FirstObject(args);
                 FailJoin(payload, MiniJson.GetString(payload, "reason", "Unable to create expedition."));
+            });
+
+            _socket.On("mechanismUpdated", args =>
+            {
+                var payload = FirstObject(args);
+                if (payload == null) return;
+                string mechanismId = MiniJson.GetString(payload, "mechanismId");
+                var state = GetObjectField(payload, "state");
+                OnMechanismUpdated?.Invoke(mechanismId, state);
             });
 
             _socket.On("leftRoom", args =>
@@ -651,6 +661,17 @@ namespace WhisperingWilds.Online
         public void PlayOffline()
         {
             EnterSoloMode();
+        }
+
+        public void SendMechanismInteraction(string mechanismId, Dictionary<string, object> payload)
+        {
+            if (!IsConnected || string.IsNullOrEmpty(CurrentRoom) || string.IsNullOrEmpty(mechanismId)) return;
+
+            _socket.Emit("interactMechanism", new Dictionary<string, object>
+            {
+                { "mechanismId", mechanismId },
+                { "payload", payload ?? new Dictionary<string, object>() }
+            });
         }
 
         private void FailJoin(Dictionary<string, object> payload, string fallback)

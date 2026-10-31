@@ -22,15 +22,22 @@ namespace WhisperingWilds.UI
         [SerializeField] private Button coopButton;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button settingsButton;
+        [SerializeField] private Button savedGamesButton;
+        [SerializeField] private Button creditsButton;
         [SerializeField] private Button quitButton;
 
         [Header("Panels")]
         [SerializeField] private SettingsMenuUI settingsMenu;
         [SerializeField] private LoginUI loginUI;
+        [SerializeField] private SavedGamesUI savedGamesUI;
+        [SerializeField] private CreditsUI creditsUI;
         [SerializeField] private ConfirmationDialog confirmationDialog;
 
         [Header("Info Displays")]
         [SerializeField] private Text ruleNoticeText;
+
+        [Header("Audio")]
+        [SerializeField] private AudioClip menuAmbienceClip;
 
         [Header("Cinematic Intro")]
         [SerializeField] private CinematicIntroController cinematicIntro;
@@ -52,7 +59,11 @@ namespace WhisperingWilds.UI
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
+            EnsureMenuArtwork();
             EnsureCoopButton();
+            EnsureSavedGamesButton();
+            EnsureCreditsButton();
+            EnsurePanels();
 
             if (loginButton != null) loginButton.onClick.AddListener(OnLoginClicked);
             if (newGameButton != null) newGameButton.onClick.AddListener(OnNewGameClicked);
@@ -64,17 +75,39 @@ namespace WhisperingWilds.UI
                 // present a button that silently drops the player into a fresh campaign.
                 continueButton.interactable = CampaignFlow.CanContinue();
             }
+            if (savedGamesButton != null)
+            {
+                savedGamesButton.onClick.AddListener(OnSavedGamesClicked);
+                savedGamesButton.interactable = CampaignFlow.CanContinue();
+            }
             if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
+            if (creditsButton != null) creditsButton.onClick.AddListener(OnCreditsClicked);
             if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
 
             if (settingsMenu != null) settingsMenu.SetVisible(false);
             if (loginUI != null) loginUI.SetVisible(false);
+            if (savedGamesUI != null) savedGamesUI.SetVisible(false);
+            if (creditsUI != null) creditsUI.SetVisible(false);
 
             ApplyLocalizedLabels();
 
             // STEP 70: Start the menu entrance animation after a short delay to ensure
             // the scene is fully initialized and MainMenuAnimator is discoverable.
             StartCoroutine(StartMenuAnimationDelayed());
+
+            // Play gentle title ambience
+            if (AudioManager.Instance != null)
+            {
+                if (menuAmbienceClip != null)
+                {
+                    AudioManager.Instance.PlayAmbient(menuAmbienceClip);
+                }
+                else
+                {
+                    var clip = Resources.Load<AudioClip>("Audio/Ambience/temple_ambience");
+                    if (clip != null) AudioManager.Instance.PlayAmbient(clip);
+                }
+            }
         }
 
         private System.Collections.IEnumerator StartMenuAnimationDelayed()
@@ -121,6 +154,11 @@ namespace WhisperingWilds.UI
             {
                 anim.StopAnimations();
             }
+
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.StopAmbient();
+            }
         }
 
         private void OnLanguageChanged(Language language)
@@ -138,8 +176,10 @@ namespace WhisperingWilds.UI
             SetButtonLabel(newGameButton, "menu.new_game");
             SetButtonLabel(coopButton, "menu.coop");
             SetButtonLabel(continueButton, "menu.continue");
+            SetButtonLabel(savedGamesButton, "menu.load_game");
             SetButtonLabel(settingsButton, "menu.settings");
-            SetButtonLabel(quitButton, "menu.quit");
+            SetButtonLabel(creditsButton, "menu.credits");
+            SetButtonLabel(quitButton, "menu.exit_game");
 
             LocalizationManager mgr = LocalizationManager.Instance;
 
@@ -198,6 +238,138 @@ namespace WhisperingWilds.UI
 
             // Never leak the internal "missing." identifier or the raw key to the player.
             label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
+        }
+
+        
+        /// <summary>
+        /// Ensures the title screen displays the high-fidelity background image showing
+        /// the main characters and iconic Tamil Nadu landscapes (Mamallapuram Shore)
+        /// and positions the AppLogo sprite above the title text.
+        /// </summary>
+        public void EnsureMenuArtwork()
+        {
+            var menuBg = GameObject.Find("MenuBackground");
+            if (menuBg != null)
+            {
+                var bgImage = menuBg.GetComponent<Image>();
+                if (bgImage != null)
+                {
+                    var bgSprite = Resources.Load<Sprite>("UI/MainMenuBackground");
+                    if (bgSprite != null)
+                    {
+                        bgImage.sprite = bgSprite;
+                        bgImage.color = Color.white;
+                    }
+                }
+            }
+
+            var rootTransform = transform;
+            var menuRoot = rootTransform.Find("MenuRoot");
+            if (menuRoot != null && menuRoot.Find("AppLogo") == null)
+            {
+                var logoSprite = Resources.Load<Sprite>("UI/AppLogo");
+                if (logoSprite != null)
+                {
+                    var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
+                    logoObj.transform.SetParent(menuRoot, false);
+                    var logoRect = logoObj.GetComponent<RectTransform>();
+                    logoRect.anchorMin = new Vector2(0.5f, 0.88f);
+                    logoRect.anchorMax = new Vector2(0.5f, 0.88f);
+                    logoRect.pivot = new Vector2(0.5f, 0.5f);
+                    logoRect.anchoredPosition = Vector2.zero;
+                    logoRect.sizeDelta = new Vector2(120f, 120f);
+
+                    var logoImg = logoObj.GetComponent<Image>();
+                    logoImg.sprite = logoSprite;
+                    logoImg.preserveAspect = true;
+                    logoImg.raycastTarget = false;
+                    logoObj.transform.SetSiblingIndex(0);
+                }
+            }
+        }
+
+        
+        private void EnsureSavedGamesButton()
+        {
+            if (savedGamesButton != null || continueButton == null) return;
+
+            savedGamesButton = Instantiate(continueButton, continueButton.transform.parent, false);
+            savedGamesButton.name = "Btn_SavedGames";
+            savedGamesButton.onClick.RemoveAllListeners();
+            savedGamesButton.onClick.AddListener(OnSavedGamesClicked);
+            savedGamesButton.interactable = CampaignFlow.CanContinue();
+            savedGamesButton.transform.SetSiblingIndex(continueButton.transform.GetSiblingIndex() + 1);
+
+            RectTransform container = savedGamesButton.transform.parent as RectTransform;
+            if (container != null)
+            {
+                container.sizeDelta = new Vector2(container.sizeDelta.x, container.sizeDelta.y + 52f);
+            }
+        }
+
+        private void EnsureCreditsButton()
+        {
+            if (creditsButton != null || settingsButton == null) return;
+
+            creditsButton = Instantiate(settingsButton, settingsButton.transform.parent, false);
+            creditsButton.name = "Btn_Credits";
+            creditsButton.onClick.RemoveAllListeners();
+            creditsButton.onClick.AddListener(OnCreditsClicked);
+            creditsButton.transform.SetSiblingIndex(settingsButton.transform.GetSiblingIndex() + 1);
+
+            RectTransform container = creditsButton.transform.parent as RectTransform;
+            if (container != null)
+            {
+                container.sizeDelta = new Vector2(container.sizeDelta.x, container.sizeDelta.y + 52f);
+            }
+        }
+
+        private void EnsurePanels()
+        {
+            if (savedGamesUI == null)
+            {
+                savedGamesUI = FindAnyObjectByType<SavedGamesUI>();
+            }
+            if (creditsUI == null)
+            {
+                creditsUI = FindAnyObjectByType<CreditsUI>();
+            }
+        }
+
+        public void OnSavedGamesClicked()
+        {
+            if (savedGamesUI != null)
+            {
+                savedGamesUI.SetVisible(true);
+                return;
+            }
+            var sg = FindAnyObjectByType<SavedGamesUI>();
+            if (sg != null)
+            {
+                sg.SetVisible(true);
+            }
+            else
+            {
+                Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> SavedGamesUI is not assigned.");
+            }
+        }
+
+        public void OnCreditsClicked()
+        {
+            if (creditsUI != null)
+            {
+                creditsUI.SetVisible(true);
+                return;
+            }
+            var cr = FindAnyObjectByType<CreditsUI>();
+            if (cr != null)
+            {
+                cr.SetVisible(true);
+            }
+            else
+            {
+                Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> CreditsUI is not assigned.");
+            }
         }
 
         private void EnsureCoopButton()
