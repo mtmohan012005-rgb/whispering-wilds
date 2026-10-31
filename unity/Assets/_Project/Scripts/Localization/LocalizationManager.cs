@@ -69,6 +69,24 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("saved_games.quests_done", "Quests Completed",  "முடிக்கப்பட்ட பணிகள்"),
             new LocalizationEntry("credits.title",        "Credits & Heritage Acknowledgements", "பங்களிப்பாளர்கள் & கலாச்சார நன்றிகள்"),
 
+            // ---- In-Game Pause Menu -------------------------------------------
+            new LocalizationEntry("menu.pause_title",      "PAUSED",               "இடைநிறுத்தப்பட்டது"),
+            new LocalizationEntry("menu.resume",           "Resume Game",          "தொடரவும்"),
+            new LocalizationEntry("menu.save_game",        "Save Progress",        "சேமிக்கவும்"),
+            new LocalizationEntry("menu.save_success",     "Progress saved successfully.", "விளையாட்டு சேமிக்கப்பட்டது."),
+            new LocalizationEntry("menu.return_to_main",   "Return to Main Menu",  "முதன்மை மெனுவுக்கு செல்லவும்"),
+            new LocalizationEntry("menu.return_confirm",   "Return to Main Menu? Progress is saved.", "முதன்மை மெனுவிற்கு செல்லவா? முன்னேற்றம் சேமிக்கப்படும்."),
+
+            // ---- Guided Introduction Tutorial ---------------------------------
+            new LocalizationEntry("tutorial.title",          "EXPLORER GUIDE",          "ஆய்வாளர் வழிகாட்டி"),
+            new LocalizationEntry("tutorial.move",           "Walk using [W, A, S, D] or Left Stick", "நடப்பதற்கு [W, A, S, D] அல்லது இடது ஸ்டிக்கைப் பயன்படுத்தவும்"),
+            new LocalizationEntry("tutorial.look",           "Look around with Mouse or Right Stick", "சுற்றிலும் பார்க்க மவுஸ் அல்லது வலது ஸ்டிக்கைப் பயன்படுத்தவும்"),
+            new LocalizationEntry("tutorial.sprint_crouch",  "Hold [Shift] to Sprint, [C] to Crouch", "வேகமாக ஓட [Shift], குனிய [C] அழுத்தவும்"),
+            new LocalizationEntry("tutorial.interact",       "Approach Murugan at the Tea Kadai and press [E]", "தேநீர்க்கடையில் முருகனை அணுகி [E] அழுத்தவும்"),
+            new LocalizationEntry("tutorial.journal_pause",  "Press [J] for Field Journal, [Esc] for Pause Menu", "ஆய்வுக் குறிப்பேட்டிற்கு [J], இடைநிறுத்த மெனுவிற்கு [Esc] அழுத்தவும்"),
+            new LocalizationEntry("tutorial.complete",       "Introduction complete! Explore George Town.", "வழிகாட்டுதல் முடிந்தது! ஜார்ஜ் டவுனை ஆராயுங்கள்."),
+            new LocalizationEntry("tutorial.dismiss",        "Dismiss Guide",          "வழிகாட்டியை மூடு"),
+
             // ---- Co-op lobby -------------------------------------------------
             new LocalizationEntry("coop.title",           "Co-op Expedition",     "கூட்டுப் பயணம்"),
             new LocalizationEntry("coop.name",            "Explorer name",        "ஆய்வாளர் பெயர்"),

@@ -270,6 +270,14 @@ async function main() {
     results.push(cleanupResult);
     if (cleanupResult.code !== 0) hasFailure = true;
 
+    // Step 2 Player Controller & First Exploration Region
+    const step2Result = await runTestSuite(
+      'Step 2 Player Controller & First Exploration Region',
+      'scripts/verify-step2-controller.js'
+    );
+    results.push(step2Result);
+    if (step2Result.code !== 0) hasFailure = true;
+
     // Candidate launcher provenance & safety regression
     const launcherResult = await runTestSuite(
       'Candidate Launcher Provenance & Safety Tests',
