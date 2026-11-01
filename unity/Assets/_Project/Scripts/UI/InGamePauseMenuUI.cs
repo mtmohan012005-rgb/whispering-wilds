@@ -174,7 +174,7 @@ namespace WhisperingWilds.UI
             {
                 if (SaveManager.Instance != null)
                 {
-                    SaveManager.Instance.SaveCurrentGame();
+                    SaveManager.Instance.SaveGame();
                 }
                 else
                 {
@@ -195,7 +195,7 @@ namespace WhisperingWilds.UI
             var settings = SettingsMenuController.Instance;
             if (settings != null)
             {
-                settings.SetVisible(true);
+                var ui = settings.GetComponent<SettingsMenuUI>(); if (ui != null) ui.SetVisible(true); else settings.gameObject.SetActive(true);
             }
             else
             {

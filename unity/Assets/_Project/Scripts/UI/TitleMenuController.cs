@@ -5,6 +5,7 @@ using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.Localization;
 using WhisperingWilds.Online;
+using WhisperingWilds.Audio;
 
 namespace WhisperingWilds.UI
 {

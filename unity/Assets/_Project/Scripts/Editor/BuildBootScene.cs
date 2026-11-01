@@ -497,6 +497,11 @@ namespace WhisperingWilds.Editor
                     new Vector2(0.02f, 0.92f), new Vector2(0.15f, 0.92f), new Vector2(0f, 0f), new Vector2(100f, 40f),
                     font, "Back", new Color(0.3f, 0.3f, 0.3f));
 
+                // --- Guest / Play Offline Button ---
+                var guestBtn = CreateButton("GuestButton", loginUIObj.transform,
+                    new Vector2(0.80f, 0.92f), new Vector2(0.98f, 0.92f), new Vector2(0f, 0f), new Vector2(160f, 40f),
+                    font, "Guest / Offline", new Color(0.2f, 0.35f, 0.45f));
+
                 // Wire all references using SerializedObject
                 var serializedLoginUI = new SerializedObject(loginUI);
                 serializedLoginUI.FindProperty("emailField").objectReferenceValue = emailField;
@@ -1229,7 +1234,6 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             if (managersObj.GetComponent<WhisperingWilds.QA.RuntimeAutomatedSmokeTest>() == null) managersObj.AddComponent<WhisperingWilds.QA.RuntimeAutomatedSmokeTest>();
             if (managersObj.GetComponent<WhisperingWilds.QA.RuntimeEcologyAcceptanceTest>() == null) managersObj.AddComponent<WhisperingWilds.QA.RuntimeEcologyAcceptanceTest>();
         }
-    }
 
         private static GameObject BuildSavedGamesPanel(Transform parent, Font font)
         {
@@ -1354,5 +1358,5 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             root.SetActive(false);
             return root;
         }
-
+    }
 }
