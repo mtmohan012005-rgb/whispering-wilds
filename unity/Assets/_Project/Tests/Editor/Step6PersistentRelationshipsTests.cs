@@ -341,5 +341,131 @@ namespace WhisperingWilds.Tests.Editor
             }
             Assert.IsTrue(foundConsequentialVeluChoice, "Velu dialogue must include at least one consequential choice.");
         }
+
+        [Test]
+        public void EndingController_RestoreRelationships_ReplacesExistingState_WithoutLeakage()
+        {
+            // Set up pre-existing state in memory
+            endingController.SetTrust("murugan", 65);
+            endingController.SetTrust("velu", 45);
+            endingController.SetAffinity("heritage", 50);
+            endingController.SetAffinity("agrarian", -30);
+
+            // Set up unrelated ending state
+            endingController.SetSanctuaryVerdict("LivingSanctuary");
+            endingController.RecordMilestone("Epigraphist");
+
+            Assert.AreEqual(65, endingController.GetTrust("murugan"));
+            Assert.AreEqual(45, endingController.GetTrust("velu"));
+            Assert.AreEqual(50, endingController.GetAffinity("heritage"));
+            Assert.AreEqual(-30, endingController.GetAffinity("agrarian"));
+            Assert.AreEqual("LivingSanctuary", endingController.GetSanctuaryVerdict());
+            Assert.AreEqual(1, endingController.MilestoneCount);
+
+            // Restore empty relationships (simulating loading a legacy v4 save or a save with no prior records)
+            endingController.RestoreRelationships(new List<SavedNPCTrust>(), new List<SavedFactionAffinity>());
+
+            // Trust and affinities must be reset to baseline 0, with NO state leaked from before
+            Assert.AreEqual(0, endingController.GetTrust("murugan"), "Murugan trust must reset to 0 default on restore.");
+            Assert.AreEqual(0, endingController.GetTrust("velu"), "Velu trust must reset to 0 default on restore.");
+            Assert.AreEqual(0, endingController.GetAffinity("heritage"), "Heritage affinity must reset to 0 default on restore.");
+            Assert.AreEqual(0, endingController.GetAffinity("agrarian"), "Agrarian affinity must reset to 0 default on restore.");
+
+            // Unrelated ending state must be preserved
+            Assert.AreEqual("LivingSanctuary", endingController.GetSanctuaryVerdict(), "Sanctuary verdict must be preserved.");
+            Assert.AreEqual(1, endingController.MilestoneCount, "Milestones must be preserved.");
+        }
+
+        [Test]
+        public void SaveManager_ApplySaveDataToGame_ReplacesStaleTrustAndMemoriesOnLoad()
+        {
+            var saveMgrGo = new GameObject("TestSaveManager", typeof(SaveManager));
+            var saveMgr = saveMgrGo.GetComponent<SaveManager>();
+
+            try
+            {
+                // Seed pre-existing state in memory
+                endingController.SetTrust("murugan", 80);
+                endingController.SetTrust("velu", 50);
+                endingController.SetAffinity("heritage", 40);
+                NPCMemoryStore.RecordMemory("murugan", "stale_memory_flag");
+                NPCMemoryStore.RecordChoiceApplied("choice_murugan_ask_ledger");
+
+                Assert.AreEqual(80, endingController.GetTrust("murugan"));
+                Assert.IsTrue(NPCMemoryStore.HasMemory("murugan", "stale_memory_flag"));
+                Assert.IsTrue(NPCMemoryStore.IsChoiceApplied("choice_murugan_ask_ledger"));
+
+                // Create a migrated v4 save with empty v5 relationship lists
+                var v4Save = new GameSaveData
+                {
+                    schemaVersion = 5,
+                    currentRegionId = "chennai",
+                    currency = 150,
+                    tutorialCompleted = true,
+                    npcTrustScores = new List<SavedNPCTrust>(),
+                    npcMemories = new List<SavedNPCMemory>(),
+                    appliedChoiceIds = new List<string>(),
+                    factionAffinities = new List<SavedFactionAffinity>()
+                };
+
+                // Apply save data
+                saveMgr.ApplySaveDataToGame(v4Save);
+
+                // All prior relationship state must be cleared without leakage
+                Assert.AreEqual(0, endingController.GetTrust("murugan"), "Stale trust must not leak into loaded v4 save.");
+                Assert.AreEqual(0, endingController.GetTrust("velu"), "Stale trust must not leak into loaded v4 save.");
+                Assert.AreEqual(0, endingController.GetAffinity("heritage"), "Stale affinity must not leak into loaded v4 save.");
+                Assert.IsFalse(NPCMemoryStore.HasMemory("murugan", "stale_memory_flag"), "Stale memory must not leak into loaded v4 save.");
+                Assert.IsFalse(NPCMemoryStore.IsChoiceApplied("choice_murugan_ask_ledger"), "Stale applied choices must not leak into loaded v4 save.");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(saveMgrGo);
+            }
+        }
+
+        [Test]
+        public void DialogueConsequences_OneTimeExecution_AndStateIsolation()
+        {
+            var choice = new DialogueChoice
+            {
+                choiceId = "choice_test_murugan_favor",
+                trustDelta = 20,
+                targetNpcId = "murugan",
+                memoryFlag = "favored_murugan",
+                factionId = "heritage",
+                factionDelta = 10
+            };
+
+            Assert.IsTrue(choice.hasConsequence);
+            Assert.IsFalse(NPCMemoryStore.IsChoiceApplied(choice.choiceId));
+            Assert.AreEqual(0, endingController.GetTrust("murugan"));
+            Assert.AreEqual(0, endingController.GetAffinity("heritage"));
+
+            // Simulate consequence application (logic mirroring DialogueUI)
+            if (choice.hasConsequence && !NPCMemoryStore.IsChoiceApplied(choice.choiceId))
+            {
+                endingController.AdjustTrust(choice.targetNpcId, choice.trustDelta);
+                NPCMemoryStore.RecordMemory(choice.targetNpcId, choice.memoryFlag);
+                endingController.AdjustAffinity(choice.factionId, choice.factionDelta);
+                NPCMemoryStore.RecordChoiceApplied(choice.choiceId);
+            }
+
+            Assert.AreEqual(20, endingController.GetTrust("murugan"));
+            Assert.AreEqual(10, endingController.GetAffinity("heritage"));
+            Assert.IsTrue(NPCMemoryStore.HasMemory("murugan", "favored_murugan"));
+            Assert.IsTrue(NPCMemoryStore.IsChoiceApplied(choice.choiceId));
+
+            // Re-executing must be blocked by the anti-exploit guard
+            if (choice.hasConsequence && !NPCMemoryStore.IsChoiceApplied(choice.choiceId))
+            {
+                endingController.AdjustTrust(choice.targetNpcId, choice.trustDelta);
+                endingController.AdjustAffinity(choice.factionId, choice.factionDelta);
+            }
+
+            // Values remain unchanged
+            Assert.AreEqual(20, endingController.GetTrust("murugan"), "Trust must not be re-awarded on duplicate selection.");
+            Assert.AreEqual(10, endingController.GetAffinity("heritage"), "Affinity must not be re-awarded on duplicate selection.");
+        }
     }
 }

@@ -374,6 +374,44 @@ namespace WhisperingWilds.Campaign
         // Save/Load
         // ------------------------------------------------------------------
 
+        /// <summary>
+        /// Restores persistent NPC trust scores and faction affinities from a save payload.
+        /// Strictly replaces all prior relationship state without leaking values from the previous
+        /// session, while preserving unrelated campaign progression (sanctuaryVerdict, explorationMilestones,
+        /// ending evaluation status).
+        /// </summary>
+        public void RestoreRelationships(IEnumerable<Core.SavedNPCTrust> savedTrust, IEnumerable<Core.SavedFactionAffinity> savedAffinities)
+        {
+            // 1. Clear existing trust scores so loaded campaign starts from a clean baseline
+            npcTrustScores.Clear();
+            if (savedTrust != null)
+            {
+                foreach (var entry in savedTrust)
+                {
+                    if (entry != null && !string.IsNullOrEmpty(entry.npcId))
+                    {
+                        SetTrust(entry.npcId, entry.trust);
+                    }
+                }
+            }
+
+            // 2. Reset faction affinities to 0 baseline before applying saved affinities
+            heritageCouncilAffinity = 0;
+            archaeologicalSocietyAffinity = 0;
+            agrarianGuildAffinity = 0;
+
+            if (savedAffinities != null)
+            {
+                foreach (var entry in savedAffinities)
+                {
+                    if (entry != null && !string.IsNullOrEmpty(entry.factionId))
+                    {
+                        SetAffinity(entry.factionId, entry.affinity);
+                    }
+                }
+            }
+        }
+
         /// <summary>Serializes ending state for save.</summary>
         public EndingSaveData Snapshot()
         {

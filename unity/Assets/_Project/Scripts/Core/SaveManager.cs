@@ -141,27 +141,7 @@ namespace WhisperingWilds.Core
             // Schema v5: Restore NPC trust, faction affinities, durable memories, and applied choices
             if (WhisperingWilds.Campaign.EndingController.Instance != null)
             {
-                if (save.npcTrustScores != null)
-                {
-                    foreach (var t in save.npcTrustScores)
-                    {
-                        if (t != null && !string.IsNullOrEmpty(t.npcId))
-                        {
-                            WhisperingWilds.Campaign.EndingController.Instance.SetTrust(t.npcId, t.trust);
-                        }
-                    }
-                }
-
-                if (save.factionAffinities != null)
-                {
-                    foreach (var f in save.factionAffinities)
-                    {
-                        if (f != null && !string.IsNullOrEmpty(f.factionId))
-                        {
-                            WhisperingWilds.Campaign.EndingController.Instance.SetAffinity(f.factionId, f.affinity);
-                        }
-                    }
-                }
+                WhisperingWilds.Campaign.EndingController.Instance.RestoreRelationships(save.npcTrustScores, save.factionAffinities);
             }
 
             WhisperingWilds.NPC.NPCMemoryStore.RestoreMemories(save.npcMemories);

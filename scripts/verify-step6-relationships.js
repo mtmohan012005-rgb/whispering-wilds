@@ -87,6 +87,7 @@ if (fs.existsSync(endingFile)) {
   check('EndingController defines SetAffinity', content.includes('SetAffinity(string factionId, int value)'));
   check('EndingController clamps trust to 0-100', content.includes('Mathf.Clamp(value, 0, 100)'));
   check('EndingController clamps affinity to -100-100', content.includes('Mathf.Clamp(value, -100, 100)'));
+  check('EndingController defines RestoreRelationships', content.includes('public void RestoreRelationships('));
 }
 
 // Group 4: Dialogue Consequence Execution
@@ -127,6 +128,7 @@ if (fs.existsSync(saveSystemFile)) {
 check('SaveManager.cs exists', fs.existsSync(saveManagerFile));
 if (fs.existsSync(saveManagerFile)) {
   const content = fs.readFileSync(saveManagerFile, 'utf8');
+  check('SaveManager calls EndingController.Instance.RestoreRelationships', content.includes('EndingController.Instance.RestoreRelationships(save.npcTrustScores, save.factionAffinities)'));
   check('SaveManager restores npcTrustScores', content.includes('save.npcTrustScores'));
   check('SaveManager restores factionAffinities', content.includes('save.factionAffinities'));
   check('SaveManager restores NPC memories via NPCMemoryStore.RestoreMemories', content.includes('NPCMemoryStore.RestoreMemories(save.npcMemories)'));
@@ -203,6 +205,9 @@ if (fs.existsSync(testsFile)) {
   check('Tests cover CampaignFlow_ResetCampaign_ClearsMemoriesAndTrust', content.includes('CampaignFlow_ResetCampaign_ClearsMemoriesAndTrust'));
   check('Tests cover Localization_RelationshipTiers_ResolveBilingual', content.includes('Localization_RelationshipTiers_ResolveBilingual'));
   check('Tests cover ChennaiOpeningContent_AuthoredChoices_ContainConsequences', content.includes('ChennaiOpeningContent_AuthoredChoices_ContainConsequences'));
+  check('Tests cover EndingController_RestoreRelationships_ReplacesExistingState_WithoutLeakage', content.includes('EndingController_RestoreRelationships_ReplacesExistingState_WithoutLeakage'));
+  check('Tests cover SaveManager_ApplySaveDataToGame_ReplacesStaleTrustAndMemoriesOnLoad', content.includes('SaveManager_ApplySaveDataToGame_ReplacesStaleTrustAndMemoriesOnLoad'));
+  check('Tests cover DialogueConsequences_OneTimeExecution_AndStateIsolation', content.includes('DialogueConsequences_OneTimeExecution_AndStateIsolation'));
 }
 
 console.log('\n======================================================================');
