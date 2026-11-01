@@ -236,6 +236,17 @@ namespace WhisperingWilds.Localization
 new LocalizationEntry("talk.default",      "Talk to {0}",        "{0} பேசுவதற்கு"),
 new LocalizationEntry("talk.meenakshi", "Talk to Meenakshi", "மீனாட்சி பேசுவதற்கு"),
 new LocalizationEntry("talk.murugan", "Talk to Murugan", "முருகன் பேசுவதற்கு"),
+
+            // ---- NPC Names ---------------------------------------------------
+            new LocalizationEntry("npc.murugan",               "Murugan",              "முருகன்"),
+            new LocalizationEntry("npc.velu",                  "Velu",                 "வேலு"),
+
+            // ---- Step 6.1: Persistent NPC Relationships -----------------------
+            new LocalizationEntry("relationship.stranger",     "Stranger",             "அறியாதவர்"),
+            new LocalizationEntry("relationship.acquaintance", "Acquaintance",         "அறிமுகமானவர்"),
+            new LocalizationEntry("relationship.familiar",     "Familiar",             "பழகியவர்"),
+            new LocalizationEntry("relationship.trusted",      "Trusted",              "நம்பகமானவர்"),
+            new LocalizationEntry("relationship.close_ally",   "Close Ally",           "நெருங்கிய தோழர்"),
 new LocalizationEntry("talk.selvam", "Talk to Selvam", "செல்வம் பேசுவதற்கு"),
 new LocalizationEntry("talk.velu", "Talk to Velu", "வேலு பேசுவதற்கு"),
 new LocalizationEntry("talk.kannan", "Talk to Kannan", "கண்ணனுடன் பேசுவதற்கு"),

@@ -138,6 +138,35 @@ namespace WhisperingWilds.Core
             WhisperingWilds.Investigation.PuzzleStateStore.RestoreSolvedPuzzleIds(save.solvedPuzzleIds);
             WhisperingWilds.Investigation.DiscoveryLog.RestoreRecordedIds(save.recordedDiscoveryIds);
 
+            // Schema v5: Restore NPC trust, faction affinities, durable memories, and applied choices
+            if (WhisperingWilds.Campaign.EndingController.Instance != null)
+            {
+                if (save.npcTrustScores != null)
+                {
+                    foreach (var t in save.npcTrustScores)
+                    {
+                        if (t != null && !string.IsNullOrEmpty(t.npcId))
+                        {
+                            WhisperingWilds.Campaign.EndingController.Instance.SetTrust(t.npcId, t.trust);
+                        }
+                    }
+                }
+
+                if (save.factionAffinities != null)
+                {
+                    foreach (var f in save.factionAffinities)
+                    {
+                        if (f != null && !string.IsNullOrEmpty(f.factionId))
+                        {
+                            WhisperingWilds.Campaign.EndingController.Instance.SetAffinity(f.factionId, f.affinity);
+                        }
+                    }
+                }
+            }
+
+            WhisperingWilds.NPC.NPCMemoryStore.RestoreMemories(save.npcMemories);
+            WhisperingWilds.NPC.NPCMemoryStore.RestoreAppliedChoices(save.appliedChoiceIds);
+
             if (WhisperingWilds.Localization.LocalizationManager.Instance != null && save.languagePreference >= 0)
             {
                 var lang = (WhisperingWilds.Localization.Language)Mathf.Clamp(save.languagePreference, 0, 1);

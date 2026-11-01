@@ -50,6 +50,7 @@ namespace WhisperingWilds.Campaign
 
             InvestigationRuntimeState.Clear();
             NPC.NPCInteractionLog.Clear();
+            NPC.NPCMemoryStore.Clear();
             CraftingHistory.Clear();
             PhotoJournal.Clear();
 

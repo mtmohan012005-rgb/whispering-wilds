@@ -384,16 +384,22 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_murugan_strange_how",
                                 choiceTextEn = "Strange how?",
                                 choiceTextTa = "எப்படி வழக்கத்திற்கு மாறாக?",
                                 nextNodeIndex = 1
                             },
                             new DialogueChoice
                             {
+                                choiceId = "choice_murugan_ask_ledger",
                                 choiceTextEn = "Show me the day's takings.",
                                 choiceTextTa = "இன்றைய வருவாவைக் காட்டுங்கள்.",
                                 nextNodeIndex = 2,
-                                revealClueId = ClueMuruganTeaLedger
+                                revealClueId = ClueMuruganTeaLedger,
+                                trustDelta = 10,
+                                memoryFlag = "asked_about_ledger",
+                                factionId = "heritage",
+                                factionDelta = 5
                             }
                         }
                     },
@@ -406,10 +412,13 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_murugan_sympathize_crossed",
                                 choiceTextEn = "Crossed out for a reason, then.",
                                 choiceTextTa = "அப்படியெனில் ஒரு காரணம் இருந்திருக்கும்.",
                                 nextNodeIndex = 2,
-                                revealClueId = ClueMuruganTeaLedger
+                                revealClueId = ClueMuruganTeaLedger,
+                                trustDelta = 5,
+                                memoryFlag = "sympathized_with_murugan"
                             }
                         }
                     },
@@ -422,17 +431,25 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_murugan_share_clue",
                                 choiceTextEn = "One more thing. Someone else keeps the same hours.",
                                 choiceTextTa = "இன்னும் ஒன்று. வேறு ஒருவர் அதே நேரங்களில் இருக்கிறார்.",
                                 nextNodeIndex = 3,
                                 requiredClueId = ClueVeluRickshawTally,
-                                revealClueId = ClueHighCourtSticker
+                                revealClueId = ClueHighCourtSticker,
+                                trustDelta = 15,
+                                memoryFlag = "shared_clue_with_murugan",
+                                factionId = "heritage",
+                                factionDelta = 10
                             },
                             new DialogueChoice
                             {
+                                choiceId = "choice_murugan_record_it",
                                 choiceTextEn = "I will record it.",
                                 choiceTextTa = "அதைப் பதிவு செய்கிறேன்.",
-                                nextNodeIndex = -1
+                                nextNodeIndex = -1,
+                                trustDelta = 5,
+                                memoryFlag = "agreed_to_record_ledger"
                             }
                         }
                     },
@@ -445,9 +462,21 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_murugan_check_board",
                                 choiceTextEn = "I will check the board.",
                                 choiceTextTa = "பலகையைப் பார்க்கிறேன்.",
-                                nextNodeIndex = -1
+                                nextNodeIndex = -1,
+                                trustDelta = 5,
+                                memoryFlag = "promised_to_check_board"
+                            },
+                            new DialogueChoice
+                            {
+                                choiceId = "choice_murugan_accuse_unfounded",
+                                choiceTextEn = "Could you be hiding something in this tea stall?",
+                                choiceTextTa = "இந்த தேநீர்க்கடையில் எதையாவது மறைக்கிறீர்களா?",
+                                nextNodeIndex = -1,
+                                trustDelta = -15,
+                                memoryFlag = "accused_without_proof"
                             }
                         }
                     }
@@ -467,16 +496,24 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_velu_what_else",
                                 choiceTextEn = "What else do you carry?",
                                 choiceTextTa = "வேறு என்ன கொண்டுசெல்கிறீர்கள்?",
-                                nextNodeIndex = 1
+                                nextNodeIndex = 1,
+                                trustDelta = 5,
+                                memoryFlag = "inquired_about_cargo"
                             },
                             new DialogueChoice
                             {
+                                choiceId = "choice_velu_investigate_records",
                                 choiceTextEn = "Show me the tally.",
                                 choiceTextTa = "எண்ணிக்கையைக் காட்டுங்கள்.",
                                 nextNodeIndex = 2,
-                                revealClueId = ClueVeluRickshawTally
+                                revealClueId = ClueVeluRickshawTally,
+                                trustDelta = 10,
+                                memoryFlag = "helped_with_records",
+                                factionId = "agrarian",
+                                factionDelta = 5
                             }
                         }
                     },
@@ -489,10 +526,13 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_velu_ask_dawn_routes",
                                 choiceTextEn = "Then record it. Names are evidence too.",
                                 choiceTextTa = "அப்படியானால் பதிவு செய்யுங்கள். பெயர்களும் சான்றுதான்.",
                                 nextNodeIndex = 2,
-                                revealClueId = ClueVeluRickshawTally
+                                revealClueId = ClueVeluRickshawTally,
+                                trustDelta = 5,
+                                memoryFlag = "discussed_dawn_routes"
                             }
                         }
                     },
@@ -505,9 +545,12 @@ namespace WhisperingWilds.Gameplay
                         {
                             new DialogueChoice
                             {
+                                choiceId = "choice_velu_thank",
                                 choiceTextEn = "Thank you, Velu.",
                                 choiceTextTa = "நன்றி, வேலு.",
-                                nextNodeIndex = -1
+                                nextNodeIndex = -1,
+                                trustDelta = 5,
+                                memoryFlag = "thanked_velu"
                             }
                         }
                     }

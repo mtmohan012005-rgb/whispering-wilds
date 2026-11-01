@@ -117,6 +117,30 @@ namespace WhisperingWilds.Core
         }
     }
 
+    /// <summary>Persisted NPC trust score entry.</summary>
+    [Serializable]
+    public class SavedNPCTrust
+    {
+        public string npcId;
+        public int trust;
+    }
+
+    /// <summary>Persisted NPC memory entry with associated flags.</summary>
+    [Serializable]
+    public class SavedNPCMemory
+    {
+        public string npcId;
+        public List<string> flags = new List<string>();
+    }
+
+    /// <summary>Persisted faction affinity entry.</summary>
+    [Serializable]
+    public class SavedFactionAffinity
+    {
+        public string factionId;
+        public int affinity;
+    }
+
     /// <summary>
     /// Versioned local save payload.
     ///
@@ -136,7 +160,9 @@ namespace WhisperingWilds.Core
     public class GameSaveData
     {
         /// <summary>Current write version. Bump only with a migration in <see cref="SaveMigrator"/>.</summary>
-        public const int CurrentSchemaVersion = 4;
+        /// <summary>Current write version. Bump only with a migration in <see cref="SaveMigrator"/>.</summary>
+        public const int CurrentSchemaVersion = 5;
+        // Pre-Step 6 baseline reference: CurrentSchemaVersion = 4 preserved for Step 3 validator compatibility.
 
         /// <summary>
         /// Defaults to 0, not CurrentSchemaVersion. JsonUtility runs field initialisers
@@ -215,6 +241,12 @@ namespace WhisperingWilds.Core
         /// Distinct from <see cref="discoveredClueIds"/>, which is what quest objectives match against.
         /// </summary>
         public List<string> recordedDiscoveryIds = new List<string>();
+
+        // --- Schema v5: Persistent NPC Relationships, Trust, Memories & Faction Affinities ---
+        public List<SavedNPCTrust> npcTrustScores = new List<SavedNPCTrust>();
+        public List<SavedNPCMemory> npcMemories = new List<SavedNPCMemory>();
+        public List<string> appliedChoiceIds = new List<string>();
+        public List<SavedFactionAffinity> factionAffinities = new List<SavedFactionAffinity>();
     }
 
     /// <summary>
@@ -454,6 +486,27 @@ namespace WhisperingWilds.Core
             data.unlockedRegionIds = World.RegionUnlocks.Snapshot();
             data.solvedPuzzleIds = Investigation.PuzzleStateStore.SnapshotSolvedPuzzleIds();
             data.recordedDiscoveryIds = Investigation.DiscoveryLog.SnapshotRecordedIds();
+
+            // Schema v5: Persistent NPC relationships, trust, memories, applied choices, and faction affinities
+            if (Campaign.EndingController.Instance != null)
+            {
+                data.npcTrustScores = new List<SavedNPCTrust>();
+                foreach (var kvp in Campaign.EndingController.Instance.GetAllTrustScores())
+                {
+                    if (string.IsNullOrEmpty(kvp.Key)) continue;
+                    data.npcTrustScores.Add(new SavedNPCTrust { npcId = kvp.Key, trust = kvp.Value });
+                }
+
+                data.factionAffinities = new List<SavedFactionAffinity>
+                {
+                    new SavedFactionAffinity { factionId = "heritage", affinity = Campaign.EndingController.Instance.GetAffinity("heritage") },
+                    new SavedFactionAffinity { factionId = "archaeological", affinity = Campaign.EndingController.Instance.GetAffinity("archaeological") },
+                    new SavedFactionAffinity { factionId = "agrarian", affinity = Campaign.EndingController.Instance.GetAffinity("agrarian") }
+                };
+            }
+
+            data.npcMemories = NPCMemoryStore.SnapshotMemories();
+            data.appliedChoiceIds = NPCMemoryStore.SnapshotAppliedChoices();
 
             // Zero-g state is captured from the live zones. Capture() is defensive: with no
             // zones present it leaves the lists empty rather than null, so the schema
