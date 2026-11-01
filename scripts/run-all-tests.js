@@ -278,6 +278,14 @@ async function main() {
     results.push(step2Result);
     if (step2Result.code !== 0) hasFailure = true;
 
+    // Step 3 Campaign Flow, Quest System & Region Navigation
+    const step3Result = await runTestSuite(
+      'Step 3 Campaign Flow, Quest System & Region Navigation',
+      'scripts/verify-step3-campaign.js'
+    );
+    results.push(step3Result);
+    if (step3Result.code !== 0) hasFailure = true;
+
     // Candidate launcher provenance & safety regression
     const launcherResult = await runTestSuite(
       'Candidate Launcher Provenance & Safety Tests',

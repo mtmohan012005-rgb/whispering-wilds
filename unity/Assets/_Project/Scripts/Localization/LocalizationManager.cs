@@ -77,6 +77,15 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("menu.return_to_main",   "Return to Main Menu",  "முதன்மை மெனுவுக்கு செல்லவும்"),
             new LocalizationEntry("menu.return_confirm",   "Return to Main Menu? Progress is saved.", "முதன்மை மெனுவிற்கு செல்லவா? முன்னேற்றம் சேமிக்கப்படும்."),
 
+            // ---- Step 3: Campaign Flow & Objective Tracker -----------------------
+            new LocalizationEntry("objective.tracker_title",  "ACTIVE OBJECTIVE",       "தற்போதைய குறிக்கோள்"),
+            new LocalizationEntry("objective.no_active",      "Explore the region",     "புதிய இடங்களை ஆராயுங்கள்"),
+            new LocalizationEntry("objective.completed_toast","Objective Complete!",    "குறிக்கோள் முடிந்தது!"),
+            new LocalizationEntry("objective.quest_complete", "Quest Complete!",        "முழுமையான தேடல் முடிந்தது!"),
+            new LocalizationEntry("objective.stage_label",    "Stage {0}: {1}",         "நிலை {0}: {1}"),
+            new LocalizationEntry("region.travel_prompt",     "Travel to {0}",          "{0} நோக்கிப் பயணம்"),
+            new LocalizationEntry("menu.new_game_confirm",    "Start a new game? Unsaved progress will be lost.", "புதிய ஆட்டத்தைத் தொடங்கவா? சேமிக்கப்படாத முன்னேற்றம் இழக்கப்படும்."),
+
             // ---- Guided Introduction Tutorial ---------------------------------
             new LocalizationEntry("tutorial.title",          "EXPLORER GUIDE",          "ஆய்வாளர் வழிகாட்டி"),
             new LocalizationEntry("tutorial.move",           "Walk using [W, A, S, D] or Left Stick", "நடப்பதற்கு [W, A, S, D] அல்லது இடது ஸ்டிக்கைப் பயன்படுத்தவும்"),

@@ -63,6 +63,11 @@ namespace WhisperingWilds.Gameplay
             {
                 var tutObj = new GameObject("IntroductionTutorialUI", typeof(IntroductionTutorialUI));
             }
+
+            if (FindAnyObjectByType<ObjectiveTrackerHUD>() == null)
+            {
+                var objHud = new GameObject("ObjectiveTrackerHUD", typeof(ObjectiveTrackerHUD));
+            }
         }
 
         /// <summary>
@@ -133,6 +138,7 @@ namespace WhisperingWilds.Gameplay
             EnsureManager<SaveManager>();
             EnsureManager<GameManager>();
             EnsureManager<CampaignFlow>();
+            EnsureManager<World.RegionalSceneManager>();
         }
 
         private static void EnsureManager<T>() where T : MonoBehaviour

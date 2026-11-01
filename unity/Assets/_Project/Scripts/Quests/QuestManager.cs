@@ -153,7 +153,7 @@ namespace WhisperingWilds.Quests
                 if (objective == null) continue;
                 if (objective.type != type) continue;
                 if (!string.Equals(objective.targetId, targetId, StringComparison.Ordinal)) continue;
-                if (objective.isCompleted) continue;
+                if (objective.isCompleted || active.GetCount(objective.objectiveId) >= objective.requiredCount) continue;
 
                 if (AdvanceObjective(active.quest.questId, objective.objectiveId, 1))
                 {
@@ -165,7 +165,7 @@ namespace WhisperingWilds.Quests
 
         public bool AcceptQuest(QuestData quest)
         {
-            if (quest == null || IsQuestActive(quest.questId) || IsQuestCompleted(quest.questId))
+            if (quest == null || string.IsNullOrEmpty(quest.questId) || IsQuestActive(quest.questId) || IsQuestCompleted(quest.questId))
             {
                 return false;
             }
@@ -227,6 +227,7 @@ namespace WhisperingWilds.Quests
 
         public bool AdvanceObjective(string questId, string objectiveId, int amount = 1)
         {
+            if (string.IsNullOrEmpty(questId) || string.IsNullOrEmpty(objectiveId)) return false;
             var active = FindProgress(questId);
             if (active == null) return false;
 
