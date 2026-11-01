@@ -159,6 +159,20 @@ namespace WhisperingWilds.Core
                 WhisperingWilds.Wildlife.WildlifeManager.Instance.AdvanceLogicalEcologySimulation(0);
             }
 
+            if (WhisperingWilds.UI.IntroductionTutorialUI.Instance != null)
+            {
+                WhisperingWilds.UI.IntroductionTutorialUI.Instance.SetTutorialCompletedState(save.tutorialCompleted);
+            }
+            else
+            {
+                PlayerPrefs.SetInt(WhisperingWilds.UI.IntroductionTutorialUI.PrefKeyTutorialCompleted, save.tutorialCompleted ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+            if (WhisperingWilds.UI.ObjectiveTrackerHUD.Instance != null)
+            {
+                WhisperingWilds.UI.ObjectiveTrackerHUD.Instance.RefreshDisplay();
+            }
+
             Debug.Log($"<color=#00FF99><b>[SaveManager]</b></color> Game state successfully restored into scene (Player: {save.posX:F1}, {save.posY:F1}, {save.posZ:F1}, Time: {save.timeOfDayHours:F1}, ZeroGBodies: {restoredBodies}).");
         }
 

@@ -75,6 +75,13 @@ namespace WhisperingWilds.World
                 return;
             }
 
+            if (string.IsNullOrEmpty(targetRegionId))
+            {
+                Debug.LogWarning("[RegionalSceneManager] Cannot travel to null or empty region ID.");
+                OnRegionLoadFailed?.Invoke(targetRegionId, "Invalid region ID.");
+                return;
+            }
+
             if (!TamilNaduGeography.TryGetRegion(targetRegionId, out RegionGeoLocation targetGeo))
             {
                 string errorMsg = $"Cannot travel to unknown or invalid region '{targetRegionId}'. Current region '{activeRegionId}' retained.";
@@ -277,6 +284,32 @@ namespace WhisperingWilds.World
             }
             var activePlayer = GameObject.FindWithTag("Player");
             WhisperingWilds.Cameras.CameraController.EnsureActiveCameraBound(activePlayer != null ? activePlayer.transform : null);
+
+            // 6b. Restore gameplay input, cursor, and essential region UI
+            if (activePlayer != null)
+            {
+                var inputHandler = activePlayer.GetComponent<WhisperingWilds.Player.PlayerInputHandler>();
+                if (inputHandler != null) inputHandler.ClearSimulation();
+            }
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetGameState(GameState.Gameplay);
+            }
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            if (FindAnyObjectByType<WhisperingWilds.UI.InGamePauseMenuUI>() == null)
+            {
+                new GameObject("InGamePauseMenuUI", typeof(WhisperingWilds.UI.InGamePauseMenuUI));
+            }
+            if (FindAnyObjectByType<WhisperingWilds.UI.ObjectiveTrackerHUD>() == null)
+            {
+                new GameObject("ObjectiveTrackerHUD", typeof(WhisperingWilds.UI.ObjectiveTrackerHUD));
+            }
+            if (WhisperingWilds.Quests.QuestManager.Instance != null)
+            {
+                WhisperingWilds.Quests.QuestManager.Instance.AcceptRegionArrivalQuest(targetGeo.regionId);
+            }
 
             // 7. Safely unload old region
             if (!string.IsNullOrEmpty(currentSceneName) && currentSceneName != targetSceneName && currentSceneName != "00_Boot")

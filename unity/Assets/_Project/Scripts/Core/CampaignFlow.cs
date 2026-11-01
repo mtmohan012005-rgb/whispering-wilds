@@ -77,6 +77,18 @@ namespace WhisperingWilds.Campaign
             // Reset ending evaluation so a new campaign starts fresh.
             if (EndingController.Instance != null) EndingController.Instance.ResetForNewGame();
 
+            // Reset tutorial state so a new game starts with the guided explorer intro.
+            PlayerPrefs.SetInt(UI.IntroductionTutorialUI.PrefKeyTutorialCompleted, 0);
+            PlayerPrefs.Save();
+            if (UI.IntroductionTutorialUI.Instance != null)
+            {
+                UI.IntroductionTutorialUI.Instance.ResetTutorial();
+            }
+            if (UI.ObjectiveTrackerHUD.Instance != null)
+            {
+                UI.ObjectiveTrackerHUD.Instance.RefreshDisplay();
+            }
+
             SaveManager.PendingSaveToRestore = null;
         }
 

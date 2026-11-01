@@ -234,6 +234,17 @@ namespace WhisperingWilds.UI
             if (tutorialRoot != null) tutorialRoot.SetActive(false);
         }
 
+        public void SetTutorialCompletedState(bool completed)
+        {
+            isCompleted = completed;
+            PlayerPrefs.SetInt(PrefKeyTutorialCompleted, completed ? 1 : 0);
+            PlayerPrefs.Save();
+            if (tutorialRoot != null && hideIfCompleted)
+            {
+                tutorialRoot.SetActive(!completed);
+            }
+        }
+
         public void DismissTutorial()
         {
             isCompleted = true;

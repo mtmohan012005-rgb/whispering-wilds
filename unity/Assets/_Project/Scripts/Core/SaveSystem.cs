@@ -187,6 +187,8 @@ namespace WhisperingWilds.Core
 
         // World State
         public string currentRegionId = "chennai";
+        /// <summary>Tutorial completion flag. Persisted with save so continue does not restart guide.</summary>
+        public bool tutorialCompleted = false;
         public float timeOfDayHours = 9.0f; // 09:00 AM
 
         // --- Schema v3: antigravity physics state ---
@@ -423,6 +425,15 @@ namespace WhisperingWilds.Core
             {
                 data.discoveredClueIds = new List<string>(InvestigationRuntimeState.SnapshotDiscovered());
                 data.unlockedDeductions = new List<string>(InvestigationRuntimeState.SnapshotDeductions());
+            }
+
+            if (UI.IntroductionTutorialUI.Instance != null)
+            {
+                data.tutorialCompleted = UI.IntroductionTutorialUI.Instance.IsCompleted;
+            }
+            else
+            {
+                data.tutorialCompleted = PlayerPrefs.GetInt(UI.IntroductionTutorialUI.PrefKeyTutorialCompleted, 0) == 1;
             }
 
             data.photographedTargets = PhotoJournal.AllTargetIds();
