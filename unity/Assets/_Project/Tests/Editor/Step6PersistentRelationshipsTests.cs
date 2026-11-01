@@ -425,6 +425,79 @@ namespace WhisperingWilds.Tests.Editor
         }
 
         [Test]
+        public void SaveMigrator_AndSaveManager_V4JsonMigrationAndRestoration_ClearsStaleRelationships()
+        {
+            var saveMgrGo = new GameObject("TestSaveManager", typeof(SaveManager));
+            var saveMgr = saveMgrGo.GetComponent<SaveManager>();
+
+            try
+            {
+                // Seed pre-existing state in memory (simulating a dirty active session)
+                endingController.SetTrust("murugan", 75);
+                endingController.SetTrust("velu", 40);
+                endingController.SetAffinity("heritage", 35);
+                NPCMemoryStore.RecordMemory("murugan", "stale_memory_flag");
+                NPCMemoryStore.RecordChoiceApplied("choice_murugan_ask_ledger");
+
+                Assert.AreEqual(75, endingController.GetTrust("murugan"));
+                Assert.AreEqual(40, endingController.GetTrust("velu"));
+                Assert.AreEqual(35, endingController.GetAffinity("heritage"));
+                Assert.IsTrue(NPCMemoryStore.HasMemory("murugan", "stale_memory_flag"));
+                Assert.IsTrue(NPCMemoryStore.IsChoiceApplied("choice_murugan_ask_ledger"));
+
+                // Real Schema v4 JSON payload lacking any v5 relationship fields
+                string v4Json = "{" +
+                    "\"schemaVersion\": 4," +
+                    "\"currentRegionId\": \"chennai\"," +
+                    "\"posX\": 12.5," +
+                    "\"posY\": 0.0," +
+                    "\"posZ\": -5.2," +
+                    "\"rotY\": 90.0," +
+                    "\"currency\": 150," +
+                    "\"tutorialCompleted\": true," +
+                    "\"unlockedRegionIds\": [\"chennai\", \"pichavaram\"]," +
+                    "\"solvedPuzzleIds\": []," +
+                    "\"recordedDiscoveryIds\": []" +
+                "}";
+
+                // Parse raw v4 JSON into GameSaveData
+                var v4Data = JsonUtility.FromJson<GameSaveData>(v4Json);
+                Assert.IsNotNull(v4Data, "JSON deserialization of v4 payload must succeed");
+                Assert.AreEqual(4, v4Data.schemaVersion, "Parsed save data must have schemaVersion 4");
+
+                // Execute actual forward-migration from v4 to v5
+                bool migrated = SaveMigrator.TryMigrate(v4Data, out string migrationError);
+                Assert.IsTrue(migrated, $"SaveMigrator.TryMigrate must succeed on v4 payload. Error: {migrationError}");
+                Assert.IsNull(migrationError);
+                Assert.AreEqual(5, v4Data.schemaVersion, "Save schema must be forward-migrated to v5");
+
+                // Verify v5 relationship collections were cleanly initialized by migrator
+                Assert.IsNotNull(v4Data.npcTrustScores, "npcTrustScores must be initialized after migration");
+                Assert.AreEqual(0, v4Data.npcTrustScores.Count);
+                Assert.IsNotNull(v4Data.npcMemories, "npcMemories must be initialized after migration");
+                Assert.AreEqual(0, v4Data.npcMemories.Count);
+                Assert.IsNotNull(v4Data.appliedChoiceIds, "appliedChoiceIds must be initialized after migration");
+                Assert.AreEqual(0, v4Data.appliedChoiceIds.Count);
+                Assert.IsNotNull(v4Data.factionAffinities, "factionAffinities must be initialized after migration");
+                Assert.AreEqual(0, v4Data.factionAffinities.Count);
+
+                // Apply migrated save through SaveManager
+                saveMgr.ApplySaveDataToGame(v4Data);
+
+                // Verify all prior relationship state was cleanly replaced with 0 defaults and zero stale state leaked
+                Assert.AreEqual(0, endingController.GetTrust("murugan"), "Murugan trust must reset to 0 default on loading migrated v4 save.");
+                Assert.AreEqual(0, endingController.GetTrust("velu"), "Velu trust must reset to 0 default on loading migrated v4 save.");
+                Assert.AreEqual(0, endingController.GetAffinity("heritage"), "Heritage affinity must reset to 0 default on loading migrated v4 save.");
+                Assert.IsFalse(NPCMemoryStore.HasMemory("murugan", "stale_memory_flag"), "Stale memory must not leak from prior session.");
+                Assert.IsFalse(NPCMemoryStore.IsChoiceApplied("choice_murugan_ask_ledger"), "Stale applied choices must not leak from prior session.");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(saveMgrGo);
+            }
+        }
+
+        [Test]
         public void DialogueConsequences_OneTimeExecution_AndStateIsolation()
         {
             var choice = new DialogueChoice

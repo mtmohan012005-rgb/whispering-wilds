@@ -207,6 +207,7 @@ if (fs.existsSync(testsFile)) {
   check('Tests cover ChennaiOpeningContent_AuthoredChoices_ContainConsequences', content.includes('ChennaiOpeningContent_AuthoredChoices_ContainConsequences'));
   check('Tests cover EndingController_RestoreRelationships_ReplacesExistingState_WithoutLeakage', content.includes('EndingController_RestoreRelationships_ReplacesExistingState_WithoutLeakage'));
   check('Tests cover SaveManager_ApplySaveDataToGame_ReplacesStaleTrustAndMemoriesOnLoad', content.includes('SaveManager_ApplySaveDataToGame_ReplacesStaleTrustAndMemoriesOnLoad'));
+  check('Tests cover SaveMigrator_AndSaveManager_V4JsonMigrationAndRestoration_ClearsStaleRelationships', content.includes('SaveMigrator_AndSaveManager_V4JsonMigrationAndRestoration_ClearsStaleRelationships'));
   check('Tests cover DialogueConsequences_OneTimeExecution_AndStateIsolation', content.includes('DialogueConsequences_OneTimeExecution_AndStateIsolation'));
 }
 
