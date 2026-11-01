@@ -337,7 +337,37 @@ namespace WhisperingWilds.UI
 
             for (int i = 0; i < names.Count && i < MaxListedRows; i++)
             {
-                AddRow($"• {names[i]}", new Color(0.9f, 0.9f, 0.75f));
+                string id = names[i];
+                if (string.IsNullOrEmpty(id)) continue;
+
+                // Resolve localized NPC display name
+                string displayName = id;
+                if (LocalizationManager.Instance != null && LocalizationManager.Instance.HasKey("npc." + id.ToLowerInvariant()))
+                {
+                    displayName = Localized("npc." + id.ToLowerInvariant(), id);
+                }
+                else
+                {
+                    // Fall back to title-cased name
+                    displayName = char.ToUpperInvariant(id[0]) + id.Substring(1);
+                }
+
+                // Resolve relationship tier and trust score
+                int trust = EndingController.Instance != null ? EndingController.Instance.GetTrust(id) : 0;
+                var tier = EndingController.GetRelationshipTier(trust);
+                string tierKey;
+                switch (tier)
+                {
+                    case EndingController.NPCRelationshipTier.CloseAlly: tierKey = "relationship.close_ally"; break;
+                    case EndingController.NPCRelationshipTier.Trusted: tierKey = "relationship.trusted"; break;
+                    case EndingController.NPCRelationshipTier.Familiar: tierKey = "relationship.familiar"; break;
+                    case EndingController.NPCRelationshipTier.Acquaintance: tierKey = "relationship.acquaintance"; break;
+                    case EndingController.NPCRelationshipTier.Stranger:
+                    default: tierKey = "relationship.stranger"; break;
+                }
+
+                string tierText = Localized(tierKey, tier.ToString());
+                AddRow($"• {displayName} — {tierText} ({trust})", new Color(0.9f, 0.9f, 0.75f));
             }
         }
 

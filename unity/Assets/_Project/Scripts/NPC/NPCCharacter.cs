@@ -13,6 +13,9 @@ namespace WhisperingWilds.NPC
     [Serializable]
     public class DialogueChoice
     {
+        /// <summary>Stable unique identifier for this choice to guard against re-applying one-time consequences.</summary>
+        public string choiceId;
+
         public string choiceTextEn;
         public string choiceTextTa;
         public int nextNodeIndex;
@@ -28,6 +31,16 @@ namespace WhisperingWilds.NPC
         /// <see cref="revealClueId"/> so existing dialogue graphs keep working.
         /// </summary>
         public string questTriggerId;
+
+        // Step 6.1: Consequential dialogue fields
+        public int trustDelta;
+        public string targetNpcId;
+        public string memoryFlag;
+        public string factionId;
+        public int factionDelta;
+
+        /// <summary>True when this choice carries consequential effects (trust, memory, or faction).</summary>
+        public bool hasConsequence => !string.IsNullOrEmpty(choiceId) && (trustDelta != 0 || !string.IsNullOrEmpty(memoryFlag) || factionDelta != 0);
     }
 
     [Serializable]
@@ -680,14 +693,24 @@ namespace WhisperingWilds.NPC
 
 public void RecordMemory(string key)
         {
+            if (string.IsNullOrEmpty(key)) return;
             if (!memoryFlags.Contains(key))
             {
                 memoryFlags.Add(key);
                 Debug.Log($"<color=#00FF99><b>[NPC Memory]</b></color> {displayNameEn} remembers: {key}");
             }
+            if (!string.IsNullOrEmpty(npcId))
+            {
+                NPCMemoryStore.RecordMemory(npcId, key);
+            }
         }
 
-        public bool HasMemory(string key) => memoryFlags.Contains(key);
+        public bool HasMemory(string key)
+        {
+            if (string.IsNullOrEmpty(key)) return false;
+            if (memoryFlags.Contains(key)) return true;
+            return !string.IsNullOrEmpty(npcId) && NPCMemoryStore.HasMemory(npcId, key);
+        }
 
         /// <summary>
         /// Records that this resident has met the player and reports the single gameplay event

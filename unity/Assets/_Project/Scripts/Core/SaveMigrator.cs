@@ -93,6 +93,16 @@ namespace WhisperingWilds.Core
                 data.schemaVersion = 4;
             }
 
+            // v4 -> v5: persistent NPC relationships, trust, memories, applied choices, and faction affinities.
+            if (data.schemaVersion < 5)
+            {
+                if (data.npcTrustScores == null) data.npcTrustScores = new List<SavedNPCTrust>();
+                if (data.npcMemories == null) data.npcMemories = new List<SavedNPCMemory>();
+                if (data.appliedChoiceIds == null) data.appliedChoiceIds = new List<string>();
+                if (data.factionAffinities == null) data.factionAffinities = new List<SavedFactionAffinity>();
+                data.schemaVersion = 5;
+            }
+
             data.schemaVersion = GameSaveData.CurrentSchemaVersion;
             return true;
         }

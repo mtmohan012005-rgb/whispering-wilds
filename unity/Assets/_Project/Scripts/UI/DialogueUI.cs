@@ -448,6 +448,38 @@ private void RecordConversationIfNeeded()
                 }
             }
 
+            // Step 6.1: Consequential dialogue choices (trust, durable memory, faction affinity)
+            if (choice.hasConsequence && !NPCMemoryStore.IsChoiceApplied(choice.choiceId))
+            {
+                string target = !string.IsNullOrEmpty(choice.targetNpcId)
+                    ? choice.targetNpcId
+                    : (activeNPC != null ? activeNPC.NpcId : string.Empty);
+
+                // Trust delta
+                if (choice.trustDelta != 0 && !string.IsNullOrEmpty(target) && Campaign.EndingController.Instance != null)
+                {
+                    Campaign.EndingController.Instance.AdjustTrust(target, choice.trustDelta);
+                }
+
+                // Memory flag
+                if (!string.IsNullOrEmpty(choice.memoryFlag) && !string.IsNullOrEmpty(target))
+                {
+                    NPCMemoryStore.RecordMemory(target, choice.memoryFlag);
+                    if (activeNPC != null && string.Equals(activeNPC.NpcId, target, StringComparison.OrdinalIgnoreCase))
+                    {
+                        activeNPC.RecordMemory(choice.memoryFlag);
+                    }
+                }
+
+                // Faction affinity delta
+                if (!string.IsNullOrEmpty(choice.factionId) && choice.factionDelta != 0 && Campaign.EndingController.Instance != null)
+                {
+                    Campaign.EndingController.Instance.AdjustAffinity(choice.factionId, choice.factionDelta);
+                }
+
+                NPCMemoryStore.RecordChoiceApplied(choice.choiceId);
+            }
+
             if (choice.nextNodeIndex < 0)
             {
                 CloseDialogue();

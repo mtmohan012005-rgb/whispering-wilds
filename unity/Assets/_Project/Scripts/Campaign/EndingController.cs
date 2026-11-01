@@ -97,6 +97,24 @@ namespace WhisperingWilds.Campaign
             }
         }
 
+        public void SetAffinity(string factionId, int value)
+        {
+            if (string.IsNullOrEmpty(factionId)) return;
+            int clamped = Mathf.Clamp(value, -100, 100);
+            switch (factionId.ToLowerInvariant())
+            {
+                case "heritage":
+                    heritageCouncilAffinity = clamped;
+                    break;
+                case "archaeological":
+                    archaeologicalSocietyAffinity = clamped;
+                    break;
+                case "agrarian":
+                    agrarianGuildAffinity = clamped;
+                    break;
+            }
+        }
+
         public int GetAffinity(string factionId)
         {
             switch (factionId.ToLowerInvariant())
@@ -130,6 +148,40 @@ namespace WhisperingWilds.Campaign
             if (string.IsNullOrEmpty(npcId) || !npcTrustScores.ContainsKey(npcId))
                 return 0;
             return npcTrustScores[npcId];
+        }
+
+        public void SetTrust(string npcId, int value)
+        {
+            if (string.IsNullOrEmpty(npcId)) return;
+            npcTrustScores[npcId] = Mathf.Clamp(value, 0, 100);
+        }
+
+        public IReadOnlyDictionary<string, int> GetAllTrustScores()
+        {
+            return npcTrustScores;
+        }
+
+        public enum NPCRelationshipTier
+        {
+            Stranger,       // 0-19
+            Acquaintance,   // 20-39
+            Familiar,       // 40-59
+            Trusted,        // 60-79
+            CloseAlly       // 80-100
+        }
+
+        public static NPCRelationshipTier GetRelationshipTier(int trust)
+        {
+            if (trust >= 80) return NPCRelationshipTier.CloseAlly;
+            if (trust >= 60) return NPCRelationshipTier.Trusted;
+            if (trust >= 40) return NPCRelationshipTier.Familiar;
+            if (trust >= 20) return NPCRelationshipTier.Acquaintance;
+            return NPCRelationshipTier.Stranger;
+        }
+
+        public NPCRelationshipTier GetNPCRelationshipTier(string npcId)
+        {
+            return GetRelationshipTier(GetTrust(npcId));
         }
 
         /// <summary>
