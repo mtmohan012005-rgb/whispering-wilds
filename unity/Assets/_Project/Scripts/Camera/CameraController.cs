@@ -160,6 +160,9 @@ namespace WhisperingWilds.Cameras
         private void HandleOrbitInput()
         {
             if (input == null) return;
+            if (Cursor.lockState != CursorLockMode.Locked) return;
+            if (WhisperingWilds.Core.GameManager.Instance != null &&
+                WhisperingWilds.Core.GameManager.Instance.CurrentState != WhisperingWilds.Core.GameState.Gameplay) return;
 
             Vector2 look = input.LookInput;
             currentYaw += look.x;
@@ -168,6 +171,10 @@ namespace WhisperingWilds.Cameras
 
         private void HandleZoomInput()
         {
+            if (Cursor.lockState != CursorLockMode.Locked) return;
+            if (WhisperingWilds.Core.GameManager.Instance != null &&
+                WhisperingWilds.Core.GameManager.Instance.CurrentState != WhisperingWilds.Core.GameState.Gameplay) return;
+
 #if ENABLE_INPUT_SYSTEM
             var mouse = Mouse.current;
             if (mouse != null)

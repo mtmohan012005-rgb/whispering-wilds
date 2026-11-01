@@ -4,6 +4,7 @@ using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.NPC;
 using WhisperingWilds.Quests;
+using WhisperingWilds.UI;
 
 namespace WhisperingWilds.Gameplay
 {
@@ -45,6 +46,23 @@ namespace WhisperingWilds.Gameplay
 
             ApplyRegionDialogue();
             EnsurePersistentManagers();
+            EnsureRegionUI();
+        }
+
+        /// <summary>
+        /// Ensures essential region UI systems (Pause Menu and Introduction Tutorial) are present.
+        /// </summary>
+        private void EnsureRegionUI()
+        {
+            if (FindAnyObjectByType<InGamePauseMenuUI>() == null)
+            {
+                var pauseObj = new GameObject("InGamePauseMenuUI", typeof(InGamePauseMenuUI));
+            }
+
+            if (regionId == ChennaiOpeningContent.RegionId && FindAnyObjectByType<IntroductionTutorialUI>() == null)
+            {
+                var tutObj = new GameObject("IntroductionTutorialUI", typeof(IntroductionTutorialUI));
+            }
         }
 
         /// <summary>

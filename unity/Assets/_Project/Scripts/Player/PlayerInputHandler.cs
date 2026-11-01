@@ -336,14 +336,17 @@ namespace WhisperingWilds.Player
             bool invY = EffectiveInvertY;
             bool invX = EffectiveInvertX;
 
-            if (mouse != null && Cursor.lockState == CursorLockMode.Locked)
+            bool isGameplay = WhisperingWilds.Core.GameManager.Instance == null ||
+                              WhisperingWilds.Core.GameManager.Instance.CurrentState == WhisperingWilds.Core.GameState.Gameplay;
+
+            if (mouse != null && Cursor.lockState == CursorLockMode.Locked && isGameplay)
             {
                 Vector2 delta = mouse.delta.ReadValue();
                 lookX = delta.x * sensX * 0.1f * (invX ? -1f : 1f);
                 lookY = delta.y * sensY * 0.1f * (invY ? 1f : -1f);
             }
 
-            if (gamepad != null)
+            if (gamepad != null && Cursor.lockState == CursorLockMode.Locked && isGameplay)
             {
                 Vector2 rStick = ApplyRadialDeadzone(gamepad.rightStick.ReadValue(), EffectiveGamepadDeadzone);
                 if (rStick.sqrMagnitude > 0f)
@@ -355,6 +358,9 @@ namespace WhisperingWilds.Player
 
             LookInput = new Vector2(lookX, lookY);
 #else
+            bool isGameplay = WhisperingWilds.Core.GameManager.Instance == null ||
+                              WhisperingWilds.Core.GameManager.Instance.CurrentState == WhisperingWilds.Core.GameState.Gameplay;
+
             moveX = Input.GetAxisRaw("Horizontal");
             moveZ = Input.GetAxisRaw("Vertical");
             IsSprinting = Input.GetKey(KeyCode.LeftShift);
@@ -367,7 +373,14 @@ namespace WhisperingWilds.Player
             if (Input.GetMouseButtonDown(1)) secondaryActionBufferTimer = 0.15f;
             isPrimaryActionPressed = Input.GetMouseButton(0);
             isSecondaryActionPressed = Input.GetMouseButton(1);
-            LookInput = new Vector2(Input.GetAxis("Mouse X") * EffectiveMouseSensitivity, Input.GetAxis("Mouse Y") * EffectiveMouseSensitivityY * (EffectiveInvertY ? 1f : -1f));
+            if (Cursor.lockState == CursorLockMode.Locked && isGameplay)
+            {
+                LookInput = new Vector2(Input.GetAxis("Mouse X") * EffectiveMouseSensitivity, Input.GetAxis("Mouse Y") * EffectiveMouseSensitivityY * (EffectiveInvertY ? 1f : -1f));
+            }
+            else
+            {
+                LookInput = Vector2.zero;
+            }
 #endif
 
             // Normalize and clamp vector
@@ -390,5 +403,18 @@ namespace WhisperingWilds.Player
         public void ConsumeQuickItem() { quickItemBufferTimer = 0f; simQuickItem = false; }
         public void ConsumeInventory() { inventoryBufferTimer = 0f; simInventory = false; }
         public void ConsumeMap() { mapBufferTimer = 0f; simMap = false; }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus && !isSimulated)
+            {
+                MoveInput = Vector2.zero;
+                LookInput = Vector2.zero;
+                IsSprinting = false;
+                IsCrouching = false;
+                isPrimaryActionPressed = false;
+                isSecondaryActionPressed = false;
+            }
+        }
     }
 }
