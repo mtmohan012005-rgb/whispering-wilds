@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
+using System.Text.RegularExpressions;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.Core;
 using WhisperingWilds.Data;
@@ -167,8 +169,15 @@ namespace WhisperingWilds.Tests.Editor
                 failedRegion = reg;
             };
 
+            // Register expected error log before invalid region travel call
+            LogAssert.Expect(
+                LogType.Error,
+                new Regex(@"\[RegionalSceneManager\] Cannot travel to unknown or invalid region 'atlantis_underwater_citadel'\. Current region 'chennai' retained\.")
+            );
+
             // Call with invalid region ID
             rsm.TravelToRegion("atlantis_underwater_citadel");
+            Assert.AreEqual("chennai", rsm.ActiveRegionId, "Current region must remain chennai after invalid travel attempt");
             Assert.IsTrue(eventFired, "OnRegionLoadFailed must fire for invalid destination");
             Assert.AreEqual("atlantis_underwater_citadel", failedRegion);
             Assert.IsFalse(rsm.IsLoadingRegion, "IsLoadingRegion must be false after refused travel");
