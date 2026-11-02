@@ -242,7 +242,7 @@ new LocalizationEntry("talk.murugan", "Talk to Murugan", "முருகன் 
             new LocalizationEntry("npc.velu",                  "Velu",                 "வேலு"),
 
             // ---- Step 6.1: Persistent NPC Relationships -----------------------
-            new LocalizationEntry("relationship.stranger",     "Stranger",             "அறியாதவர்"),
+            new LocalizationEntry("relationship.stranger",     "Stranger",             "அந்நியர்"),
             new LocalizationEntry("relationship.acquaintance", "Acquaintance",         "அறிமுகமானவர்"),
             new LocalizationEntry("relationship.familiar",     "Familiar",             "பழகியவர்"),
             new LocalizationEntry("relationship.trusted",      "Trusted",              "நம்பகமானவர்"),
