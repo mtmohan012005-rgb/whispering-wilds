@@ -38,6 +38,7 @@ namespace WhisperingWilds.Economy
         // Runtime state
         private NPCWallet wallet;
         private NPCCharacter npcCharacter;
+        private VendorSystem vendorSystem;
         private bool isTrading = false;
 
         // Events
@@ -46,12 +47,14 @@ namespace WhisperingWilds.Economy
 
         public bool IsTrading => isTrading;
         public NPCWallet Wallet => wallet;
+        public VendorSystem VendorSystem => vendorSystem;
         public IReadOnlyList<VendorStockItem> SellStock => sellStock;
         public IReadOnlyList<VendorStockItem> BuyStock => buyStock;
 
         private void Awake()
         {
             npcCharacter = GetComponent<NPCCharacter>();
+            vendorSystem = GetComponent<VendorSystem>();
             wallet = new NPCWallet(npcCharacter?.NpcId ?? "vendor", startingCoins, maxCoins);
 
             // Initialize stock
@@ -72,6 +75,33 @@ namespace WhisperingWilds.Economy
         }
 
         // ------------------------------------------------------------------
+        
+        /// <summary>
+        /// Calculates the effective unit buy price for the player, applying trust discounts if VendorSystem is attached.
+        /// </summary>
+        public int GetEffectiveBuyPrice(VendorStockItem stockItem)
+        {
+            if (stockItem == null) return 0;
+            if (vendorSystem != null)
+            {
+                return vendorSystem.CalculatePurchasePrice(stockItem.unitPrice);
+            }
+            return stockItem.unitPrice;
+        }
+
+        /// <summary>
+        /// Calculates the effective unit payout for the player selling an item, applying trust bonuses if VendorSystem is attached.
+        /// </summary>
+        public int GetEffectiveSellPayout(VendorStockItem stockItem)
+        {
+            if (stockItem == null) return 0;
+            if (vendorSystem != null)
+            {
+                return vendorSystem.CalculateBarterPayout(stockItem.unitPrice);
+            }
+            return stockItem.unitPrice;
+        }
+
         // Buy from vendor (player pays coins, receives items)
         // ------------------------------------------------------------------
 
@@ -106,7 +136,8 @@ namespace WhisperingWilds.Economy
                 return false;
             }
 
-            int totalCost = stockItem.unitPrice * quantity;
+            int unitPrice = GetEffectiveBuyPrice(stockItem);
+            int totalCost = unitPrice * quantity;
 
             // Check vendor has enough stock
             int availableStock = wallet.GetStock(itemId);
@@ -206,7 +237,8 @@ namespace WhisperingWilds.Economy
                 return false;
             }
 
-            int totalEarned = stockItem.unitPrice * quantity;
+            int unitPrice = GetEffectiveSellPayout(stockItem);
+            int totalEarned = unitPrice * quantity;
 
             // Check player has enough items
             var inv = InventoryManager.Instance;
