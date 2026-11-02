@@ -64,6 +64,8 @@ namespace WhisperingWilds.Investigation
         private bool _hintShown;
         private bool _puzzleCompleted;
 
+        public event Action OnFolkloreSolved;
+
         // References
         private AncientTempleLevelController _levelController;
         private StoneMechanism[] _mechanisms;
@@ -179,7 +181,7 @@ namespace WhisperingWilds.Investigation
         private void OnPuzzleSolved()
         {
             _puzzleCompleted = true;
-            Debug.Log("[TemplePuzzle] Puzzle solved! Hidden chamber unlocked.");
+            Debug.Log("[TemplePuzzle] Puzzle solved! Folklore stones aligned.");
 
             // Play puzzle success sound
             if (AudioManager.Instance != null && puzzleSuccessSound != null)
@@ -190,22 +192,13 @@ namespace WhisperingWilds.Investigation
             // Record in PuzzleStateStore for save persistence
             PuzzleStateStore.MarkSolved(puzzleId);
 
-            // Notify level controller
+            // Notify level controller (checks whether all 3 puzzles are solved before opening chamber)
             if (_levelController != null)
             {
-                _levelController.OnPuzzleCompleted();
+                _levelController.OnFolklorePuzzleCompleted();
             }
 
-            // Open the hidden chamber door if referenced
-            if (_levelController != null)
-            {
-                _levelController.OpenHiddenChamber();
-                // Play door open sound after a short delay so it coincides with the door animation
-                if (AudioManager.Instance != null && doorOpenSound != null)
-                {
-                    StartCoroutine(PlayDoorOpenSoundDelayed(0.5f));
-                }
-            }
+            OnFolkloreSolved?.Invoke();
         }
 
         private IEnumerator PlayDoorOpenSoundDelayed(float delay)
