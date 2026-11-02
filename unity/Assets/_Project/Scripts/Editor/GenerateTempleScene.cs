@@ -97,15 +97,27 @@ namespace WhisperingWilds.Editor
             GameObject puzzleObj = new GameObject("PuzzleController");
             TempleFolklorePuzzleController puzzleCtrl = puzzleObj.AddComponent<TempleFolklorePuzzleController>();
 
-            // --- Level Controller with all references wired ---
+            // --- Navagraha Solar Reflection Puzzle Controller & Mirror Pedestals ---
+            GameObject navagrahaObj = new GameObject("NavagrahaPuzzle");
+            NavagrahaShadowPuzzle navagrahaCtrl = navagrahaObj.AddComponent<NavagrahaShadowPuzzle>();
+            CreateNavagrahaPedestals(navagrahaCtrl);
+
+            // --- Dravidian Acoustic Musical Pillar Puzzle Controller & Pillars ---
+            GameObject acousticObj = new GameObject("AcousticPuzzle");
+            AcousticPillarPuzzle acousticCtrl = acousticObj.AddComponent<AcousticPillarPuzzle>();
+            CreateAcousticPillars(acousticCtrl);
+
+            // --- Level Controller with all three temple puzzles wired ---
             GameObject controllerObj = new GameObject("TempleLevelController");
             AncientTempleLevelController controller = controllerObj.AddComponent<AncientTempleLevelController>();
             controller.puzzleController = puzzleCtrl;
+            controller.navagrahaPuzzle = navagrahaCtrl;
+            controller.acousticPuzzle = acousticCtrl;
             controller.artifactPickup = artifact.GetComponent<HiddenArtifactPickup>();
             controller.hiddenChamberDoor = door;
 
-            // --- Wire Audio Clips ---
-            WireAudioClips(controller, puzzleCtrl);
+            // --- Wire Audio Clips across all puzzle controllers ---
+            WireAudioClips(controller, puzzleCtrl, navagrahaCtrl, acousticCtrl);
 
             // --- Save Scene (Preserves existing .meta GUID) ---
             EditorSceneManager.MarkSceneDirty(scene);
@@ -724,15 +736,143 @@ namespace WhisperingWilds.Editor
             pLight.shadows = LightShadows.None;
         }
 
-        private static void WireAudioClips(AncientTempleLevelController levelCtrl, TempleFolklorePuzzleController puzzleCtrl)
+        private static GameObject[] CreateNavagrahaPedestals(NavagrahaShadowPuzzle puzzle)
+        {
+            GameObject[] pedestals = new GameObject[3];
+            Vector3[] positions = new Vector3[]
+            {
+                new Vector3(-6f, 0f, 2f),
+                new Vector3(0f, 0f, 6f),
+                new Vector3(6f, 0f, 2f)
+            };
+
+            string lampPath = "Assets/_Project/Art/Models/Props/temple/brass_lamp.glb";
+            GameObject lampModel = AssetDatabase.LoadAssetAtPath<GameObject>(lampPath);
+
+            Material brassMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/KaveriSealGold.mat",
+                new Color(0.85f, 0.72f, 0.32f),
+                0.80f,
+                0.45f);
+
+            Mesh dialMesh = TempleMeshBuilder.GetOrCreateCarvedStoneDialMesh(
+                "Assets/_Project/Art/Meshes/Temple/StoneMechanismDial.asset",
+                0.85f,
+                0.22f,
+                16);
+
+            for (int i = 0; i < 3; i++)
+            {
+                GameObject pedObj = new GameObject("NavagrahaPedestal_" + i);
+                pedObj.transform.position = positions[i];
+
+                BoxCollider collider = pedObj.AddComponent<BoxCollider>();
+                collider.center = new Vector3(0, 1.0f, 0);
+                collider.size = new Vector3(1.6f, 2.0f, 1.6f);
+
+                GameObject dialObj = new GameObject("MirrorDialBase");
+                dialObj.transform.SetParent(pedObj.transform, false);
+                dialObj.transform.localPosition = new Vector3(0, 0.15f, 0);
+                var mf = dialObj.AddComponent<MeshFilter>();
+                mf.sharedMesh = dialMesh;
+                var mr = dialObj.AddComponent<MeshRenderer>();
+                mr.sharedMaterial = brassMat;
+
+                if (lampModel != null)
+                {
+                    GameObject lamp = GameObject.Instantiate(lampModel, pedObj.transform);
+                    lamp.name = "BrassMirrorReflector";
+                    lamp.transform.localPosition = new Vector3(0, 0.25f, 0);
+                    lamp.transform.localScale = Vector3.one * 0.9f;
+                }
+
+                NavagrahaPedestalInteractable interactable = pedObj.AddComponent<NavagrahaPedestalInteractable>();
+                interactable.pedestalIndex = i;
+                interactable.puzzle = puzzle;
+
+                pedestals[i] = pedObj;
+            }
+
+            return pedestals;
+        }
+
+        private static GameObject[] CreateAcousticPillars(AcousticPillarPuzzle puzzle)
+        {
+            GameObject[] pillars = new GameObject[5];
+            Vector3[] positions = new Vector3[]
+            {
+                new Vector3(-8f, 0f, -12f),
+                new Vector3(-4f, 0f, -12f),
+                new Vector3(0f, 0f, -12f),
+                new Vector3(4f, 0f, -12f),
+                new Vector3(8f, 0f, -12f)
+            };
+
+            string columnPath = "Assets/_Project/Art/Models/Props/temple/granite_column.glb";
+            GameObject columnModel = AssetDatabase.LoadAssetAtPath<GameObject>(columnPath);
+
+            Material graniteMat = WWMaterialLibrary.Lit(
+                "Assets/_Project/Art/Materials/Temple/DravidianCarvedGranite.mat",
+                new Color(0.44f, 0.41f, 0.38f),
+                0.06f,
+                0.32f);
+
+            Mesh plinthMesh = TempleMeshBuilder.GetOrCreateCarvedStoneDialMesh(
+                "Assets/_Project/Art/Meshes/Temple/StoneMechanismPlinth.asset",
+                1.1f,
+                0.15f,
+                24);
+
+            for (int i = 0; i < 5; i++)
+            {
+                GameObject pillarObj = new GameObject("AcousticPillar_" + i);
+                pillarObj.transform.position = positions[i];
+
+                BoxCollider collider = pillarObj.AddComponent<BoxCollider>();
+                collider.center = new Vector3(0, 1.8f, 0);
+                collider.size = new Vector3(1.8f, 3.6f, 1.8f);
+
+                GameObject baseObj = new GameObject("PillarBase");
+                baseObj.transform.SetParent(pillarObj.transform, false);
+                baseObj.transform.localPosition = new Vector3(0, 0.08f, 0);
+                var mf = baseObj.AddComponent<MeshFilter>();
+                mf.sharedMesh = plinthMesh;
+                var mr = baseObj.AddComponent<MeshRenderer>();
+                mr.sharedMaterial = graniteMat;
+
+                if (columnModel != null)
+                {
+                    GameObject col = GameObject.Instantiate(columnModel, pillarObj.transform);
+                    col.name = "MusicalColumnShaft";
+                    col.transform.localPosition = Vector3.zero;
+                    col.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+                }
+
+                AcousticPillarInteractable interactable = pillarObj.AddComponent<AcousticPillarInteractable>();
+                interactable.pillarIndex = i;
+                interactable.puzzle = puzzle;
+
+                pillars[i] = pillarObj;
+            }
+
+            return pillars;
+        }
+
+        private static void WireAudioClips(
+            AncientTempleLevelController levelCtrl,
+            TempleFolklorePuzzleController puzzleCtrl,
+            NavagrahaShadowPuzzle navagrahaCtrl,
+            AcousticPillarPuzzle acousticCtrl)
         {
             string ambiencePath = "Assets/_Project/Audio/Ambience/temple_ambience.wav";
+            string bellPath = "Assets/_Project/Audio/Ambience/temple_bell.wav";
             string stoneClickPath = "Assets/_Project/Audio/Interactions/stone_click.wav";
             string successPath = "Assets/_Project/Audio/Interactions/puzzle_success.wav";
             string wrongAnswerPath = "Assets/_Project/Audio/Interactions/wrong_answer.wav";
             string doorOpenPath = "Assets/_Project/Audio/Interactions/door_open.wav";
 
             AudioClip ambience = AssetDatabase.LoadAssetAtPath<AudioClip>(ambiencePath);
+            AudioClip bell = AssetDatabase.LoadAssetAtPath<AudioClip>(bellPath);
             AudioClip stoneClick = AssetDatabase.LoadAssetAtPath<AudioClip>(stoneClickPath);
             AudioClip success = AssetDatabase.LoadAssetAtPath<AudioClip>(successPath);
             AudioClip wrongAnswer = AssetDatabase.LoadAssetAtPath<AudioClip>(wrongAnswerPath);
@@ -744,7 +884,23 @@ namespace WhisperingWilds.Editor
             if (wrongAnswer != null) puzzleCtrl.wrongAnswerSound = wrongAnswer;
             if (doorOpen != null) puzzleCtrl.doorOpenSound = doorOpen;
 
-            Debug.Log("[GenerateTempleScene] Audio clips wired successfully.");
+            if (navagrahaCtrl != null)
+            {
+                if (stoneClick != null) navagrahaCtrl.pedestalRotateSound = stoneClick;
+                if (success != null) navagrahaCtrl.beamAlignedSound = success;
+            }
+
+            if (acousticCtrl != null)
+            {
+                if (success != null) acousticCtrl.harmonicResonanceSound = success;
+                if (wrongAnswer != null) acousticCtrl.dissonanceSound = wrongAnswer;
+                if (bell != null)
+                {
+                    acousticCtrl.noteClips = new AudioClip[] { bell, bell, bell, bell, bell };
+                }
+            }
+
+            Debug.Log("[GenerateTempleScene] Audio clips wired successfully across all three Dravidian temple puzzles.");
         }
 
         private static void AddOrUpdateSceneInBuildSettings(string scenePath)

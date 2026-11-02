@@ -63,6 +63,7 @@ namespace WhisperingWilds.World
             if (puzzleController != null)
             {
                 puzzleController.Initialize();
+                puzzleController.OnFolkloreSolved += CheckAllChambersUnlocked;
             }
 
             // Initialize Navagraha solar puzzle if present
@@ -78,6 +79,9 @@ namespace WhisperingWilds.World
                 acousticPuzzle.Initialize();
                 acousticPuzzle.OnAcousticSolved += CheckAllChambersUnlocked;
             }
+
+            // Check if all chambers are already unlocked (e.g. from restored save data)
+            CheckAllChambersUnlocked();
 
             // Initialize artifact pickup if reference exists
             if (artifactPickup != null)
@@ -102,6 +106,21 @@ namespace WhisperingWilds.World
 
         private void OnDestroy()
         {
+            if (puzzleController != null)
+            {
+                puzzleController.OnFolkloreSolved -= CheckAllChambersUnlocked;
+            }
+
+            if (navagrahaPuzzle != null)
+            {
+                navagrahaPuzzle.OnNavagrahaSolved -= CheckAllChambersUnlocked;
+            }
+
+            if (acousticPuzzle != null)
+            {
+                acousticPuzzle.OnAcousticSolved -= CheckAllChambersUnlocked;
+            }
+
             if (WhisperingWilds.Online.RealtimeManager.Instance != null)
             {
                 WhisperingWilds.Online.RealtimeManager.Instance.OnMechanismUpdated -= HandleRemoteMechanismUpdate;
@@ -128,20 +147,20 @@ namespace WhisperingWilds.World
             // SaveSystem's InvestigationRuntimeState automatically. No extra save needed here.
         }
 
-        public void OnPuzzleCompleted()
+        public void OnFolklorePuzzleCompleted()
         {
-            if (_puzzleCompleted) return; // Prevent duplicate rewards
+            if (_puzzleCompleted) return; // Prevent duplicate execution
 
             _puzzleCompleted = true;
-            Debug.Log("[AncientTemple] Puzzle completed! Hidden chamber unlocked.");
-
-            // Enable artifact pickup
-            if (artifactPickup != null)
-            {
-                artifactPickup.EnableArtifact();
-            }
+            Debug.Log("[AncientTemple] Folklore puzzle completed! Checking if all temple chambers are unlocked...");
 
             SavePuzzleState();
+            CheckAllChambersUnlocked();
+        }
+
+        public void OnPuzzleCompleted()
+        {
+            OnFolklorePuzzleCompleted();
         }
 
         public void OnArtifactCollected()
@@ -175,24 +194,44 @@ namespace WhisperingWilds.World
 
         public bool AreAllTemplePuzzlesSolved()
         {
-            bool folkloreOk = _puzzleCompleted || (puzzleController == null || puzzleController.IsPuzzleCompleted());
-            bool solarOk = (navagrahaPuzzle == null || navagrahaPuzzle.IsSolved());
-            bool acousticOk = (acousticPuzzle == null || acousticPuzzle.IsSolved());
+            // Strict 3-puzzle guard: all three puzzle components must be wired and solved.
+            // Missing references must NEVER be treated as solved.
+            if (puzzleController == null || navagrahaPuzzle == null || acousticPuzzle == null)
+            {
+                return false;
+            }
+
+            bool folkloreOk = _puzzleCompleted || puzzleController.IsPuzzleCompleted();
+            bool solarOk = navagrahaPuzzle.IsSolved();
+            bool acousticOk = acousticPuzzle.IsSolved();
+
             return folkloreOk && solarOk && acousticOk;
         }
 
-        private void CheckAllChambersUnlocked()
+        public void CheckAllChambersUnlocked()
         {
             if (AreAllTemplePuzzlesSolved())
             {
                 Debug.Log("[AncientTemple] All three Dravidian temple puzzle chambers solved! Unlocking inner garbhagriha.");
                 OpenHiddenChamber();
+
+                // Enable artifact pickup only once all three puzzles are solved
+                if (artifactPickup != null)
+                {
+                    artifactPickup.EnableArtifact();
+                }
+            }
+            else
+            {
+                bool folkloreSolved = _puzzleCompleted || (puzzleController != null && puzzleController.IsPuzzleCompleted());
+                bool solarSolved = navagrahaPuzzle != null && navagrahaPuzzle.IsSolved();
+                bool acousticSolved = acousticPuzzle != null && acousticPuzzle.IsSolved();
+                Debug.Log($"[AncientTemple] Temple puzzle chambers status: Folklore={folkloreSolved}, Solar={solarSolved}, Acoustic={acousticSolved}");
             }
         }
 
         /// <summary>
-        /// Opens the hidden chamber door when the puzzle is solved.
-        /// Called by TempleFolklorePuzzleController after correct solution.
+        /// Opens the hidden chamber door when all puzzles are solved.
         /// </summary>
         public void OpenHiddenChamber()
         {
@@ -216,7 +255,7 @@ namespace WhisperingWilds.World
             {
                 if (mechanismId == "temple_folklore")
                 {
-                    OnPuzzleCompleted();
+                    OnFolklorePuzzleCompleted();
                 }
                 else if (mechanismId == "navagraha_shadow" && navagrahaPuzzle != null && !navagrahaPuzzle.IsSolved())
                 {

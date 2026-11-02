@@ -11,6 +11,7 @@ namespace WhisperingWilds.Tests.PlayMode
     public class TemplePuzzleExpansionTests
     {
         private GameObject _holder;
+        private TempleFolklorePuzzleController _folklore;
         private NavagrahaShadowPuzzle _navagraha;
         private AcousticPillarPuzzle _acoustic;
         private AncientTempleLevelController _controller;
@@ -19,13 +20,16 @@ namespace WhisperingWilds.Tests.PlayMode
         public void SetUp()
         {
             _holder = new GameObject("Test_TemplePuzzleExpansion");
+            _folklore = _holder.AddComponent<TempleFolklorePuzzleController>();
             _navagraha = _holder.AddComponent<NavagrahaShadowPuzzle>();
             _acoustic = _holder.AddComponent<AcousticPillarPuzzle>();
             _controller = _holder.AddComponent<AncientTempleLevelController>();
 
+            _controller.puzzleController = _folklore;
             _controller.navagrahaPuzzle = _navagraha;
             _controller.acousticPuzzle = _acoustic;
 
+            _folklore.Initialize();
             _navagraha.Initialize();
             _acoustic.Initialize();
         }
@@ -150,7 +154,7 @@ namespace WhisperingWilds.Tests.PlayMode
             Assert.IsFalse(_controller.AreAllTemplePuzzlesSolved());
 
             // Solve folklore
-            _controller.OnPuzzleCompleted();
+            _controller.OnFolklorePuzzleCompleted();
 
             // Solve solar
             _navagraha.SetPedestalAngle(0, 45);
