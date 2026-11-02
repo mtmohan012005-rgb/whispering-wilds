@@ -251,7 +251,8 @@ namespace WhisperingWilds.UI
                 if (itemData == null) continue;
 
                 // Create item entry
-                CreateItemEntry(sellItemsContainer, sellItemPrefab, itemData, stockItem.unitPrice,
+                int effectivePrice = activeVendor.GetEffectiveBuyPrice(stockItem);
+                CreateItemEntry(sellItemsContainer, sellItemPrefab, itemData, effectivePrice,
                     availableStock, true, (itemId, qty) => OnBuyItem(itemId, qty));
             }
         }
@@ -283,7 +284,8 @@ namespace WhisperingWilds.UI
                 if (itemData == null) continue;
 
                 // Create item entry
-                CreateItemEntry(buyItemsContainer, buyItemPrefab, itemData, stockItem.unitPrice,
+                int effectivePayout = activeVendor.GetEffectiveSellPayout(stockItem);
+                CreateItemEntry(buyItemsContainer, buyItemPrefab, itemData, effectivePayout,
                     playerCount, false, (itemId, qty) => OnSellItem(itemId, qty));
             }
         }
