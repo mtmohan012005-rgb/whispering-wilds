@@ -15122,21 +15122,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.UI.LoginUI
   emailField: {fileID: 1451204253}
   passwordField: {fileID: 1197070119}
+  togglePasswordVisibilityButton: {fileID: 0}
+  passwordEyeText: {fileID: 0}
+  rememberEmailToggle: {fileID: 0}
+  forgotPasswordButton: {fileID: 0}
   signInButton: {fileID: 1691032277}
   signInStatusText: {fileID: 1958978144}
+  switchToRegisterButton: {fileID: 1386713275}
   registerEmailField: {fileID: 1775895356}
   registerNameField: {fileID: 1828748310}
   registerPasswordField: {fileID: 1317360683}
   registerConfirmPasswordField: {fileID: 1981974599}
+  toggleRegPasswordVisibilityButton: {fileID: 0}
+  regPasswordEyeText: {fileID: 0}
+  passwordStrengthBar: {fileID: 0}
+  passwordStrengthText: {fileID: 0}
+  registerRequirementsText: {fileID: 0}
   registerButton: {fileID: 524987126}
   registerStatusText: {fileID: 1745966656}
-  backButton: {fileID: 936880900}
-  switchToRegisterButton: {fileID: 1386713275}
   switchToSignInButton: {fileID: 503240908}
+  forgotEmailField: {fileID: 0}
+  sendRecoveryButton: {fileID: 0}
+  forgotStatusText: {fileID: 0}
+  forgotBackToSignInButton: {fileID: 0}
+  forgotHaveTokenButton: {fileID: 0}
+  forgotInstructionsText: {fileID: 0}
+  resetTokenField: {fileID: 0}
+  resetPasswordField: {fileID: 0}
+  resetConfirmPasswordField: {fileID: 0}
+  toggleResetPasswordVisibilityButton: {fileID: 0}
+  resetPasswordEyeText: {fileID: 0}
+  resetPasswordButton: {fileID: 0}
+  resetStatusText: {fileID: 0}
+  resetBackToSignInButton: {fileID: 0}
+  resetInstructionsText: {fileID: 0}
   signedInLabel: {fileID: 1990223694}
+  accountStatusLabel: {fileID: 0}
   signOutButton: {fileID: 315247992}
+  continueButton: {fileID: 0}
+  backButton: {fileID: 936880900}
+  guestButton: {fileID: 0}
+  loadingSpinner: {fileID: 0}
   signInPanel: {fileID: 1716769867}
   registerPanel: {fileID: 215187427}
+  forgotPasswordPanel: {fileID: 0}
+  resetPasswordPanel: {fileID: 0}
   signedInPanel: {fileID: 2082823457}
 --- !u!1 &1523323997
 GameObject:
