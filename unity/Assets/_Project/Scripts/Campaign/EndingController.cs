@@ -25,7 +25,7 @@ namespace WhisperingWilds.Campaign
     /// </summary>
     public class EndingController : MonoBehaviour
     {
-        public static EndingController Instance { get; private set; }
+        public static EndingController Instance { get; set; }
 
         /// <summary>The four possible endings, ordered by evaluation priority (highest first).</summary>
         public enum EndingType

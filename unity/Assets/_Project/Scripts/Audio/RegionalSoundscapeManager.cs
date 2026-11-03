@@ -64,6 +64,12 @@ namespace WhisperingWilds.Audio
 
         public string CurrentRegionId => _currentProfile != null ? _currentProfile.regionId : string.Empty;
 
+        public void EnsureInitialized()
+        {
+            InitializeSources();
+            EnsureDefaultProfiles();
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -74,8 +80,7 @@ namespace WhisperingWilds.Audio
             }
             Instance = this;
 
-            InitializeSources();
-            EnsureDefaultProfiles();
+            EnsureInitialized();
         }
 
         private void OnDestroy()
@@ -100,7 +105,7 @@ namespace WhisperingWilds.Audio
             _activeSource = ambienceSourceA;
         }
 
-        private void EnsureDefaultProfiles()
+        public void EnsureDefaultProfiles()
         {
             if (regionalProfiles == null) regionalProfiles = new List<RegionAudioProfile>();
 
@@ -129,6 +134,7 @@ namespace WhisperingWilds.Audio
         public RegionAudioProfile GetProfile(string regionId)
         {
             if (string.IsNullOrEmpty(regionId)) return null;
+            if (regionalProfiles == null || regionalProfiles.Count == 0) EnsureDefaultProfiles();
             return regionalProfiles.Find(p => string.Equals(p.regionId, regionId, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -144,7 +150,7 @@ namespace WhisperingWilds.Audio
                 return;
             }
 
-            if (_currentProfile != null && _currentProfile.regionId == profile.regionId && _activeSource.isPlaying)
+            if (_currentProfile != null && _currentProfile.regionId == profile.regionId && _activeSource != null && _activeSource.isPlaying)
             {
                 return; // Already playing this region
             }
@@ -152,13 +158,16 @@ namespace WhisperingWilds.Audio
             _currentProfile = profile;
             float fadeTime = duration >= 0f ? duration : defaultCrossfadeDuration;
 
-            if (_crossfadeRoutine != null) StopCoroutine(_crossfadeRoutine);
-            _crossfadeRoutine = StartCoroutine(CrossfadeAmbience(profile, fadeTime));
-
-            if (_periodicSFXRoutine != null) StopCoroutine(_periodicSFXRoutine);
-            if (profile.periodicSFXClip != null)
+            if (Application.isPlaying)
             {
-                _periodicSFXRoutine = StartCoroutine(PeriodicSFXLoop(profile));
+                if (_crossfadeRoutine != null) StopCoroutine(_crossfadeRoutine);
+                _crossfadeRoutine = StartCoroutine(CrossfadeAmbience(profile, fadeTime));
+
+                if (_periodicSFXRoutine != null) StopCoroutine(_periodicSFXRoutine);
+                if (profile.periodicSFXClip != null)
+                {
+                    _periodicSFXRoutine = StartCoroutine(PeriodicSFXLoop(profile));
+                }
             }
         }
 

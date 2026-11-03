@@ -24,7 +24,10 @@ namespace WhisperingWilds.Editor
             "Assets/_Project/Scenes/05_Chettinad_Mansion.unity",
             "Assets/_Project/Scenes/06_Mamallapuram_Shore.unity",
             "Assets/_Project/Scenes/07_Nilgiris_Sanctuary.unity",
-            "Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity"
+            "Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity",
+            "Assets/_Project/Scenes/09_Madurai_Meenakshi.unity",
+            "Assets/_Project/Scenes/10_Kanyakumari_Cape.unity",
+            "Assets/_Project/Scenes/11_Agasthyamalai_Wilds.unity"
         };
 
         public static readonly string[] BenchmarkScenes = new string[]
@@ -50,7 +53,12 @@ namespace WhisperingWilds.Editor
             string exePath = Path.Combine(buildDir, "TheWhisperingWilds.exe");
             if (!Directory.Exists(buildDir)) Directory.CreateDirectory(buildDir);
 
-            // Re-generate authoritative 00_Boot.unity and regional scenes with living ecology
+            bool skipRegen = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WW_SKIP_SCENE_REGEN")) ||
+                             !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WW_PRESERVE_EXISTING_SCENES"));
+
+            if (!skipRegen)
+            {
+                // Re-generate authoritative 00_Boot.unity and regional scenes with living ecology
             BuildBootScene.CreateBootScene();
             AssembleWhisperingWilds.BuildPlayableChennaiScene();
 
@@ -63,9 +71,16 @@ namespace WhisperingWilds.Editor
             AssembleAllRegions.BuildAllScenes();
             GenerateTempleScene.Generate();
 
-            // Bake static NavMesh AFTER scene assembly so ground geometry exists, and BEFORE the
-            // build so NavMeshAgent pathing works in the shipping player.
-            EcologyNavMeshBaker.BakeAllRegions();
+
+
+                // Wire Carnatic swaras, wildlife calls, and NPC voice hooks
+                ProductionAssetPatchTools.WireSwarasWildlifeAndNpcVoice();
+
+    
+    
+                EcologyNavMeshBaker.BakeAllRegions();
+
+            }
 
             // Register only gameplay scenes in build settings
             EditorBuildSettingsScene[] buildScenes = new EditorBuildSettingsScene[ProductionGameplayScenes.Length];
@@ -130,7 +145,12 @@ namespace WhisperingWilds.Editor
             BuildChennaiPopulation.Build();
             AssembleAllRegions.BuildAllScenes();
             GenerateTempleScene.Generate();
-            EcologyNavMeshBaker.BakeAllRegions();
+                // Wire Carnatic swaras, wildlife calls, and NPC voice hooks
+                ProductionAssetPatchTools.WireSwarasWildlifeAndNpcVoice();
+
+    
+    
+                EcologyNavMeshBaker.BakeAllRegions();
             if (Application.isBatchMode) EditorApplication.Exit(0);
         }
 

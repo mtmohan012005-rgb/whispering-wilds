@@ -54,7 +54,7 @@ namespace WhisperingWilds.World
             InitializeLevel();
         }
 
-        private void InitializeLevel()
+        public void InitializeLevel()
         {
             // Load puzzle state from save data
             LoadPuzzleState();

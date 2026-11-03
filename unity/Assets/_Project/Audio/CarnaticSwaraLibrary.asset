@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a57445603b4a6834c9b4cd10fb9d6d06, type: 3}
+  m_Name: CarnaticSwaraLibrary
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.Audio.CarnaticSwaraLibrary
+  baseTonicFrequency: 220
+  swaras:
+  - swaraName: pillar_tone_sa
+    tamilSyllable: "\u0B9A"
+    frequencyHz: 220
+    clip: {fileID: 8300000, guid: 0a1947be505a88343b51a9e53861d9ab, type: 3}
+  - swaraName: pillar_tone_ri
+    tamilSyllable: "\u0BB0\u0BBF"
+    frequencyHz: 247.5
+    clip: {fileID: 8300000, guid: de50f352a07294649ac1af0a44f6a5a2, type: 3}
+  - swaraName: pillar_tone_ga
+    tamilSyllable: "\u0B95"
+    frequencyHz: 275
+    clip: {fileID: 8300000, guid: 779301a5d1a7ab544a7e818190442e98, type: 3}
+  - swaraName: pillar_tone_ma
+    tamilSyllable: "\u0BAE"
+    frequencyHz: 293.33
+    clip: {fileID: 8300000, guid: 93f2d4170c5bafd4ea81b88d7cf5124e, type: 3}
+  - swaraName: pillar_tone_pa
+    tamilSyllable: "\u0BAA"
+    frequencyHz: 330
+    clip: {fileID: 8300000, guid: c5615d3ef80076e42ab74630a21eca8f, type: 3}
+  - swaraName: pillar_tone_dha
+    tamilSyllable: "\u0BA4"
+    frequencyHz: 371.25
+    clip: {fileID: 8300000, guid: a3b65d47c2fec4549af8cabad6f3485f, type: 3}
+  - swaraName: pillar_tone_ni
+    tamilSyllable: "\u0BA8\u0BBF"
+    frequencyHz: 412.5
+    clip: {fileID: 8300000, guid: 5b9bffd2db4ca104dac048cc70f3c01b, type: 3}

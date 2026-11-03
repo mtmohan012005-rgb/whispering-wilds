@@ -53,9 +53,9 @@ namespace WhisperingWilds.Editor
                 BuildChettinadScene();
                 BuildMamallapuramScene();
                 BuildNilgirisScene();
-                BuildMaduraiScene();
-                BuildKanyakumariScene();
-                BuildAgasthyamalaiScene();
+                BuildSangamExpansionScenes.BuildMaduraiScene();
+                BuildSangamExpansionScenes.BuildKanyakumariScene();
+                BuildSangamExpansionScenes.BuildAgasthyamalaiScene();
 
                 // Benchmarks
                 BuildBenchmarkScene("WW_Benchmark_Chennai", "chennai");

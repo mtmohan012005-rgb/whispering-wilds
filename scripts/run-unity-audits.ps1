@@ -4,7 +4,10 @@ param (
     [string]$Action
 )
 
-$unityExe = "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe"
+$unityExe = "C:\Unity\6000.6.3f1\Editor\Unity.exe"
+if (-not (Test-Path $unityExe)) {
+    $unityExe = "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe"
+}
 $projectPath = Join-Path $PSScriptRoot "..\unity"
 $artifactsDir = Join-Path $PSScriptRoot "..\artifacts"
 

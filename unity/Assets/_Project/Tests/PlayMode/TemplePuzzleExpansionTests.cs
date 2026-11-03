@@ -32,6 +32,7 @@ namespace WhisperingWilds.Tests.PlayMode
             _folklore.Initialize();
             _navagraha.Initialize();
             _acoustic.Initialize();
+            _controller.InitializeLevel();
         }
 
         [TearDown]
@@ -137,7 +138,7 @@ namespace WhisperingWilds.Tests.PlayMode
             Assert.IsNotNull(en);
             Assert.IsNotNull(ta);
             Assert.IsTrue(en.Contains("Mohanam raga"));
-            Assert.IsTrue(ta.Contains("மோகன ராகம்"));
+            Assert.IsTrue(ta.Contains("மோகன ராகத்தின்"));
         }
 
         [Test]

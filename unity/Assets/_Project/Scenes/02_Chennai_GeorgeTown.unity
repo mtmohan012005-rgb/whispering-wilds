@@ -279,6 +279,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2929107}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2929112}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2929111}
   m_SourcePrefab: {fileID: -1847912811722665902, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
 --- !u!4 &2929105 stripped
 Transform:
@@ -402,12 +408,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B87\u0BA8\u0BCD\u0BA4\u0BA4\u0BCD \u0BA4\u0BC6\u0BB0\u0BC1\u0BB5\u0BBF\u0BA9\u0BCD \u0BAA\u0BA4\u0BBF\u0BA9\u0BCA\u0BB0\u0BC1\u0B99\u0BCD\u0B95 \u0B95\u0BC1\u0BB4\u0BA8\u0BCD\u0BA4\u0BC8\u0B95\u0BB3\u0BC1\u0B95\u0BCD\u0B95\u0BC1\u0BAA\u0BCD \u0BAA\u0B9F\u0BBF\u0B95\u0BCD\u0B95\u0B9A\u0BCD \u0B9A\u0BCA\u0BB2\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD. \u0B87\u0BB0\u0BC1\u0BB5\u0BB0\u0BC1\u0BAE\u0BCD \u0B85\u0BB1\u0BBF\u0BB5\u0BBF\u0BAA\u0BCD\u0BAA\u0BC1\u0BAA\u0BCD \u0BAA\u0BB2\u0B95\u0BC8\u0BAF\u0BC8\u0BAA\u0BCD \u0BAA\u0B9F\u0BBF\u0B95\u0BCD\u0B95 \u0BAE\u0BC1\u0B9F\u0BBF\u0BAF\u0BB5\u0BBF\u0BB2\u0BCD\u0BB2\u0BC8."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1012672545}
   homeAnchor: {fileID: 583494246}
   socialAnchor: {fileID: 1583043729}
@@ -458,6 +470,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &2929111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2929106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &2929112
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2929106}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &3275940
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -539,6 +664,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3275943}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3275948}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3275947}
   m_SourcePrefab: {fileID: -1847912811722665902, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
 --- !u!4 &3275941 stripped
 Transform:
@@ -662,12 +793,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B8E\u0BA9\u0BCD \u0B87\u0BAF\u0BA8\u0BCD\u0BA4\u0BBF\u0BB0\u0BAE\u0BCD \u0B95\u0BBE\u0BB2\u0BAE\u0BBE\u0BA9\u0BA4\u0BC1, \u0B86\u0BA9\u0BBE\u0BB2\u0BCD \u0B92\u0BB0\u0BC1 \u0BA4\u0BC8\u0BAF\u0BBF\u0BAA\u0BCD\u0BAA\u0BC1\u0BAE\u0BCD \u0B89\u0B9F\u0BC8\u0B95\u0BCD\u0B95\u0BB5\u0BBF\u0BB2\u0BCD\u0BB2\u0BC8."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1012672545}
   homeAnchor: {fileID: 2092234108}
   socialAnchor: {fileID: 2072202129}
@@ -718,6 +855,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &3275947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3275942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &3275948
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3275942}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!21 &8614407
 Material:
   serializedVersion: 8
@@ -2412,6 +2662,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
       insertIndex: -1
       addedObject: {fileID: 181551450}
+    - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 181551455}
+    - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 181551454}
   m_SourcePrefab: {fileID: -8800258143079746161, guid: 452c560512d174c4eae084815eb24f37, type: 3}
 --- !u!4 &181551448 stripped
 Transform:
@@ -2535,12 +2791,18 @@ MonoBehaviour:
     speakerTextTa: "\u0BAE\u0BC1\u0BA4\u0BB2\u0BBF\u0BB2\u0BCD \u0BB5\u0BB2\u0BC8, \u0B87\u0BB0\u0BA3\u0BCD\u0B9F\u0BBE\u0BB5\u0BA4\u0BC1 \u0BAA\u0B9F\u0B95\u0BC1, \u0B95\u0B9F\u0BB2\u0BC1\u0B9F\u0BA9\u0BCD \u0BB5\u0BBE\u0BA4\u0BAE\u0BCD \u0B95\u0B9F\u0BC8\u0B9A\u0BBF\u0BAF\u0BBF\u0BB2\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1884810600}
   homeAnchor: {fileID: 819001751}
   socialAnchor: {fileID: 1583043729}
@@ -2591,6 +2853,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &181551454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181551449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &181551455
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 181551449}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &194862712
 GameObject:
   m_ObjectHideFlags: 0
@@ -4327,6 +4702,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
       insertIndex: -1
       addedObject: {fileID: 338468415}
+    - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 338468420}
+    - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 338468419}
   m_SourcePrefab: {fileID: -8800258143079746161, guid: 452c560512d174c4eae084815eb24f37, type: 3}
 --- !u!4 &338468413 stripped
 Transform:
@@ -4450,12 +4831,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B87\u0BB5\u0BCD\u0BB5\u0BBF\u0B9F\u0BCD\u0B9F\u0BC1\u0B95\u0BB3\u0BBF\u0BB2\u0BCD \u0BAA\u0BBE\u0BA4\u0BBF\u0BAF\u0BC8 \u0BA8\u0BBE\u0BA9\u0BCD \u0B9A\u0BC6\u0BAF\u0BCD\u0BA4\u0BC7\u0BA9\u0BCD. \u0BAE\u0BB1\u0BCD\u0BB1 \u0BAA\u0BBE\u0BA4\u0BBF \u0BA4\u0BBF\u0BB0\u0BC1\u0BA4\u0BCD\u0BA4\u0BC1\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1012672545}
   homeAnchor: {fileID: 370861297}
   socialAnchor: {fileID: 2072202129}
@@ -4506,6 +4893,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &338468419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338468414}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &338468420
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 338468414}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &340922912
 GameObject:
   m_ObjectHideFlags: 0
@@ -5583,6 +6083,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -7675608083647519423, guid: b8c85987ea2504b4a9a78a9d064bc884, type: 3}
       insertIndex: -1
       addedObject: {fileID: 404878053}
+    - targetCorrespondingSourceObject: {fileID: -7675608083647519423, guid: b8c85987ea2504b4a9a78a9d064bc884, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 404878058}
+    - targetCorrespondingSourceObject: {fileID: -7675608083647519423, guid: b8c85987ea2504b4a9a78a9d064bc884, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 404878057}
   m_SourcePrefab: {fileID: -4186492573363430887, guid: b8c85987ea2504b4a9a78a9d064bc884, type: 3}
 --- !u!4 &404878051 stripped
 Transform:
@@ -5706,12 +6212,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B85\u0BA8\u0BCD\u0BA4 \u0BAE\u0BC7\u0BB2\u0BCD\u0BB5\u0BB3\u0BBF\u0BAF\u0BAE\u0BCD \u0BB5\u0BB0\u0BC1\u0BB5\u0BA4\u0BB1\u0BCD\u0B95\u0BC1 \u0BAE\u0BC1\u0BA9\u0BCD\u0BAA\u0BC7 \u0B87\u0BA4\u0BCD \u0BA4\u0BC6\u0BB0\u0BC1\u0BB5\u0BBF\u0BB2\u0BCD \u0BA8\u0B9F\u0BA8\u0BCD\u0BA4\u0BC1\u0BB3\u0BCD\u0BB3\u0BC7\u0BA9\u0BCD. \u0B95\u0BC7\u0BB3\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1882019055}
   homeAnchor: {fileID: 115254614}
   socialAnchor: {fileID: 1882019055}
@@ -5762,6 +6274,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &404878057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404878052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &404878058
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404878052}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &409608862
 GameObject:
   m_ObjectHideFlags: 0
@@ -6565,6 +7190,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 502469648}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 502469653}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 502469652}
   m_SourcePrefab: {fileID: -1847912811722665902, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
 --- !u!4 &502469646 stripped
 Transform:
@@ -6688,12 +7319,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B92\u0BB0\u0BC1 \u0BAE\u0BA3\u0BBF \u0BA8\u0BC7\u0BB0\u0BAE\u0BC1\u0BAE\u0BCD \u0B92\u0BB0\u0BC1 \u0BA4\u0BC6\u0BA9\u0BCD\u0BA9\u0BC8 \u0B87\u0BB2\u0BC8\u0BAF\u0BC1\u0BAE\u0BCD \u0BA4\u0BBE\u0BB0\u0BC1. \u0B86\u0BAF\u0BBF\u0BB0\u0BBE\u0BA3\u0BCD\u0B9F\u0BC1 \u0BA8\u0BBF\u0BB2\u0BC8\u0B95\u0BCD\u0B95\u0BC1\u0BAE\u0BCD \u0B95\u0BC2\u0B9F\u0BC8 \u0B9A\u0BC6\u0BAF\u0BCD\u0BA4\u0BC1 \u0BA4\u0BB0\u0BC1\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1012672545}
   homeAnchor: {fileID: 2094965082}
   socialAnchor: {fileID: 2072202129}
@@ -6744,6 +7381,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &502469652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502469647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &502469653
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 502469647}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &507412171
 GameObject:
   m_ObjectHideFlags: 0
@@ -8499,6 +9249,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8600310457569612227, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
       insertIndex: -1
       addedObject: {fileID: 714758908}
+    - targetCorrespondingSourceObject: {fileID: 8600310457569612227, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 714758910}
+    - targetCorrespondingSourceObject: {fileID: 8600310457569612227, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 714758909}
   m_SourcePrefab: {fileID: 5401800872276357198, guid: 86f5d93be259074469d3ff6ff173b380, type: 3}
 --- !u!4 &714758903 stripped
 Transform:
@@ -8622,12 +9378,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B95\u0BA3\u0BCD\u0BA3\u0BBE \u0B95\u0B9F\u0BCD\u0B9F\u0BC1, \u0B9A\u0BBE\u0BAA\u0BCD\u0BAA\u0BBF\u0B9F\u0BCD\u0B9F\u0BBE? \u0B89\u0B9F\u0BCD\u0B95\u0BBE\u0BB0\u0BC1\u0B99\u0BCD\u0B95. \u0B87\u0BA9\u0BCD\u0BB1\u0BC1 \u0BA4\u0BC7\u0BAF\u0BCD \u0B95\u0BC6\u0B9F\u0BCD\u0B9F\u0BBF\u0BAF\u0BBE\u0BA9\u0BA4\u0BC1."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 518264484}
   homeAnchor: {fileID: 896337938}
   socialAnchor: {fileID: 518264484}
@@ -8730,6 +9492,119 @@ MonoBehaviour:
     unitPrice: 25
     quantity: 0
     maxQuantity: 30
+--- !u!114 &714758909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714758904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &714758910
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714758904}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &748200752
 GameObject:
   m_ObjectHideFlags: 0
@@ -9145,6 +10020,8 @@ MonoBehaviour:
   serverUrl: http://localhost:3000
   networkTickRateHz: 15
   interpolateRemotePlayers: 1
+  remotePlayerPrefab: {fileID: 0}
+  remoteInterpolationSharpness: 12
 --- !u!114 &748200775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12792,6 +13669,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -3184994993669495735, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1106746279}
+    - targetCorrespondingSourceObject: {fileID: -3184994993669495735, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1106746284}
+    - targetCorrespondingSourceObject: {fileID: -3184994993669495735, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1106746283}
   m_SourcePrefab: {fileID: -7903825068076171188, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
 --- !u!4 &1106746277 stripped
 Transform:
@@ -12915,12 +13798,18 @@ MonoBehaviour:
     speakerTextTa: "\u0BB5\u0BBE\u0BB0\u0BAE\u0BCD \u0B87\u0BB0\u0BA3\u0BCD\u0B9F\u0BC1 \u0BA4\u0B9F\u0BB5\u0BC8 \u0B87\u0BB2\u0BC8 \u0B95\u0BCA\u0BA3\u0BCD\u0B9F\u0BC1 \u0B9A\u0BC6\u0BB2\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD. \u0BAA\u0BB2\u0BB0\u0BC8 \u0BB5\u0BBF\u0B9F \u0B85\u0BA4\u0BBF\u0B95\u0BAE\u0BBE\u0BAF\u0BCD \u0B87\u0BA4\u0BCD \u0BA4\u0BC6\u0BB0\u0BC1\u0BB5\u0BC8\u0BAA\u0BCD \u0BAA\u0BBE\u0BB0\u0BCD\u0B95\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1636270758}
   homeAnchor: {fileID: 1806842071}
   socialAnchor: {fileID: 2072202129}
@@ -12971,6 +13860,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &1106746283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106746278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &1106746284
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106746278}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1113425928
 GameObject:
   m_ObjectHideFlags: 0
@@ -13606,6 +14608,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3742209498171340671, guid: c63ba07fafdaef54bac4ba789eba85c1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1146094534}
+    - targetCorrespondingSourceObject: {fileID: 3742209498171340671, guid: c63ba07fafdaef54bac4ba789eba85c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1146094539}
+    - targetCorrespondingSourceObject: {fileID: 3742209498171340671, guid: c63ba07fafdaef54bac4ba789eba85c1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1146094538}
   m_SourcePrefab: {fileID: -2445065536895430198, guid: c63ba07fafdaef54bac4ba789eba85c1, type: 3}
 --- !u!4 &1146094532 stripped
 Transform:
@@ -13729,12 +14737,18 @@ MonoBehaviour:
     speakerTextTa: "\u0BA8\u0BBE\u0BA9\u0BCD \u0BAE\u0BC0\u0BA9\u0BBE\u0B9F\u0BCD\u0B9A\u0BBF. \u0B86\u0BB5\u0BA3\u0BAA\u0BCD \u0BAA\u0BBE\u0BA4\u0BC8\u0B95\u0BB3\u0BC8\u0BA4\u0BCD \u0BA4\u0BCA\u0B9F\u0BB0\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD. \u0BA8\u0BC0\u0BA4\u0BBF\u0BAE\u0BA9\u0BCD\u0BB1\u0BAA\u0BCD \u0BAA\u0BA4\u0BBF\u0BB5\u0BC7\u0B9F\u0BCD\u0B9F\u0BBF\u0BB2\u0BCD \u0BAE\u0BA3\u0BCD\u0B9F\u0BB2\u0B99\u0BCD\u0B95\u0BB3\u0BCD \u0B8E\u0B99\u0BCD\u0B95\u0BC7 \u0B9A\u0BC6\u0BA9\u0BCD\u0BB1\u0BA9 \u0B8E\u0BA9\u0BCD\u0BAA\u0BA4\u0BC1 \u0BA4\u0BC6\u0BB0\u0BBF\u0BAF\u0BC1\u0BAE\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1115529477}
   homeAnchor: {fileID: 378344228}
   socialAnchor: {fileID: 1583043729}
@@ -13785,6 +14799,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &1146094538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146094533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &1146094539
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146094533}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1151512975
 GameObject:
   m_ObjectHideFlags: 0
@@ -15135,6 +16262,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -3184994993669495735, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1397439489}
+    - targetCorrespondingSourceObject: {fileID: -3184994993669495735, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1397439494}
+    - targetCorrespondingSourceObject: {fileID: -3184994993669495735, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1397439493}
   m_SourcePrefab: {fileID: -7903825068076171188, guid: 9a890d17d6c0f8941a8fa88be0f896ff, type: 3}
 --- !u!4 &1397439487 stripped
 Transform:
@@ -15258,12 +16391,18 @@ MonoBehaviour:
     speakerTextTa: "\u0BB5\u0BC6\u0BAA\u0BCD\u0BAA\u0BAE\u0BCD \u0BB5\u0BB0\u0BC1\u0BB5\u0BA4\u0BB1\u0BCD\u0B95\u0BC1\u0BB3\u0BCD \u0BAE\u0BB2\u0BCD\u0BB2\u0BBF \u0BAA\u0BC2, \u0B95\u0BBE\u0BB2\u0BC8 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB5\u0BC7."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1636270758}
   homeAnchor: {fileID: 22552368}
   socialAnchor: {fileID: 2072202129}
@@ -15314,6 +16453,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &1397439493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397439488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &1397439494
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1397439488}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1407537358
 GameObject:
   m_ObjectHideFlags: 0
@@ -17500,6 +18752,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -225552980618801433, guid: b985e68dbbb0c82499032decb9cb730e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1544567282}
+    - targetCorrespondingSourceObject: {fileID: -225552980618801433, guid: b985e68dbbb0c82499032decb9cb730e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1544567287}
+    - targetCorrespondingSourceObject: {fileID: -225552980618801433, guid: b985e68dbbb0c82499032decb9cb730e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1544567286}
   m_SourcePrefab: {fileID: 1339575042619572682, guid: b985e68dbbb0c82499032decb9cb730e, type: 3}
 --- !u!4 &1544567280 stripped
 Transform:
@@ -17623,12 +18881,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B87\u0BA8\u0BCD\u0BA4\u0BAA\u0BCD \u0BAA\u0B95\u0BCD\u0B95\u0BAE\u0BCD \u0BA8\u0BC0\u0BB0\u0BCD \u0B87\u0BA9\u0BCD\u0BA9\u0BC1\u0BAE\u0BCD \u0B9A\u0BC1\u0BA4\u0BCD\u0BA4\u0BAE\u0BBE\u0B95 \u0B87\u0BB0\u0BC1\u0B95\u0BCD\u0B95\u0BC1. \u0BAE\u0BC0\u0BA4\u0BAE\u0BCD \u0BAA\u0BBF\u0B9A\u0BCD\u0B9A\u0BBE\u0BB5\u0BB0\u0BAE\u0BCD \u0B9A\u0BCA\u0BB2\u0BCD\u0BB2\u0BC1\u0BAE\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 1884810600}
   homeAnchor: {fileID: 2069065471}
   socialAnchor: {fileID: 1884810600}
@@ -17679,6 +18943,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &1544567286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544567281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &1544567287
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544567281}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1562332381
 GameObject:
   m_ObjectHideFlags: 0
@@ -18617,6 +19994,113 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653951072}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1661537827
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1661537831}
+  - component: {fileID: 1661537830}
+  - component: {fileID: 1661537829}
+  - component: {fileID: 1661537828}
+  m_Layer: 0
+  m_Name: Market_Puddle_Decal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1661537828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661537827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aec31b6fbc298824bb4eb79924a5d55b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.Atmosphere.PuddleDecalController
+  maxOpacity: 0.85
+  accumulationSpeed: 0.5
+  evaporationSpeed: 0.25
+  currentOpacity: 0
+--- !u!23 &1661537829
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661537827}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 044fc1656287b70469305d9dd9b7891d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1661537830
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661537827}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1661537831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661537827}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -2, y: 0.02, z: 4}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1668326781
 GameObject:
   m_ObjectHideFlags: 0
@@ -19152,6 +20636,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1745640616}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1745640618}
+    - targetCorrespondingSourceObject: {fileID: 4552595145596205356, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1745640617}
   m_SourcePrefab: {fileID: -1847912811722665902, guid: 778e1ca37e79b634f9444bdc5151211a, type: 3}
 --- !u!4 &1745640610 stripped
 Transform:
@@ -19275,12 +20765,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B85\u0BB0\u0BBF\u0B9A\u0BBF, \u0BAE\u0BA3\u0BCD\u0BA3\u0BC6\u0BAF\u0BCD, \u0B8E\u0BB0\u0BBF\u0BAA\u0BCD\u0BAA\u0BC1 \u0BAE\u0BC1\u0B9A\u0BCD\u0B9A\u0BC1. \u0BA4\u0BAE\u0BBF\u0BB4\u0BCD \u0BAA\u0BA4\u0BBF\u0BB5\u0BC7\u0B9F\u0BCD\u0B9F\u0BC8\u0BAF\u0BC1\u0BAE\u0BCD \u0BB5\u0BC8\u0BA4\u0BCD\u0BA4\u0BBF\u0BB0\u0BC1\u0B95\u0BCD\u0B95\u0BBF\u0BB1\u0BC7\u0BA9\u0BCD."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 591680127}
   homeAnchor: {fileID: 635895835}
   socialAnchor: {fileID: 1583043729}
@@ -19383,6 +20879,119 @@ MonoBehaviour:
     unitPrice: 25
     quantity: 0
     maxQuantity: 30
+--- !u!114 &1745640617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745640611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &1745640618
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745640611}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1806842070
 GameObject:
   m_ObjectHideFlags: 0
@@ -21569,6 +23178,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2153565035261563765, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2039412064}
+    - targetCorrespondingSourceObject: {fileID: 2153565035261563765, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2039412066}
+    - targetCorrespondingSourceObject: {fileID: 2153565035261563765, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2039412065}
   m_SourcePrefab: {fileID: 1931507639935165643, guid: 6cea51aa2aae846428dfcc5a108d452d, type: 3}
 --- !u!4 &2039412060 stripped
 Transform:
@@ -21692,12 +23307,18 @@ MonoBehaviour:
     speakerTextTa: "\u0B8E\u0B99\u0BCD\u0B95\u0BC7 \u0BAA\u0BCB\u0B95\u0BBF\u0BB1\u0BC0\u0BB0\u0BCD, \u0B85\u0BA3\u0BCD\u0BA3\u0BBE? \u0B8E\u0BA9\u0BCD \u0B86\u0B9F\u0BCD\u0B9F\u0BCB \u0B87\u0BA4\u0BC7 \u0B87\u0BB0\u0BC1\u0B95\u0BCD\u0B95\u0BC1."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 518264484}
   homeAnchor: {fileID: 1924099686}
   socialAnchor: {fileID: 1583043729}
@@ -21748,6 +23369,119 @@ MonoBehaviour:
   minimumMovementThreshold: 0.15
   maxStuckAttemptsBeforeRecovery: 2
   pathRecalculationCooldown: 0.5
+--- !u!114 &2039412065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2039412061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &2039412066
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2039412061}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2040086234
 GameObject:
   m_ObjectHideFlags: 0
@@ -22569,6 +24303,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2112254474}
+    - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2112254479}
+    - targetCorrespondingSourceObject: {fileID: -984936058686189488, guid: 452c560512d174c4eae084815eb24f37, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2112254478}
   m_SourcePrefab: {fileID: -8800258143079746161, guid: 452c560512d174c4eae084815eb24f37, type: 3}
 --- !u!4 &2112254472 stripped
 Transform:
@@ -22692,12 +24432,18 @@ MonoBehaviour:
     speakerTextTa: "\u0BA4\u0BC1\u0BB1\u0BC8 \u0BA8\u0BC0\u0BB0\u0BBF\u0BA9\u0BCD \u0B9A\u0BC1\u0BB5\u0BC8 \u0B92\u0BB5\u0BCD\u0BB5\u0BCA\u0BB0\u0BC1 \u0BAE\u0BBE\u0BA4\u0BAE\u0BC1\u0BAE\u0BCD \u0BB5\u0BC7\u0BB1\u0BC1\u0BAA\u0B9F\u0BC1\u0B95\u0BBF\u0BB1\u0BA4\u0BC1. \u0BAF\u0BBE\u0BB0\u0BC1\u0BAE\u0BCD \u0B8F\u0BA9\u0BCD \u0B8E\u0BA9\u0BCD\u0BB1\u0BC1 \u0B9A\u0BCA\u0BB2\u0BCD\u0BB5\u0BA4\u0BBF\u0BB2\u0BCD\u0BB2\u0BC8."
     requiredClueId: 
     choices:
-    - choiceTextEn: See you around.
+    - choiceId: 
+      choiceTextEn: See you around.
       choiceTextTa: "\u0BAA\u0BBF\u0BB1\u0B95\u0BC1 \u0B9A\u0BA8\u0BCD\u0BA4\u0BBF\u0B95\u0BCD\u0B95\u0BB2\u0BBE\u0BAE\u0BCD."
       nextNodeIndex: -1
       requiredClueId: 
       revealClueId: 
       questTriggerId: 
+      trustDelta: 0
+      targetNpcId: 
+      memoryFlag: 
+      factionId: 
+      factionDelta: 0
   workAnchor: {fileID: 591680127}
   homeAnchor: {fileID: 1898555840}
   socialAnchor: {fileID: 1583043729}
@@ -22748,6 +24494,119 @@ CapsuleCollider:
   m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0.9, z: 0}
+--- !u!114 &2112254478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112254473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11cdbb3386a2554418764697ccaa5a49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WhisperingWilds::WhisperingWilds.NPC.NPCVoiceBarkPlayer
+  speechClip: {fileID: 0}
+  baseVolume: 1
+  minDistance: 2
+  maxDistance: 15
+--- !u!82 &2112254479
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112254473}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &2119952246
 GameObject:
   m_ObjectHideFlags: 0
@@ -23106,3 +24965,4 @@ SceneRoots:
   - {fileID: 768109947}
   - {fileID: 247271394}
   - {fileID: 1127168303}
+  - {fileID: 1661537831}
