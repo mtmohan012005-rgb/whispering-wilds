@@ -65,7 +65,10 @@ function runVerification() {
     'unity/Assets/_Project/Scenes/05_Chettinad_Mansion.unity',
     'unity/Assets/_Project/Scenes/06_Mamallapuram_Shore.unity',
     'unity/Assets/_Project/Scenes/07_Nilgiris_Sanctuary.unity',
-    'unity/Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity'
+    'unity/Assets/_Project/Scenes/08_Ancient_Temple_Ruins.unity',
+    'unity/Assets/_Project/Scenes/09_Madurai_Meenakshi.unity',
+    'unity/Assets/_Project/Scenes/10_Kanyakumari_Cape.unity',
+    'unity/Assets/_Project/Scenes/11_Agasthyamalai_Wilds.unity'
   ];
   let scenesPass = true;
   for (const scene of scenes) {

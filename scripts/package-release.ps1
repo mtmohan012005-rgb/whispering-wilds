@@ -151,7 +151,7 @@ HOW TO RUN:
 2. Double-click 'TheWhisperingWilds.exe' to launch the game.
 3. Select your language preference (English or தமிழ்) on the initial menu.
 
-INCLUDED PRODUCTION SCENES (9 Total):
+INCLUDED PRODUCTION SCENES (12 Total):
 - 00_Boot (Main Menu, Tamil/English Selector, Graphics & Audio Settings)
 - 01_StateMap_TamilNadu (Interactive Geographic Overview, Region Selection Hub)
 - 02_Chennai_GeorgeTown (Playable 3D Urban Market, Murugan NPC, Clues, Save/Load)
@@ -161,6 +161,9 @@ INCLUDED PRODUCTION SCENES (9 Total):
 - 06_Mamallapuram_Shore (Playable 3D Coastal Temple & Granite Monuments)
 - 07_Nilgiris_Sanctuary (Playable 3D Mountain Forest & Tea Highlands)
 - 08_Ancient_Temple_Ruins (Playable 3D Dravidian Temple Complex)
+- 09_Madurai_Meenakshi (Playable 3D Dravidian Gopuram & Colonnade Bazaar)
+- 10_Kanyakumari_Cape (Playable 3D Three-Sea Confluence & Triveni Sangam)
+- 11_Agasthyamalai_Wilds (Playable 3D Mountain Biosphere & Shola Forest)
 
 CONTROLS:
 State Map View:
