@@ -129,6 +129,11 @@ namespace WhisperingWilds.Online
         /// </summary>
         public void SignIn(string email, string password, Action<bool, string> callback)
         {
+            SignIn(email, password, false, callback);
+        }
+
+        public void SignIn(string email, string password, bool remember, Action<bool, string> callback)
+        {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
                 string msg = "Email and password are required.";
@@ -152,15 +157,15 @@ namespace WhisperingWilds.Online
                 return;
             }
 
-            StartCoroutine(SignInCoroutine(email, password, callback));
+            StartCoroutine(SignInCoroutine(email, password, remember, callback));
         }
 
-        private IEnumerator SignInCoroutine(string email, string password, Action<bool, string> callback)
+        private IEnumerator SignInCoroutine(string email, string password, bool remember, Action<bool, string> callback)
         {
             IsRequesting = true;
             string url = $"{baseUrl.TrimEnd('/')}/api/auth/login";
 
-            string json = $"{{\"email\":\"{EscapeJson(email)}\",\"password\":\"{EscapeJson(password)}\"}}";
+            string json = $"{{\"email\":\"{EscapeJson(email)}\",\"password\":\"{EscapeJson(password)}\",\"remember\":{(remember ? "true" : "false")}}}";
 
             using (var uwr = new UnityWebRequest(url, "POST"))
             {
@@ -272,6 +277,162 @@ namespace WhisperingWilds.Online
                     string msg = uwr.isNetworkError
                         ? "Cannot reach the server. Check your internet connection."
                         : ParseErrorMessage(uwr.downloadHandler?.text) ?? "Registration failed.";
+                    callback?.Invoke(false, msg);
+                    OnError?.Invoke(msg);
+                }
+                else
+                {
+                    string response = uwr.downloadHandler?.text;
+                    var result = ParseGenericResponse(response);
+                    callback?.Invoke(result.success, result.message);
+                    if (!result.success) OnError?.Invoke(result.message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Requests a password recovery link/token to be sent to the registered email address.
+        /// </summary>
+        public void ForgotPassword(string email, Action<bool, string> callback)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                string msg = "Email is required.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                string msg = "Backend is not configured. Password recovery is unavailable.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (IsRequesting)
+            {
+                callback?.Invoke(false, "A request is already in progress.");
+                return;
+            }
+
+            StartCoroutine(ForgotPasswordCoroutine(email.Trim(), callback));
+        }
+
+        private IEnumerator ForgotPasswordCoroutine(string email, Action<bool, string> callback)
+        {
+            IsRequesting = true;
+            string url = $"{baseUrl.TrimEnd('/')}/api/auth/forgot-password";
+            string json = $"{{\"email\":\"{EscapeJson(email)}\"}}";
+
+            using (var uwr = new UnityWebRequest(url, "POST"))
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+                uwr.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                uwr.downloadHandler = new DownloadHandlerBuffer();
+                uwr.SetRequestHeader("Content-Type", "application/json");
+                uwr.SetRequestHeader("X-WW-CSRF", "1");
+                uwr.timeout = requestTimeoutSeconds;
+
+                yield return uwr.SendWebRequest();
+                IsRequesting = false;
+
+                if (uwr.isNetworkError || uwr.isHttpError)
+                {
+                    string msg = uwr.isNetworkError
+                        ? "Cannot reach the server. Check your internet connection."
+                        : ParseErrorMessage(uwr.downloadHandler?.text) ?? "Password reset request failed.";
+                    callback?.Invoke(false, msg);
+                    OnError?.Invoke(msg);
+                }
+                else
+                {
+                    string response = uwr.downloadHandler?.text;
+                    var result = ParseGenericResponse(response);
+                    callback?.Invoke(result.success, result.message);
+                    if (!result.success) OnError?.Invoke(result.message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Submits a password reset request using a valid token and new password.
+        /// </summary>
+        public void ResetPassword(string token, string newPassword, string confirmPassword, Action<bool, string> callback)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                string msg = "Recovery token is required.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                string msg = "New password and confirmation are required.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (newPassword != confirmPassword)
+            {
+                string msg = "Passwords do not match.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (newPassword.Length < 8)
+            {
+                string msg = "Password must be at least 8 characters long.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(baseUrl))
+            {
+                string msg = "Backend is not configured. Password reset is unavailable.";
+                callback?.Invoke(false, msg);
+                OnError?.Invoke(msg);
+                return;
+            }
+
+            if (IsRequesting)
+            {
+                callback?.Invoke(false, "A request is already in progress.");
+                return;
+            }
+
+            StartCoroutine(ResetPasswordCoroutine(token.Trim(), newPassword, confirmPassword, callback));
+        }
+
+        private IEnumerator ResetPasswordCoroutine(string token, string newPassword, string confirmPassword, Action<bool, string> callback)
+        {
+            IsRequesting = true;
+            string url = $"{baseUrl.TrimEnd('/')}/api/auth/reset-password";
+            string json = $"{{\"token\":\"{EscapeJson(token)}\",\"newPassword\":\"{EscapeJson(newPassword)}\",\"confirmPassword\":\"{EscapeJson(confirmPassword)}\"}}";
+
+            using (var uwr = new UnityWebRequest(url, "POST"))
+            {
+                byte[] bodyRaw = Encoding.UTF8.GetBytes(json);
+                uwr.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                uwr.downloadHandler = new DownloadHandlerBuffer();
+                uwr.SetRequestHeader("Content-Type", "application/json");
+                uwr.SetRequestHeader("X-WW-CSRF", "1");
+                uwr.timeout = requestTimeoutSeconds;
+
+                yield return uwr.SendWebRequest();
+                IsRequesting = false;
+
+                if (uwr.isNetworkError || uwr.isHttpError)
+                {
+                    string msg = uwr.isNetworkError
+                        ? "Cannot reach the server. Check your internet connection."
+                        : ParseErrorMessage(uwr.downloadHandler?.text) ?? "Password reset failed.";
                     callback?.Invoke(false, msg);
                     OnError?.Invoke(msg);
                 }
