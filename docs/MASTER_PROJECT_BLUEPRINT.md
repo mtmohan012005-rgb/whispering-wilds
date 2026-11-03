@@ -1,10 +1,10 @@
 # 🗺️ Master Project Blueprint: The Whispering Wilds (Kaattu Vazhi / தடம்)
 
-**Project Status:** v1.0.1 Candidate Build Shipped & Locked (e33d6e0)
+**Project Status:** v1.0.1 Candidate Build Shipped & Locked (88c6f3f)
 **Engine / Stack:** Unity 6000.6.3f1 (HDRP 17.7.0) + Node.js Backend / CI  
 **Total Test Suites:** 13/13 Passing (100% Green CI)  
 **Release Package:** `TheWhisperingWilds-v1.0.1-windows-x64.zip` (59.91 MB)  
-**Release Provenance SHA-256:** `AB1FFD8A1EBECDCA1F1C0C42E03C6A8FFD61EECFED32DB2E94EA8A97F96BC0E1`  
+**Release Provenance SHA-256:** `61EC0705D2E016E4769809520052F6CBA580F85A4D97877A3B71AE0AD7375FD2`  
 
 ---
 
@@ -38,7 +38,7 @@ Every core system is modular, fully tested via NUnit EditMode test suites, and i
 
 ---
 
-## 2. World Geography & Production Scenes (9 Total)
+## 2. World Geography & Production Scenes (12 Total)
 
 | Scene Index & Name | Region / Setting | Key Gameplay & Architectural Focus |
 | :--- | :--- | :--- |
@@ -51,11 +51,9 @@ Every core system is modular, fully tested via NUnit EditMode test suites, and i
 | `06_Mamallapuram_Shore` | Coastal Hub | Pallava shore rock reliefs, coastal winds, maritime travel nodes. |
 | `07_Nilgiris_Sanctuary` | Highland Hub | Misty Western Ghats tea estates, Toda shola reserves, high-altitude flora. |
 | `08_Ancient_Temple_Ruins` | Sacred Sanctuary | Final endgame dungeon housing the 3 Dravidian trials and master puzzles. |
-
-### Expansion Waypoints (Sangam Horizons)
-* `09_Madurai_Meenakshi`: Cultural capital, night jasmine markets & Vaigai archaeology.
-* `10_Kanyakumari_Cape`: Confluence of three oceans, maritime lighthouses & sunrise rocks.
-* `11_Agasthyamalai_Wilds`: High-biodiversity nocturnal biosphere & indigenous medicinal flora.
+| `09_Madurai_Meenakshi` | Cultural Hub | Cultural capital, night jasmine markets & Vaigai archaeology. |
+| `10_Kanyakumari_Cape` | Maritime Hub | Confluence of three oceans, maritime lighthouses & sunrise rocks. |
+| `11_Agasthyamalai_Wilds` | Sacred Biosphere | High-biodiversity nocturnal biosphere & indigenous medicinal flora. |
 
 ---
 
