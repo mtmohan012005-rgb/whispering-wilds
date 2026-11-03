@@ -1,10 +1,10 @@
 # 🗺️ Master Project Blueprint: The Whispering Wilds (Kaattu Vazhi / தடம்)
 
-**Project Status:** v1.0.1 Candidate Build Shipped & Locked (38f042)
+**Project Status:** v1.0.1 Candidate Build Shipped & Locked (e33d6e0)
 **Engine / Stack:** Unity 6000.6.3f1 (HDRP 17.7.0) + Node.js Backend / CI  
 **Total Test Suites:** 13/13 Passing (100% Green CI)  
 **Release Package:** `TheWhisperingWilds-v1.0.1-windows-x64.zip` (59.91 MB)  
-**Release Provenance SHA-256:** `960B2DFBCA35A9DF122536A232F1ED1E8AEA6E884ED625120F9B940C8FE617F7`  
+**Release Provenance SHA-256:** `AB1FFD8A1EBECDCA1F1C0C42E03C6A8FFD61EECFED32DB2E94EA8A97F96BC0E1`  
 
 ---
 
