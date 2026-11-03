@@ -494,6 +494,10 @@ namespace WhisperingWilds.Editor.Characters
             controller.AddParameter("FreeFall", AnimatorControllerParameterType.Bool);
             controller.AddParameter("Crouching", AnimatorControllerParameterType.Bool);
             controller.AddParameter("Jump", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("IsAimingCamera", AnimatorControllerParameterType.Bool);
+            controller.AddParameter("HarvestTrigger", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("InteractTrigger", AnimatorControllerParameterType.Trigger);
+            controller.AddParameter("InteractionType", AnimatorControllerParameterType.Int);
 
             var sm = controller.layers[0].stateMachine;
 
@@ -522,6 +526,25 @@ namespace WhisperingWilds.Editor.Characters
             Transition(jump, land, false, 0f, 0.1f, ("Grounded", AnimatorConditionMode.If, 1f));
             Transition(fall, land, false, 0f, 0.1f, ("Grounded", AnimatorConditionMode.If, 1f));
             Transition(land, ground, true, 0.15f, 0.1f);
+
+            if (clips.ContainsKey("PlayerHarvestSickle"))
+            {
+                var harvest = AddState(sm, "Harvest", clips["PlayerHarvestSickle"], new Vector2(0, 1));
+                Transition(ground, harvest, false, 0f, 0.1f, ("HarvestTrigger", AnimatorConditionMode.If, 1f));
+                Transition(harvest, ground, true, 0.85f, 0.15f);
+            }
+            if (clips.ContainsKey("PlayerAimCamera"))
+            {
+                var aimCamera = AddState(sm, "AimCamera", clips["PlayerAimCamera"], new Vector2(1, 1));
+                Transition(ground, aimCamera, false, 0f, 0.15f, ("IsAimingCamera", AnimatorConditionMode.If, 1f));
+                Transition(aimCamera, ground, false, 0f, 0.15f, ("IsAimingCamera", AnimatorConditionMode.IfNot, 0f));
+            }
+            if (clips.ContainsKey("PlayerInteractInspect"))
+            {
+                var interact = AddState(sm, "Interact", clips["PlayerInteractInspect"], new Vector2(2, 1));
+                Transition(ground, interact, false, 0f, 0.1f, ("InteractTrigger", AnimatorConditionMode.If, 1f));
+                Transition(interact, ground, true, 0.85f, 0.15f);
+            }
 
             AssetDatabase.SaveAssets();
             return controller;

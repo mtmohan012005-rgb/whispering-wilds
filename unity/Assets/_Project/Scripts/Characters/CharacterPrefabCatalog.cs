@@ -26,6 +26,8 @@ namespace WhisperingWilds.Characters
         public const string FisherPrefabPath = CharacterPrefabRoot + "NPC_Fisher.prefab";
         public const string ForestGuidePrefabPath = CharacterPrefabRoot + "NPC_ForestGuide.prefab";
         public const string TeaWorkerPrefabPath = CharacterPrefabRoot + "NPC_TeaWorker.prefab";
+        public const string KumaranPrefabPath = CharacterPrefabRoot + "NPC_Kumaran.prefab";
+        public const string SiddharPrefabPath = CharacterPrefabRoot + "NPC_Siddhar.prefab";
 
         /// <summary>
         /// File-name key (GLB base name, e.g. "selvam") -> prefab asset path.
@@ -42,6 +44,8 @@ namespace WhisperingWilds.Characters
             { "fisher", FisherPrefabPath },
             { "forest-guide", ForestGuidePrefabPath },
             { "kannan", TeaWorkerPrefabPath },
+            { "kumaran", KumaranPrefabPath },
+            { "siddhar", SiddharPrefabPath },
         };
 
         /// <summary>
