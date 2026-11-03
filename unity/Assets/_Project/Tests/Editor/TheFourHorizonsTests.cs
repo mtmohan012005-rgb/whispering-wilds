@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -29,6 +29,8 @@ namespace WhisperingWilds.Tests.Editor
             expansionManager = testHost.AddComponent<SangamHorizonsExpansion>();
             cholaManager = testHost.AddComponent<CholaMaritimeTacticsManager>();
             cyberpunkEngine = testHost.AddComponent<MadrasCyberpunkDialogueEngine>();
+            expansionManager.InitializeExpansionHubs();
+            cyberpunkEngine.InitializeSampleNoirCase();
         }
 
         [TearDown]
