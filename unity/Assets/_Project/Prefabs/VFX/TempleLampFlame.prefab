@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &458386841504510200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 670834466762139400}
+  - component: {fileID: 297509585192272640}
+  - component: {fileID: 892522303888429200}
+  - component: {fileID: 559042388564909800}
+  m_Layer: 0
+  m_Name: TempleLampFlame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &670834466762139400
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458386841504510200}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!198 &297509585192272640
+ParticleSystem:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458386841504510200}
+  serializedVersion: 6
+  lengthInSeconds: 2
+  simulationSpeed: 1
+  looping: 1
+  prewarm: 1
+  playOnAwake: 1
+  autoRandomSeed: 1
+  startLifetime: {scalar: 0.8, maxCurve: {serializedVersion: 2, m_Curve: [{time: 0, value: 0.8}], m_PreInfinity: 2, m_PostInfinity: 2}}
+  startSpeed: {scalar: 0.6, maxCurve: {serializedVersion: 2, m_Curve: [{time: 0, value: 0.6}], m_PreInfinity: 2, m_PostInfinity: 2}}
+  startColor: {maxColor: {r: 1.0, g: 0.72, b: 0.22, a: 0.95}}
+  startSize: {scalar: 0.12, maxCurve: {serializedVersion: 2, m_Curve: [{time: 0, value: 0.12}], m_PreInfinity: 2, m_PostInfinity: 2}}
+  gravityModifier: {scalar: -0.2, maxCurve: {serializedVersion: 2, m_Curve: [{time: 0, value: -0.2}], m_PreInfinity: 2, m_PostInfinity: 2}}
+  maxNumParticles: 60
+--- !u!199 &892522303888429200
+ParticleSystemRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458386841504510200}
+  m_Enabled: 1
+  m_RenderMode: 0
+  m_MinParticleSize: 0.001
+  m_MaxParticleSize: 0.5
+--- !u!108 &559042388564909800
+Light:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458386841504510200}
+  m_Enabled: 1
+  serializedVersion: 10
+  m_Type: 2
+  m_Color: {r: 1.0, g: 0.75, b: 0.35, a: 1}
+  m_Intensity: 2.5
+  m_Range: 6
+  m_SpotAngle: 30
+  m_InnerSpotAngle: 21.80208
+  m_CookieSize: 10
+  m_Shadows:
+    m_Type: 1
+    m_Resolution: -1
+    m_CustomResolution: -1
+    m_Strength: 0.75
+    m_Bias: 0.05
+    m_NormalBias: 0.4
+    m_NearPlane: 0.2
