@@ -22,6 +22,10 @@ namespace WhisperingWilds.Editor
             GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Ambience", "temple_bell.wav"), 0.5f, 520, 0.3f);
             GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Ambience", "birds.wav"), 0.5f, 2000, 0.08f);
             GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Footsteps", "footstep_stone.wav"), 0.2f, 300, 0.3f);
+            GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Footsteps", "footstep_mud.wav"), 0.22f, 120, 0.45f);
+            GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Footsteps", "footstep_grass.wav"), 0.18f, 420, 0.35f);
+            GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Footsteps", "footstep_water.wav"), 0.25f, 550, 0.4f);
+            GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Footsteps", "footstep_sand.wav"), 0.2f, 220, 0.38f);
             GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Interactions", "stone_click.wav"), 0.2f, 800, 0.5f);
             GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Interactions", "wrong_answer.wav"), 0.3f, 150, 0.3f);
             GenerateWav(Path.Combine(Application.dataPath, "_Project", "Audio", "Interactions", "puzzle_success.wav"), 0.5f, 440, 0.4f);

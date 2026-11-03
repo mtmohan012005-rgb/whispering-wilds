@@ -920,6 +920,37 @@ namespace WhisperingWilds.Editor.Characters
                 ApplyLand(ctx, 0.4f);
             });
 
+            clips["PlayerHarvestSickle"] = MakeClip("PlayerHarvestSickle", bones, 1.2f, ctx =>
+            {
+                ctx.HipsLocalY(t => -0.05f * Mathf.Sin(Phase(t, 1.2f)));
+                ctx.Rotate("Spine", t => new Vector3(15f + 10f * Mathf.Sin(Phase(t, 1.2f)), 0f, 0f));
+                ctx.Rotate("Chest", t => new Vector3(12f + 8f * Mathf.Sin(Phase(t, 1.2f)), 0f, 0f));
+                ctx.Rotate("RightUpperArm", t => new Vector3(-20f + 70f * Mathf.Sin(Phase(t, 1.2f)), 15f, -10f));
+                ctx.Rotate("RightLowerArm", t => new Vector3(-45f + 30f * Mathf.Sin(Phase(t, 1.2f)), 0f, 0f));
+                ctx.Rotate("LeftUpperArm", t => new Vector3(-15f, 0f, 15f));
+                ctx.Rotate("LeftLowerArm", t => new Vector3(-25f, 0f, 0f));
+            });
+
+            clips["PlayerAimCamera"] = MakeClip("PlayerAimCamera", bones, 1.8f, ctx =>
+            {
+                ctx.Rotate("Spine", t => new Vector3(2f * Mathf.Sin(Phase(t, 1.8f)), 0f, 0f));
+                ctx.Rotate("Chest", t => new Vector3(3f * Mathf.Sin(Phase(t, 1.8f)), 0f, 0f));
+                ctx.Rotate("LeftUpperArm", t => new Vector3(-65f, 25f, 15f));
+                ctx.Rotate("RightUpperArm", t => new Vector3(-65f, -25f, -15f));
+                ctx.Rotate("LeftLowerArm", t => new Vector3(-75f, 0f, 0f));
+                ctx.Rotate("RightLowerArm", t => new Vector3(-75f, 0f, 0f));
+            });
+
+            clips["PlayerInteractInspect"] = MakeClip("PlayerInteractInspect", bones, 1.4f, ctx =>
+            {
+                ctx.Rotate("Spine", t => new Vector3(14f + 4f * Mathf.Sin(Phase(t, 1.4f)), 0f, 0f));
+                ctx.Rotate("Chest", t => new Vector3(10f + 3f * Mathf.Sin(Phase(t, 1.4f)), 0f, 0f));
+                ctx.Rotate("LeftUpperArm", t => new Vector3(-45f + 10f * Mathf.Sin(Phase(t, 1.4f)), 10f, 10f));
+                ctx.Rotate("RightUpperArm", t => new Vector3(-45f + 10f * Mathf.Sin(Phase(t, 1.4f)), -10f, -10f));
+                ctx.Rotate("LeftLowerArm", t => new Vector3(-35f, 0f, 0f));
+                ctx.Rotate("RightLowerArm", t => new Vector3(-35f, 0f, 0f));
+            });
+
             clips["NPCIdle"] = MakeClip("NPCIdle", bones, 2.2f, ctx =>
             {
                 ctx.Rotate("Chest", t => new Vector3(0.02f * Mathf.Sin(Phase(t, 2.2f)), 0f, 0f));
@@ -1019,6 +1050,8 @@ namespace WhisperingWilds.Editor.Characters
             {
                 case "PlayerJump":
                 case "PlayerLand":
+                case "PlayerHarvestSickle":
+                case "PlayerInteractInspect":
                     return false;
                 default:
                     return true;
