@@ -187,10 +187,18 @@ namespace WhisperingWilds.Geography
 
         private void HandleReset()
         {
+#if ENABLE_INPUT_SYSTEM
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null && (kb.rKey.wasPressedThisFrame || kb.homeKey.wasPressedThisFrame))
+            {
+                ResetView();
+            }
+#else
             if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Home))
             {
                 ResetView();
             }
+#endif
         }
 
         public void ResetView()

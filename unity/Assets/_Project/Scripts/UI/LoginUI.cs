@@ -136,6 +136,20 @@ namespace WhisperingWilds.UI
             }
 
             // Keyboard navigation (Enter to submit active view, Escape to exit/back)
+#if ENABLE_INPUT_SYSTEM
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null)
+            {
+                if (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)
+                {
+                    SubmitActivePanel();
+                }
+                else if (kb.escapeKey.wasPressedThisFrame)
+                {
+                    HandleEscapeNavigation();
+                }
+            }
+#else
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 SubmitActivePanel();
@@ -144,6 +158,7 @@ namespace WhisperingWilds.UI
             {
                 HandleEscapeNavigation();
             }
+#endif
         }
 
         private void OnDestroy()

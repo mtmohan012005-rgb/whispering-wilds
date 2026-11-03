@@ -65,10 +65,18 @@ namespace WhisperingWilds.Geography
 
         private void Update()
         {
+#if ENABLE_INPUT_SYSTEM
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
+            {
+                ReturnToBootMenu();
+            }
+#else
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 ReturnToBootMenu();
             }
+#endif
         }
 
         public void SelectRegion(StateMapRegionMarker marker)

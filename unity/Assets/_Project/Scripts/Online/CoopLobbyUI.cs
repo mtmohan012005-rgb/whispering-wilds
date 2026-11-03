@@ -144,6 +144,21 @@ namespace WhisperingWilds.Online
 
         private void Update()
         {
+#if ENABLE_INPUT_SYSTEM
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null)
+            {
+                if (kb.f8Key.wasPressedThisFrame)
+                {
+                    SetVisible(!visible);
+                    return;
+                }
+                if (visible && kb.escapeKey.wasPressedThisFrame)
+                {
+                    SetVisible(false);
+                }
+            }
+#else
             if (Input.GetKeyDown(KeyCode.F8))
             {
                 SetVisible(!visible);
@@ -154,6 +169,7 @@ namespace WhisperingWilds.Online
             {
                 SetVisible(false);
             }
+#endif
         }
 
         private void SetVisible(bool value)
