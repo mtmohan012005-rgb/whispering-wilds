@@ -374,12 +374,18 @@ namespace WhisperingWilds.Editor
                 serializedMenuAnim.ApplyModifiedProperties();
 
                 // STEP 73: Create PRO LoginUI panel with cinematic Dravidian split-screen experience
-                var loginUIObj = new GameObject("LoginUI");
+                var loginUIObj = new GameObject("LoginUI", typeof(RectTransform));
                 loginUIObj.transform.SetParent(canvasObj.transform, false);
+                var loginUIRect = loginUIObj.GetComponent<RectTransform>();
+                loginUIRect.anchorMin = Vector2.zero;
+                loginUIRect.anchorMax = Vector2.one;
+                loginUIRect.offsetMin = Vector2.zero;
+                loginUIRect.offsetMax = Vector2.zero;
                 var loginUI = loginUIObj.AddComponent<WhisperingWilds.UI.LoginUI>();
+                var loginAnimator = loginUIObj.AddComponent<WhisperingWilds.UI.LoginAnimator>();
                 loginUIObj.SetActive(false);
 
-                // Fullscreen dim overlay
+                // Fullscreen atmospheric dark twilight gradient overlay
                 var loginBg = new GameObject("LoginBackground", typeof(RectTransform), typeof(Image));
                 loginBg.transform.SetParent(loginUIObj.transform, false);
                 var loginBgRect = loginBg.GetComponent<RectTransform>();
@@ -387,45 +393,148 @@ namespace WhisperingWilds.Editor
                 loginBgRect.anchorMax = Vector2.one;
                 loginBgRect.offsetMin = Vector2.zero;
                 loginBgRect.offsetMax = Vector2.zero;
-                loginBg.GetComponent<Image>().color = new Color(0.04f, 0.05f, 0.07f, 0.94f);
+                loginBg.GetComponent<Image>().color = new Color(0.02f, 0.03f, 0.06f, 0.98f);
 
-                // Subtle Dravidian temple hero backdrop
+                // Dravidian temple hero backdrop with Ken Burns cinematic drift
                 var loginHeroArt = new GameObject("LoginHeroBackdrop", typeof(RectTransform), typeof(Image));
                 loginHeroArt.transform.SetParent(loginUIObj.transform, false);
                 var heroArtRect = loginHeroArt.GetComponent<RectTransform>();
                 heroArtRect.anchorMin = Vector2.zero;
                 heroArtRect.anchorMax = Vector2.one;
-                heroArtRect.offsetMin = Vector2.zero;
-                heroArtRect.offsetMax = Vector2.zero;
+                heroArtRect.offsetMin = new Vector2(-50f, -30f);
+                heroArtRect.offsetMax = new Vector2(50f, 30f);
                 var heroArtImg = loginHeroArt.GetComponent<Image>();
-                var menuBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/MainMenuBackground.png");
-                if (menuBgSprite != null)
+                var sanctumSprite = EnsureSpriteImport("Assets/_Project/Resources/UI/LoginBackground_DravidianSanctum.png");
+                if (sanctumSprite != null)
                 {
-                    heroArtImg.sprite = menuBgSprite;
-                    heroArtImg.color = new Color(1f, 1f, 1f, 0.12f);
+                    heroArtImg.sprite = sanctumSprite;
+                    heroArtImg.color = new Color(1f, 1f, 1f, 0.88f);
                     heroArtImg.raycastTarget = false;
                 }
 
+                var moteSprite = EnsureSpriteImport("Assets/_Project/Resources/UI/GlowMote.png");
+
+                // Ambient golden radial backlight aura behind the cards (using soft radial GlowMote sprite)
+                var backlightObj = new GameObject("LoginBacklight", typeof(RectTransform), typeof(Image));
+                backlightObj.transform.SetParent(loginUIObj.transform, false);
+                var backlightRect = backlightObj.GetComponent<RectTransform>();
+                backlightRect.anchorMin = new Vector2(0.5f, 0.5f);
+                backlightRect.anchorMax = new Vector2(0.5f, 0.5f);
+                backlightRect.pivot = new Vector2(0.5f, 0.5f);
+                backlightRect.anchoredPosition = Vector2.zero;
+                backlightRect.sizeDelta = new Vector2(1300f, 900f);
+                var backlightImg = backlightObj.GetComponent<Image>();
+                if (moteSprite != null) backlightImg.sprite = moteSprite;
+                backlightImg.color = new Color(0.95f, 0.75f, 0.20f, 0.08f);
+                backlightImg.raycastTarget = false;
+
+                // Soft dark vignette around edges
+                var vigObj2 = new GameObject("LoginVignette", typeof(RectTransform), typeof(Image));
+                vigObj2.transform.SetParent(loginUIObj.transform, false);
+                var vigRect2 = vigObj2.GetComponent<RectTransform>();
+                vigRect2.anchorMin = Vector2.zero;
+                vigRect2.anchorMax = Vector2.one;
+                vigRect2.offsetMin = Vector2.zero;
+                vigRect2.offsetMax = Vector2.zero;
+                var vigImg2 = vigObj2.GetComponent<Image>();
+                vigImg2.color = new Color(0.02f, 0.03f, 0.05f, 0.35f);
+                vigImg2.raycastTarget = false;
+
+                // Atmospheric Mist Layers
+                var mistSprite = EnsureSpriteImport("Assets/_Project/Resources/UI/MistBand.png");
+
+                var loginMist1 = new GameObject("LoginMistLayer1", typeof(RectTransform), typeof(Image));
+                loginMist1.transform.SetParent(loginUIObj.transform, false);
+                var m1Rect = loginMist1.GetComponent<RectTransform>();
+                m1Rect.anchorMin = new Vector2(0f, 0f);
+                m1Rect.anchorMax = new Vector2(1f, 0.60f);
+                m1Rect.offsetMin = new Vector2(-60f, -20f);
+                m1Rect.offsetMax = new Vector2(60f, 20f);
+                var m1Img = loginMist1.GetComponent<Image>();
+                if (mistSprite != null) m1Img.sprite = mistSprite;
+                m1Img.color = new Color(0.60f, 0.75f, 0.95f, 0.10f);
+                m1Img.raycastTarget = false;
+
+                var loginMist2 = new GameObject("LoginMistLayer2", typeof(RectTransform), typeof(Image));
+                loginMist2.transform.SetParent(loginUIObj.transform, false);
+                var m2Rect = loginMist2.GetComponent<RectTransform>();
+                m2Rect.anchorMin = new Vector2(0f, 0.30f);
+                m2Rect.anchorMax = new Vector2(1f, 0.90f);
+                m2Rect.offsetMin = new Vector2(-50f, -20f);
+                m2Rect.offsetMax = new Vector2(50f, 20f);
+                var m2Img = loginMist2.GetComponent<Image>();
+                if (mistSprite != null) m2Img.sprite = mistSprite;
+                m2Img.color = new Color(0.95f, 0.80f, 0.50f, 0.06f);
+                m2Img.raycastTarget = false;
+
+                // Procedural Golden Temple Fireflies / Sacred Embers
+                var firefliesObj = new GameObject("LoginFireflies", typeof(RectTransform));
+                firefliesObj.transform.SetParent(loginUIObj.transform, false);
+                var ffRect = firefliesObj.GetComponent<RectTransform>();
+                ffRect.anchorMin = Vector2.zero;
+                ffRect.anchorMax = Vector2.one;
+                ffRect.offsetMin = Vector2.zero;
+                ffRect.offsetMax = Vector2.zero;
+
+                Color[] emberPalette = new Color[]
+                {
+                    new Color(1f, 0.92f, 0.50f, 0.85f),
+                    new Color(0.96f, 0.78f, 0.28f, 0.80f),
+                    new Color(1f, 1f, 0.88f, 0.90f),
+                    new Color(0.88f, 0.68f, 0.24f, 0.75f),
+                    new Color(0.65f, 0.96f, 0.78f, 0.70f)
+                };
+
+                for (int i = 0; i < 25; i++)
+                {
+                    var moteObj = new GameObject($"Firefly_{i:00}", typeof(RectTransform), typeof(Image));
+                    moteObj.transform.SetParent(firefliesObj.transform, false);
+                    var mRect = moteObj.GetComponent<RectTransform>();
+                    var mImg = moteObj.GetComponent<Image>();
+                    mImg.raycastTarget = false;
+                    if (moteSprite != null) mImg.sprite = moteSprite;
+                    float size = UnityEngine.Random.Range(8f, 20f);
+                    mRect.sizeDelta = new Vector2(size, size);
+                    mImg.color = emberPalette[i % emberPalette.Length];
+                    float startX = UnityEngine.Random.Range(-900f, 900f);
+                    float startY = UnityEngine.Random.Range(-500f, 500f);
+                    mRect.anchoredPosition = new Vector2(startX, startY);
+                }
+
                 // --- LEFT SIDE: Brand & Dravidian Lore Showcase ---
-                var brandPanel = new GameObject("BrandShowcase", typeof(RectTransform));
+                var brandPanel = new GameObject("BrandShowcase", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
                 brandPanel.transform.SetParent(loginUIObj.transform, false);
                 var brandRect = brandPanel.GetComponent<RectTransform>();
-                brandRect.anchorMin = new Vector2(0.06f, 0.12f);
-                brandRect.anchorMax = new Vector2(0.44f, 0.88f);
-                brandRect.offsetMin = Vector2.zero;
-                brandRect.offsetMax = Vector2.zero;
+                brandRect.anchorMin = new Vector2(0.5f, 0.5f);
+                brandRect.anchorMax = new Vector2(0.5f, 0.5f);
+                brandRect.pivot = new Vector2(0.5f, 0.5f);
+                brandRect.anchoredPosition = new Vector2(-242f, 0f);
+                brandRect.sizeDelta = new Vector2(460f, 660f);
+                brandPanel.GetComponent<Image>().color = new Color(0.045f, 0.06f, 0.09f, 0.94f);
+
+                // Gold accent border line on top of brand showcase
+                var brandTopBorder = new GameObject("BrandTopBorder", typeof(RectTransform), typeof(Image));
+                brandTopBorder.transform.SetParent(brandPanel.transform, false);
+                var btbRect = brandTopBorder.GetComponent<RectTransform>();
+                btbRect.anchorMin = new Vector2(0f, 1f);
+                btbRect.anchorMax = new Vector2(1f, 1f);
+                btbRect.pivot = new Vector2(0.5f, 1f);
+                btbRect.anchoredPosition = Vector2.zero;
+                btbRect.sizeDelta = new Vector2(0f, 3f);
+                brandTopBorder.GetComponent<Image>().color = new Color(0.95f, 0.78f, 0.28f, 0.95f);
 
                 // App Logo
-                var loginLogoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
+                var loginLogoSprite = EnsureSpriteImport("Assets/_Project/Resources/UI/AppLogo.png");
                 if (loginLogoSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
                     logoObj.transform.SetParent(brandPanel.transform, false);
                     var logoRect = logoObj.GetComponent<RectTransform>();
-                    logoRect.anchorMin = new Vector2(0.5f, 0.82f);
-                    logoRect.anchorMax = new Vector2(0.5f, 0.82f);
+                    logoRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    logoRect.anchorMax = new Vector2(0.5f, 0.5f);
                     logoRect.pivot = new Vector2(0.5f, 0.5f);
-                    logoRect.sizeDelta = new Vector2(260f, 110f);
+                    logoRect.anchoredPosition = new Vector2(0f, 230f);
+                    logoRect.sizeDelta = new Vector2(250f, 95f);
                     var logoImg = logoObj.GetComponent<Image>();
                     logoImg.sprite = loginLogoSprite;
                     logoImg.preserveAspect = true;
@@ -433,50 +542,67 @@ namespace WhisperingWilds.Editor
                 }
 
                 // Game Title & Tamil Subtitle
-                CreateText("BrandTitle", brandPanel.transform,
-                    new Vector2(0.5f, 0.64f), new Vector2(0.5f, 0.64f), Vector2.zero, new Vector2(440f, 40f),
-                    font, 26, TextAnchor.MiddleCenter, new Color(0.92f, 0.78f, 0.38f));
+                var brandTitle = CreateText("BrandTitle", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 150f), new Vector2(420f, 36f),
+                    font, 22, TextAnchor.MiddleCenter, new Color(0.96f, 0.85f, 0.45f));
+                brandTitle.GetComponent<Text>().fontStyle = FontStyle.Bold;
+                brandTitle.GetComponent<Text>().text = "ANCIENT TAMIL NADU EXPEDITION";
 
-                CreateText("BrandTamilTitle", brandPanel.transform,
-                    new Vector2(0.5f, 0.56f), new Vector2(0.5f, 0.56f), Vector2.zero, new Vector2(440f, 32f),
-                    font, 20, TextAnchor.MiddleCenter, new Color(0.68f, 0.85f, 0.65f));
+                var brandTamil = CreateText("BrandTamilTitle", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 110f), new Vector2(420f, 30f),
+                    font, 18, TextAnchor.MiddleCenter, new Color(0.45f, 0.90f, 0.70f));
+                brandTamil.GetComponent<Text>().text = "\u0BB5\u0BBF\u0BB8\u0BCD\u0BAA\u0BB0\u0BBF\u0B99\u0BCD \u0BB5\u0BC8\u0BB2\u0BCD\u0B9F\u0BCD\u0BB8\u0BCD";
 
                 // Tagline
-                CreateText("BrandTagline", brandPanel.transform,
-                    new Vector2(0.5f, 0.46f), new Vector2(0.5f, 0.46f), Vector2.zero, new Vector2(420f, 54f),
-                    font, 14, TextAnchor.MiddleCenter, new Color(0.82f, 0.85f, 0.9f));
+                var brandTag = CreateText("BrandTagline", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 65f), new Vector2(400f, 44f),
+                    font, 13, TextAnchor.MiddleCenter, new Color(0.80f, 0.85f, 0.92f));
+                brandTag.GetComponent<Text>().fontStyle = FontStyle.Italic;
+                brandTag.GetComponent<Text>().text = "A living Dravidian odyssey through ancient sanctums & wilderness.";
 
                 // Gold divider
                 var divider = new GameObject("Divider", typeof(RectTransform), typeof(Image));
                 divider.transform.SetParent(brandPanel.transform, false);
                 var divRect = divider.GetComponent<RectTransform>();
-                divRect.anchorMin = new Vector2(0.15f, 0.38f);
-                divRect.anchorMax = new Vector2(0.85f, 0.38f);
-                divRect.sizeDelta = new Vector2(0f, 2f);
-                divider.GetComponent<Image>().color = new Color(0.83f, 0.69f, 0.22f, 0.6f);
+                divRect.anchorMin = new Vector2(0.5f, 0.5f);
+                divRect.anchorMax = new Vector2(0.5f, 0.5f);
+                divRect.pivot = new Vector2(0.5f, 0.5f);
+                divRect.anchoredPosition = new Vector2(0f, 25f);
+                divRect.sizeDelta = new Vector2(380f, 2f);
+                divider.GetComponent<Image>().color = new Color(0.85f, 0.70f, 0.25f, 0.60f);
 
                 // Feature Highlights
-                CreateText("Feature1", brandPanel.transform,
-                    new Vector2(0.5f, 0.30f), new Vector2(0.5f, 0.30f), Vector2.zero, new Vector2(400f, 28f),
-                    font, 13, TextAnchor.MiddleLeft, new Color(0.8f, 0.88f, 0.95f));
+                var f1 = CreateText("Feature1", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -30f), new Vector2(400f, 30f),
+                    font, 13, TextAnchor.MiddleLeft, new Color(0.88f, 0.92f, 0.98f));
+                f1.GetComponent<Text>().text = "\u2726 Cloud Save Synchronization Across Expeditions";
 
-                CreateText("Feature2", brandPanel.transform,
-                    new Vector2(0.5f, 0.23f), new Vector2(0.5f, 0.23f), Vector2.zero, new Vector2(400f, 28f),
-                    font, 13, TextAnchor.MiddleLeft, new Color(0.8f, 0.88f, 0.95f));
+                var f2 = CreateText("Feature2", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -80f), new Vector2(400f, 30f),
+                    font, 13, TextAnchor.MiddleLeft, new Color(0.88f, 0.92f, 0.98f));
+                f2.GetComponent<Text>().text = "\u2726 Living Dravidian Wilderness & Sanctum Ecosystems";
 
-                CreateText("Feature3", brandPanel.transform,
-                    new Vector2(0.5f, 0.16f), new Vector2(0.5f, 0.16f), Vector2.zero, new Vector2(400f, 28f),
-                    font, 13, TextAnchor.MiddleLeft, new Color(0.8f, 0.88f, 0.95f));
+                var f3 = CreateText("Feature3", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -130f), new Vector2(400f, 30f),
+                    font, 13, TextAnchor.MiddleLeft, new Color(0.88f, 0.92f, 0.98f));
+                f3.GetComponent<Text>().text = "\u2726 Authentic Carnatic Soundscapes & Regional Lore";
+
+                // Version Tag
+                var versionTag = CreateText("VersionTag", brandPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -260f), new Vector2(400f, 24f),
+                    font, 11, TextAnchor.MiddleCenter, new Color(0.40f, 0.48f, 0.58f));
+                versionTag.GetComponent<Text>().text = "v1.0.2 \u2022 Tamil Nadu Exploration Engine";
 
                 // --- RIGHT SIDE: Card Container (Charcoal Glass & Gold Border) ---
-                var cardContainer = new GameObject("CardContainer", typeof(RectTransform), typeof(Image));
+                var cardContainer = new GameObject("CardContainer", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
                 cardContainer.transform.SetParent(loginUIObj.transform, false);
                 var cardRect = cardContainer.GetComponent<RectTransform>();
-                cardRect.anchorMin = new Vector2(0.48f, 0.08f);
-                cardRect.anchorMax = new Vector2(0.94f, 0.92f);
-                cardRect.offsetMin = Vector2.zero;
-                cardRect.offsetMax = Vector2.zero;
-                cardContainer.GetComponent<Image>().color = new Color(0.07f, 0.09f, 0.12f, 0.95f);
+                cardRect.anchorMin = new Vector2(0.5f, 0.5f);
+                cardRect.anchorMax = new Vector2(0.5f, 0.5f);
+                cardRect.pivot = new Vector2(0.5f, 0.5f);
+                cardRect.anchoredPosition = new Vector2(242f, 0f);
+                cardRect.sizeDelta = new Vector2(460f, 660f);
+                cardContainer.GetComponent<Image>().color = new Color(0.045f, 0.06f, 0.09f, 0.94f);
 
                 // Gold accent border line on top of card
                 var cardTopBorder = new GameObject("CardTopBorder", typeof(RectTransform), typeof(Image));
@@ -484,8 +610,10 @@ namespace WhisperingWilds.Editor
                 var topBorderRect = cardTopBorder.GetComponent<RectTransform>();
                 topBorderRect.anchorMin = new Vector2(0f, 1f);
                 topBorderRect.anchorMax = new Vector2(1f, 1f);
+                topBorderRect.pivot = new Vector2(0.5f, 1f);
+                topBorderRect.anchoredPosition = Vector2.zero;
                 topBorderRect.sizeDelta = new Vector2(0f, 3f);
-                cardTopBorder.GetComponent<Image>().color = new Color(0.83f, 0.69f, 0.22f, 0.9f);
+                cardTopBorder.GetComponent<Image>().color = new Color(0.95f, 0.78f, 0.28f, 0.95f);
 
                 // --- 1. Sign In Panel ---
                 var signInPanel = new GameObject("SignInPanel", typeof(RectTransform));
@@ -493,36 +621,39 @@ namespace WhisperingWilds.Editor
                 var signInRect = signInPanel.GetComponent<RectTransform>();
                 signInRect.anchorMin = Vector2.zero;
                 signInRect.anchorMax = Vector2.one;
-                signInRect.offsetMin = new Vector2(25f, 20f);
-                signInRect.offsetMax = new Vector2(-25f, -20f);
+                signInRect.offsetMin = Vector2.zero;
+                signInRect.offsetMax = Vector2.zero;
 
                 // Sign In Header
                 var signInTitle = CreateText("SignInTitle", signInPanel.transform,
-                    new Vector2(0.5f, 0.93f), new Vector2(0.5f, 0.93f), Vector2.zero, new Vector2(400f, 36f),
-                    font, 24, TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.38f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 235f), new Vector2(400f, 38f),
+                    font, 22, TextAnchor.MiddleCenter, new Color(0.96f, 0.82f, 0.38f));
+                // Clean crisp font
+                signInTitle.GetComponent<Text>().text = "Sign In / \u0B89\u0BB3\u0BCD\u0BA8\u0BC1\u0BB4\u0BC8\u0B95";
 
                 // Email field
                 var emailField = CreateInputField("EmailField", signInPanel.transform,
-                    new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(380f, 42f), font, "Email Address");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 150f), new Vector2(390f, 44f), font, "Email Address");
 
-                // Password field
+                // Password field + Toggle
                 var passwordField = CreateInputField("PasswordField", signInPanel.transform,
-                    new Vector2(0.44f, 0.66f), new Vector2(0.44f, 0.66f), Vector2.zero, new Vector2(310f, 42f), font, "Password");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-35f, 80f), new Vector2(320f, 44f), font, "Password");
                 passwordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
 
-                // Toggle Password Visibility Button
                 var togglePasswordBtn = CreateButton("TogglePasswordBtn", signInPanel.transform,
-                    new Vector2(0.90f, 0.66f), new Vector2(0.90f, 0.66f), Vector2.zero, new Vector2(60f, 42f),
-                    font, "SHOW", new Color(0.18f, 0.22f, 0.28f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(165f, 80f), new Vector2(60f, 44f),
+                    font, "SHOW", new Color(0.14f, 0.18f, 0.25f));
                 var passwordEyeText = togglePasswordBtn.GetComponentInChildren<Text>();
                 passwordEyeText.fontSize = 11;
 
-                // Remember Email toggle row
+                // Remember Email & Forgot Password Row (Same line y = 20)
                 var rememberRow = new GameObject("RememberRow", typeof(RectTransform), typeof(Toggle));
                 rememberRow.transform.SetParent(signInPanel.transform, false);
                 var remRect = rememberRow.GetComponent<RectTransform>();
-                remRect.anchorMin = new Vector2(0.05f, 0.55f);
-                remRect.anchorMax = new Vector2(0.50f, 0.55f);
+                remRect.anchorMin = new Vector2(0.5f, 0.5f);
+                remRect.anchorMax = new Vector2(0.5f, 0.5f);
+                remRect.pivot = new Vector2(0.5f, 0.5f);
+                remRect.anchoredPosition = new Vector2(-105f, 20f);
                 remRect.sizeDelta = new Vector2(180f, 26f);
                 var remToggle = rememberRow.GetComponent<Toggle>();
 
@@ -532,8 +663,9 @@ namespace WhisperingWilds.Editor
                 remCheckBgRect.anchorMin = new Vector2(0f, 0.5f);
                 remCheckBgRect.anchorMax = new Vector2(0f, 0.5f);
                 remCheckBgRect.pivot = new Vector2(0f, 0.5f);
+                remCheckBgRect.anchoredPosition = Vector2.zero;
                 remCheckBgRect.sizeDelta = new Vector2(18f, 18f);
-                remCheckBg.GetComponent<Image>().color = new Color(0.15f, 0.18f, 0.22f);
+                remCheckBg.GetComponent<Image>().color = new Color(0.12f, 0.16f, 0.22f);
 
                 var remCheckmark = new GameObject("Checkmark", typeof(RectTransform), typeof(Image));
                 remCheckmark.transform.SetParent(remCheckBg.transform, false);
@@ -543,40 +675,44 @@ namespace WhisperingWilds.Editor
                 remCheckmarkRect.offsetMin = Vector2.zero;
                 remCheckmarkRect.offsetMax = Vector2.zero;
                 var checkmarkImg = remCheckmark.GetComponent<Image>();
-                checkmarkImg.color = new Color(0.85f, 0.72f, 0.35f);
+                checkmarkImg.color = new Color(0.95f, 0.78f, 0.28f);
                 remToggle.graphic = checkmarkImg;
                 remToggle.targetGraphic = remCheckBg.GetComponent<Image>();
 
                 var remLabel = CreateText("Label", rememberRow.transform,
-                    new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(26f, 0f), new Vector2(160f, 24f),
-                    font, 13, TextAnchor.MiddleLeft, new Color(0.8f, 0.85f, 0.9f));
+                    new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(26f, 0f), new Vector2(150f, 24f),
+                    font, 12, TextAnchor.MiddleLeft, new Color(0.80f, 0.85f, 0.90f));
                 remLabel.GetComponent<Text>().text = "Remember Email";
 
-                // Forgot Password button
                 var forgotPasswordBtn = CreateButton("ForgotPasswordBtn", signInPanel.transform,
-                    new Vector2(0.76f, 0.55f), new Vector2(0.76f, 0.55f), Vector2.zero, new Vector2(140f, 26f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(105f, 20f), new Vector2(180f, 26f),
                     font, "Forgot Password?", new Color(0f, 0f, 0f, 0f));
+                var forgotBtnRect = forgotPasswordBtn.GetComponent<RectTransform>();
                 var forgotBtnText = forgotPasswordBtn.GetComponentInChildren<Text>();
                 forgotBtnText.fontSize = 12;
-                forgotBtnText.color = new Color(0.85f, 0.72f, 0.35f);
+                forgotBtnText.alignment = TextAnchor.MiddleRight;
+                forgotBtnText.color = new Color(0.92f, 0.78f, 0.38f);
 
-                // Sign In button (Deep Forest Green)
+                // Sign In button (Sangam Gold on Charcoal)
                 var signInBtn = CreateButton("SignInButton", signInPanel.transform,
-                    new Vector2(0.5f, 0.42f), new Vector2(0.5f, 0.42f), Vector2.zero, new Vector2(380f, 44f),
-                    font, "Sign In", new Color(0.12f, 0.38f, 0.26f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -50f), new Vector2(390f, 48f),
+                    font, "Sign In / \u0B89\u0BB3\u0BCD\u0BA8\u0BC1\u0BB4\u0BC8\u0B95", new Color(0.95f, 0.78f, 0.28f));
                 var signInBtnText = signInBtn.GetComponentInChildren<Text>();
-                signInBtnText.fontSize = 17;
-                signInBtnText.color = new Color(0.96f, 0.92f, 0.82f);
+                signInBtnText.fontSize = 16;
+                // Clean crisp font
+                signInBtnText.color = new Color(0.06f, 0.08f, 0.12f);
 
                 // Sign In status text
                 var signInStatus = CreateText("SignInStatus", signInPanel.transform,
-                    new Vector2(0.5f, 0.32f), new Vector2(0.5f, 0.32f), Vector2.zero, new Vector2(380f, 32f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -105f), new Vector2(390f, 28f),
                     font, 13, TextAnchor.MiddleCenter, Color.gray);
 
                 // Switch to register button
                 var switchToRegBtn = CreateButton("SwitchToRegisterBtn", signInPanel.transform,
-                    new Vector2(0.5f, 0.20f), new Vector2(0.5f, 0.20f), Vector2.zero, new Vector2(380f, 38f),
-                    font, "Don't have an account? Sign up", new Color(0.16f, 0.20f, 0.25f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -175f), new Vector2(390f, 44f),
+                    font, "Don't have an account? Sign up", new Color(0.10f, 0.14f, 0.20f, 0.95f));
+                var switchBtnText = switchToRegBtn.GetComponentInChildren<Text>();
+                switchBtnText.color = new Color(0.90f, 0.85f, 0.70f);
 
                 // --- 2. Register Panel ---
                 var registerPanel = new GameObject("RegisterPanel", typeof(RectTransform));
@@ -584,110 +720,116 @@ namespace WhisperingWilds.Editor
                 var regRect = registerPanel.GetComponent<RectTransform>();
                 regRect.anchorMin = Vector2.zero;
                 regRect.anchorMax = Vector2.one;
-                regRect.offsetMin = new Vector2(25f, 20f);
-                regRect.offsetMax = new Vector2(-25f, -20f);
+                regRect.offsetMin = Vector2.zero;
+                regRect.offsetMax = Vector2.zero;
                 registerPanel.SetActive(false);
 
                 // Register title
-                CreateText("RegisterTitle", registerPanel.transform,
-                    new Vector2(0.5f, 0.94f), new Vector2(0.5f, 0.94f), Vector2.zero, new Vector2(400f, 34f),
-                    font, 22, TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.38f));
+                var registerTitle = CreateText("RegisterTitle", registerPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 245f), new Vector2(420f, 36f),
+                    font, 20, TextAnchor.MiddleCenter, new Color(0.96f, 0.82f, 0.38f));
+                // Clean crisp font
+                registerTitle.GetComponent<Text>().text = "Create Account / \u0B95\u0BA3\u0B95\u0BCD\u0B95\u0BC1 \u0B89\u0BB0\u0BC1\u0BB5\u0BBE\u0B95\u0BCD\u0B95\u0BC1\u0B95";
 
                 // Display name field
                 var regNameField = CreateInputField("RegNameField", registerPanel.transform,
-                    new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(380f, 38f), font, "Explorer Display Name");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 185f), new Vector2(390f, 40f), font, "Explorer Display Name");
 
                 // Email field
                 var regEmailField = CreateInputField("RegEmailField", registerPanel.transform,
-                    new Vector2(0.5f, 0.71f), new Vector2(0.5f, 0.71f), Vector2.zero, new Vector2(380f, 38f), font, "Email Address");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 130f), new Vector2(390f, 40f), font, "Email Address");
 
                 // Password field + Eye Toggle
                 var regPasswordField = CreateInputField("RegPasswordField", registerPanel.transform,
-                    new Vector2(0.44f, 0.60f), new Vector2(0.44f, 0.60f), Vector2.zero, new Vector2(310f, 38f), font, "Password (min 8 chars)");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-35f, 75f), new Vector2(320f, 40f), font, "Password (min 8 chars)");
                 regPasswordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
 
                 var toggleRegPasswordBtn = CreateButton("ToggleRegPasswordBtn", registerPanel.transform,
-                    new Vector2(0.90f, 0.60f), new Vector2(0.90f, 0.60f), Vector2.zero, new Vector2(60f, 38f),
-                    font, "SHOW", new Color(0.18f, 0.22f, 0.28f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(165f, 75f), new Vector2(60f, 40f),
+                    font, "SHOW", new Color(0.14f, 0.18f, 0.25f));
                 var regPasswordEyeText = toggleRegPasswordBtn.GetComponentInChildren<Text>();
                 regPasswordEyeText.fontSize = 11;
 
                 // Confirm password field
                 var regConfirmPasswordField = CreateInputField("RegConfirmPasswordField", registerPanel.transform,
-                    new Vector2(0.5f, 0.49f), new Vector2(0.5f, 0.49f), Vector2.zero, new Vector2(380f, 38f), font, "Confirm Password");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 20f), new Vector2(390f, 40f), font, "Confirm Password");
                 regConfirmPasswordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
 
                 // Password strength bar container
                 var strengthBarObj = new GameObject("PasswordStrengthBar", typeof(RectTransform), typeof(Image));
                 strengthBarObj.transform.SetParent(registerPanel.transform, false);
                 var strBarRect = strengthBarObj.GetComponent<RectTransform>();
-                strBarRect.anchorMin = new Vector2(0.05f, 0.41f);
-                strBarRect.anchorMax = new Vector2(0.95f, 0.41f);
-                strBarRect.sizeDelta = new Vector2(0f, 6f);
+                strBarRect.anchorMin = new Vector2(0.5f, 0.5f);
+                strBarRect.anchorMax = new Vector2(0.5f, 0.5f);
+                strBarRect.pivot = new Vector2(0.5f, 0.5f);
+                strBarRect.anchoredPosition = new Vector2(0f, -15f);
+                strBarRect.sizeDelta = new Vector2(390f, 6f);
                 var strBarImg = strengthBarObj.GetComponent<Image>();
-                strBarImg.color = new Color(0.3f, 0.35f, 0.4f);
+                strBarImg.color = new Color(0.20f, 0.25f, 0.32f);
 
                 // Password strength label
                 var strTextObj = CreateText("PasswordStrengthText", registerPanel.transform,
-                    new Vector2(0.5f, 0.36f), new Vector2(0.5f, 0.36f), Vector2.zero, new Vector2(380f, 22f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -32f), new Vector2(390f, 20f),
                     font, 12, TextAnchor.MiddleLeft, Color.gray);
 
                 // Requirements label
                 var reqTextObj = CreateText("RegisterRequirements", registerPanel.transform,
-                    new Vector2(0.5f, 0.31f), new Vector2(0.5f, 0.31f), Vector2.zero, new Vector2(380f, 22f),
-                    font, 11, TextAnchor.MiddleLeft, new Color(0.65f, 0.7f, 0.75f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -52f), new Vector2(390f, 20f),
+                    font, 11, TextAnchor.MiddleLeft, new Color(0.55f, 0.62f, 0.70f));
 
                 // Register button
                 var registerBtn = CreateButton("RegisterButton", registerPanel.transform,
-                    new Vector2(0.5f, 0.22f), new Vector2(0.5f, 0.22f), Vector2.zero, new Vector2(380f, 42f),
-                    font, "Create Account", new Color(0.12f, 0.38f, 0.26f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -105f), new Vector2(390f, 46f),
+                    font, "Create Account / \u0B95\u0BA3\u0B95\u0BCD\u0B95\u0BC1 \u0B89\u0BB0\u0BC1\u0BB5\u0BBE\u0B95\u0BCD\u0B95\u0BC1\u0B95", new Color(0.10f, 0.55f, 0.35f));
 
                 // Register status text
                 var regStatus = CreateText("RegisterStatus", registerPanel.transform,
-                    new Vector2(0.5f, 0.14f), new Vector2(0.5f, 0.14f), Vector2.zero, new Vector2(380f, 26f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -155f), new Vector2(390f, 24f),
                     font, 12, TextAnchor.MiddleCenter, Color.gray);
 
                 // Switch to sign in button
                 var switchToSignInBtn = CreateButton("SwitchToSignInBtn", registerPanel.transform,
-                    new Vector2(0.5f, 0.05f), new Vector2(0.5f, 0.05f), Vector2.zero, new Vector2(380f, 36f),
-                    font, "Already have an account? Sign in", new Color(0.16f, 0.20f, 0.25f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -205f), new Vector2(390f, 40f),
+                    font, "Already have an account? Sign in", new Color(0.12f, 0.16f, 0.22f));
 
                 // --- 3. Forgot Password Panel ---
                 var forgotPasswordPanel = new GameObject("ForgotPasswordPanel", typeof(RectTransform));
                 forgotPasswordPanel.transform.SetParent(cardContainer.transform, false);
-                var forgotRect = forgotPasswordPanel.GetComponent<RectTransform>();
-                forgotRect.anchorMin = Vector2.zero;
-                forgotRect.anchorMax = Vector2.one;
-                forgotRect.offsetMin = new Vector2(25f, 20f);
-                forgotRect.offsetMax = new Vector2(-25f, -20f);
+                var forgotPanelRect = forgotPasswordPanel.GetComponent<RectTransform>();
+                forgotPanelRect.anchorMin = Vector2.zero;
+                forgotPanelRect.anchorMax = Vector2.one;
+                forgotPanelRect.offsetMin = Vector2.zero;
+                forgotPanelRect.offsetMax = Vector2.zero;
                 forgotPasswordPanel.SetActive(false);
 
-                CreateText("ForgotTitle", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.92f), new Vector2(0.5f, 0.92f), Vector2.zero, new Vector2(400f, 34f),
-                    font, 22, TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.38f));
+                var forgotTitle = CreateText("ForgotTitle", forgotPasswordPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 240f), new Vector2(400f, 36f),
+                    font, 20, TextAnchor.MiddleCenter, new Color(0.96f, 0.82f, 0.38f));
+                // Clean crisp font
+                forgotTitle.GetComponent<Text>().text = "Account Recovery / \u0B95\u0B9F\u0BB5\u0BC1\u0B9A\u0BCD\u0B9A\u0BCA\u0BB2\u0BCD \u0BAE\u0BC0\u0B9F\u0BCD\u0BAA\u0BC1";
 
                 var forgotInstructions = CreateText("ForgotInstructions", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(380f, 50f),
-                    font, 13, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.92f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 165f), new Vector2(390f, 48f),
+                    font, 13, TextAnchor.MiddleCenter, new Color(0.82f, 0.86f, 0.92f));
 
                 var forgotEmailField = CreateInputField("ForgotEmailField", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.62f), new Vector2(0.5f, 0.62f), Vector2.zero, new Vector2(380f, 42f), font, "Registered Email");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 95f), new Vector2(390f, 44f), font, "Registered Email");
 
                 var sendRecoveryBtn = CreateButton("SendRecoveryBtn", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.48f), new Vector2(0.5f, 0.48f), Vector2.zero, new Vector2(380f, 42f),
-                    font, "Send Recovery Link", new Color(0.14f, 0.35f, 0.42f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 25f), new Vector2(390f, 46f),
+                    font, "Send Recovery Link", new Color(0.12f, 0.38f, 0.65f));
 
                 var forgotStatus = CreateText("ForgotStatus", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.36f), new Vector2(0.5f, 0.36f), Vector2.zero, new Vector2(380f, 32f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -35f), new Vector2(390f, 30f),
                     font, 12, TextAnchor.MiddleCenter, Color.gray);
 
                 var forgotHaveTokenBtn = CreateButton("ForgotHaveTokenBtn", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.22f), new Vector2(0.5f, 0.22f), Vector2.zero, new Vector2(380f, 38f),
-                    font, "Have a recovery token? Reset Password", new Color(0.18f, 0.24f, 0.30f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -95f), new Vector2(390f, 42f),
+                    font, "Have a recovery token? Reset Password", new Color(0.14f, 0.20f, 0.28f));
 
                 var forgotBackBtn = CreateButton("ForgotBackToSignInBtn", forgotPasswordPanel.transform,
-                    new Vector2(0.5f, 0.10f), new Vector2(0.5f, 0.10f), Vector2.zero, new Vector2(380f, 38f),
-                    font, "Back to Sign In", new Color(0.16f, 0.20f, 0.25f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -165f), new Vector2(390f, 42f),
+                    font, "Back to Sign In", new Color(0.12f, 0.16f, 0.22f));
 
                 // --- 4. Reset Password Panel ---
                 var resetPasswordPanel = new GameObject("ResetPasswordPanel", typeof(RectTransform));
@@ -695,46 +837,48 @@ namespace WhisperingWilds.Editor
                 var resetRect = resetPasswordPanel.GetComponent<RectTransform>();
                 resetRect.anchorMin = Vector2.zero;
                 resetRect.anchorMax = Vector2.one;
-                resetRect.offsetMin = new Vector2(25f, 20f);
-                resetRect.offsetMax = new Vector2(-25f, -20f);
+                resetRect.offsetMin = Vector2.zero;
+                resetRect.offsetMax = Vector2.zero;
                 resetPasswordPanel.SetActive(false);
 
-                CreateText("ResetTitle", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.94f), new Vector2(0.5f, 0.94f), Vector2.zero, new Vector2(400f, 34f),
-                    font, 22, TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.38f));
+                var resetTitle = CreateText("ResetTitle", resetPasswordPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 245f), new Vector2(400f, 36f),
+                    font, 20, TextAnchor.MiddleCenter, new Color(0.96f, 0.82f, 0.38f));
+                // Clean crisp font
+                resetTitle.GetComponent<Text>().text = "Reset Password / \u0B95\u0B9F\u0BB5\u0BC1\u0B9A\u0BCD\u0B9A\u0BCA\u0BB2\u0BCD \u0BAE\u0BC0\u0B9F\u0BCD\u0B9F\u0BAE\u0BC8";
 
                 var resetInstructions = CreateText("ResetInstructions", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(380f, 44f),
-                    font, 13, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.92f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 185f), new Vector2(390f, 40f),
+                    font, 13, TextAnchor.MiddleCenter, new Color(0.82f, 0.86f, 0.92f));
 
                 var resetTokenField = CreateInputField("ResetTokenField", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.72f), new Vector2(0.5f, 0.72f), Vector2.zero, new Vector2(380f, 38f), font, "Paste Recovery Token");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 125f), new Vector2(390f, 40f), font, "Paste Recovery Token");
 
                 var resetPasswordField = CreateInputField("ResetPasswordField", resetPasswordPanel.transform,
-                    new Vector2(0.44f, 0.60f), new Vector2(0.44f, 0.60f), Vector2.zero, new Vector2(310f, 38f), font, "New Password (min 8 chars)");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-35f, 65f), new Vector2(320f, 40f), font, "New Password (min 8 chars)");
                 resetPasswordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
 
                 var toggleResetPasswordBtn = CreateButton("ToggleResetPasswordBtn", resetPasswordPanel.transform,
-                    new Vector2(0.90f, 0.60f), new Vector2(0.90f, 0.60f), Vector2.zero, new Vector2(60f, 38f),
-                    font, "SHOW", new Color(0.18f, 0.22f, 0.28f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(165f, 65f), new Vector2(60f, 40f),
+                    font, "SHOW", new Color(0.14f, 0.18f, 0.25f));
                 var resetPasswordEyeText = toggleResetPasswordBtn.GetComponentInChildren<Text>();
                 resetPasswordEyeText.fontSize = 11;
 
                 var resetConfirmPasswordField = CreateInputField("ResetConfirmPasswordField", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.48f), new Vector2(0.5f, 0.48f), Vector2.zero, new Vector2(380f, 38f), font, "Confirm New Password");
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 5f), new Vector2(390f, 40f), font, "Confirm New Password");
                 resetConfirmPasswordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
 
                 var resetPasswordBtn = CreateButton("ResetPasswordButton", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.34f), new Vector2(0.5f, 0.34f), Vector2.zero, new Vector2(380f, 42f),
-                    font, "Update Password", new Color(0.12f, 0.38f, 0.26f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -60f), new Vector2(390f, 46f),
+                    font, "Update Password", new Color(0.10f, 0.55f, 0.35f));
 
                 var resetStatus = CreateText("ResetStatus", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.22f), new Vector2(0.5f, 0.22f), Vector2.zero, new Vector2(380f, 28f),
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -115f), new Vector2(390f, 26f),
                     font, 12, TextAnchor.MiddleCenter, Color.gray);
 
                 var resetBackToSignInBtn = CreateButton("ResetBackToSignInBtn", resetPasswordPanel.transform,
-                    new Vector2(0.5f, 0.10f), new Vector2(0.5f, 0.10f), Vector2.zero, new Vector2(380f, 38f),
-                    font, "Back to Sign In", new Color(0.16f, 0.20f, 0.25f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -175f), new Vector2(390f, 42f),
+                    font, "Back to Sign In", new Color(0.12f, 0.16f, 0.22f));
 
                 // --- 5. Signed In Panel ---
                 var signedInPanel = new GameObject("SignedInPanel", typeof(RectTransform));
@@ -742,38 +886,44 @@ namespace WhisperingWilds.Editor
                 var signedInRect = signedInPanel.GetComponent<RectTransform>();
                 signedInRect.anchorMin = Vector2.zero;
                 signedInRect.anchorMax = Vector2.one;
-                signedInRect.offsetMin = new Vector2(25f, 20f);
-                signedInRect.offsetMax = new Vector2(-25f, -20f);
+                signedInRect.offsetMin = Vector2.zero;
+                signedInRect.offsetMax = Vector2.zero;
                 signedInPanel.SetActive(false);
 
-                CreateText("SignedInTitle", signedInPanel.transform,
-                    new Vector2(0.5f, 0.88f), new Vector2(0.5f, 0.88f), Vector2.zero, new Vector2(400f, 36f),
-                    font, 24, TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.38f));
+                var signedInTitle = CreateText("SignedInTitle", signedInPanel.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 230f), new Vector2(400f, 36f),
+                    font, 22, TextAnchor.MiddleCenter, new Color(0.96f, 0.82f, 0.38f));
+                // Clean crisp font
+                signedInTitle.GetComponent<Text>().text = "Explorer Profile / \u0BAA\u0BAF\u0BA3\u0BBF\u0BAF\u0BBF\u0BA9\u0BCD \u0BB5\u0BBF\u0BB5\u0BB0\u0BAE\u0BCD";
 
                 var signedInLabel = CreateText("SignedInLabel", signedInPanel.transform,
-                    new Vector2(0.5f, 0.70f), new Vector2(0.5f, 0.70f), Vector2.zero, new Vector2(380f, 36f),
-                    font, 18, TextAnchor.MiddleCenter, new Color(0.85f, 0.95f, 0.85f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 130f), new Vector2(390f, 48f),
+                    font, 17, TextAnchor.MiddleCenter, new Color(0.88f, 0.94f, 0.98f));
 
                 var accountStatusLabel = CreateText("AccountStatusLabel", signedInPanel.transform,
-                    new Vector2(0.5f, 0.58f), new Vector2(0.5f, 0.58f), Vector2.zero, new Vector2(380f, 28f),
-                    font, 14, TextAnchor.MiddleCenter, new Color(0.6f, 0.85f, 0.7f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 60f), new Vector2(390f, 36f),
+                    font, 14, TextAnchor.MiddleCenter, new Color(0.40f, 0.88f, 0.65f));
 
                 var continueBtn = CreateButton("ContinueButton", signedInPanel.transform,
-                    new Vector2(0.5f, 0.38f), new Vector2(0.5f, 0.38f), Vector2.zero, new Vector2(380f, 46f),
-                    font, "Continue to Game", new Color(0.12f, 0.42f, 0.28f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -30f), new Vector2(390f, 50f),
+                    font, "Continue to Game", new Color(0.95f, 0.78f, 0.28f));
+                var contBtnText = continueBtn.GetComponentInChildren<Text>();
+                contBtnText.fontSize = 16;
+                // Clean crisp font
+                contBtnText.color = new Color(0.06f, 0.08f, 0.12f);
 
                 var signOutBtn = CreateButton("SignOutButton", signedInPanel.transform,
-                    new Vector2(0.5f, 0.22f), new Vector2(0.5f, 0.22f), Vector2.zero, new Vector2(380f, 42f),
-                    font, "Sign Out", new Color(0.48f, 0.18f, 0.18f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -110f), new Vector2(390f, 44f),
+                    font, "Sign Out", new Color(0.50f, 0.16f, 0.18f, 0.95f));
 
                 // --- Shared Top Navigation ---
                 var backBtn = CreateButton("BackButton", loginUIObj.transform,
-                    new Vector2(0.03f, 0.94f), new Vector2(0.03f, 0.94f), new Vector2(60f, 0f), new Vector2(110f, 38f),
-                    font, "Back", new Color(0.20f, 0.24f, 0.30f));
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(105f, -40f), new Vector2(170f, 40f),
+                    font, "<- Back / \u0BAA\u0BBF\u0BA9\u0BCD\u0B9A\u0BC6\u0BB2\u0BCD\u0B95", new Color(0.08f, 0.11f, 0.16f, 0.94f));
 
                 var guestBtn = CreateButton("GuestButton", loginUIObj.transform,
-                    new Vector2(0.97f, 0.94f), new Vector2(0.97f, 0.94f), new Vector2(-95f, 0f), new Vector2(180f, 38f),
-                    font, "Play Offline (Guest)", new Color(0.15f, 0.32f, 0.45f));
+                    new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-115f, -40f), new Vector2(190f, 40f),
+                    font, "Play Offline (Guest) \u2726", new Color(0.09f, 0.16f, 0.25f, 0.94f));
 
                 // Loading Spinner Indicator
                 var spinnerObj = new GameObject("LoadingSpinner", typeof(RectTransform), typeof(Image));
@@ -783,7 +933,7 @@ namespace WhisperingWilds.Editor
                 spinRect.anchorMax = new Vector2(0.5f, 0.5f);
                 spinRect.sizeDelta = new Vector2(40f, 40f);
                 var spinImg = spinnerObj.GetComponent<Image>();
-                spinImg.color = new Color(0.85f, 0.72f, 0.35f, 0.8f);
+                spinImg.color = new Color(0.95f, 0.78f, 0.28f, 0.85f);
                 spinnerObj.SetActive(false);
 
                 // Wire all references via SerializedObject
@@ -842,7 +992,35 @@ namespace WhisperingWilds.Editor
                 serializedLoginUI.FindProperty("forgotPasswordPanel").objectReferenceValue = forgotPasswordPanel;
                 serializedLoginUI.FindProperty("resetPasswordPanel").objectReferenceValue = resetPasswordPanel;
                 serializedLoginUI.FindProperty("signedInPanel").objectReferenceValue = signedInPanel;
+                serializedLoginUI.FindProperty("loginAnimator").objectReferenceValue = loginAnimator;
                 serializedLoginUI.ApplyModifiedProperties();
+
+                // Wire LoginAnimator via SerializedObject
+                var serializedLoginAnim = new SerializedObject(loginAnimator);
+                serializedLoginAnim.FindProperty("loginBackground").objectReferenceValue = loginBg.GetComponent<Image>();
+                serializedLoginAnim.FindProperty("heroBackdrop").objectReferenceValue = heroArtRect;
+                serializedLoginAnim.FindProperty("heroBackdropImage").objectReferenceValue = heroArtImg;
+                serializedLoginAnim.FindProperty("backlightGlow").objectReferenceValue = backlightImg;
+                serializedLoginAnim.FindProperty("vignetteOverlay").objectReferenceValue = vigImg2;
+                serializedLoginAnim.FindProperty("mistLayer1").objectReferenceValue = m1Rect;
+                serializedLoginAnim.FindProperty("mistImage1").objectReferenceValue = m1Img;
+                serializedLoginAnim.FindProperty("mistLayer2").objectReferenceValue = m2Rect;
+                serializedLoginAnim.FindProperty("mistImage2").objectReferenceValue = m2Img;
+                serializedLoginAnim.FindProperty("firefliesContainer").objectReferenceValue = firefliesObj.transform;
+                serializedLoginAnim.FindProperty("moteSprite").objectReferenceValue = moteSprite;
+                serializedLoginAnim.FindProperty("brandCanvasGroup").objectReferenceValue = brandPanel.GetComponent<CanvasGroup>();
+                serializedLoginAnim.FindProperty("brandRect").objectReferenceValue = brandRect;
+                var appLogoObj = brandPanel.transform.Find("AppLogo");
+                if (appLogoObj != null) serializedLoginAnim.FindProperty("appLogoRect").objectReferenceValue = appLogoObj.GetComponent<RectTransform>();
+                var brandTitleObj = brandPanel.transform.Find("BrandTitle");
+                if (brandTitleObj != null) serializedLoginAnim.FindProperty("brandTitleText").objectReferenceValue = brandTitleObj.GetComponent<Text>();
+                var brandTamilObj = brandPanel.transform.Find("BrandTamilTitle");
+                if (brandTamilObj != null) serializedLoginAnim.FindProperty("brandTamilTitleText").objectReferenceValue = brandTamilObj.GetComponent<Text>();
+                serializedLoginAnim.FindProperty("brandFeaturesGroup").objectReferenceValue = brandPanel.transform;
+                serializedLoginAnim.FindProperty("cardCanvasGroup").objectReferenceValue = cardContainer.GetComponent<CanvasGroup>();
+                serializedLoginAnim.FindProperty("cardContainerRect").objectReferenceValue = cardRect;
+                serializedLoginAnim.FindProperty("cardTopBorder").objectReferenceValue = cardTopBorder.GetComponent<Image>();
+                serializedLoginAnim.ApplyModifiedProperties();
 
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
@@ -875,6 +1053,22 @@ namespace WhisperingWilds.Editor
             {
                 Debug.LogError("[Whispering Wilds] Boot scene creation failed: " + ex);
             }
+        }
+
+        /// <summary>
+        /// Ensures a texture asset is imported as a UI Sprite with alpha transparency.
+        /// </summary>
+        private static Sprite EnsureSpriteImport(string path)
+        {
+            var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+            if (importer != null && (importer.textureType != TextureImporterType.Sprite || !importer.alphaIsTransparency))
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.SaveAndReimport();
+            }
+            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
         private static GameObject CreateText(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 sizeDelta, Font font, int fontSize, TextAnchor alignment, Color color)
@@ -967,13 +1161,13 @@ namespace WhisperingWilds.Editor
             var placeholderRect = placeholderObj.GetComponent<RectTransform>();
             placeholderRect.anchorMin = new Vector2(0f, 0f);
             placeholderRect.anchorMax = new Vector2(1f, 1f);
-            placeholderRect.offsetMin = new Vector2(10f, 5f);
-            placeholderRect.offsetMax = new Vector2(10f, 5f);
+            placeholderRect.offsetMin = new Vector2(12f, 4f);
+            placeholderRect.offsetMax = new Vector2(-12f, -4f);
             var placeholderText = placeholderObj.GetComponent<Text>();
             placeholderText.font = font;
-            placeholderText.fontSize = 16;
+            placeholderText.fontSize = 14;
             placeholderText.alignment = TextAnchor.MiddleLeft;
-            placeholderText.color = new Color(0.5f, 0.5f, 0.5f);
+            placeholderText.color = new Color(0.48f, 0.54f, 0.62f);
             placeholderText.text = placeholder;
             placeholderText.raycastTarget = false;
             inputField.placeholder = placeholderText;
@@ -984,13 +1178,13 @@ namespace WhisperingWilds.Editor
             var textRect = textObj.GetComponent<RectTransform>();
             textRect.anchorMin = new Vector2(0f, 0f);
             textRect.anchorMax = new Vector2(1f, 1f);
-            textRect.offsetMin = new Vector2(10f, 5f);
-            textRect.offsetMax = new Vector2(10f, 5f);
+            textRect.offsetMin = new Vector2(12f, 4f);
+            textRect.offsetMax = new Vector2(-12f, -4f);
             var textComp = textObj.GetComponent<Text>();
             textComp.font = font;
-            textComp.fontSize = 16;
+            textComp.fontSize = 14;
             textComp.alignment = TextAnchor.MiddleLeft;
-            textComp.color = Color.white;
+            textComp.color = new Color(0.95f, 0.96f, 0.98f);
             textComp.raycastTarget = false;
             inputField.textComponent = textComp;
 

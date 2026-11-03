@@ -27,8 +27,17 @@ namespace WhisperingWilds.Editor
                 return;
             }
 
+            // Hide MenuRoot so login panel is pristine and isolated
+            var menuRoot = GameObject.Find("MenuRoot") ?? canvas.transform.Find("MenuRoot")?.gameObject;
+            if (menuRoot != null) menuRoot.SetActive(false);
+
             // Ensure LoginModal is active
             loginUI.gameObject.SetActive(true);
+            if (loginUI.Animator != null)
+            {
+                loginUI.Animator.InitializeReferences();
+                loginUI.Animator.ResetVisualsToVisible();
+            }
 
             // Configure canvas to render with camera into RenderTexture
             var origRenderMode = canvas.renderMode;
@@ -88,19 +97,17 @@ namespace WhisperingWilds.Editor
                 regPassInput.text = "KaveriDelta#2026!";
             }
             // Trigger password strength meter
-            var strengthLabelProp = so.FindProperty("passwordStrengthLabel");
-            if (strengthLabelProp?.objectReferenceValue is Text strengthLabel)
+            var strengthTextProp = so.FindProperty("passwordStrengthText");
+            if (strengthTextProp?.objectReferenceValue is Text strengthText)
             {
-                strengthLabel.text = "Strong / வலிமையான கடவுச்சொல்";
-                strengthLabel.color = new Color(0.2f, 0.85f, 0.4f);
+                strengthText.text = "Strong / \u0BB5\u0BB2\u0BBF\u0BAE\u0BC8\u0BAF\u0BBE\u0BA9 \u0B95\u0B9F\u0BB5\u0BC1\u0B9A\u0BCD\u0B9A\u0BCA\u0BB2\u0BCD";
+                strengthText.color = new Color(0.2f, 0.85f, 0.4f);
             }
-            for (int i = 0; i < 4; i++)
+            var strengthBarProp = so.FindProperty("passwordStrengthBar");
+            if (strengthBarProp?.objectReferenceValue is Image strengthBar)
             {
-                var barProp = so.FindProperty($"passwordStrengthBar{i + 1}");
-                if (barProp?.objectReferenceValue is Image barImg)
-                {
-                    barImg.color = new Color(0.2f, 0.85f, 0.4f, 1f);
-                }
+                strengthBar.color = new Color(0.2f, 0.85f, 0.4f);
+                if (strengthBar.type == Image.Type.Filled) strengthBar.fillAmount = 1f;
             }
             CaptureView("login_02_register", resolutions, cam, docsDir, brainDir);
 
@@ -129,15 +136,16 @@ namespace WhisperingWilds.Editor
             var accountStatusLabelProp = so.FindProperty("accountStatusLabel");
             if (accountStatusLabelProp?.objectReferenceValue is Text accountStatusLabel)
             {
-                accountStatusLabel.text = "✦ Cloud save active • Verified Explorer (Cauvery Delta)";
+                accountStatusLabel.text = "\u2726 Cloud save active \u2022 Verified Explorer (Cauvery Delta)";
                 accountStatusLabel.color = new Color(0.35f, 0.85f, 0.55f);
             }
             CaptureView("login_04_signedin", resolutions, cam, docsDir, brainDir);
 
-            // Restore canvas
+            // Restore canvas and menuRoot
             canvas.renderMode = origRenderMode;
             canvas.worldCamera = origCamera;
             canvas.planeDistance = origPlaneDist;
+            if (menuRoot != null) menuRoot.SetActive(true);
 
             Debug.Log("[CaptureLoginInEngine] All 8 in-engine login screenshots captured successfully.");
         }

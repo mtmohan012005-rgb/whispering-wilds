@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
@@ -99,6 +99,11 @@ namespace WhisperingWilds.UI
         [SerializeField] private GameObject resetPasswordPanel;
         [SerializeField] private GameObject signedInPanel;
 
+        [Header("Atmosphere & Animation")]
+        [SerializeField] private LoginAnimator loginAnimator;
+
+        public LoginAnimator Animator => loginAnimator;
+
         private bool _isPasswordVisible;
         private bool _isRegPasswordVisible;
         private bool _isResetPasswordVisible;
@@ -109,6 +114,11 @@ namespace WhisperingWilds.UI
 
         private void Awake()
         {
+            if (loginAnimator == null)
+            {
+                loginAnimator = GetComponent<LoginAnimator>() ?? GetComponentInChildren<LoginAnimator>();
+            }
+
             SetVisible(false);
             LoadRememberedEmail();
         }
@@ -245,9 +255,9 @@ namespace WhisperingWilds.UI
 
         public void SetVisible(bool visible)
         {
-            gameObject.SetActive(visible);
             if (visible)
             {
+                gameObject.SetActive(true);
                 ApplyLocalizedLabels();
                 if (AuthService.Instance != null && AuthService.Instance.IsSignedIn)
                 {
@@ -256,6 +266,22 @@ namespace WhisperingWilds.UI
                 else
                 {
                     ShowSignIn();
+                }
+
+                if (loginAnimator != null && Application.isPlaying)
+                {
+                    loginAnimator.PlayEntrance();
+                }
+            }
+            else
+            {
+                if (loginAnimator != null && Application.isPlaying && gameObject.activeInHierarchy)
+                {
+                    loginAnimator.PlayExit(() => gameObject.SetActive(false));
+                }
+                else
+                {
+                    gameObject.SetActive(false);
                 }
             }
         }
@@ -271,6 +297,11 @@ namespace WhisperingWilds.UI
             ClearStatusTexts();
             LoadRememberedEmail();
             UpdatePasswordVisibilityVisuals();
+
+            if (loginAnimator != null && Application.isPlaying)
+            {
+                loginAnimator.AnimatePanelEntrance(signInPanel);
+            }
         }
 
         public void ShowRegister()
@@ -284,6 +315,11 @@ namespace WhisperingWilds.UI
             ClearStatusTexts();
             OnRegisterPasswordChanged(registerPasswordField != null ? registerPasswordField.text : "");
             UpdatePasswordVisibilityVisuals();
+
+            if (loginAnimator != null && Application.isPlaying)
+            {
+                loginAnimator.AnimatePanelEntrance(registerPanel);
+            }
         }
 
         public void ShowForgotPassword()
@@ -300,6 +336,11 @@ namespace WhisperingWilds.UI
             {
                 forgotEmailField.text = emailField.text.Trim();
             }
+
+            if (loginAnimator != null && Application.isPlaying)
+            {
+                loginAnimator.AnimatePanelEntrance(forgotPasswordPanel);
+            }
         }
 
         public void ShowResetPassword()
@@ -312,6 +353,11 @@ namespace WhisperingWilds.UI
             SetLoading(false);
             ClearStatusTexts();
             UpdatePasswordVisibilityVisuals();
+
+            if (loginAnimator != null && Application.isPlaying)
+            {
+                loginAnimator.AnimatePanelEntrance(resetPasswordPanel);
+            }
         }
 
         public void ShowSignedIn()
@@ -336,8 +382,13 @@ namespace WhisperingWilds.UI
                 if (accountStatusLabel != null)
                 {
                     string status = mgr != null ? mgr.GetForDisplay("login.cloud_sync_active") : "Cloud save & expedition sync active";
-                    accountStatusLabel.text = $"â€¢ {status}";
+                    accountStatusLabel.text = $"• {status}";
                 }
+            }
+
+            if (loginAnimator != null && Application.isPlaying)
+            {
+                loginAnimator.AnimatePanelEntrance(signedInPanel);
             }
         }
 
@@ -793,16 +844,39 @@ namespace WhisperingWilds.UI
         public void OnGuestClicked()
         {
             Debug.Log("<color=#00D2FF><b>[LoginUI]</b></color> Continuing in Guest / Play Offline mode.");
-            SetVisible(false);
-            OnSignInResult?.Invoke(true, "Guest");
-            OnBackToMenu?.Invoke();
+            if (loginAnimator != null && Application.isPlaying && gameObject.activeInHierarchy)
+            {
+                loginAnimator.PlayExit(() =>
+                {
+                    gameObject.SetActive(false);
+                    OnSignInResult?.Invoke(true, "Guest");
+                    OnBackToMenu?.Invoke();
+                });
+            }
+            else
+            {
+                SetVisible(false);
+                OnSignInResult?.Invoke(true, "Guest");
+                OnBackToMenu?.Invoke();
+            }
         }
 
         private void OnBackClicked()
         {
             ClearFields();
-            SetVisible(false);
-            OnBackToMenu?.Invoke();
+            if (loginAnimator != null && Application.isPlaying && gameObject.activeInHierarchy)
+            {
+                loginAnimator.PlayExit(() =>
+                {
+                    gameObject.SetActive(false);
+                    OnBackToMenu?.Invoke();
+                });
+            }
+            else
+            {
+                SetVisible(false);
+                OnBackToMenu?.Invoke();
+            }
         }
 
         private void SubmitActivePanel()
