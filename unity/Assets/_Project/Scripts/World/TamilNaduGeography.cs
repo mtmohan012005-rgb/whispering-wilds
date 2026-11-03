@@ -123,6 +123,62 @@ namespace WhisperingWilds.World
             sceneName = "07_Nilgiris_Sanctuary"
         };
 
+        public static readonly RegionGeoLocation AncientTemple = new RegionGeoLocation
+        {
+            regionId = "ancient_temple",
+            englishName = "Ancient Dravidian Temple Ruins",
+            tamilName = "பண்டைய திராவிடக் கோயில் சிதிலங்கள்",
+            latitude = 10.7850,
+            longitude = 79.1350,
+            elevationMeters = 55.0f,
+            highwayRoute = "Kaveri River Tributary Access",
+            historicalSignificance = "Historic Chola and Nayakar mandapas, acoustic swara musical pillars, and sun-aligned sanctum.",
+            biomeType = "Sacred Heritage Complex / Granite Mandapa",
+            sceneName = "08_Ancient_Temple_Ruins"
+        };
+
+        public static readonly RegionGeoLocation Madurai = new RegionGeoLocation
+        {
+            regionId = "madurai",
+            englishName = "Madurai Meenakshi Royal Quarter",
+            tamilName = "மதுரை மீனாட்சி சுந்தரேஸ்வரர் பகுதி",
+            latitude = 9.9195,
+            longitude = 78.1193,
+            elevationMeters = 136.0f,
+            highwayRoute = "NH 44 / Vaigai Corridor",
+            historicalSignificance = "Ancient Pandyan capital, Sangam literature center, Meenakshi temple 5-tier gopurams and Nayakar colonnade.",
+            biomeType = "Historic Temple City / Jasmine Bazaar",
+            sceneName = "09_Madurai_Meenakshi"
+        };
+
+        public static readonly RegionGeoLocation Kanyakumari = new RegionGeoLocation
+        {
+            regionId = "kanyakumari",
+            englishName = "Kanyakumari Cape Triveni Sangam",
+            tamilName = "கன்னியாகுமரி முக்கடல் சங்கமம்",
+            latitude = 8.0883,
+            longitude = 77.5385,
+            elevationMeters = 10.0f,
+            highwayRoute = "NH 66 / Southern Coastal Highway",
+            historicalSignificance = "Southernmost tip of the Indian subcontinent, confluence of Arabian Sea, Indian Ocean, and Bay of Bengal.",
+            biomeType = "Coastal Cape / Ocean Confluence",
+            sceneName = "10_Kanyakumari_Cape"
+        };
+
+        public static readonly RegionGeoLocation Agasthyamalai = new RegionGeoLocation
+        {
+            regionId = "agasthyamalai",
+            englishName = "Agasthyamalai Biosphere Wilds",
+            tamilName = "அகத்தியர் மலை உயிர்க்கோள வனம்",
+            latitude = 8.6167,
+            longitude = 77.2500,
+            elevationMeters = 1868.0f,
+            highwayRoute = "Western Ghats Forest Reserve Corridor",
+            historicalSignificance = "Protected UNESCO biosphere, indigenous Siddha medicinal flora, montane shola forest and sacred mist peaks.",
+            biomeType = "Montane Evergreen Shola / Sacred Forest",
+            sceneName = "11_Agasthyamalai_Wilds"
+        };
+
         public static readonly List<RegionGeoLocation> AllRegions = new List<RegionGeoLocation>
         {
             Chennai,
@@ -131,7 +187,11 @@ namespace WhisperingWilds.World
             CauveryDelta,
             Thanjavur,
             Chettinad,
-            Nilgiris
+            Nilgiris,
+            AncientTemple,
+            Madurai,
+            Kanyakumari,
+            Agasthyamalai
         };
 
         public static bool IsValidRegion(string regionId)

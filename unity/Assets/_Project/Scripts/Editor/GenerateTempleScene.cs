@@ -896,7 +896,7 @@ namespace WhisperingWilds.Editor
                 if (wrongAnswer != null) acousticCtrl.dissonanceSound = wrongAnswer;
                 if (bell != null)
                 {
-                    var swaraLib = AssetDatabase.LoadAssetAtPath<WhisperingWilds.Audio.CarnaticSwaraLibrary>("Assets/_Project/Audio/Swaras/CarnaticSwaraLibrary.asset");
+                    var swaraLib = AssetDatabase.LoadAssetAtPath<WhisperingWilds.Audio.CarnaticSwaraLibrary>("Assets/_Project/Audio/CarnaticSwaraLibrary.asset");
                     var mohanam = swaraLib != null ? swaraLib.GetMohanamClips() : null;
                     if (mohanam != null && mohanam.Length == 5)
                     {

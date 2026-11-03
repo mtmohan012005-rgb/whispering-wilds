@@ -125,5 +125,42 @@ namespace WhisperingWilds.Tests.Editor
 
             Object.DestroyImmediate(go);
         }
+
+        [Test]
+        public void WildlifeAudioSpecification_ReadmeExists_AndDocumentsPlaceholderStatus()
+        {
+            string readmePath = "Assets/_Project/Audio/Wildlife/README.md";
+            Assert.IsTrue(File.Exists(readmePath), "Wildlife audio specification README must exist.");
+
+            string text = File.ReadAllText(readmePath);
+            Assert.IsTrue(text.Contains("SYNTHETIC_SOUND_DESIGN"), "README must document synthetic sound design status.");
+            Assert.IsTrue(text.Contains("call_elephant.wav"), "README must list call_elephant.wav.");
+            Assert.IsTrue(text.Contains("call_nilgiri_tahr.wav"), "README must list call_nilgiri_tahr.wav.");
+            Assert.IsTrue(text.Contains("call_peafowl.wav"), "README must list call_peafowl.wav.");
+        }
+
+        [Test]
+        public void AllTwelveScenes_ResolveToGroundedRegions_InRegionalSceneManager()
+        {
+            string[] regionalScenes = {
+                "02_Chennai_GeorgeTown",
+                "03_Pichavaram_Wetlands",
+                "04_Thanjavur_Delta",
+                "05_Chettinad_Mansion",
+                "06_Mamallapuram_Shore",
+                "07_Nilgiris_Sanctuary",
+                "08_Ancient_Temple_Ruins",
+                "09_Madurai_Meenakshi",
+                "10_Kanyakumari_Cape",
+                "11_Agasthyamalai_Wilds"
+            };
+
+            foreach (var scene in regionalScenes)
+            {
+                string regionId = WhisperingWilds.World.RegionalSceneManager.ResolveRegionIdFromSceneName(scene);
+                Assert.IsNotNull(regionId, $"Scene '{scene}' must resolve to a valid region ID.");
+                Assert.IsTrue(WhisperingWilds.World.TamilNaduGeography.IsValidRegion(regionId), $"Region ID '{regionId}' resolved from '{scene}' must be valid in TamilNaduGeography.");
+            }
+        }
     }
 }

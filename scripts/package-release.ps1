@@ -253,7 +253,7 @@ $manifestData = [ordered]@{
     sizeMB = $sizeMB
     sha256 = $zipHash
     generatedAt = (Get-Date).ToUniversalTime().ToString("o")
-    scenesIncluded = 9
+    scenesIncluded = 12
     scenes = @(
         "00_Boot",
         "01_StateMap_TamilNadu",
@@ -263,7 +263,10 @@ $manifestData = [ordered]@{
         "05_Chettinad_Mansion",
         "06_Mamallapuram_Shore",
         "07_Nilgiris_Sanctuary",
-        "08_Ancient_Temple_Ruins"
+        "08_Ancient_Temple_Ruins",
+        "09_Madurai_Meenakshi",
+        "10_Kanyakumari_Cape",
+        "11_Agasthyamalai_Wilds"
     )
     testStatuses = [ordered]@{
         "unit_editmode" = "PASS_AUTOMATED"
