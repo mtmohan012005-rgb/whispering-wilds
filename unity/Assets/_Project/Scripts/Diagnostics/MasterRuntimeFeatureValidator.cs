@@ -406,8 +406,16 @@ namespace WhisperingWilds.Diagnostics
 
         private void AuditWildlife(Scene scene, RuntimeAuditReport report)
         {
-            var wildlife = GameObject.FindGameObjectsWithTag("Wildlife");
-            if (wildlife.Length == 0)
+            GameObject[] wildlife = null;
+            try
+            {
+                wildlife = GameObject.FindGameObjectsWithTag("Wildlife");
+            }
+            catch (UnityException)
+            {
+                wildlife = Array.Empty<GameObject>();
+            }
+            if (wildlife == null || wildlife.Length == 0)
             {
                 report.results.Add(new RuntimeFeatureCheckResult
                 {
