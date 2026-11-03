@@ -61,10 +61,18 @@ namespace WhisperingWilds.UI
             }
 
             // [M] key toggles State Map
+#if ENABLE_INPUT_SYSTEM
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null && kb.mKey.wasPressedThisFrame)
+            {
+                OpenStateMap();
+            }
+#else
             if (Input.GetKeyDown(KeyCode.M))
             {
                 OpenStateMap();
             }
+#endif
         }
 
         private void FindPlayerReferences()
