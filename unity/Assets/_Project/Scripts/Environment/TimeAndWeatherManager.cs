@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using WhisperingWilds.Loops;
 
-namespace WhisperingWilds.Environment
+namespace WhisperingWilds.Atmosphere
 {
     public enum WeatherState
     {

@@ -18,7 +18,7 @@ namespace WhisperingWilds.Campaign
     }
 
     /// <summary>
-    /// Expansion Pack Architecture: "Sangam Horizons (சங்கத் தடம்)".
+    /// Expansion Pack Architecture: "Sangam Horizons (à®šà®™à¯à®•à®¤à¯ à®¤à®Ÿà®®à¯)".
     /// Expands the playable journey into southern Tamil Nadu:
     /// - Madurai (Meenakshi temple corridors, night jasmine floriculture & Vaigai archaeological digs)
     /// - Kanyakumari (Confluence of three oceans & coastal lighthouse navigation)
@@ -60,9 +60,9 @@ namespace WhisperingWilds.Campaign
             {
                 hubId = "madurai",
                 englishName = "Madurai",
-                tamilName = "மதுரை",
+                tamilName = "à®®à®¤à¯à®°à¯ˆ",
                 sceneName = "09_Madurai_Meenakshi",
-                specialtyResource = "Madurai Jasmine (மல்லிகை)",
+                specialtyResource = "Madurai Jasmine (à®®à®²à¯à®²à®¿à®•à¯ˆ)",
                 isUnlocked = false
             });
 
@@ -70,9 +70,9 @@ namespace WhisperingWilds.Campaign
             {
                 hubId = "kanyakumari",
                 englishName = "Kanyakumari",
-                tamilName = "கன்னியாகுமரி",
+                tamilName = "à®•à®©à¯à®©à®¿à®¯à®¾à®•à¯à®®à®°à®¿",
                 sceneName = "10_Kanyakumari_Cape",
-                specialtyResource = "Palmyra Palm Sap (பனம்பால்)",
+                specialtyResource = "Palmyra Palm Sap (à®ªà®©à®®à¯à®ªà®¾à®²à¯)",
                 isUnlocked = false
             });
 
@@ -80,9 +80,9 @@ namespace WhisperingWilds.Campaign
             {
                 hubId = "agasthyamalai",
                 englishName = "Agasthyamalai",
-                tamilName = "அகஸ்தியர்மலை",
+                tamilName = "à®…à®•à®¸à¯à®¤à®¿à®¯à®°à¯à®®à®²à¯ˆ",
                 sceneName = "11_Agasthyamalai_Wilds",
-                specialtyResource = "Medicinal Flora (மூலிகை)",
+                specialtyResource = "Medicinal Flora (à®®à¯‚à®²à®¿à®•à¯ˆ)",
                 isUnlocked = false
             });
         }
@@ -105,14 +105,14 @@ namespace WhisperingWilds.Campaign
                     // If travel manager is provided, integrate new travel node
                     if (travelManager != null)
                     {
-                        travelManager.travelNodes.Add(new TravelNode
+                        travelManager.worldNodes.Add(new TravelNode
                         {
                             nodeId = updated.hubId,
                             regionName = updated.englishName,
                             connectedNodeIds = new List<string> { "chettinad", "thanjavur" },
-                            travelStaminaCost = 30f,
-                            travelTimeHours = 3.5f,
-                            hasDirectTransitRoute = true
+                            baseTravelHours = 3.5f,
+                            dangerLevel = 2,
+                            isUnlocked = true
                         });
                     }
 

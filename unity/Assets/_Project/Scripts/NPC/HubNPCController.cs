@@ -15,6 +15,7 @@ using WhisperingWilds.Player;
 using WhisperingWilds.NPC;
 using WhisperingWilds.Localization;
 using WhisperingWilds.UI;
+using WhisperingWilds.Campaign;
 
 namespace WhisperingWilds.Characters
 {

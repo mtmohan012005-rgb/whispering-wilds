@@ -11,6 +11,7 @@ using WhisperingWilds.NPC;
 using WhisperingWilds.Photography;
 using WhisperingWilds.Player;
 using WhisperingWilds.Quests;
+using WhisperingWilds.Campaign;
 
 namespace WhisperingWilds.UI
 {

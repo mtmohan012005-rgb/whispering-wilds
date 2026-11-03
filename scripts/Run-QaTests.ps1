@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Runs Unity PlayMode or EditMode tests with QA-isolated save directory.
 .DESCRIPTION
@@ -30,9 +30,15 @@ $ErrorActionPreference = "Stop"
 # Repo root is one level above scripts/
 $repoRoot = Split-Path $PSScriptRoot -Parent
 $unityProjectDir = Join-Path $repoRoot "unity"
-$unityExe = "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe"
+$candidateUnityPaths = @(
+    "C:\Unity\6000.6.3f1\Editor\Unity.exe",
+    "C:\Program Files\Unity\Hub\Editor\6000.6.3f1\Editor\Unity.exe",
+    "C:\Program Files\Unity\Editor\Unity.exe"
+)
+$unityExe = $candidateUnityPaths | Where-Object { Test-Path $_ } | Select-Object -First 1
+if (-not $unityExe) { $unityExe = "C:\Unity\6000.6.3f1\Editor\Unity.exe" }
 
-# All QA artifacts go into a unique temp directory — never into the repository
+# All QA artifacts go into a unique temp directory â€” never into the repository
 $qaTempRoot = Join-Path $env:TEMP "ww_qa_$(Get-Date -Format 'yyyyMMddHHmmss')_$((New-Guid).ToString('N').Substring(0, 8))"
 New-Item -ItemType Directory -Force -Path $qaTempRoot | Out-Null
 
@@ -229,7 +235,7 @@ if (-not [string]::IsNullOrWhiteSpace($ArtifactDir)) {
     }
 }
 
-# Cleanup QA artifacts — preserve logs and results on failure or when no ArtifactDir
+# Cleanup QA artifacts â€” preserve logs and results on failure or when no ArtifactDir
 if ($testsExecuted -and $testFailed -eq 0 -and $exitCode -eq 0) {
     if (-not [string]::IsNullOrWhiteSpace($ArtifactDir)) {
         Write-Host "Tests passed. Evidence preserved in: $ArtifactDir. Cleaning up temp root: $qaTempRoot"

@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -72,7 +72,7 @@ namespace WhisperingWilds.Tests.Editor
             Assert.IsTrue(unlocked);
 
             // Verify travel node was appended to travel manager
-            bool hasMaduraiNode = travelManager.travelNodes.Exists(n => n.nodeId == "madurai");
+            bool hasMaduraiNode = travelManager.worldNodes.Exists(n => n.nodeId == "madurai");
             Assert.IsTrue(hasMaduraiNode);
 
             // Relic discovery

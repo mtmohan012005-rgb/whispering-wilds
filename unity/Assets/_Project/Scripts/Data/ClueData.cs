@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace WhisperingWilds.Data
 {
@@ -18,6 +18,8 @@ namespace WhisperingWilds.Data
         public string clueId;
         public string titleEn;
         public string titleTa;
+        public string clueNameEn => titleEn;
+        public string clueNameTa => titleTa;
         [TextArea(3, 5)] public string descriptionEn;
         [TextArea(3, 5)] public string descriptionTa;
 

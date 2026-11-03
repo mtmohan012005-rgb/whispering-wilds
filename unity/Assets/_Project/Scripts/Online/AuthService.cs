@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
@@ -25,12 +25,30 @@ namespace WhisperingWilds.Online
     /// Used for login, register, logout, and me endpoints.
     /// </summary>
     [Serializable]
-    internal class AuthResponse
+    public class AuthUserDataWrapper
+    {
+        public AuthUser user;
+    }
+
+    /// <summary>
+    /// Generic server response wrapper: { success, message, data: { user }, token? }
+    /// Maps nested backend contracts where data contains the authenticated user.
+    /// </summary>
+    [Serializable]
+    public class AuthResponse
     {
         public bool success;
         public string message;
-        public AuthUser data;
+        public AuthUserDataWrapper data;
+        public AuthUser user;
         public string token;
+
+        public AuthUser GetUser()
+        {
+            if (data != null && data.user != null) return data.user;
+            if (user != null) return user;
+            return null;
+        }
     }
 
     /// <summary>
@@ -70,6 +88,8 @@ namespace WhisperingWilds.Online
 
         private string _sessionToken;
 
+        public const string ProductionDefaultUrl = "https://thewhisperingwilds.netlify.app";
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -79,6 +99,69 @@ namespace WhisperingWilds.Online
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            ResolveBaseUrl();
+        }
+
+        private void ResolveBaseUrl()
+        {
+            string cliUrl = ReadCommandLineArg("-authUrl") ?? ReadCommandLineArg("-serverUrl");
+            string envUrl = global::System.Environment.GetEnvironmentVariable("WW_AUTH_BACKEND_URL") 
+                         ?? global::System.Environment.GetEnvironmentVariable("WW_SERVER_URL");
+
+            if (!string.IsNullOrWhiteSpace(cliUrl))
+            {
+                baseUrl = cliUrl.Trim();
+                Debug.Log($"[AuthService] Base URL overridden via command line: {baseUrl}");
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(envUrl))
+            {
+                baseUrl = envUrl.Trim();
+                Debug.Log($"[AuthService] Base URL overridden via environment variable: {baseUrl}");
+                return;
+            }
+
+            // In production player builds (non-editor, non-debug), ensure localhost is never used
+            if (!Application.isEditor && !Debug.isDebugBuild)
+            {
+                if (string.IsNullOrWhiteSpace(baseUrl) || baseUrl.Contains("localhost") || baseUrl.Contains("127.0.0.1"))
+                {
+                    baseUrl = ProductionDefaultUrl;
+                    Debug.Log($"[AuthService] Production build defaulting to canonical HTTPS endpoint: {baseUrl}");
+                }
+            }
+        }
+
+        private static string ReadCommandLineArg(string flag)
+        {
+            string[] args;
+            try
+            {
+                args = global::System.Environment.GetCommandLineArgs();
+            }
+            catch
+            {
+                return null;
+            }
+
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                {
+                    return args[i + 1];
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Explicitly overrides the backend base URL (for testing or runtime reconfiguration).
+        /// </summary>
+        public void SetBaseUrl(string url)
+        {
+            baseUrl = url?.Trim();
         }
 
         private void OnDestroy()
@@ -90,7 +173,7 @@ namespace WhisperingWilds.Online
         /// Configures CloudSaveManager with the persistence backend after successful sign-in.
         /// The token provider returns the current session token per-request. The persistence
         /// routes use session-based auth (matching /api/auth/login), so the session token
-        /// is the correct credential — no Firebase Auth SDK is required in Unity.
+        /// is the correct credential Ã¢â‚¬â€ no Firebase Auth SDK is required in Unity.
         /// </summary>
         private void ConfigureCloudSaves()
         {
@@ -196,7 +279,7 @@ namespace WhisperingWilds.Online
                     if (result.success && !string.IsNullOrEmpty(result.token))
                     {
                         _sessionToken = result.token;
-                        CurrentUser = result.data;
+                        CurrentUser = result.GetUser() ?? ExtractUserFromResponse(response);
                         // Configure cloud saves with the persistence backend
                         ConfigureCloudSaves();
                         callback?.Invoke(true, "Signed in successfully.");
@@ -539,7 +622,7 @@ namespace WhisperingWilds.Online
 
         // --- Parsing helpers using JsonUtility ---
 
-        private AuthResponse ParseSignInResponse(string response)
+        public AuthResponse ParseSignInResponse(string response)
         {
             if (string.IsNullOrEmpty(response))
                 return new AuthResponse { success = false, message = "Invalid server response." };
@@ -549,6 +632,14 @@ namespace WhisperingWilds.Online
                 var authResponse = JsonUtility.FromJson<AuthResponse>(response);
                 if (authResponse != null)
                 {
+                    if (authResponse.GetUser() == null)
+                    {
+                        var extracted = ExtractUserFromResponse(response);
+                        if (extracted != null)
+                        {
+                            authResponse.data = new AuthUserDataWrapper { user = extracted };
+                        }
+                    }
                     return authResponse;
                 }
             }
@@ -558,12 +649,14 @@ namespace WhisperingWilds.Online
             }
 
             // Fallback: manual extraction for responses JsonUtility cannot parse
+            var fallbackUser = ExtractUserFromResponse(response);
             return new AuthResponse
             {
                 success = response.Contains("\"success\":true") || response.Contains("\"success\": true"),
                 message = ExtractJsonString(response, "message") ?? "Sign in failed.",
                 token = ExtractJsonString(response, "token"),
-                data = ExtractUserFromResponse(response)
+                data = fallbackUser != null ? new AuthUserDataWrapper { user = fallbackUser } : null,
+                user = fallbackUser
             };
         }
 
@@ -590,7 +683,7 @@ namespace WhisperingWilds.Online
             };
         }
 
-        private AuthUser ParseMeResponse(string response)
+        public AuthUser ParseMeResponse(string response)
         {
             if (string.IsNullOrEmpty(response)) return null;
 
@@ -598,7 +691,10 @@ namespace WhisperingWilds.Online
             {
                 var authResponse = JsonUtility.FromJson<AuthResponse>(response);
                 if (authResponse != null && authResponse.success)
-                    return authResponse.data;
+                {
+                    var u = authResponse.GetUser();
+                    if (u != null) return u;
+                }
             }
             catch
             {
@@ -608,14 +704,17 @@ namespace WhisperingWilds.Online
             return ExtractUserFromResponse(response);
         }
 
-        private AuthUser ExtractUserFromResponse(string response)
+        public AuthUser ExtractUserFromResponse(string response)
         {
-            // The server returns { success, message, data: { id, email, displayName, emailVerified } }
-            // or for login: { success, message, data: { ... }, token: "..." }
-            int dataStart = response.IndexOf("\"data\"");
-            if (dataStart < 0) return null;
+            if (string.IsNullOrEmpty(response)) return null;
 
-            int objStart = response.IndexOf("{", dataStart);
+            // The server returns { success, message, data: { user: { id, email, displayName, emailVerified } } }
+            // Prefer the nested 'user' block; fall back to 'data' block
+            int userStart = response.IndexOf("\"user\"");
+            int searchStart = userStart >= 0 ? userStart : response.IndexOf("\"data\"");
+            if (searchStart < 0) return null;
+
+            int objStart = response.IndexOf("{", searchStart);
             int objEnd = FindMatchingBrace(response, objStart);
             if (objStart < 0 || objEnd <= objStart) return null;
 

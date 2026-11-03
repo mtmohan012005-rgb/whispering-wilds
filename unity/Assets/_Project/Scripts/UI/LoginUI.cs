@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
@@ -321,7 +321,7 @@ namespace WhisperingWilds.UI
                 if (accountStatusLabel != null)
                 {
                     string status = mgr != null ? mgr.GetForDisplay("login.cloud_sync_active") : "Cloud save & expedition sync active";
-                    accountStatusLabel.text = $"• {status}";
+                    accountStatusLabel.text = $"â€¢ {status}";
                 }
             }
         }
@@ -779,6 +779,7 @@ namespace WhisperingWilds.UI
         {
             Debug.Log("<color=#00D2FF><b>[LoginUI]</b></color> Continuing in Guest / Play Offline mode.");
             SetVisible(false);
+            OnSignInResult?.Invoke(true, "Guest");
             OnBackToMenu?.Invoke();
         }
 
