@@ -14,6 +14,7 @@ namespace WhisperingWilds.Tests.Editor
         {
             _holder = new GameObject("Test_RegionalSoundscape");
             _manager = _holder.AddComponent<RegionalSoundscapeManager>();
+            _manager.EnsureInitialized();
         }
 
         [TearDown]

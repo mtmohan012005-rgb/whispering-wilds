@@ -19,6 +19,8 @@ namespace WhisperingWilds.Tests.Editor
         [SetUp]
         public void SetUp()
         {
+            WhisperingWilds.Investigation.PuzzleStateStore.Clear();
+            WhisperingWilds.Investigation.DiscoveryLog.Clear();
             _holder = new GameObject("Test_TempleFinaleIntegration");
 
             _folklore = _holder.AddComponent<TempleFolklorePuzzleController>();
@@ -43,6 +45,7 @@ namespace WhisperingWilds.Tests.Editor
             _folklore.Initialize();
             _navagraha.Initialize();
             _acoustic.Initialize();
+            _controller.InitializeLevel();
         }
 
         [TearDown]
@@ -51,6 +54,8 @@ namespace WhisperingWilds.Tests.Editor
             if (_holder != null) Object.DestroyImmediate(_holder);
             if (_door != null) Object.DestroyImmediate(_door);
             if (_artifact != null && _artifact.gameObject != null) Object.DestroyImmediate(_artifact.gameObject);
+            WhisperingWilds.Investigation.PuzzleStateStore.Clear();
+            WhisperingWilds.Investigation.DiscoveryLog.Clear();
         }
 
         [Test]

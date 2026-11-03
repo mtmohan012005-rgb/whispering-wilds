@@ -31,6 +31,7 @@ namespace WhisperingWilds.Tests.Editor
 
             testEndingGo = new GameObject("TestEndingController", typeof(EndingController));
             endingController = testEndingGo.GetComponent<EndingController>();
+            EndingController.Instance = endingController;
             endingController.ResetForNewGame();
         }
 
@@ -38,6 +39,7 @@ namespace WhisperingWilds.Tests.Editor
         public void TearDown()
         {
             NPCMemoryStore.Clear();
+            EndingController.Instance = null;
             if (testEndingGo != null)
             {
                 UnityEngine.Object.DestroyImmediate(testEndingGo);

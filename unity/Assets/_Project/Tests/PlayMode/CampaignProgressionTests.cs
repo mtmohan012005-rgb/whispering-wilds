@@ -411,8 +411,8 @@ namespace WhisperingWilds.Tests.PlayMode
         public void SaveSystem_GameSaveData_SchemaVersionIsCorrect()
         {
             // Verify the current schema version is as expected
-            Assert.AreEqual(4, GameSaveData.CurrentSchemaVersion,
-                "Current schema version should be 4");
+            Assert.AreEqual(5, GameSaveData.CurrentSchemaVersion,
+                "Current schema version should be 5");
         }
 
         [Test]
