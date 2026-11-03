@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -140,7 +140,7 @@ namespace WhisperingWilds.Editor
             if (managersObj.GetComponent<PerformanceBenchmarkManager>() == null) managersObj.AddComponent<PerformanceBenchmarkManager>();
             if (managersObj.GetComponent<PerformanceTelemetryOverlay>() == null) managersObj.AddComponent<PerformanceTelemetryOverlay>();
 
-            // Campaign ending system — bridges quest completion to ending evaluation
+            // Campaign ending system â€” bridges quest completion to ending evaluation
             if (managersObj.GetComponent<WhisperingWilds.Campaign.EndingController>() == null) managersObj.AddComponent<WhisperingWilds.Campaign.EndingController>();
             if (managersObj.GetComponent<WhisperingWilds.Campaign.QuestEndingBridge>() == null) managersObj.AddComponent<WhisperingWilds.Campaign.QuestEndingBridge>();
 
@@ -364,7 +364,7 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/01_StateMap_TamilNadu.unity";
 
             SetupSun(new Color(1f, 0.95f, 0.85f), 1.2f, Quaternion.Euler(50f, -30f, 0f));
-            SetupCommonManagers("statemap", "Tamil Nadu State Map", "தமிழ்நாடு வரைபடம்");
+            SetupCommonManagers("statemap", "Tamil Nadu State Map", "à®¤à®®à®¿à®´à¯à®¨à®¾à®Ÿà¯ à®µà®°à¯ˆà®ªà®Ÿà®®à¯");
 
             // 3D Map Table & Relief Board
             // This board is the MAP SURFACE the real GIS geometry sits on, not the map itself.
@@ -408,7 +408,7 @@ namespace WhisperingWilds.Editor
             var hudObj = new GameObject("StateMapHUD");
             hudObj.AddComponent<WhisperingWilds.Geography.StateMapHUDController>();
 
-            SetupHUD("Tamil Nadu State Map", "தமிழ்நாடு பெருவழி வரைபடம்");
+            SetupHUD("Tamil Nadu State Map", "à®¤à®®à®¿à®´à¯à®¨à®¾à®Ÿà¯ à®ªà¯†à®°à¯à®µà®´à®¿ à®µà®°à¯ˆà®ªà®Ÿà®®à¯");
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
@@ -420,9 +420,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/03_Pichavaram_Wetlands.unity";
 
             SetupSun(new Color(0.9f, 0.95f, 1.0f), 1.1f, Quaternion.Euler(40f, -45f, 0f));
-            SetupCommonManagers("pichavaram", "Pichavaram Mangrove Wetlands", "பிச்சாவரம் சதுப்புநிலக் காடு");
+            SetupCommonManagers("pichavaram", "Pichavaram Mangrove Wetlands", "à®ªà®¿à®šà¯à®šà®¾à®µà®°à®®à¯ à®šà®¤à¯à®ªà¯à®ªà¯à®¨à®¿à®²à®•à¯ à®•à®¾à®Ÿà¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Pichavaram Wetlands", "பிச்சாவரம் சதுப்புநிலக் காடு");
+            SetupHUD("Pichavaram Wetlands", "à®ªà®¿à®šà¯à®šà®¾à®µà®°à®®à¯ à®šà®¤à¯à®ªà¯à®ªà¯à®¨à®¿à®²à®•à¯ à®•à®¾à®Ÿà¯");
 
             var envRoot = new GameObject("--- PICHAVARAM_ENVIRONMENT ---");
 
@@ -460,11 +460,11 @@ namespace WhisperingWilds.Editor
             var npcMani = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/selvam.glb", envRoot.transform, new Vector3(1.5f, 0.4f, 3f), Quaternion.Euler(0f, -140f, 0f), Vector3.one);
             if (npcMani != null)
             {
-                SetupNPC(npcMani, "Mani (Fisher)", "மணி (மீனவர்)", "Pichavaram",
-                    "பாரம்பரிய வலை வீசி மீன்பிடிக்கும் படகோட்டி மணி.",
+                SetupNPC(npcMani, "Mani (Fisher)", "à®®à®£à®¿ (à®®à¯€à®©à®µà®°à¯)", "Pichavaram",
+                    "à®ªà®¾à®°à®®à¯à®ªà®°à®¿à®¯ à®µà®²à¯ˆ à®µà¯€à®šà®¿ à®®à¯€à®©à¯à®ªà®¿à®Ÿà®¿à®•à¯à®•à¯à®®à¯ à®ªà®Ÿà®•à¯‹à®Ÿà¯à®Ÿà®¿ à®®à®£à®¿.",
                     "The mangrove water is getting saltier every year. You should see Pichavaram before it's gone.",
-                    "மண்டல நீர் ஒவ்வொரு வருசமும் உப்பாடகிறது. பிச்சாவரம் சேரறதற்கு முன்னாடி பாருங்க.",
-                    NPCOccupation.Fisherman, "Fisher", "மீனவர்");
+                    "à®®à®£à¯à®Ÿà®² à®¨à¯€à®°à¯ à®’à®µà¯à®µà¯Šà®°à¯ à®µà®°à¯à®šà®®à¯à®®à¯ à®‰à®ªà¯à®ªà®¾à®Ÿà®•à®¿à®±à®¤à¯. à®ªà®¿à®šà¯à®šà®¾à®µà®°à®®à¯ à®šà¯‡à®°à®±à®¤à®±à¯à®•à¯ à®®à¯à®©à¯à®©à®¾à®Ÿà®¿ à®ªà®¾à®°à¯à®™à¯à®•.",
+                    NPCOccupation.Fisherman, "Fisher", "à®®à¯€à®©à®µà®°à¯");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "pichavaram", HabitatType.WetlandMarsh);
@@ -478,7 +478,7 @@ namespace WhisperingWilds.Editor
                 PichavaramContent.ObjectDockEdge,
                 PichavaramContent.ClueKeroseneSheen,
                 "Examine the sheen on the water",
-                "நீரிலுள்க் குழைவை ஆராயுங்கள்");
+                "à®¨à¯€à®°à®¿à®²à¯à®³à¯à®•à¯ à®•à¯à®´à¯ˆà®µà¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
             PlaceClueInteractable(
                 "Clue_RootGash",
                 envRoot.transform,
@@ -486,7 +486,7 @@ namespace WhisperingWilds.Editor
                 PichavaramContent.ObjectSternCutting,
                 PichavaramContent.ClueRootGash,
                 "Inspect the rope cut on the mangrove root",
-                "மரத்க் கீற்றை ஆராயுங்கள்");
+                "à®®à®°à®¤à¯à®•à¯ à®•à¯€à®±à¯à®±à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
             PlaceClueInteractable(
                 "Clue_NightBundle",
                 envRoot.transform,
@@ -494,7 +494,7 @@ namespace WhisperingWilds.Editor
                 PichavaramContent.ObjectRootCache,
                 PichavaramContent.ClueNightBundle,
                 "Search the hollowed root",
-                "வெற்றுப் பட்டைக ஆராயுங்கள்");
+                "à®µà¯†à®±à¯à®±à¯à®ªà¯ à®ªà®Ÿà¯à®Ÿà¯ˆà®• à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
@@ -506,9 +506,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/04_Thanjavur_Delta.unity";
 
             SetupSun(new Color(1f, 0.98f, 0.88f), 1.3f, Quaternion.Euler(55f, -25f, 0f));
-            SetupCommonManagers("delta", "Cauvery Delta & Thanjavur", "காவிரி டெல்டா மற்றும் தஞ்சாவூர்");
+            SetupCommonManagers("delta", "Cauvery Delta & Thanjavur", "à®•à®¾à®µà®¿à®°à®¿ à®Ÿà¯†à®²à¯à®Ÿà®¾ à®®à®±à¯à®±à¯à®®à¯ à®¤à®žà¯à®šà®¾à®µà¯‚à®°à¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Cauvery Delta & Thanjavur", "காவிரி டெல்டா மற்றும் தஞ்சாவூர்");
+            SetupHUD("Cauvery Delta & Thanjavur", "à®•à®¾à®µà®¿à®°à®¿ à®Ÿà¯†à®²à¯à®Ÿà®¾ à®®à®±à¯à®±à¯à®®à¯ à®¤à®žà¯à®šà®¾à®µà¯‚à®°à¯");
 
             var envRoot = new GameObject("--- DELTA_ENVIRONMENT ---");
 
@@ -549,11 +549,11 @@ namespace WhisperingWilds.Editor
             var npcFarmer = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/selvam.glb", envRoot.transform, new Vector3(-2f, 0f, 7f), Quaternion.Euler(0f, 180f, 0f), Vector3.one);
             if (npcFarmer != null)
             {
-                SetupNPC(npcFarmer, "Arumugam (Farmer)", "ஆறுமுகம் (விவசாயி)", "CauveryDelta",
-                    "காவிரி டெல்டா பாரம்பரிய நெல் விவசாயி ஆறுமுகம்.",
+                SetupNPC(npcFarmer, "Arumugam (Farmer)", "à®†à®±à¯à®®à¯à®•à®®à¯ (à®µà®¿à®µà®šà®¾à®¯à®¿)", "CauveryDelta",
+                    "à®•à®¾à®µà®¿à®°à®¿ à®Ÿà¯†à®²à¯à®Ÿà®¾ à®ªà®¾à®°à®®à¯à®ªà®°à®¿à®¯ à®¨à¯†à®²à¯ à®µà®¿à®µà®šà®¾à®¯à®¿ à®†à®±à¯à®®à¯à®•à®®à¯.",
                     "The rice grows tall when the river is kind. This year the water came late.",
-                    "காவிரி நீர் தாமதமா வந்திது. நெலுக்கு நேரமில்லாமுடையாச்சு.",
-                    NPCOccupation.Farmer, "Farmer", "விவசாயி");
+                    "à®•à®¾à®µà®¿à®°à®¿ à®¨à¯€à®°à¯ à®¤à®¾à®®à®¤à®®à®¾ à®µà®¨à¯à®¤à®¿à®¤à¯. à®¨à¯†à®²à¯à®•à¯à®•à¯ à®¨à¯‡à®°à®®à®¿à®²à¯à®²à®¾à®®à¯à®Ÿà¯ˆà®¯à®¾à®šà¯à®šà¯.",
+                    NPCOccupation.Farmer, "Farmer", "à®µà®¿à®µà®šà®¾à®¯à®¿");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "delta", HabitatType.PastoralFarmBoundary);
@@ -567,7 +567,7 @@ namespace WhisperingWilds.Editor
                 ThanjavurDeltaContent.ObjectTempleSteps,
                 ThanjavurDeltaContent.ClueTempleLedger,
                 "Examine the faded ledger on the temple steps",
-                "கோவில் படிகளிலுள்க் பதிகையை ஆராயுங்கள்");
+                "à®•à¯‹à®µà®¿à®²à¯ à®ªà®Ÿà®¿à®•à®³à®¿à®²à¯à®³à¯à®•à¯ à®ªà®¤à®¿à®•à¯ˆà®¯à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
             PlaceClueInteractable(
                 "Clue_BrassSeal",
                 envRoot.transform,
@@ -575,7 +575,7 @@ namespace WhisperingWilds.Editor
                 ThanjavurDeltaContent.ObjectLibraryShelf,
                 ThanjavurDeltaContent.ClueBrassSeal,
                 "Inspect the brass seal in the library",
-                "புத்தகசாலையிலுள்க் வெண்கல மூத்திரையை ஆராயுங்கள்");
+                "à®ªà¯à®¤à¯à®¤à®•à®šà®¾à®²à¯ˆà®¯à®¿à®²à¯à®³à¯à®•à¯ à®µà¯†à®£à¯à®•à®² à®®à¯‚à®¤à¯à®¤à®¿à®°à¯ˆà®¯à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
             PlaceClueInteractable(
                 "Clue_UnsentDispatch",
                 envRoot.transform,
@@ -583,7 +583,7 @@ namespace WhisperingWilds.Editor
                 ThanjavurDeltaContent.ObjectWorkshopAnvil,
                 ThanjavurDeltaContent.ClueUnsentDispatch,
                 "Search the workshop for the unsent dispatch",
-                "வேலைச்சாலையிலுள்க் அனுப்பப்படாத கடிதத்தை ஆராயுங்கள்");
+                "à®µà¯‡à®²à¯ˆà®šà¯à®šà®¾à®²à¯ˆà®¯à®¿à®²à¯à®³à¯à®•à¯ à®…à®©à¯à®ªà¯à®ªà®ªà¯à®ªà®Ÿà®¾à®¤ à®•à®Ÿà®¿à®¤à®¤à¯à®¤à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
@@ -625,9 +625,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/06_Mamallapuram_Shore.unity";
 
             SetupSun(new Color(1f, 0.95f, 0.85f), 1.3f, Quaternion.Euler(42f, -35f, 0f));
-            SetupCommonManagers("mamallapuram", "Mamallapuram Shore & Rock Shrines", "மாமல்லபுரம் கடற்கரை கோவில்");
+            SetupCommonManagers("mamallapuram", "Mamallapuram Shore & Rock Shrines", "à®®à®¾à®®à®²à¯à®²à®ªà¯à®°à®®à¯ à®•à®Ÿà®±à¯à®•à®°à¯ˆ à®•à¯‹à®µà®¿à®²à¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Mamallapuram Shore", "மாமல்லபுரம் கடற்கரை");
+            SetupHUD("Mamallapuram Shore", "à®®à®¾à®®à®²à¯à®²à®ªà¯à®°à®®à¯ à®•à®Ÿà®±à¯à®•à®°à¯ˆ");
 
             var envRoot = new GameObject("--- MAMALLAPURAM_ENVIRONMENT ---");
 
@@ -656,11 +656,11 @@ namespace WhisperingWilds.Editor
             var npcSundaram = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/selvam.glb", envRoot.transform, new Vector3(-6.5f, 0f, 7.5f), Quaternion.Euler(0f, 150f, 0f), Vector3.one);
             if (npcSundaram != null)
             {
-                SetupNPC(npcSundaram, "Sundaram (Stone Sculptor)", "சுந்தரம் (சிற்பி)", "Mamallapuram",
-                    "பல்லவ மரபுவழி கருங்கல் சிற்பி சுந்தரம்.",
+                SetupNPC(npcSundaram, "Sundaram (Stone Sculptor)", "à®šà¯à®¨à¯à®¤à®°à®®à¯ (à®šà®¿à®±à¯à®ªà®¿)", "Mamallapuram",
+                    "à®ªà®²à¯à®²à®µ à®®à®°à®ªà¯à®µà®´à®¿ à®•à®°à¯à®™à¯à®•à®²à¯ à®šà®¿à®±à¯à®ªà®¿ à®šà¯à®¨à¯à®¤à®°à®®à¯.",
                     "The stone remembers what the hands forget. I carve what my grandfather taught me.",
-                    "கல்லு என்னு தாத்தா கற்றுத்தந்ததைத் கரவுகிறேன்.",
-                    NPCOccupation.CraftWorker, "Sculptor", "சிற்பி");
+                    "à®•à®²à¯à®²à¯ à®Žà®©à¯à®©à¯ à®¤à®¾à®¤à¯à®¤à®¾ à®•à®±à¯à®±à¯à®¤à¯à®¤à®¨à¯à®¤à®¤à¯ˆà®¤à¯ à®•à®°à®µà¯à®•à®¿à®±à¯‡à®©à¯.",
+                    NPCOccupation.CraftWorker, "Sculptor", "à®šà®¿à®±à¯à®ªà®¿");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "mamallapuram", HabitatType.CoastalShoreline);
@@ -675,9 +675,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/07_Nilgiris_Sanctuary.unity";
 
             SetupSun(new Color(0.92f, 0.95f, 1.0f), 1.15f, Quaternion.Euler(45f, -20f, 0f));
-            SetupCommonManagers("nilgiris", "Nilgiris Shola-Tea Biosphere", "நீலகிரி சோலை - தேயிலை வனம்");
+            SetupCommonManagers("nilgiris", "Nilgiris Shola-Tea Biosphere", "à®¨à¯€à®²à®•à®¿à®°à®¿ à®šà¯‹à®²à¯ˆ - à®¤à¯‡à®¯à®¿à®²à¯ˆ à®µà®©à®®à¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Nilgiris Biosphere", "நீலகிரி சோலை - தேயிலை வனம்");
+            SetupHUD("Nilgiris Biosphere", "à®¨à¯€à®²à®•à®¿à®°à®¿ à®šà¯‹à®²à¯ˆ - à®¤à¯‡à®¯à®¿à®²à¯ˆ à®µà®©à®®à¯");
 
             var envRoot = new GameObject("--- NILGIRIS_ENVIRONMENT ---");
 
@@ -712,11 +712,11 @@ namespace WhisperingWilds.Editor
             var npcRaman = InstantiateModel("Assets/_Project/Art/Models/Characters/NPCs/forest-guide.glb", envRoot.transform, new Vector3(-4f, 0f, 5f), Quaternion.Euler(0f, 160f, 0f), Vector3.one);
             if (npcRaman != null)
             {
-                SetupNPC(npcRaman, "Raman (Forest Guide)", "ராமன் (வன வழிகாட்டி)", "Nilgiris",
-                    "நீலகிரி சோலைக்காடு மற்றும் தோடர் பண்பாட்டு வழிகாட்டி ராமன்.",
+                SetupNPC(npcRaman, "Raman (Forest Guide)", "à®°à®¾à®®à®©à¯ (à®µà®© à®µà®´à®¿à®•à®¾à®Ÿà¯à®Ÿà®¿)", "Nilgiris",
+                    "à®¨à¯€à®²à®•à®¿à®°à®¿ à®šà¯‹à®²à¯ˆà®•à¯à®•à®¾à®Ÿà¯ à®®à®±à¯à®±à¯à®®à¯ à®¤à¯‹à®Ÿà®°à¯ à®ªà®£à¯à®ªà®¾à®Ÿà¯à®Ÿà¯ à®µà®´à®¿à®•à®¾à®Ÿà¯à®Ÿà®¿ à®°à®¾à®®à®©à¯.",
                     "The forest speaks if you listen. The tahr herds move higher when the monsoon comes.",
-                    "காட்டு பேசும், கேட்கிறீராக்லா. மழை வரறதற்கு முன்த் தவ்றா மேலே போகும்.",
-                    NPCOccupation.Resident, "Forest Guide", "வன வழிகாட்டி");
+                    "à®•à®¾à®Ÿà¯à®Ÿà¯ à®ªà¯‡à®šà¯à®®à¯, à®•à¯‡à®Ÿà¯à®•à®¿à®±à¯€à®°à®¾à®•à¯à®²à®¾. à®®à®´à¯ˆ à®µà®°à®±à®¤à®±à¯à®•à¯ à®®à¯à®©à¯à®¤à¯ à®¤à®µà¯à®±à®¾ à®®à¯‡à®²à¯‡ à®ªà¯‹à®•à¯à®®à¯.",
+                    NPCOccupation.Resident, "Forest Guide", "à®µà®© à®µà®´à®¿à®•à®¾à®Ÿà¯à®Ÿà®¿");
             }
 
             SetupWildlifeHabitat(envRoot.transform, "nilgiris", HabitatType.SholaGrassland);
@@ -730,7 +730,7 @@ namespace WhisperingWilds.Editor
                 NilgirisSanctuaryContent.ObjectSurveyPost,
                 NilgirisSanctuaryContent.ClueSurveyMarkers,
                 "Examine the survey markers near the forest station",
-                "வனத் துறை நிலையத்தருகே உள்ள அளவீட்டு குறிகளை ஆராயுங்கள்");
+                "à®µà®©à®¤à¯ à®¤à¯à®±à¯ˆ à®¨à®¿à®²à¯ˆà®¯à®¤à¯à®¤à®°à¯à®•à¯‡ à®‰à®³à¯à®³ à®…à®³à®µà¯€à®Ÿà¯à®Ÿà¯ à®•à¯à®±à®¿à®•à®³à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
             PlaceClueInteractable(
                 "Clue_FadedMap",
                 envRoot.transform,
@@ -738,7 +738,7 @@ namespace WhisperingWilds.Editor
                 NilgirisSanctuaryContent.ObjectWatchtowerMap,
                 NilgirisSanctuaryContent.ClueFadedMap,
                 "Inspect the faded map at the watchtower",
-                "காட்சி கோபுரத்தில் உள்ள மங்கிய வரைபடத்தை ஆராயுங்கள்");
+                "à®•à®¾à®Ÿà¯à®šà®¿ à®•à¯‹à®ªà¯à®°à®¤à¯à®¤à®¿à®²à¯ à®‰à®³à¯à®³ à®®à®™à¯à®•à®¿à®¯ à®µà®°à¯ˆà®ªà®Ÿà®¤à¯à®¤à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
             PlaceClueInteractable(
                 "Clue_OriginalBlueprint",
                 envRoot.transform,
@@ -746,7 +746,7 @@ namespace WhisperingWilds.Editor
                 NilgirisSanctuaryContent.ObjectBlueprintPedestal,
                 NilgirisSanctuaryContent.ClueOriginalBlueprint,
                 "Examine the original blueprint at the botanical portal",
-                "தாவரவியல் வாயிலில் உள்ள அசல் வரைபடத்தை ஆராயுங்கள்");
+                "à®¤à®¾à®µà®°à®µà®¿à®¯à®²à¯ à®µà®¾à®¯à®¿à®²à®¿à®²à¯ à®‰à®³à¯à®³ à®…à®šà®²à¯ à®µà®°à¯ˆà®ªà®Ÿà®¤à¯à®¤à¯ˆ à®†à®°à®¾à®¯à¯à®™à¯à®•à®³à¯");
 
             EditorSceneManager.SaveScene(scene, path);
             Debug.Log($"[AssembleAllRegions] Saved: {path}");
@@ -803,7 +803,7 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/{sceneName}.unity";
 
             SetupSun(new Color(1f, 0.95f, 0.88f), 1.25f, Quaternion.Euler(45f, -30f, 0f));
-            var managers = SetupCommonManagers(regionId, $"Benchmark ({regionId})", "செயல்திறன் சோதனை");
+            var managers = SetupCommonManagers(regionId, $"Benchmark ({regionId})", "à®šà¯†à®¯à®²à¯à®¤à®¿à®±à®©à¯ à®šà¯‹à®¤à®©à¯ˆ");
 
             // DO NOT set autoStartOnLoad=true on PerformanceBenchmarkManager.
             // Instead, add BenchmarkSceneBootstrapper which only activates when BenchmarkSessionFlag.IsActive.
@@ -812,7 +812,7 @@ namespace WhisperingWilds.Editor
             bootstrapperGO.AddComponent<BenchmarkSceneBootstrapper>();
 
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD($"Performance Benchmark ({sceneName})", "தானியங்கி வன்பொருள் சோதனை");
+            SetupHUD($"Performance Benchmark ({sceneName})", "à®¤à®¾à®©à®¿à®¯à®™à¯à®•à®¿ à®µà®©à¯à®ªà¯Šà®°à¯à®³à¯ à®šà¯‹à®¤à®©à¯ˆ");
 
             // Ground floor
             var floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -866,7 +866,7 @@ namespace WhisperingWilds.Editor
         /// <summary>
         /// Sets up a complete NPC with all required components: NPCCharacter, NPCNavigationController,
         /// interaction collider, and bilingual dialogue. This ensures every NPC placed by
-        /// AssembleAllRegions is fully functional — visible, navigable, and interactable.
+        /// AssembleAllRegions is fully functional â€” visible, navigable, and interactable.
         /// </summary>
         internal static void SetupNPC(GameObject npcObject, string nameEn, string nameTa, string location,
             string profileDescription, string greetingEn, string greetingTa,
@@ -909,7 +909,7 @@ namespace WhisperingWilds.Editor
             choices.arraySize = 1;
             var choice = choices.GetArrayElementAtIndex(0);
             choice.FindPropertyRelative("choiceTextEn").stringValue = "Thank you.";
-            choice.FindPropertyRelative("choiceTextTa").stringValue = "நன்றி.";
+            choice.FindPropertyRelative("choiceTextTa").stringValue = "à®¨à®©à¯à®±à®¿.";
             choice.FindPropertyRelative("nextNodeIndex").intValue = -1;
             choice.FindPropertyRelative("requiredClueId").stringValue = string.Empty;
             choice.FindPropertyRelative("revealClueId").stringValue = string.Empty;
@@ -996,7 +996,6 @@ namespace WhisperingWilds.Editor
             sunObj.transform.rotation = rotation;
             return sun;
         }
-    }
 
         private static void BuildMaduraiScene()
         {
@@ -1004,9 +1003,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/09_Madurai_Meenakshi.unity";
 
             SetupSun(new Color(1.0f, 0.95f, 0.88f), 1.2f, Quaternion.Euler(50f, -30f, 0f));
-            SetupCommonManagers("madurai_meenakshi", "Madurai Cultural Sanctuary", "மதுரை பண்பாட்டு சரணாலயம்");
+            SetupCommonManagers("madurai_meenakshi", "Madurai Cultural Sanctuary", "à®®à®¤à¯à®°à¯ˆ à®ªà®£à¯à®ªà®¾à®Ÿà¯à®Ÿà¯ à®šà®°à®£à®¾à®²à®¯à®®à¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Madurai Meenakshi", "மதுரை பண்பாட்டு சரணாலயம்");
+            SetupHUD("Madurai Meenakshi", "à®®à®¤à¯à®°à¯ˆ à®ªà®£à¯à®ªà®¾à®Ÿà¯à®Ÿà¯ à®šà®°à®£à®¾à®²à®¯à®®à¯");
 
             var envRoot = new GameObject("--- MADURAI_ENVIRONMENT ---");
             var ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -1024,9 +1023,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/10_Kanyakumari_Cape.unity";
 
             SetupSun(new Color(1.0f, 0.92f, 0.82f), 1.25f, Quaternion.Euler(35f, 45f, 0f));
-            SetupCommonManagers("kanyakumari_cape", "Kanyakumari Oceans Confluence", "கன்னியாகுமரி முக்கடல் சங்கமம்");
+            SetupCommonManagers("kanyakumari_cape", "Kanyakumari Oceans Confluence", "à®•à®©à¯à®©à®¿à®¯à®¾à®•à¯à®®à®°à®¿ à®®à¯à®•à¯à®•à®Ÿà®²à¯ à®šà®™à¯à®•à®®à®®à¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Kanyakumari Cape", "கன்னியாகுமரி முக்கடல் சங்கமம்");
+            SetupHUD("Kanyakumari Cape", "à®•à®©à¯à®©à®¿à®¯à®¾à®•à¯à®®à®°à®¿ à®®à¯à®•à¯à®•à®Ÿà®²à¯ à®šà®™à¯à®•à®®à®®à¯");
 
             var envRoot = new GameObject("--- KANYAKUMARI_ENVIRONMENT ---");
             var ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -1044,9 +1043,9 @@ namespace WhisperingWilds.Editor
             string path = $"{SceneFolderPath}/11_Agasthyamalai_Wilds.unity";
 
             SetupSun(new Color(0.88f, 0.94f, 1.0f), 1.1f, Quaternion.Euler(40f, -15f, 0f));
-            SetupCommonManagers("agasthyamalai_wilds", "Agasthyamalai Sacred Biosphere", "அகத்தியமலை புனித உயிர்க்கோளம்");
+            SetupCommonManagers("agasthyamalai_wilds", "Agasthyamalai Sacred Biosphere", "à®…à®•à®¤à¯à®¤à®¿à®¯à®®à®²à¯ˆ à®ªà¯à®©à®¿à®¤ à®‰à®¯à®¿à®°à¯à®•à¯à®•à¯‹à®³à®®à¯");
             SetupPlayerAndCamera(new Vector3(0f, 0.5f, 0f));
-            SetupHUD("Agasthyamalai Wilds", "அகத்தியமலை புனித உயிர்க்கோளம்");
+            SetupHUD("Agasthyamalai Wilds", "à®…à®•à®¤à¯à®¤à®¿à®¯à®®à®²à¯ˆ à®ªà¯à®©à®¿à®¤ à®‰à®¯à®¿à®°à¯à®•à¯à®•à¯‹à®³à®®à¯");
 
             var envRoot = new GameObject("--- AGASTHYAMALAI_ENVIRONMENT ---");
             var ground = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -1057,4 +1056,5 @@ namespace WhisperingWilds.Editor
 
             EditorSceneManager.SaveScene(scene, path);
         }
+    }
 }

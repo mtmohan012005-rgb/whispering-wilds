@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using WhisperingWilds.Ecology;
-using WhisperingWilds.Environment;
+using WhisperingWilds.Atmosphere;
 using WhisperingWilds.Loops;
 using WhisperingWilds.Player;
 using WhisperingWilds.UI;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using WhisperingWilds.Campaign;
@@ -69,6 +69,17 @@ namespace WhisperingWilds.Economy
         /// <summary>
         /// Updates trust points based on player actions, quests, or persistent memories.
         /// </summary>
+        public void SetTrustScore(int points)
+        {
+            trustPoints = Mathf.Clamp(points, 0, 100);
+            EvaluateTrustTier();
+
+            if (EndingController.Instance != null && !string.IsNullOrEmpty(vendorId))
+            {
+                EndingController.Instance.SetTrust(vendorId, trustPoints);
+            }
+        }
+
         public void AddTrustPoints(int amount)
         {
             trustPoints = Mathf.Clamp(trustPoints + amount, 0, 100);

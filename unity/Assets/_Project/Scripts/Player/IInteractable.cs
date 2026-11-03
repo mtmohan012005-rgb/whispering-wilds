@@ -2,7 +2,8 @@ namespace WhisperingWilds.Player
 {
     public enum InteractionType
     {
-        Talk,
+        None = 0,
+        Talk = 1,
         Inspect,
         Open,
         Pickup,

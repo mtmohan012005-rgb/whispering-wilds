@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,6 +53,8 @@ namespace WhisperingWilds.Data
         public int stageIndex;
         public string titleEn;
         public string titleTa;
+        public string questNameEn => titleEn;
+        public string questNameTa => titleTa;
         public List<QuestObjective> objectives = new List<QuestObjective>();
     }
 
@@ -63,6 +65,8 @@ namespace WhisperingWilds.Data
         public string questId;
         public string titleEn;
         public string titleTa;
+        public string questNameEn => titleEn;
+        public string questNameTa => titleTa;
         [TextArea(2, 4)] public string summaryEn;
         [TextArea(2, 4)] public string summaryTa;
         public string regionId;

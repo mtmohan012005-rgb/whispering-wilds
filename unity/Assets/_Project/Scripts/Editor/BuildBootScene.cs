@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -64,7 +64,7 @@ namespace WhisperingWilds.Editor
                 // STEP 78: Canvas draw order fix.
                 // In a ScreenSpaceOverlay Canvas, later siblings render ON TOP of earlier siblings.
                 // The previous order created MenuRoot first, then full-screen backgrounds after it,
-                // so the opaque MenuBackground covered all menu buttons — producing the olive-brown
+                // so the opaque MenuBackground covered all menu buttons â€” producing the olive-brown
                 // blank screen the user reported.
                 //
                 // Correct order (bottom to top):
@@ -73,7 +73,7 @@ namespace WhisperingWilds.Editor
                 //   3. MenuRoot (title, subtitle, buttons, rule notice)
                 //   4. Intro title group (cinematic title/subtitle)
                 //   5. Skip hint text
-                //   6. Modal panels (LoginUI, Settings, ConfirmationDialog) — children of MenuRoot
+                //   6. Modal panels (LoginUI, Settings, ConfirmationDialog) â€” children of MenuRoot
                 // ============================================================
 
                 // --- 1. Background layers (rendered first = behind everything) ---
@@ -89,7 +89,7 @@ namespace WhisperingWilds.Editor
                 bgImg.color = new Color(0.05f, 0.07f, 0.09f, 0.95f);
                 bgImg.raycastTarget = false;
 
-                // Menu background gradient — deep teal/blue dawn sky
+                // Menu background gradient â€” deep teal/blue dawn sky
                 var menuBgObj = new GameObject("MenuBackground", typeof(RectTransform), typeof(Image));
                 menuBgObj.transform.SetParent(canvasObj.transform, false);
                 var menuBgRect = menuBgObj.GetComponent<RectTransform>();
@@ -101,7 +101,7 @@ namespace WhisperingWilds.Editor
                 menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
                 menuBgImg.raycastTarget = false;
 
-                // Mist layer 1 — slow horizontal drift
+                // Mist layer 1 â€” slow horizontal drift
                 var menuMist1Obj = new GameObject("MenuMistLayer1", typeof(RectTransform), typeof(Image));
                 menuMist1Obj.transform.SetParent(canvasObj.transform, false);
                 var menuMist1Rect = menuMist1Obj.GetComponent<RectTransform>();
@@ -114,7 +114,7 @@ namespace WhisperingWilds.Editor
                 menuMist1Img.raycastTarget = false;
                 menuMist1Obj.SetActive(false);
 
-                // Mist layer 2 — different speed for parallax
+                // Mist layer 2 â€” different speed for parallax
                 var menuMist2Obj = new GameObject("MenuMistLayer2", typeof(RectTransform), typeof(Image));
                 menuMist2Obj.transform.SetParent(canvasObj.transform, false);
                 var menuMist2Rect = menuMist2Obj.GetComponent<RectTransform>();
@@ -127,7 +127,7 @@ namespace WhisperingWilds.Editor
                 menuMist2Img.raycastTarget = false;
                 menuMist2Obj.SetActive(false);
 
-                // Fireflies — subtle pulsing light particles
+                // Fireflies â€” subtle pulsing light particles
                 var menuFirefliesObj = new GameObject("MenuFireflies", typeof(RectTransform), typeof(Image));
                 menuFirefliesObj.transform.SetParent(canvasObj.transform, false);
                 var menuFirefliesRect = menuFirefliesObj.GetComponent<RectTransform>();
@@ -140,7 +140,7 @@ namespace WhisperingWilds.Editor
                 menuFirefliesImg.raycastTarget = false;
                 menuFirefliesObj.SetActive(false);
 
-                // Menu vignette — subtle edge darkening to keep center readable
+                // Menu vignette â€” subtle edge darkening to keep center readable
                 var menuVignetteObj = new GameObject("MenuVignette", typeof(RectTransform), typeof(Image));
                 menuVignetteObj.transform.SetParent(canvasObj.transform, false);
                 var menuVignetteRect = menuVignetteObj.GetComponent<RectTransform>();
@@ -244,7 +244,7 @@ namespace WhisperingWilds.Editor
                     logoImg.raycastTarget = false;
                 }
 
-                // Game Title & Tamil Subtitle — STEP 71: Centered in upper half of screen
+                // Game Title & Tamil Subtitle â€” STEP 71: Centered in upper half of screen
                 var titleObj = CreateText("GameTitle", menuRoot.transform, new Vector2(0f, 0.72f), new Vector2(1f, 0.72f), Vector2.zero, new Vector2(1400, 100), font, 56, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
                 var titleText = titleObj.GetComponent<Text>();
                 titleText.text = "THE WHISPERING WILDS";
@@ -256,7 +256,7 @@ namespace WhisperingWilds.Editor
                 var subtitleText = subtitleObj.GetComponent<Text>();
                 subtitleText.text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
 
-                // Menu Buttons Container — STEP 71: Centered vertically and horizontally
+                // Menu Buttons Container â€” STEP 71: Centered vertically and horizontally
                 var menuContainer = new GameObject("MenuContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
                 menuContainer.transform.SetParent(menuRoot.transform, false);
                 var menuRect = menuContainer.GetComponent<RectTransform>();
@@ -275,7 +275,7 @@ namespace WhisperingWilds.Editor
                 layout.childAlignment = TextAnchor.MiddleCenter;
                 layout.padding = new RectOffset(10, 10, 10, 10);
 
-                // Buttons — STEP 71: Consistent width/height, evenly spaced
+                // Buttons â€” STEP 71: Consistent width/height, evenly spaced
                 // Placeholder labels only. TitleMenuController.ApplyLocalizedLabels rewrites these from
                 // localization keys on Start, so the visible text always matches the active
                 // language instead of being frozen at build time.
@@ -332,7 +332,7 @@ namespace WhisperingWilds.Editor
                 skipObj.GetComponent<Text>().supportRichText = false;
                 skipObj.SetActive(false);
 
-                // STEP 70: MainMenuAnimator — orchestrates title, subtitle, button, and background animation.
+                // STEP 70: MainMenuAnimator â€” orchestrates title, subtitle, button, and background animation.
                 // Parented to the canvas so it persists in the scene hierarchy and is discoverable by FindObjectOfType.
                 var menuAnimatorObj = new GameObject("MainMenuAnimator");
                 menuAnimatorObj.transform.SetParent(canvasObj.transform, false);
@@ -416,8 +416,8 @@ namespace WhisperingWilds.Editor
                 brandRect.offsetMax = Vector2.zero;
 
                 // App Logo
-                var logoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
-                if (logoSprite != null)
+                var loginLogoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
+                if (loginLogoSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
                     logoObj.transform.SetParent(brandPanel.transform, false);
@@ -427,7 +427,7 @@ namespace WhisperingWilds.Editor
                     logoRect.pivot = new Vector2(0.5f, 0.5f);
                     logoRect.sizeDelta = new Vector2(260f, 110f);
                     var logoImg = logoObj.GetComponent<Image>();
-                    logoImg.sprite = logoSprite;
+                    logoImg.sprite = loginLogoSprite;
                     logoImg.preserveAspect = true;
                     logoImg.raycastTarget = false;
                 }
