@@ -49,6 +49,7 @@ namespace WhisperingWilds.Campaign
             Instance = this;
 
             InitializeExpansionHubs();
+            WhisperingWilds.Gameplay.SangamHorizonsContent.EnsureInitialized();
         }
 
         public void InitializeExpansionHubs()
