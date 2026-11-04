@@ -160,11 +160,18 @@ namespace WhisperingWilds.UI
             UpdateAccountBadge();
 
             // ESC closes any open panel safely
+#if ENABLE_INPUT_SYSTEM
             var kb = Keyboard.current;
             if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 HandleEscapeKey();
             }
+#else
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                HandleEscapeKey();
+            }
+#endif
         }
 
         private void BindButtonListeners()
@@ -274,6 +281,15 @@ namespace WhisperingWilds.UI
             yield return null;
             yield return null;
 
+            OnIntroCompleted();
+        }
+
+        /// <summary>
+        /// Called when the cinematic intro finishes or is skipped.
+        /// Activates the menu root and plays the visible entrance animation.
+        /// </summary>
+        public void CompleteIntro()
+        {
             OnIntroCompleted();
         }
 

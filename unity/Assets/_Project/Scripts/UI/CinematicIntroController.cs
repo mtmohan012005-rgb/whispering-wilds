@@ -628,7 +628,7 @@ namespace WhisperingWilds.UI
 
             if (titleMenuController != null)
             {
-                titleMenuController.OnIntroCompleted();
+                titleMenuController.CompleteIntro();
             }
             else if (menuRoot != null)
             {

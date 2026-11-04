@@ -93,6 +93,24 @@ namespace WhisperingWilds.UI
             CacheRectTransforms();
         }
 
+        private void Update()
+        {
+            Vector2 mousePos;
+#if ENABLE_INPUT_SYSTEM
+            mousePos = Mouse.current != null ? Mouse.current.position.ReadValue() : new Vector2(Screen.width / 2f, Screen.height / 2f);
+#else
+            mousePos = Input.mousePosition;
+#endif
+
+            if (enableParallax && !reducedMotion && _screenCenter.x > 0f && _screenCenter.y > 0f)
+            {
+                float normalizedX = Mathf.Clamp((mousePos.x - _screenCenter.x) / _screenCenter.x, -1f, 1f);
+                float normalizedY = Mathf.Clamp((mousePos.y - _screenCenter.y) / _screenCenter.y, -1f, 1f);
+                Vector2 targetParallax = new Vector2(normalizedX * parallaxStrength, normalizedY * parallaxStrength * 0.6f);
+                _currentParallaxOffset = Vector2.Lerp(_currentParallaxOffset, targetParallax, Time.unscaledDeltaTime * 2.5f);
+            }
+        }
+
         private void CacheRectTransforms()
         {
             if (menuBackground != null) _bgRect = menuBackground.GetComponent<RectTransform>();
@@ -317,17 +335,7 @@ namespace WhisperingWilds.UI
 
                 if (!reducedMotion)
                 {
-                    // Compute mouse parallax
-                    Vector2 mousePos = Mouse.current != null ? Mouse.current.position.ReadValue() : _screenCenter;
-                    float normalizedX = Mathf.Clamp((mousePos.x - _screenCenter.x) / _screenCenter.x, -1f, 1f);
-                    float normalizedY = Mathf.Clamp((mousePos.y - _screenCenter.y) / _screenCenter.y, -1f, 1f);
-
-                    Vector2 targetParallax = enableParallax
-                        ? new Vector2(normalizedX * parallaxStrength, normalizedY * parallaxStrength * 0.6f)
-                        : Vector2.zero;
-
-                    _currentParallaxOffset = Vector2.Lerp(_currentParallaxOffset, targetParallax, Time.unscaledDeltaTime * 2.5f);
-
+                    // Parallax offset is computed in Update() using New Input System Mouse.current / fallback
                     // 1. Background Camera Drift & Subtle Zoom Breathing
                     if (_bgRect != null)
                     {
