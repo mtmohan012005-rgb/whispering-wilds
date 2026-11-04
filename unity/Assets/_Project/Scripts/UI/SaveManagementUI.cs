@@ -93,10 +93,19 @@ namespace WhisperingWilds.UI
 
         private void Update()
         {
-            if (IsVisible() && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (!IsVisible()) return;
+
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 SetVisible(false);
             }
+#else
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SetVisible(false);
+            }
+#endif
         }
 
         public bool IsVisible()

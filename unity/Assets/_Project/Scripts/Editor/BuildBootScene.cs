@@ -509,7 +509,7 @@ namespace WhisperingWilds.Editor
                 loginBgRect.anchorMax = Vector2.one;
                 loginBgRect.offsetMin = Vector2.zero;
                 loginBgRect.offsetMax = Vector2.zero;
-                loginBg.GetComponent<Image>().color = new Color(0.04f, 0.05f, 0.07f, 0.70f);
+                loginBg.GetComponent<Image>().color = new Color(0.04f, 0.05f, 0.07f, 0.72f);
 
                 // Subtle Dravidian temple hero backdrop
                 var loginHeroArt = new GameObject("LoginHeroBackdrop", typeof(RectTransform), typeof(Image));
@@ -965,6 +965,9 @@ namespace WhisperingWilds.Editor
                 serializedLoginUI.FindProperty("resetPasswordPanel").objectReferenceValue = resetPasswordPanel;
                 serializedLoginUI.FindProperty("signedInPanel").objectReferenceValue = signedInPanel;
                 var loginCg = loginUIObj.GetComponent<CanvasGroup>() ?? loginUIObj.AddComponent<CanvasGroup>();
+                loginCg.alpha = 0f;
+                loginCg.interactable = false;
+                loginCg.blocksRaycasts = false;
                 if (serializedLoginUI.FindProperty("mainCanvasGroup") != null)
                     serializedLoginUI.FindProperty("mainCanvasGroup").objectReferenceValue = loginCg;
                 if (serializedLoginUI.FindProperty("cardContainerRect") != null)

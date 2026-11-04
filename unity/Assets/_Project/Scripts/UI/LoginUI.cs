@@ -116,6 +116,18 @@ namespace WhisperingWilds.UI
 
         private void Awake()
         {
+            EnsureCanvasGroup();
+            if (mainCanvasGroup != null)
+            {
+                mainCanvasGroup.alpha = 0f;
+                mainCanvasGroup.interactable = false;
+                mainCanvasGroup.blocksRaycasts = false;
+            }
+            var overlay = transform.Find("LoginBackground")?.GetComponent<Image>() ?? transform.Find("Overlay")?.GetComponent<Image>();
+            if (overlay != null)
+            {
+                overlay.color = new Color(0f, 0f, 0f, 0.72f);
+            }
             SetVisible(false);
             LoadRememberedEmail();
         }
@@ -258,6 +270,9 @@ namespace WhisperingWilds.UI
                 if (mainCanvasGroup == null)
                 {
                     mainCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+                    mainCanvasGroup.alpha = 0f;
+                    mainCanvasGroup.interactable = false;
+                    mainCanvasGroup.blocksRaycasts = false;
                 }
             }
             if (cardContainerRect == null)
