@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 namespace WhisperingWilds.UI
 {
@@ -81,6 +82,8 @@ namespace WhisperingWilds.UI
         private RectTransform _mist2Rect;
         private RectTransform _firefliesRect;
         private RectTransform _lightRaysRect;
+        private Vector2 _initialTitlePos;
+        private Vector2 _initialSubtitlePos;
 
         private void Awake()
         {
@@ -95,6 +98,8 @@ namespace WhisperingWilds.UI
             if (menuMistLayer2 != null) _mist2Rect = menuMistLayer2.GetComponent<RectTransform>();
             if (menuFireflies != null) _firefliesRect = menuFireflies.GetComponent<RectTransform>();
             if (menuLightRays != null) _lightRaysRect = menuLightRays.GetComponent<RectTransform>();
+            if (titleText != null) _initialTitlePos = titleText.rectTransform.anchoredPosition;
+            if (subtitleText != null) _initialSubtitlePos = subtitleText.rectTransform.anchoredPosition;
         }
 
         public void PlayEntrance()
@@ -157,7 +162,7 @@ namespace WhisperingWilds.UI
                     var rect = titleText.GetComponent<RectTransform>();
                     if (rect != null)
                     {
-                        rect.anchoredPosition = new Vector2(0f, -titleRiseAmount * (1f - t));
+                        rect.anchoredPosition = _initialTitlePos + new Vector2(0f, -titleRiseAmount * (1f - t));
                     }
                 }
 
@@ -242,7 +247,7 @@ namespace WhisperingWilds.UI
                 if (!reducedMotion)
                 {
                     // Compute mouse parallax
-                    Vector2 mousePos = Input.mousePosition;
+                    Vector2 mousePos = Mouse.current != null ? Mouse.current.position.ReadValue() : _screenCenter;
                     float normalizedX = Mathf.Clamp((mousePos.x - _screenCenter.x) / _screenCenter.x, -1f, 1f);
                     float normalizedY = Mathf.Clamp((mousePos.y - _screenCenter.y) / _screenCenter.y, -1f, 1f);
 
