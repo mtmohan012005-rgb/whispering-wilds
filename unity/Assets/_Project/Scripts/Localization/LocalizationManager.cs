@@ -527,6 +527,8 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("vendor.not_enough_stock", "Vendor out of stock",      "வணிகர் இருப்பு இல்லை"),
             new LocalizationEntry("vendor.inventory_full",   "Inventory full",           "பொருளடக்கம் நிரம்பியது"),
             new LocalizationEntry("vendor.item_not_bought",  "Vendor does not buy this", "வணிகர் இதை வாங்குவதில்லை"),
+            new LocalizationEntry("30", "30", "30"),
+            new LocalizationEntry("1366 x 768", "1366 x 768", "1366 x 768"),
         };
 
         private static readonly Dictionary<string, LocalizationEntry> Lookup = BuildLookup();

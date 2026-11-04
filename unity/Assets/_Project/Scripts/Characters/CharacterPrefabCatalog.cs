@@ -43,7 +43,8 @@ namespace WhisperingWilds.Characters
             { "farmer", FarmerPrefabPath },
             { "fisher", FisherPrefabPath },
             { "forest-guide", ForestGuidePrefabPath },
-            { "kannan", TeaWorkerPrefabPath },
+            // "kannan" intentionally unaliased: no authored model exists (see MISSING_PRODUCTION_ASSET).
+            // Do not silently redirect to NPC_TeaWorker; resolve to null so callers surface the gap.
             { "kumaran", KumaranPrefabPath },
             { "siddhar", SiddharPrefabPath },
         };
