@@ -89,7 +89,7 @@ namespace WhisperingWilds.Editor
                 bgImg.color = new Color(0.05f, 0.07f, 0.09f, 0.95f);
                 bgImg.raycastTarget = false;
 
-                // Menu background gradient â€” deep teal/blue dawn sky
+                // Menu background — rich cinematic artwork inspired by Tamil Nadu heritage
                 var menuBgObj = new GameObject("MenuBackground", typeof(RectTransform), typeof(Image));
                 menuBgObj.transform.SetParent(canvasObj.transform, false);
                 var menuBgRect = menuBgObj.GetComponent<RectTransform>();
@@ -98,10 +98,19 @@ namespace WhisperingWilds.Editor
                 menuBgRect.offsetMin = Vector2.zero;
                 menuBgRect.offsetMax = Vector2.zero;
                 var menuBgImg = menuBgObj.GetComponent<Image>();
-                menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
+                var mainBgSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/MainMenuBackground.png");
+                if (mainBgSprite != null)
+                {
+                    menuBgImg.sprite = mainBgSprite;
+                    menuBgImg.color = Color.white;
+                }
+                else
+                {
+                    menuBgImg.color = new Color(0.04f, 0.06f, 0.09f, 1f);
+                }
                 menuBgImg.raycastTarget = false;
 
-                // Mist layer 1 â€” slow horizontal drift
+                // Mist layer 1 — slow horizontal drift
                 var menuMist1Obj = new GameObject("MenuMistLayer1", typeof(RectTransform), typeof(Image));
                 menuMist1Obj.transform.SetParent(canvasObj.transform, false);
                 var menuMist1Rect = menuMist1Obj.GetComponent<RectTransform>();
@@ -110,11 +119,13 @@ namespace WhisperingWilds.Editor
                 menuMist1Rect.offsetMin = Vector2.zero;
                 menuMist1Rect.offsetMax = Vector2.zero;
                 var menuMist1Img = menuMist1Obj.GetComponent<Image>();
-                menuMist1Img.color = new Color(0.3f, 0.35f, 0.4f, 0.06f);
+                var mistSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/MistBand.png");
+                if (mistSprite != null) menuMist1Img.sprite = mistSprite;
+                menuMist1Img.color = new Color(0.4f, 0.5f, 0.55f, 0.18f);
                 menuMist1Img.raycastTarget = false;
                 menuMist1Obj.SetActive(false);
 
-                // Mist layer 2 â€” different speed for parallax
+                // Mist layer 2 — counter-drifting layer for depth
                 var menuMist2Obj = new GameObject("MenuMistLayer2", typeof(RectTransform), typeof(Image));
                 menuMist2Obj.transform.SetParent(canvasObj.transform, false);
                 var menuMist2Rect = menuMist2Obj.GetComponent<RectTransform>();
@@ -123,11 +134,12 @@ namespace WhisperingWilds.Editor
                 menuMist2Rect.offsetMin = Vector2.zero;
                 menuMist2Rect.offsetMax = Vector2.zero;
                 var menuMist2Img = menuMist2Obj.GetComponent<Image>();
-                menuMist2Img.color = new Color(0.25f, 0.3f, 0.35f, 0.04f);
+                if (mistSprite != null) menuMist2Img.sprite = mistSprite;
+                menuMist2Img.color = new Color(0.35f, 0.45f, 0.5f, 0.14f);
                 menuMist2Img.raycastTarget = false;
                 menuMist2Obj.SetActive(false);
 
-                // Fireflies â€” subtle pulsing light particles
+                // Fireflies / Golden Motes — subtle pulsing ambient motes
                 var menuFirefliesObj = new GameObject("MenuFireflies", typeof(RectTransform), typeof(Image));
                 menuFirefliesObj.transform.SetParent(canvasObj.transform, false);
                 var menuFirefliesRect = menuFirefliesObj.GetComponent<RectTransform>();
@@ -136,11 +148,26 @@ namespace WhisperingWilds.Editor
                 menuFirefliesRect.offsetMin = Vector2.zero;
                 menuFirefliesRect.offsetMax = Vector2.zero;
                 var menuFirefliesImg = menuFirefliesObj.GetComponent<Image>();
-                menuFirefliesImg.color = new Color(1f, 0.9f, 0.5f, 0.3f);
+                var glowSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/GlowMote.png");
+                if (glowSprite != null) menuFirefliesImg.sprite = glowSprite;
+                menuFirefliesImg.color = new Color(1f, 0.88f, 0.45f, 0.35f);
                 menuFirefliesImg.raycastTarget = false;
                 menuFirefliesObj.SetActive(false);
 
-                // Menu vignette â€” subtle edge darkening to keep center readable
+                // Soft animated golden light rays
+                var menuLightRaysObj = new GameObject("MenuLightRays", typeof(RectTransform), typeof(Image));
+                menuLightRaysObj.transform.SetParent(canvasObj.transform, false);
+                var menuLightRaysRect = menuLightRaysObj.GetComponent<RectTransform>();
+                menuLightRaysRect.anchorMin = Vector2.zero;
+                menuLightRaysRect.anchorMax = Vector2.one;
+                menuLightRaysRect.offsetMin = Vector2.zero;
+                menuLightRaysRect.offsetMax = Vector2.zero;
+                var menuLightRaysImg = menuLightRaysObj.GetComponent<Image>();
+                menuLightRaysImg.color = new Color(1f, 0.88f, 0.45f, 0.12f);
+                menuLightRaysImg.raycastTarget = false;
+                menuLightRaysObj.SetActive(false);
+
+                // Menu vignette — subtle edge darkening
                 var menuVignetteObj = new GameObject("MenuVignette", typeof(RectTransform), typeof(Image));
                 menuVignetteObj.transform.SetParent(canvasObj.transform, false);
                 var menuVignetteRect = menuVignetteObj.GetComponent<RectTransform>();
@@ -149,12 +176,24 @@ namespace WhisperingWilds.Editor
                 menuVignetteRect.offsetMin = Vector2.zero;
                 menuVignetteRect.offsetMax = Vector2.zero;
                 var menuVignetteImg = menuVignetteObj.GetComponent<Image>();
-                menuVignetteImg.color = new Color(0f, 0f, 0f, 0.35f);
+                menuVignetteImg.color = new Color(0f, 0f, 0f, 0.42f);
                 menuVignetteImg.raycastTarget = false;
+
+                // Dim overlay for modal panel transitions
+                var menuDimOverlayObj = new GameObject("MenuDimOverlay", typeof(RectTransform), typeof(Image));
+                menuDimOverlayObj.transform.SetParent(canvasObj.transform, false);
+                var menuDimRect = menuDimOverlayObj.GetComponent<RectTransform>();
+                menuDimRect.anchorMin = Vector2.zero;
+                menuDimRect.anchorMax = Vector2.one;
+                menuDimRect.offsetMin = Vector2.zero;
+                menuDimRect.offsetMax = Vector2.zero;
+                var menuDimImg = menuDimOverlayObj.GetComponent<Image>();
+                menuDimImg.color = new Color(0f, 0f, 0f, 0f);
+                menuDimImg.raycastTarget = false;
+                menuDimOverlayObj.SetActive(false);
 
                 // --- 2. Cinematic intro layers ---
 
-                // Base background overlay for intro fade-in
                 var introBgObj = new GameObject("IntroBackground", typeof(RectTransform), typeof(Image));
                 introBgObj.transform.SetParent(canvasObj.transform, false);
                 var introBgRect = introBgObj.GetComponent<RectTransform>();
@@ -264,7 +303,7 @@ namespace WhisperingWilds.Editor
                 menuRect.anchorMax = new Vector2(0.5f, 0.5f);
                 menuRect.pivot = new Vector2(0.5f, 0.5f);
                 menuRect.anchoredPosition = new Vector2(0f, -40f);
-                menuRect.sizeDelta = new Vector2(340, 360);
+                menuRect.sizeDelta = new Vector2(380, 440);
 
                 var layout = menuContainer.GetComponent<VerticalLayoutGroup>();
                 layout.spacing = 12f;
@@ -275,24 +314,59 @@ namespace WhisperingWilds.Editor
                 layout.childAlignment = TextAnchor.MiddleCenter;
                 layout.padding = new RectOffset(10, 10, 10, 10);
 
-                // Buttons â€” STEP 71: Consistent width/height, evenly spaced
-                // Placeholder labels only. TitleMenuController.ApplyLocalizedLabels rewrites these from
-                // localization keys on Start, so the visible text always matches the active
-                // language instead of being frozen at build time.
-                var btnLogin = CreateButton("Btn_Login", menuContainer.transform, font, "Login", new Color(0.3f, 0.35f, 0.5f));
-                var btnNew = CreateButton("Btn_NewGame", menuContainer.transform, font, "New Game", new Color(0.15f, 0.45f, 0.35f));
-                var btnCont = CreateButton("Btn_Continue", menuContainer.transform, font, "Continue", new Color(0.2f, 0.35f, 0.5f));
-                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "Settings", new Color(0.25f, 0.35f, 0.45f));
-                var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "Quit", new Color(0.45f, 0.2f, 0.2f));
+                // Top-Right Account / Sign In Control
+                var accountControlObj = new GameObject("AccountControl", typeof(RectTransform));
+                accountControlObj.transform.SetParent(menuRoot.transform, false);
+                var accountControlRect = accountControlObj.GetComponent<RectTransform>();
+                accountControlRect.anchorMin = new Vector2(1f, 1f);
+                accountControlRect.anchorMax = new Vector2(1f, 1f);
+                accountControlRect.pivot = new Vector2(1f, 1f);
+                accountControlRect.anchoredPosition = new Vector2(-40f, -40f);
+                accountControlRect.sizeDelta = new Vector2(250f, 44f);
 
-                // STEP 70: Add MenuButtonAnimator to each button for hover/press/focus feedback
-                foreach (var btnGo in new[] { btnLogin, btnNew, btnCont, btnSettings, btnQuit })
+                var btnAccount = CreateButton("Btn_AccountSignIn", accountControlObj.transform, font, "👤 Guest (Offline)", new Color(0.10f, 0.20f, 0.18f, 0.95f));
+                var btnAccountRect = btnAccount.GetComponent<RectTransform>();
+                btnAccountRect.anchorMin = Vector2.zero;
+                btnAccountRect.anchorMax = Vector2.one;
+                btnAccountRect.sizeDelta = Vector2.zero;
+                btnAccountRect.anchoredPosition = Vector2.zero;
+                btnAccount.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+                var accountStatusText = btnAccount.GetComponentInChildren<Text>();
+
+                // Professional Main Menu Buttons (Section 1 Structure):
+                // 1. BEGIN GAME — start a new journey (opens Mode Selection).
+                // 2. PREVIOUS JOURNEY — continue or load an existing campaign.
+                // 3. BACKUPS & SAVES — local and cloud save management.
+                // 4. SETTINGS — audio, display, quality, controls, accessibility.
+                // 5. DEVELOPER CREDITS — solo developer Mohanraj.
+                // 6. QUIT GAME — exit with confirmation dialog.
+                var btnBegin = CreateButton("Btn_BeginGame", menuContainer.transform, font, "BEGIN GAME", new Color(0.12f, 0.42f, 0.32f, 1f));
+                var btnPrevious = CreateButton("Btn_PreviousJourney", menuContainer.transform, font, "PREVIOUS JOURNEY", new Color(0.15f, 0.30f, 0.42f, 1f));
+                var btnBackups = CreateButton("Btn_BackupsSaves", menuContainer.transform, font, "BACKUPS & SAVES", new Color(0.18f, 0.28f, 0.38f, 1f));
+                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "SETTINGS", new Color(0.20f, 0.30f, 0.38f, 1f));
+                var btnCredits = CreateButton("Btn_Credits", menuContainer.transform, font, "DEVELOPER CREDITS", new Color(0.24f, 0.32f, 0.28f, 1f));
+                var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "QUIT GAME", new Color(0.45f, 0.18f, 0.18f, 1f));
+
+                // Add MenuButtonAnimator to all 6 main menu buttons
+                foreach (var btnGo in new[] { btnBegin, btnPrevious, btnBackups, btnSettings, btnCredits, btnQuit })
                 {
                     btnGo.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
                 }
 
-                // Strict Appearance Rule Notice at bottom
                 var ruleObj = CreateText("RuleNoticeText", menuRoot.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(1000, 60), font, 16, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f));
+
+                // Modal panels under menuRoot
+                var gameModeSelectionObj = BuildGameModeSelectionPanel(menuRoot.transform, font);
+                var gameModeSelectionUI = gameModeSelectionObj.GetComponent<GameModeSelectionUI>();
+
+                var savedGamesObj = BuildSavedGamesPanel(menuRoot.transform, font);
+                var savedGamesUI = savedGamesObj.GetComponent<SavedGamesUI>();
+
+                var saveManagementObj = BuildSaveManagementPanel(menuRoot.transform, font);
+                var saveManagementUI = saveManagementObj.GetComponent<SaveManagementUI>();
+
+                var creditsObj = BuildCreditsPanel(menuRoot.transform, font);
+                var creditsUI = creditsObj.GetComponent<CreditsUI>();
 
                 // Settings panel, hidden until the player opens it.
                 var settingsUiObj = BuildSettingsPanel(menuRoot.transform, font);
@@ -370,7 +444,9 @@ namespace WhisperingWilds.Editor
                 serializedMenuAnim.FindProperty("menuMistLayer1").objectReferenceValue = menuMist1Obj;
                 serializedMenuAnim.FindProperty("menuMistLayer2").objectReferenceValue = menuMist2Obj;
                 serializedMenuAnim.FindProperty("menuFireflies").objectReferenceValue = menuFirefliesObj;
+                serializedMenuAnim.FindProperty("menuLightRays").objectReferenceValue = menuLightRaysObj;
                 serializedMenuAnim.FindProperty("menuVignette").objectReferenceValue = menuVignetteImg;
+                serializedMenuAnim.FindProperty("menuDimOverlay").objectReferenceValue = menuDimImg;
                 serializedMenuAnim.ApplyModifiedProperties();
 
                 // STEP 73: Create PRO LoginUI panel with cinematic Dravidian split-screen experience
@@ -846,13 +922,28 @@ namespace WhisperingWilds.Editor
 
                 // Bind to TitleMenuController via SerializedObject
                 var serializedTitle = new SerializedObject(titleCtrl);
-                serializedTitle.FindProperty("loginButton").objectReferenceValue = btnLogin.GetComponent<Button>();
-                serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnNew.GetComponent<Button>();
-                serializedTitle.FindProperty("continueButton").objectReferenceValue = btnCont.GetComponent<Button>();
+                serializedTitle.FindProperty("beginGameButton").objectReferenceValue = btnBegin.GetComponent<Button>();
+                serializedTitle.FindProperty("previousJourneyButton").objectReferenceValue = btnPrevious.GetComponent<Button>();
+                serializedTitle.FindProperty("backupsSavesButton").objectReferenceValue = btnBackups.GetComponent<Button>();
                 serializedTitle.FindProperty("settingsButton").objectReferenceValue = btnSettings.GetComponent<Button>();
+                serializedTitle.FindProperty("creditsButton").objectReferenceValue = btnCredits.GetComponent<Button>();
                 serializedTitle.FindProperty("quitButton").objectReferenceValue = btnQuit.GetComponent<Button>();
-                serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
+
+                serializedTitle.FindProperty("accountButton").objectReferenceValue = btnAccount.GetComponent<Button>();
+                serializedTitle.FindProperty("accountStatusText").objectReferenceValue = accountStatusText;
+
+                // Legacy aliases
+                serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnBegin.GetComponent<Button>();
+                serializedTitle.FindProperty("continueButton").objectReferenceValue = btnPrevious.GetComponent<Button>();
+                serializedTitle.FindProperty("savedGamesButton").objectReferenceValue = btnBackups.GetComponent<Button>();
+                serializedTitle.FindProperty("loginButton").objectReferenceValue = btnAccount.GetComponent<Button>();
+
+                // Panels
+                serializedTitle.FindProperty("gameModeSelectionUI").objectReferenceValue = gameModeSelectionUI;
+                serializedTitle.FindProperty("savedGamesUI").objectReferenceValue = savedGamesUI;
+                serializedTitle.FindProperty("saveManagementUI").objectReferenceValue = saveManagementUI;
                 serializedTitle.FindProperty("settingsMenu").objectReferenceValue = settingsUi;
+                serializedTitle.FindProperty("creditsUI").objectReferenceValue = creditsUI;
                 serializedTitle.FindProperty("loginUI").objectReferenceValue = loginUI;
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
@@ -1647,31 +1738,439 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             rect.offsetMax = Vector2.zero;
 
             var bg = root.GetComponent<Image>();
-            bg.color = new Color(0.04f, 0.06f, 0.08f, 0.97f);
+            bg.color = new Color(0.03f, 0.05f, 0.07f, 0.97f);
 
             var ui = root.AddComponent<CreditsUI>();
 
+            // Main Game Title
             var title = CreateText("Title", root.transform,
-                new Vector2(0.5f, 0.9f), new Vector2(0.5f, 0.9f), Vector2.zero, new Vector2(800f, 50f),
-                font, 28, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+                new Vector2(0.5f, 0.88f), new Vector2(0.5f, 0.88f), Vector2.zero, new Vector2(800f, 44f),
+                font, 26, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.92f));
 
+            // Role: SOLO DEVELOPER
+            var role = CreateText("RoleText", root.transform,
+                new Vector2(0.5f, 0.80f), new Vector2(0.5f, 0.80f), Vector2.zero, new Vector2(600f, 32f),
+                font, 18, TextAnchor.MiddleCenter, new Color(0.95f, 0.76f, 0.32f));
+
+            // Developer Name: MOHANRAJ
+            var devName = CreateText("DevNameText", root.transform,
+                new Vector2(0.5f, 0.73f), new Vector2(0.5f, 0.73f), Vector2.zero, new Vector2(600f, 50f),
+                font, 36, TextAnchor.MiddleCenter, new Color(1f, 0.84f, 0.35f));
+
+            // Social Links Group
+            var socialGroup = new GameObject("SocialLinksGroup", typeof(RectTransform));
+            socialGroup.transform.SetParent(root.transform, false);
+            var socialRect = socialGroup.GetComponent<RectTransform>();
+            socialRect.anchorMin = new Vector2(0.5f, 0.62f);
+            socialRect.anchorMax = new Vector2(0.5f, 0.62f);
+            socialRect.pivot = new Vector2(0.5f, 0.5f);
+            socialRect.sizeDelta = new Vector2(700f, 46f);
+
+            var socialLayout = socialGroup.AddComponent<HorizontalLayoutGroup>();
+            socialLayout.spacing = 24f;
+            socialLayout.childAlignment = TextAnchor.MiddleCenter;
+            socialLayout.childControlWidth = false;
+            socialLayout.childControlHeight = false;
+
+            // Instagram Button
+            var btnInsta = CreateButton("Btn_Instagram", socialGroup.transform, font, "Instagram: @itz_me_mtmohan", new Color(0.24f, 0.18f, 0.35f, 1f));
+            var instaRect = btnInsta.GetComponent<RectTransform>();
+            instaRect.sizeDelta = new Vector2(280f, 44f);
+            btnInsta.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            // YouTube Button
+            var btnYt = CreateButton("Btn_YouTube", socialGroup.transform, font, "YouTube: @its_me_fakemask", new Color(0.42f, 0.16f, 0.16f, 1f));
+            var ytRect = btnYt.GetComponent<RectTransform>();
+            ytRect.sizeDelta = new Vector2(280f, 44f);
+            btnYt.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            // Cultural / Heritage / Technical Acknowledgements
             var body = CreateText("CreditsBody", root.transform,
-                new Vector2(0.5f, 0.52f), new Vector2(0.5f, 0.52f), Vector2.zero, new Vector2(900f, 540f),
-                font, 16, TextAnchor.MiddleCenter, new Color(0.9f, 0.92f, 0.95f));
+                new Vector2(0.5f, 0.34f), new Vector2(0.5f, 0.34f), Vector2.zero, new Vector2(900f, 260f),
+                font, 15, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.92f));
             var bodyText = body.GetComponent<Text>();
             bodyText.lineSpacing = 1.25f;
 
-            var btnClose = CreateButton("Btn_Close", root.transform, font, "Back", new Color(0.25f, 0.3f, 0.35f));
+            // Close / Back Button
+            var btnClose = CreateButton("Btn_Close", root.transform, font, "Back", new Color(0.20f, 0.28f, 0.35f));
             var closeRect = btnClose.GetComponent<RectTransform>();
-            closeRect.anchorMin = new Vector2(0.5f, 0.1f);
-            closeRect.anchorMax = new Vector2(0.5f, 0.1f);
+            closeRect.anchorMin = new Vector2(0.5f, 0.08f);
+            closeRect.anchorMax = new Vector2(0.5f, 0.08f);
             closeRect.pivot = new Vector2(0.5f, 0.5f);
-            closeRect.sizeDelta = new Vector2(220f, 44f);
+            closeRect.sizeDelta = new Vector2(200f, 44f);
+            btnClose.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
 
             var so = new SerializedObject(ui);
             so.FindProperty("titleText").objectReferenceValue = title.GetComponent<Text>();
+            so.FindProperty("roleText").objectReferenceValue = role.GetComponent<Text>();
+            so.FindProperty("devNameText").objectReferenceValue = devName.GetComponent<Text>();
             so.FindProperty("creditsBodyText").objectReferenceValue = body.GetComponent<Text>();
+            so.FindProperty("instagramButton").objectReferenceValue = btnInsta.GetComponent<Button>();
+            so.FindProperty("youtubeButton").objectReferenceValue = btnYt.GetComponent<Button>();
+            so.FindProperty("instagramLabel").objectReferenceValue = btnInsta.GetComponentInChildren<Text>();
+            so.FindProperty("youtubeLabel").objectReferenceValue = btnYt.GetComponentInChildren<Text>();
             so.FindProperty("closeButton").objectReferenceValue = btnClose.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            root.SetActive(false);
+            return root;
+        }
+
+        private static GameObject BuildGameModeSelectionPanel(Transform parent, Font font)
+        {
+            var root = new GameObject("GameModeSelectionPanel", typeof(RectTransform), typeof(Image));
+            root.transform.SetParent(parent, false);
+            var rect = root.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var bg = root.GetComponent<Image>();
+            bg.color = new Color(0.03f, 0.05f, 0.07f, 0.97f);
+
+            var ui = root.AddComponent<GameModeSelectionUI>();
+
+            // Header Title
+            var headerTitle = CreateText("HeaderTitle", root.transform,
+                new Vector2(0.5f, 0.88f), new Vector2(0.5f, 0.88f), Vector2.zero, new Vector2(800f, 50f),
+                font, 32, TextAnchor.MiddleCenter, new Color(1f, 0.84f, 0.35f));
+
+            // Header Subtitle
+            var headerSubtitle = CreateText("HeaderSubtitle", root.transform,
+                new Vector2(0.5f, 0.81f), new Vector2(0.5f, 0.81f), Vector2.zero, new Vector2(800f, 32f),
+                font, 18, TextAnchor.MiddleCenter, new Color(0.80f, 0.85f, 0.90f));
+
+            // Cards Container
+            var cardsGroup = new GameObject("CardsGroup", typeof(RectTransform));
+            cardsGroup.transform.SetParent(root.transform, false);
+            var cardsRect = cardsGroup.GetComponent<RectTransform>();
+            cardsRect.anchorMin = new Vector2(0.5f, 0.48f);
+            cardsRect.anchorMax = new Vector2(0.5f, 0.48f);
+            cardsRect.pivot = new Vector2(0.5f, 0.5f);
+            cardsRect.sizeDelta = new Vector2(980f, 420f);
+
+            var cardsLayout = cardsGroup.AddComponent<HorizontalLayoutGroup>();
+            cardsLayout.spacing = 40f;
+            cardsLayout.childAlignment = TextAnchor.MiddleCenter;
+            cardsLayout.childControlWidth = false;
+            cardsLayout.childControlHeight = false;
+
+            // Card 1: SOLO EXPEDITION
+            var soloCard = new GameObject("SoloCard", typeof(RectTransform), typeof(Image));
+            soloCard.transform.SetParent(cardsGroup.transform, false);
+            var soloCardRect = soloCard.GetComponent<RectTransform>();
+            soloCardRect.sizeDelta = new Vector2(440f, 400f);
+            var soloCardBg = soloCard.GetComponent<Image>();
+            soloCardBg.color = new Color(0.08f, 0.16f, 0.14f, 0.95f);
+
+            CreateText("SoloIcon", soloCard.transform,
+                new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(400f, 40f),
+                font, 32, TextAnchor.MiddleCenter, new Color(0.95f, 0.76f, 0.32f)).GetComponent<Text>().text = "🧭";
+
+            var soloTitle = CreateText("SoloTitle", soloCard.transform,
+                new Vector2(0.5f, 0.68f), new Vector2(0.5f, 0.68f), Vector2.zero, new Vector2(400f, 40f),
+                font, 22, TextAnchor.MiddleCenter, new Color(1f, 0.88f, 0.45f));
+
+            var soloDesc = CreateText("SoloDesc", soloCard.transform,
+                new Vector2(0.5f, 0.44f), new Vector2(0.5f, 0.44f), Vector2.zero, new Vector2(380f, 120f),
+                font, 15, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.90f));
+            soloDesc.GetComponent<Text>().lineSpacing = 1.2f;
+
+            var btnSelectSolo = CreateButton("Btn_SelectSolo", soloCard.transform, font, "BEGIN SOLO", new Color(0.14f, 0.45f, 0.34f));
+            var selectSoloRect = btnSelectSolo.GetComponent<RectTransform>();
+            selectSoloRect.anchorMin = new Vector2(0.5f, 0.15f);
+            selectSoloRect.anchorMax = new Vector2(0.5f, 0.15f);
+            selectSoloRect.pivot = new Vector2(0.5f, 0.5f);
+            selectSoloRect.sizeDelta = new Vector2(300f, 46f);
+            btnSelectSolo.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            // Card 2: MULTIPLAYER EXPEDITION
+            var multiCard = new GameObject("MultiCard", typeof(RectTransform), typeof(Image));
+            multiCard.transform.SetParent(cardsGroup.transform, false);
+            var multiCardRect = multiCard.GetComponent<RectTransform>();
+            multiCardRect.sizeDelta = new Vector2(440f, 400f);
+            var multiCardBg = multiCard.GetComponent<Image>();
+            multiCardBg.color = new Color(0.08f, 0.14f, 0.18f, 0.95f);
+
+            CreateText("MultiIcon", multiCard.transform,
+                new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(400f, 40f),
+                font, 32, TextAnchor.MiddleCenter, new Color(0.95f, 0.76f, 0.32f)).GetComponent<Text>().text = "👥";
+
+            var multiTitle = CreateText("MultiTitle", multiCard.transform,
+                new Vector2(0.5f, 0.68f), new Vector2(0.5f, 0.68f), Vector2.zero, new Vector2(400f, 40f),
+                font, 22, TextAnchor.MiddleCenter, new Color(1f, 0.88f, 0.45f));
+
+            var multiDesc = CreateText("MultiDesc", multiCard.transform,
+                new Vector2(0.5f, 0.44f), new Vector2(0.5f, 0.44f), Vector2.zero, new Vector2(380f, 120f),
+                font, 15, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.90f));
+            multiDesc.GetComponent<Text>().lineSpacing = 1.2f;
+
+            var btnSelectMulti = CreateButton("Btn_SelectMulti", multiCard.transform, font, "MULTIPLAYER LOBBY", new Color(0.18f, 0.35f, 0.48f));
+            var selectMultiRect = btnSelectMulti.GetComponent<RectTransform>();
+            selectMultiRect.anchorMin = new Vector2(0.5f, 0.15f);
+            selectMultiRect.anchorMax = new Vector2(0.5f, 0.15f);
+            selectMultiRect.pivot = new Vector2(0.5f, 0.5f);
+            selectMultiRect.sizeDelta = new Vector2(300f, 46f);
+            btnSelectMulti.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            // Back Button
+            var btnBack = CreateButton("Btn_Back", root.transform, font, "Back", new Color(0.25f, 0.30f, 0.35f));
+            var backRect = btnBack.GetComponent<RectTransform>();
+            backRect.anchorMin = new Vector2(0.5f, 0.10f);
+            backRect.anchorMax = new Vector2(0.5f, 0.10f);
+            backRect.pivot = new Vector2(0.5f, 0.5f);
+            backRect.sizeDelta = new Vector2(200f, 44f);
+            btnBack.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var so = new SerializedObject(ui);
+            so.FindProperty("panelRoot").objectReferenceValue = root;
+            so.FindProperty("headerTitleText").objectReferenceValue = headerTitle.GetComponent<Text>();
+            so.FindProperty("headerSubtitleText").objectReferenceValue = headerSubtitle.GetComponent<Text>();
+            so.FindProperty("soloCardButton").objectReferenceValue = btnSelectSolo.GetComponent<Button>();
+            so.FindProperty("soloTitleText").objectReferenceValue = soloTitle.GetComponent<Text>();
+            so.FindProperty("soloDescriptionText").objectReferenceValue = soloDesc.GetComponent<Text>();
+            so.FindProperty("multiCardButton").objectReferenceValue = btnSelectMulti.GetComponent<Button>();
+            so.FindProperty("multiTitleText").objectReferenceValue = multiTitle.GetComponent<Text>();
+            so.FindProperty("multiDescriptionText").objectReferenceValue = multiDesc.GetComponent<Text>();
+            so.FindProperty("backButton").objectReferenceValue = btnBack.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+
+            root.SetActive(false);
+            return root;
+        }
+
+        private static GameObject BuildSaveManagementPanel(Transform parent, Font font)
+        {
+            var root = new GameObject("SaveManagementPanel", typeof(RectTransform), typeof(Image));
+            root.transform.SetParent(parent, false);
+            var rect = root.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            var bg = root.GetComponent<Image>();
+            bg.color = new Color(0.03f, 0.05f, 0.07f, 0.97f);
+
+            var ui = root.AddComponent<SaveManagementUI>();
+
+            // Title
+            var title = CreateText("Title", root.transform,
+                new Vector2(0.5f, 0.90f), new Vector2(0.5f, 0.90f), Vector2.zero, new Vector2(800f, 44f),
+                font, 28, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+
+            // Tabs container
+            var tabsGroup = new GameObject("TabsGroup", typeof(RectTransform));
+            tabsGroup.transform.SetParent(root.transform, false);
+            var tabsRect = tabsGroup.GetComponent<RectTransform>();
+            tabsRect.anchorMin = new Vector2(0.5f, 0.82f);
+            tabsRect.anchorMax = new Vector2(0.5f, 0.82f);
+            tabsRect.pivot = new Vector2(0.5f, 0.5f);
+            tabsRect.sizeDelta = new Vector2(720f, 44f);
+
+            var tabsLayout = tabsGroup.AddComponent<HorizontalLayoutGroup>();
+            tabsLayout.spacing = 16f;
+            tabsLayout.childAlignment = TextAnchor.MiddleCenter;
+            tabsLayout.childControlWidth = false;
+            tabsLayout.childControlHeight = false;
+
+            var tabLocal = CreateButton("Tab_Local", tabsGroup.transform, font, "Local Saves", new Color(0.18f, 0.45f, 0.35f));
+            tabLocal.GetComponent<RectTransform>().sizeDelta = new Vector2(220f, 40f);
+            tabLocal.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var tabRestore = CreateButton("Tab_Restore", tabsGroup.transform, font, "Restore Backup", new Color(0.12f, 0.20f, 0.18f));
+            tabRestore.GetComponent<RectTransform>().sizeDelta = new Vector2(220f, 40f);
+            tabRestore.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var tabCloud = CreateButton("Tab_Cloud", tabsGroup.transform, font, "Cloud Saves", new Color(0.12f, 0.20f, 0.18f));
+            tabCloud.GetComponent<RectTransform>().sizeDelta = new Vector2(220f, 40f);
+            tabCloud.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            // Content Container
+            var contentObj = new GameObject("ContentArea", typeof(RectTransform));
+            contentObj.transform.SetParent(root.transform, false);
+            var contentRect = contentObj.GetComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0.5f, 0.46f);
+            contentRect.anchorMax = new Vector2(0.5f, 0.46f);
+            contentRect.pivot = new Vector2(0.5f, 0.5f);
+            contentRect.sizeDelta = new Vector2(800f, 380f);
+
+            // --- Page 1: Local Saves ---
+            var pLocal = new GameObject("Page_Local", typeof(RectTransform), typeof(Image));
+            pLocal.transform.SetParent(contentObj.transform, false);
+            var pLocalRect = pLocal.GetComponent<RectTransform>();
+            pLocalRect.anchorMin = Vector2.zero;
+            pLocalRect.anchorMax = Vector2.one;
+            pLocalRect.sizeDelta = Vector2.zero;
+            pLocal.GetComponent<Image>().color = new Color(0.08f, 0.12f, 0.15f, 0.95f);
+
+            var txtSaveStatus = CreateText("ActiveSaveStatus", pLocal.transform,
+                new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(720f, 36f),
+                font, 18, TextAnchor.MiddleLeft, Color.white);
+
+            var txtSaveTime = CreateText("ActiveSaveTime", pLocal.transform,
+                new Vector2(0.5f, 0.70f), new Vector2(0.5f, 0.70f), Vector2.zero, new Vector2(720f, 32f),
+                font, 16, TextAnchor.MiddleLeft, new Color(0.8f, 0.85f, 0.9f));
+
+            var txtSaveVal = CreateText("ActiveSaveValidity", pLocal.transform,
+                new Vector2(0.5f, 0.58f), new Vector2(0.5f, 0.58f), Vector2.zero, new Vector2(720f, 32f),
+                font, 16, TextAnchor.MiddleLeft, new Color(0.8f, 0.85f, 0.9f));
+
+            var txtBackupStatus = CreateText("LocalBackupStatus", pLocal.transform,
+                new Vector2(0.5f, 0.46f), new Vector2(0.5f, 0.46f), Vector2.zero, new Vector2(720f, 32f),
+                font, 16, TextAnchor.MiddleLeft, new Color(0.95f, 0.76f, 0.32f));
+
+            var localButtonsGroup = new GameObject("LocalButtons", typeof(RectTransform));
+            localButtonsGroup.transform.SetParent(pLocal.transform, false);
+            var localButtonsRect = localButtonsGroup.GetComponent<RectTransform>();
+            localButtonsRect.anchorMin = new Vector2(0.5f, 0.24f);
+            localButtonsRect.anchorMax = new Vector2(0.5f, 0.24f);
+            localButtonsRect.pivot = new Vector2(0.5f, 0.5f);
+            localButtonsRect.sizeDelta = new Vector2(720f, 44f);
+            var localBtnLayout = localButtonsGroup.AddComponent<HorizontalLayoutGroup>();
+            localBtnLayout.spacing = 16f;
+            localBtnLayout.childAlignment = TextAnchor.MiddleCenter;
+            localBtnLayout.childControlWidth = false;
+            localBtnLayout.childControlHeight = false;
+
+            var btnCreateBackup = CreateButton("Btn_CreateBackup", localButtonsGroup.transform, font, "Create Backup", new Color(0.18f, 0.45f, 0.35f));
+            btnCreateBackup.GetComponent<RectTransform>().sizeDelta = new Vector2(220f, 42f);
+            btnCreateBackup.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var btnExport = CreateButton("Btn_Export", localButtonsGroup.transform, font, "Export Save", new Color(0.20f, 0.35f, 0.48f));
+            btnExport.GetComponent<RectTransform>().sizeDelta = new Vector2(220f, 42f);
+            btnExport.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var btnImport = CreateButton("Btn_Import", localButtonsGroup.transform, font, "Import Save", new Color(0.35f, 0.25f, 0.45f));
+            btnImport.GetComponent<RectTransform>().sizeDelta = new Vector2(220f, 42f);
+            btnImport.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var txtLocalActionStatus = CreateText("LocalActionStatus", pLocal.transform,
+                new Vector2(0.5f, 0.08f), new Vector2(0.5f, 0.08f), Vector2.zero, new Vector2(720f, 30f),
+                font, 15, TextAnchor.MiddleCenter, Color.white);
+
+            // --- Page 2: Restore Backup ---
+            var pRestore = new GameObject("Page_Restore", typeof(RectTransform), typeof(Image));
+            pRestore.transform.SetParent(contentObj.transform, false);
+            var pRestoreRect = pRestore.GetComponent<RectTransform>();
+            pRestoreRect.anchorMin = Vector2.zero;
+            pRestoreRect.anchorMax = Vector2.one;
+            pRestoreRect.sizeDelta = Vector2.zero;
+            pRestore.GetComponent<Image>().color = new Color(0.08f, 0.12f, 0.15f, 0.95f);
+
+            var txtRestoreHeader = CreateText("RestoreHeader", pRestore.transform,
+                new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(720f, 36f),
+                font, 18, TextAnchor.MiddleLeft, Color.white);
+
+            var txtRestoreDetails = CreateText("RestoreDetails", pRestore.transform,
+                new Vector2(0.5f, 0.52f), new Vector2(0.5f, 0.52f), Vector2.zero, new Vector2(720f, 140f),
+                font, 16, TextAnchor.MiddleLeft, new Color(0.85f, 0.9f, 0.95f));
+            txtRestoreDetails.GetComponent<Text>().lineSpacing = 1.25f;
+
+            var btnRestoreSelected = CreateButton("Btn_RestoreSelected", pRestore.transform, font, "Restore Selected Backup", new Color(0.45f, 0.22f, 0.22f));
+            var restoreSelRect = btnRestoreSelected.GetComponent<RectTransform>();
+            restoreSelRect.anchorMin = new Vector2(0.5f, 0.22f);
+            restoreSelRect.anchorMax = new Vector2(0.5f, 0.22f);
+            restoreSelRect.pivot = new Vector2(0.5f, 0.5f);
+            restoreSelRect.sizeDelta = new Vector2(300f, 44f);
+            btnRestoreSelected.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var txtRestoreStatus = CreateText("RestoreStatus", pRestore.transform,
+                new Vector2(0.5f, 0.08f), new Vector2(0.5f, 0.08f), Vector2.zero, new Vector2(720f, 30f),
+                font, 15, TextAnchor.MiddleCenter, Color.white);
+
+            // --- Page 3: Cloud Saves ---
+            var pCloud = new GameObject("Page_Cloud", typeof(RectTransform), typeof(Image));
+            pCloud.transform.SetParent(contentObj.transform, false);
+            var pCloudRect = pCloud.GetComponent<RectTransform>();
+            pCloudRect.anchorMin = Vector2.zero;
+            pCloudRect.anchorMax = Vector2.one;
+            pCloudRect.sizeDelta = Vector2.zero;
+            pCloud.GetComponent<Image>().color = new Color(0.08f, 0.12f, 0.15f, 0.95f);
+
+            var txtCloudConn = CreateText("CloudConnStatus", pCloud.transform,
+                new Vector2(0.5f, 0.82f), new Vector2(0.5f, 0.82f), Vector2.zero, new Vector2(720f, 36f),
+                font, 18, TextAnchor.MiddleLeft, Color.white);
+
+            var txtCloudAcc = CreateText("CloudAccount", pCloud.transform,
+                new Vector2(0.5f, 0.70f), new Vector2(0.5f, 0.70f), Vector2.zero, new Vector2(720f, 32f),
+                font, 16, TextAnchor.MiddleLeft, new Color(0.85f, 0.9f, 0.95f));
+
+            var txtCloudLast = CreateText("CloudLastSync", pCloud.transform,
+                new Vector2(0.5f, 0.58f), new Vector2(0.5f, 0.58f), Vector2.zero, new Vector2(720f, 32f),
+                font, 16, TextAnchor.MiddleLeft, new Color(0.85f, 0.9f, 0.95f));
+
+            var cloudButtonsGroup = new GameObject("CloudButtons", typeof(RectTransform));
+            cloudButtonsGroup.transform.SetParent(pCloud.transform, false);
+            var cloudButtonsRect = cloudButtonsGroup.GetComponent<RectTransform>();
+            cloudButtonsRect.anchorMin = new Vector2(0.5f, 0.38f);
+            cloudButtonsRect.anchorMax = new Vector2(0.5f, 0.38f);
+            cloudButtonsRect.pivot = new Vector2(0.5f, 0.5f);
+            cloudButtonsRect.sizeDelta = new Vector2(720f, 44f);
+            var cloudBtnLayout = cloudButtonsGroup.AddComponent<HorizontalLayoutGroup>();
+            cloudBtnLayout.spacing = 20f;
+            cloudBtnLayout.childAlignment = TextAnchor.MiddleCenter;
+            cloudBtnLayout.childControlWidth = false;
+            cloudBtnLayout.childControlHeight = false;
+
+            var btnCloudSync = CreateButton("Btn_CloudSyncNow", cloudButtonsGroup.transform, font, "Sync Now", new Color(0.18f, 0.45f, 0.35f));
+            btnCloudSync.GetComponent<RectTransform>().sizeDelta = new Vector2(240f, 42f);
+            btnCloudSync.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var btnCloudDl = CreateButton("Btn_CloudDownload", cloudButtonsGroup.transform, font, "Download Cloud Save", new Color(0.20f, 0.35f, 0.48f));
+            btnCloudDl.GetComponent<RectTransform>().sizeDelta = new Vector2(240f, 42f);
+            btnCloudDl.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var txtCloudMsg = CreateText("CloudMessage", pCloud.transform,
+                new Vector2(0.5f, 0.16f), new Vector2(0.5f, 0.16f), Vector2.zero, new Vector2(720f, 50f),
+                font, 15, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
+            txtCloudMsg.GetComponent<Text>().lineSpacing = 1.2f;
+
+            // Back button
+            var btnClose = CreateButton("Btn_Close", root.transform, font, "Back", new Color(0.25f, 0.30f, 0.35f));
+            var closeRect = btnClose.GetComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(0.5f, 0.08f);
+            closeRect.anchorMax = new Vector2(0.5f, 0.08f);
+            closeRect.pivot = new Vector2(0.5f, 0.5f);
+            closeRect.sizeDelta = new Vector2(200f, 44f);
+            btnClose.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+
+            var so = new SerializedObject(ui);
+            so.FindProperty("panelRoot").objectReferenceValue = root;
+            so.FindProperty("titleText").objectReferenceValue = title.GetComponent<Text>();
+            so.FindProperty("tabLocalButton").objectReferenceValue = tabLocal.GetComponent<Button>();
+            so.FindProperty("tabRestoreButton").objectReferenceValue = tabRestore.GetComponent<Button>();
+            so.FindProperty("tabCloudButton").objectReferenceValue = tabCloud.GetComponent<Button>();
+            so.FindProperty("tabLocalLabel").objectReferenceValue = tabLocal.GetComponentInChildren<Text>();
+            so.FindProperty("tabRestoreLabel").objectReferenceValue = tabRestore.GetComponentInChildren<Text>();
+            so.FindProperty("tabCloudLabel").objectReferenceValue = tabCloud.GetComponentInChildren<Text>();
+            so.FindProperty("closeButton").objectReferenceValue = btnClose.GetComponent<Button>();
+
+            so.FindProperty("localSavesPage").objectReferenceValue = pLocal;
+            so.FindProperty("activeSaveStatusText").objectReferenceValue = txtSaveStatus.GetComponent<Text>();
+            so.FindProperty("activeSaveTimestampText").objectReferenceValue = txtSaveTime.GetComponent<Text>();
+            so.FindProperty("activeSaveValidityText").objectReferenceValue = txtSaveVal.GetComponent<Text>();
+            so.FindProperty("localBackupStatusText").objectReferenceValue = txtBackupStatus.GetComponent<Text>();
+            so.FindProperty("createBackupButton").objectReferenceValue = btnCreateBackup.GetComponent<Button>();
+            so.FindProperty("exportSaveButton").objectReferenceValue = btnExport.GetComponent<Button>();
+            so.FindProperty("importSaveButton").objectReferenceValue = btnImport.GetComponent<Button>();
+            so.FindProperty("localActionStatusText").objectReferenceValue = txtLocalActionStatus.GetComponent<Text>();
+
+            so.FindProperty("restoreBackupPage").objectReferenceValue = pRestore;
+            so.FindProperty("backupListHeaderText").objectReferenceValue = txtRestoreHeader.GetComponent<Text>();
+            so.FindProperty("backupListDetailsText").objectReferenceValue = txtRestoreDetails.GetComponent<Text>();
+            so.FindProperty("restoreSelectedButton").objectReferenceValue = btnRestoreSelected.GetComponent<Button>();
+            so.FindProperty("restoreStatusText").objectReferenceValue = txtRestoreStatus.GetComponent<Text>();
+
+            so.FindProperty("cloudSavesPage").objectReferenceValue = pCloud;
+            so.FindProperty("cloudConnectionStatusText").objectReferenceValue = txtCloudConn.GetComponent<Text>();
+            so.FindProperty("cloudAccountText").objectReferenceValue = txtCloudAcc.GetComponent<Text>();
+            so.FindProperty("cloudLastSyncText").objectReferenceValue = txtCloudLast.GetComponent<Text>();
+            so.FindProperty("cloudSyncNowButton").objectReferenceValue = btnCloudSync.GetComponent<Button>();
+            so.FindProperty("cloudDownloadButton").objectReferenceValue = btnCloudDl.GetComponent<Button>();
+            so.FindProperty("cloudStatusMessageText").objectReferenceValue = txtCloudMsg.GetComponent<Text>();
+
             so.ApplyModifiedProperties();
 
             root.SetActive(false);

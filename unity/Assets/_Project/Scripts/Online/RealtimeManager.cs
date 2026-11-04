@@ -33,7 +33,7 @@ namespace WhisperingWilds.Online
     public class RealtimeManager : MonoBehaviour
     {
         private static readonly Regex RoomCodePattern =
-            new Regex("^[A-HJ-NP-Z2-9]{6}$", RegexOptions.Compiled);
+            new Regex(@"^\d{4,6}$", RegexOptions.Compiled);
 
         public static RealtimeManager Instance { get; private set; }
 
@@ -388,7 +388,7 @@ namespace WhisperingWilds.Online
             string normalized = (roomCode ?? string.Empty).Trim().ToUpperInvariant();
             if (!RoomCodePattern.IsMatch(normalized))
             {
-                OnJoinFailed?.Invoke("Enter the six-character invite code.");
+                OnJoinFailed?.Invoke("Enter a 4 to 6-digit numeric invite code.");
                 return;
             }
 

@@ -147,7 +147,7 @@ function registerSocketHandlers(io, socket, roomManager, playerManager) {
 
         const code = Validation.sanitizeRoomCode(payload.roomCode);
         if (!code) {
-            emitJoinFailure('Enter the six-character invite code.', 'INVALID_ROOM_CODE');
+            emitJoinFailure('Enter a 4 to 6-digit numeric invite code.', 'INVALID_ROOM_CODE');
             return;
         }
 
