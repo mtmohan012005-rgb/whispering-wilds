@@ -72,9 +72,15 @@ namespace WhisperingWilds.UI
         [SerializeField] private MainMenuAnimator mainMenuAnimator;
 
         [Header("Menu Navigation Container")]
+        [SerializeField] private GameObject menuRoot;
         [SerializeField] private GameObject menuContainer;
 
+        [Header("Audio SFX")]
+        [SerializeField] private AudioClip clickClip;
+
         private CampaignFlow campaignFlow;
+        private bool _hasPlayedEntrance = false;
+        private bool _isTransitioning = false;
 
         private void Awake()
         {
@@ -122,7 +128,16 @@ namespace WhisperingWilds.UI
             // Check if continue/previous journey should be enabled
             UpdateJourneyButtonsInteractable();
 
-            StartCoroutine(StartMenuAnimationDelayed());
+            if (loginUI != null)
+            {
+                loginUI.OnBackToMenu += OnLoginClosed;
+            }
+
+            // Only trigger delayed entrance if there is NO CinematicIntroController present
+            if (cinematicIntro == null)
+            {
+                StartCoroutine(StartMenuAnimationDelayed());
+            }
 
             // Play gentle temple ambience
             if (AudioManager.Instance != null)
@@ -246,20 +261,64 @@ namespace WhisperingWilds.UI
             }
         }
 
+        private void OnDestroy()
+        {
+            if (loginUI != null)
+            {
+                loginUI.OnBackToMenu -= OnLoginClosed;
+            }
+        }
+
         private System.Collections.IEnumerator StartMenuAnimationDelayed()
         {
             yield return null;
             yield return null;
 
-            MainMenuAnimator animator = mainMenuAnimator;
-            if (animator == null)
+            OnIntroCompleted();
+        }
+
+        public void OnIntroCompleted()
+        {
+            if (_hasPlayedEntrance) return;
+            _hasPlayedEntrance = true;
+
+            EnsurePanels();
+
+            if (menuRoot != null)
             {
-                animator = FindAnyObjectByType<MainMenuAnimator>();
+                menuRoot.SetActive(true);
+            }
+            if (menuContainer != null)
+            {
+                menuContainer.SetActive(true);
+                var cg = menuContainer.GetComponent<CanvasGroup>();
+                if (cg != null)
+                {
+                    cg.alpha = 1f;
+                    cg.interactable = true;
+                    cg.blocksRaycasts = true;
+                }
             }
 
+            MainMenuAnimator animator = mainMenuAnimator != null ? mainMenuAnimator : FindAnyObjectByType<MainMenuAnimator>();
             if (animator != null)
             {
+                animator.ResetAnimationState();
                 animator.PlayEntrance();
+            }
+        }
+
+        private void PlayClickSound()
+        {
+            if (clickClip == null)
+            {
+                clickClip = Resources.Load<AudioClip>("Audio/ui_click") ?? Resources.Load<AudioClip>("ui_click");
+            }
+            if (clickClip != null)
+            {
+                var audioSrc = GetComponent<AudioSource>();
+                if (audioSrc == null) audioSrc = gameObject.AddComponent<AudioSource>();
+                audioSrc.PlayOneShot(clickClip, 0.7f);
             }
         }
 
@@ -366,15 +425,154 @@ namespace WhisperingWilds.UI
         }
 
         /// <summary>
-        /// TOP-RIGHT ACCOUNT: Opens login / account screen.
+        /// TOP-RIGHT ACCOUNT: Opens login / account screen with smooth slide and fade transitions.
         /// </summary>
         public void OnAccountClicked()
         {
+            if (_isTransitioning) return;
+            if (loginUI != null && loginUI.gameObject.activeSelf) return;
+
+            _isTransitioning = true;
+            PlayClickSound();
+
             CloseAllModals();
-            if (loginUI != null)
+
+            if (menuContainer != null)
             {
-                loginUI.SetVisible(true);
+                StartCoroutine(TransitionMenuContainer(false, () =>
+                {
+                    if (loginUI != null)
+                    {
+                        loginUI.TransitionIn(() =>
+                        {
+                            _isTransitioning = false;
+                        });
+                    }
+                    else
+                    {
+                        _isTransitioning = false;
+                    }
+                }));
             }
+            else
+            {
+                if (loginUI != null)
+                {
+                    loginUI.TransitionIn(() =>
+                    {
+                        _isTransitioning = false;
+                    });
+                }
+                else
+                {
+                    _isTransitioning = false;
+                }
+            }
+        }
+
+        public void OnLoginClosed()
+        {
+            if (_isTransitioning) return;
+            _isTransitioning = true;
+
+            if (loginUI != null && loginUI.gameObject.activeSelf)
+            {
+                loginUI.TransitionOut(() =>
+                {
+                    if (menuContainer != null)
+                    {
+                        menuContainer.SetActive(true);
+                        StartCoroutine(TransitionMenuContainer(true, () =>
+                        {
+                            _isTransitioning = false;
+                            UpdateAccountBadge();
+                            RestoreFocus();
+                        }));
+                    }
+                    else
+                    {
+                        _isTransitioning = false;
+                        UpdateAccountBadge();
+                        RestoreFocus();
+                    }
+                });
+            }
+            else
+            {
+                if (menuContainer != null)
+                {
+                    menuContainer.SetActive(true);
+                    StartCoroutine(TransitionMenuContainer(true, () =>
+                    {
+                        _isTransitioning = false;
+                        UpdateAccountBadge();
+                        RestoreFocus();
+                    }));
+                }
+                else
+                {
+                    _isTransitioning = false;
+                    UpdateAccountBadge();
+                    RestoreFocus();
+                }
+            }
+        }
+
+        private void RestoreFocus()
+        {
+            var btn = beginGameButton != null ? beginGameButton : newGameButton;
+            if (btn != null && UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(btn.gameObject);
+            }
+        }
+
+        private System.Collections.IEnumerator TransitionMenuContainer(bool show, Action onComplete)
+        {
+            if (menuContainer == null)
+            {
+                onComplete?.Invoke();
+                yield break;
+            }
+
+            var cg = menuContainer.GetComponent<CanvasGroup>();
+            if (cg == null) cg = menuContainer.AddComponent<CanvasGroup>();
+
+            var rt = menuContainer.GetComponent<RectTransform>();
+            Vector2 basePos = new Vector2(60f, -40f);
+
+            float duration = 0.25f;
+            float elapsed = 0f;
+            float startAlpha = cg.alpha;
+            float endAlpha = show ? 1f : 0f;
+            Vector2 startPos = rt.anchoredPosition;
+            Vector2 endPos = show ? basePos : (basePos + new Vector2(-30f, 0f));
+
+            cg.interactable = false;
+            cg.blocksRaycasts = false;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float smoothT = t * t * (3f - 2f * t);
+
+                cg.alpha = Mathf.Lerp(startAlpha, endAlpha, smoothT);
+                rt.anchoredPosition = Vector2.Lerp(startPos, endPos, smoothT);
+                yield return null;
+            }
+
+            cg.alpha = endAlpha;
+            rt.anchoredPosition = endPos;
+            cg.interactable = show;
+            cg.blocksRaycasts = show;
+
+            if (!show)
+            {
+                menuContainer.SetActive(false);
+            }
+
+            onComplete?.Invoke();
         }
 
         // Legacy Aliases
@@ -475,7 +673,7 @@ namespace WhisperingWilds.UI
             }
             if (loginUI != null && loginUI.gameObject.activeSelf)
             {
-                loginUI.SetVisible(false);
+                OnLoginClosed();
                 return;
             }
             if (confirmationDialog != null && confirmationDialog.IsVisible)
@@ -495,7 +693,10 @@ namespace WhisperingWilds.UI
             if (saveManagementUI != null) saveManagementUI.SetVisible(false);
             if (settingsMenu != null) settingsMenu.SetVisible(false);
             if (creditsUI != null) creditsUI.SetVisible(false);
-            if (loginUI != null) loginUI.SetVisible(false);
+            if (loginUI != null && loginUI.gameObject.activeSelf)
+            {
+                loginUI.SetVisible(false);
+            }
             if (confirmationDialog != null) confirmationDialog.Dismiss();
         }
 
@@ -509,6 +710,11 @@ namespace WhisperingWilds.UI
             if (loginUI == null) loginUI = FindAnyObjectByType<LoginUI>();
             if (confirmationDialog == null) confirmationDialog = FindAnyObjectByType<ConfirmationDialog>();
             if (mainMenuAnimator == null) mainMenuAnimator = FindAnyObjectByType<MainMenuAnimator>();
+            if (menuRoot == null)
+            {
+                var mr = transform.Find("MenuRoot");
+                if (mr != null) menuRoot = mr.gameObject;
+            }
             if (menuContainer == null)
             {
                 var mc = transform.Find("MenuRoot/MenuContainer");

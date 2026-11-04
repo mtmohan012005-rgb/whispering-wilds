@@ -29,6 +29,8 @@ namespace WhisperingWilds.UI
         [SerializeField] private Text subtitleText;
         [SerializeField] private Transform menuContainer;
         [SerializeField] private Text ruleNoticeText;
+        [SerializeField] private GameObject accountControl;
+        [SerializeField] private Text footerText;
 
         [Header("Background & Atmosphere Layers")]
         [SerializeField] private Image menuBackground;
@@ -100,21 +102,53 @@ namespace WhisperingWilds.UI
             if (menuLightRays != null) _lightRaysRect = menuLightRays.GetComponent<RectTransform>();
             if (titleText != null) _initialTitlePos = titleText.rectTransform.anchoredPosition;
             if (subtitleText != null) _initialSubtitlePos = subtitleText.rectTransform.anchoredPosition;
+
+            if (accountControl == null && menuContainer != null && menuContainer.parent != null)
+            {
+                var acc = menuContainer.parent.Find("AccountControl");
+                if (acc != null) accountControl = acc.gameObject;
+            }
+            if (footerText == null && menuContainer != null && menuContainer.parent != null)
+            {
+                var ft = menuContainer.parent.Find("FooterText");
+                if (ft != null) footerText = ft.GetComponent<Text>();
+            }
         }
 
-        public void PlayEntrance()
+        public void ResetAnimationState()
         {
-            if (_isAnimating) return;
-            _isAnimating = true;
+            _isAnimating = false;
+            if (_entranceCoroutine != null)
+            {
+                StopCoroutine(_entranceCoroutine);
+                _entranceCoroutine = null;
+            }
 
             CacheRectTransforms();
 
-            Debug.Log($"<color=#FFD700><b>[MainMenuAnimator]</b></color> PlayEntrance: title={(titleText != null)}, bg={(menuBackground != null)}, container={(menuContainer != null)}");
-
-            // Initial state: hide title, subtitle, buttons
-            SetAlpha(titleText, 0f);
-            SetAlpha(subtitleText, 0f);
-            if (ruleNoticeText != null) SetAlpha(ruleNoticeText, 0f);
+            if (titleText != null)
+            {
+                SetAlpha(titleText, 0f);
+                titleText.rectTransform.anchoredPosition = _initialTitlePos + new Vector2(0f, -titleRiseAmount);
+            }
+            if (subtitleText != null)
+            {
+                SetAlpha(subtitleText, 0f);
+            }
+            if (ruleNoticeText != null)
+            {
+                SetAlpha(ruleNoticeText, 0f);
+            }
+            if (footerText != null)
+            {
+                SetAlpha(footerText, 0f);
+            }
+            if (accountControl != null)
+            {
+                var cg = accountControl.GetComponent<CanvasGroup>();
+                if (cg == null) cg = accountControl.AddComponent<CanvasGroup>();
+                cg.alpha = 0f;
+            }
 
             if (menuContainer != null)
             {
@@ -125,8 +159,24 @@ namespace WhisperingWilds.UI
                     if (label != null) SetAlpha(label, 0f);
                     var bg = child.GetComponent<Image>();
                     if (bg != null) SetImageAlpha(bg, 0f);
+                    var rect = child.GetComponent<RectTransform>();
+                    if (rect != null)
+                    {
+                        rect.anchoredPosition = new Vector2(0f, buttonSlideAmount);
+                    }
                 }
             }
+        }
+
+        public void PlayEntrance()
+        {
+            if (_isAnimating) return;
+            _isAnimating = true;
+
+            ResetAnimationState();
+            _isAnimating = true;
+
+            Debug.Log($"<color=#FFD700><b>[MainMenuAnimator]</b></color> PlayEntrance: title={(titleText != null)}, bg={(menuBackground != null)}, container={(menuContainer != null)}");
 
             // Enable atmospheric layers
             if (menuMistLayer1 != null) menuMistLayer1.SetActive(true);
@@ -144,6 +194,9 @@ namespace WhisperingWilds.UI
         private IEnumerator EntranceSequence()
         {
             float elapsed = 0f;
+
+            float accountDelay = buttonsStartDelay + (menuContainer != null ? menuContainer.childCount * buttonStagger : 0.5f) + 0.1f;
+            float footerDelay = accountDelay + 0.15f;
 
             while (_isAnimating)
             {
@@ -213,18 +266,36 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // 4. Rule notice fade
-                if (elapsed >= ruleNoticeDelay && ruleNoticeText != null)
+                // 4. Account badge fade in
+                if (elapsed >= accountDelay && accountControl != null)
                 {
-                    float t = Mathf.Clamp01((elapsed - ruleNoticeDelay) / ruleNoticeDuration);
+                    float t = Mathf.Clamp01((elapsed - accountDelay) / 0.45f);
                     t = SmoothStep(t);
-                    Color c = ruleNoticeText.color;
-                    c.a = t * 0.65f;
-                    ruleNoticeText.color = c;
+                    var cg = accountControl.GetComponent<CanvasGroup>();
+                    if (cg != null) cg.alpha = t;
+                }
+
+                // 5. Footer & rule notice fade in
+                if (elapsed >= footerDelay)
+                {
+                    float t = Mathf.Clamp01((elapsed - footerDelay) / ruleNoticeDuration);
+                    t = SmoothStep(t);
+                    if (footerText != null)
+                    {
+                        Color fc = footerText.color;
+                        fc.a = t * 0.75f;
+                        footerText.color = fc;
+                    }
+                    if (ruleNoticeText != null)
+                    {
+                        Color rc = ruleNoticeText.color;
+                        rc.a = t * 0.65f;
+                        ruleNoticeText.color = rc;
+                    }
                 }
 
                 // Completion check
-                float totalTime = buttonsStartDelay + (menuContainer != null ? menuContainer.childCount * buttonStagger : 0.5f) + buttonDuration + 0.1f;
+                float totalTime = footerDelay + ruleNoticeDuration + 0.1f;
                 if (elapsed >= totalTime)
                 {
                     _isAnimating = false;
