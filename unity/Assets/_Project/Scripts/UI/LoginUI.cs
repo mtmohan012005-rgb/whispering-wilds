@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
@@ -98,6 +98,13 @@ namespace WhisperingWilds.UI
         [SerializeField] private GameObject forgotPasswordPanel;
         [SerializeField] private GameObject resetPasswordPanel;
         [SerializeField] private GameObject signedInPanel;
+
+        [Header("Animation & Transitions")]
+        [SerializeField] private CanvasGroup mainCanvasGroup;
+        [SerializeField] private RectTransform cardContainerRect;
+        private Coroutine _transitionCoroutine;
+        private Vector2 _defaultCardPos = Vector2.zero;
+        private bool _hasDefaultCardPos = false;
 
         private bool _isPasswordVisible;
         private bool _isRegPasswordVisible;
@@ -243,8 +250,171 @@ namespace WhisperingWilds.UI
             }
         }
 
+        public void EnsureCanvasGroup()
+        {
+            if (mainCanvasGroup == null)
+            {
+                mainCanvasGroup = GetComponent<CanvasGroup>();
+                if (mainCanvasGroup == null)
+                {
+                    mainCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+                }
+            }
+            if (cardContainerRect == null)
+            {
+                var card = transform.Find("CardContainer");
+                if (card != null) cardContainerRect = card.GetComponent<RectTransform>();
+            }
+            if (cardContainerRect != null && !_hasDefaultCardPos)
+            {
+                _defaultCardPos = cardContainerRect.anchoredPosition;
+                _hasDefaultCardPos = true;
+            }
+        }
+
+        public void TransitionIn(Action onComplete = null)
+        {
+            if (_transitionCoroutine != null) StopCoroutine(_transitionCoroutine);
+            gameObject.SetActive(true);
+            _transitionCoroutine = StartCoroutine(DoTransitionIn(onComplete));
+        }
+
+        public void TransitionOut(Action onComplete = null)
+        {
+            if (_transitionCoroutine != null) StopCoroutine(_transitionCoroutine);
+            _transitionCoroutine = StartCoroutine(DoTransitionOut(onComplete));
+        }
+
+        private System.Collections.IEnumerator DoTransitionIn(Action onComplete)
+        {
+            EnsureCanvasGroup();
+            if (mainCanvasGroup != null)
+            {
+                mainCanvasGroup.alpha = 0f;
+                mainCanvasGroup.interactable = false;
+                mainCanvasGroup.blocksRaycasts = false;
+            }
+
+            Vector2 originalCardPos = _hasDefaultCardPos ? _defaultCardPos : (cardContainerRect != null ? cardContainerRect.anchoredPosition : Vector2.zero);
+            if (cardContainerRect != null)
+            {
+                cardContainerRect.anchoredPosition = originalCardPos + new Vector2(40f, 0f);
+            }
+
+            ApplyLocalizedLabels();
+            if (AuthService.Instance != null && AuthService.Instance.IsSignedIn)
+            {
+                ShowSignedIn();
+            }
+            else
+            {
+                ShowSignIn();
+            }
+
+            float duration = 0.30f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float smoothT = t * t * (3f - 2f * t);
+
+                if (mainCanvasGroup != null)
+                {
+                    mainCanvasGroup.alpha = smoothT;
+                }
+
+                if (cardContainerRect != null)
+                {
+                    cardContainerRect.anchoredPosition = Vector2.Lerp(originalCardPos + new Vector2(40f, 0f), originalCardPos, smoothT);
+                }
+
+                yield return null;
+            }
+
+            if (mainCanvasGroup != null)
+            {
+                mainCanvasGroup.alpha = 1f;
+                mainCanvasGroup.interactable = true;
+                mainCanvasGroup.blocksRaycasts = true;
+            }
+            if (cardContainerRect != null)
+            {
+                cardContainerRect.anchoredPosition = originalCardPos;
+            }
+
+            _transitionCoroutine = null;
+            onComplete?.Invoke();
+        }
+
+        private System.Collections.IEnumerator DoTransitionOut(Action onComplete)
+        {
+            EnsureCanvasGroup();
+            if (mainCanvasGroup != null)
+            {
+                mainCanvasGroup.interactable = false;
+                mainCanvasGroup.blocksRaycasts = false;
+            }
+
+            Vector2 originalCardPos = _hasDefaultCardPos ? _defaultCardPos : (cardContainerRect != null ? cardContainerRect.anchoredPosition : Vector2.zero);
+            float duration = 0.25f;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float smoothT = t * t * (3f - 2f * t);
+
+                if (mainCanvasGroup != null)
+                {
+                    mainCanvasGroup.alpha = 1f - smoothT;
+                }
+
+                if (cardContainerRect != null)
+                {
+                    cardContainerRect.anchoredPosition = Vector2.Lerp(originalCardPos, originalCardPos + new Vector2(30f, 0f), smoothT);
+                }
+
+                yield return null;
+            }
+
+            if (mainCanvasGroup != null)
+            {
+                mainCanvasGroup.alpha = 0f;
+            }
+            if (cardContainerRect != null)
+            {
+                cardContainerRect.anchoredPosition = originalCardPos;
+            }
+
+            gameObject.SetActive(false);
+            _transitionCoroutine = null;
+            OnBackToMenu?.Invoke();
+            onComplete?.Invoke();
+        }
+
         public void SetVisible(bool visible)
         {
+            if (_transitionCoroutine != null)
+            {
+                StopCoroutine(_transitionCoroutine);
+                _transitionCoroutine = null;
+            }
+
+            EnsureCanvasGroup();
+            if (mainCanvasGroup != null)
+            {
+                mainCanvasGroup.alpha = visible ? 1f : 0f;
+                mainCanvasGroup.interactable = visible;
+                mainCanvasGroup.blocksRaycasts = visible;
+            }
+            if (cardContainerRect != null && _hasDefaultCardPos)
+            {
+                cardContainerRect.anchoredPosition = _defaultCardPos;
+            }
+
             gameObject.SetActive(visible);
             if (visible)
             {
@@ -793,16 +963,30 @@ namespace WhisperingWilds.UI
         public void OnGuestClicked()
         {
             Debug.Log("<color=#00D2FF><b>[LoginUI]</b></color> Continuing in Guest / Play Offline mode.");
-            SetVisible(false);
             OnSignInResult?.Invoke(true, "Guest");
-            OnBackToMenu?.Invoke();
+            if (TitleMenuController.Instance != null && gameObject.activeInHierarchy)
+            {
+                TitleMenuController.Instance.OnLoginClosed();
+            }
+            else
+            {
+                SetVisible(false);
+                OnBackToMenu?.Invoke();
+            }
         }
 
         private void OnBackClicked()
         {
             ClearFields();
-            SetVisible(false);
-            OnBackToMenu?.Invoke();
+            if (TitleMenuController.Instance != null && gameObject.activeInHierarchy)
+            {
+                TitleMenuController.Instance.OnLoginClosed();
+            }
+            else
+            {
+                SetVisible(false);
+                OnBackToMenu?.Invoke();
+            }
         }
 
         private void SubmitActivePanel()

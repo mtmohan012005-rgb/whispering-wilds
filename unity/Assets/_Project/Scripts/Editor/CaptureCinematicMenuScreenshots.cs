@@ -387,7 +387,7 @@ namespace WhisperingWilds.Editor
             if (introTreeObj != null) introTreeObj.SetActive(true);
             if (introMistObj != null) introMistObj.SetActive(true);
             if (introSkipText != null) introSkipText.SetActive(true);
-            SaveSeqFrame("intro_dawn_mist");
+            SaveSeqFrame("intro_beginning");
 
             // Frame 2: Intro - Ancient Dravidian Temple Reveal
             if (introTempleObj != null)
@@ -413,23 +413,89 @@ namespace WhisperingWilds.Editor
             }
             SaveSeqFrame("intro_title_reveal");
 
-            // Frame 4: Main Menu - Full Scenic Vista & Left-Center Navigation
+            // Frame 4: Visible Main Menu Entrance
             closeAll();
-            SaveSeqFrame("main_menu_scenic");
-
-            // Frame 5: Main Menu - Begin Game Button Hover Feedback
-            var beginBtn = menuContainer?.transform.Find("Btn_BeginGame")?.gameObject;
-            if (beginBtn != null)
+            var titleAnimator = UnityEngine.Object.FindAnyObjectByType<MainMenuAnimator>(FindObjectsInactive.Include);
+            if (titleAnimator != null)
             {
-                var outline = beginBtn.GetComponent<Outline>();
-                if (outline != null) outline.effectColor = new Color(1f, 0.88f, 0.42f, 1f);
-                var leftAccent = beginBtn.transform.Find("LeftAccent")?.gameObject;
-                if (leftAccent != null) leftAccent.SetActive(true);
-                beginBtn.transform.localScale = new Vector3(1.04f, 1.04f, 1f);
+                titleAnimator.ResetAnimationState();
             }
-            SaveSeqFrame("main_menu_button_hover");
+            SaveSeqFrame("visible_main_menu_entrance");
 
-            // Frame 6: Game Mode Selection (Solo vs Multiplayer)
+            // Frame 5: Main Menu - Account Button Hover
+            closeAll();
+            var accountCtrl = menuRoot?.transform.Find("AccountControl")?.gameObject;
+            var accBtn = accountCtrl?.transform.Find("Btn_AccountSignIn")?.gameObject;
+            if (accBtn != null)
+            {
+                var outline = accBtn.GetComponent<Outline>();
+                if (outline != null) outline.effectColor = new Color(1f, 0.88f, 0.42f, 1f);
+                accBtn.transform.localScale = new Vector3(1.04f, 1.04f, 1f);
+            }
+            SaveSeqFrame("account_button_hover");
+
+            // Frame 6: Actual Account Button Click
+            if (accBtn != null)
+            {
+                accBtn.transform.localScale = new Vector3(0.97f, 0.97f, 1f);
+            }
+            if (menuContainer != null)
+            {
+                var cg = menuContainer.GetComponent<CanvasGroup>();
+                if (cg == null) cg = menuContainer.AddComponent<CanvasGroup>();
+                cg.alpha = 0.5f;
+                var rt = menuContainer.GetComponent<RectTransform>();
+                if (rt != null) rt.anchoredPosition = new Vector2(45f, -40f);
+            }
+            SaveSeqFrame("account_button_click");
+
+            // Frame 7: Login Card Entrance (Sliding into view over subtle scenery overlay)
+            closeAll();
+            if (menuContainer != null) menuContainer.SetActive(false);
+            if (loginUI != null)
+            {
+                loginUI.SetVisible(true);
+                var loginCg = loginUI.GetComponent<CanvasGroup>();
+                if (loginCg != null) loginCg.alpha = 0.65f;
+                var card = loginUI.transform.Find("CardContainer")?.GetComponent<RectTransform>();
+                if (card != null) card.anchoredPosition = new Vector2(25f, 0f);
+                SaveSeqFrame("login_card_entrance");
+            }
+
+            // Frame 8: Login Screen Fully Visible (Input fields & controls ready)
+            if (loginUI != null)
+            {
+                var loginCg = loginUI.GetComponent<CanvasGroup>();
+                if (loginCg != null)
+                {
+                    loginCg.alpha = 1.0f;
+                    loginCg.interactable = true;
+                    loginCg.blocksRaycasts = true;
+                }
+                var card = loginUI.transform.Find("CardContainer")?.GetComponent<RectTransform>();
+                if (card != null) card.anchoredPosition = Vector2.zero;
+                SaveSeqFrame("login_screen_fully_visible");
+            }
+
+            // Frame 9: Back to Main Menu Animation (Login card sliding out, main menu restoring)
+            if (loginUI != null)
+            {
+                var loginCg = loginUI.GetComponent<CanvasGroup>();
+                if (loginCg != null) loginCg.alpha = 0.35f;
+                var card = loginUI.transform.Find("CardContainer")?.GetComponent<RectTransform>();
+                if (card != null) card.anchoredPosition = new Vector2(30f, 0f);
+            }
+            if (menuContainer != null)
+            {
+                menuContainer.SetActive(true);
+                var cg = menuContainer.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 0.75f;
+                var rt = menuContainer.GetComponent<RectTransform>();
+                if (rt != null) rt.anchoredPosition = new Vector2(55f, -40f);
+            }
+            SaveSeqFrame("back_to_menu_animation");
+
+            // Frame 10: Game Mode Selection (Solo vs Multiplayer)
             closeAll();
             if (menuContainer != null) menuContainer.SetActive(false);
             if (gameModeUI != null)
@@ -438,7 +504,7 @@ namespace WhisperingWilds.Editor
                 SaveSeqFrame("game_mode_selection");
             }
 
-            // Frame 7: Multiplayer Expedition Lobby (Numeric 6-digit code)
+            // Frame 11: Multiplayer Expedition Lobby (Numeric 6-digit code)
             closeAll();
             if (menuContainer != null) menuContainer.SetActive(false);
             CoopLobbyUI.Show();
@@ -452,7 +518,7 @@ namespace WhisperingWilds.Editor
                 CoopLobbyUI.Hide();
             }
 
-            // Frame 8: Backups & Saves Management (3 Tabs)
+            // Frame 12: Backups & Saves Management (3 Tabs)
             closeAll();
             if (menuContainer != null) menuContainer.SetActive(false);
             if (saveMgmtUI != null)
@@ -462,7 +528,7 @@ namespace WhisperingWilds.Editor
                 SaveSeqFrame("backups_and_saves");
             }
 
-            // Frame 9: Settings Configuration
+            // Frame 13: Settings Configuration
             closeAll();
             if (menuContainer != null) menuContainer.SetActive(false);
             if (settingsUI != null)
@@ -472,7 +538,7 @@ namespace WhisperingWilds.Editor
                 SaveSeqFrame("settings_menu");
             }
 
-            // Frame 10: Developer Credits
+            // Frame 14: Developer Credits
             closeAll();
             if (menuContainer != null) menuContainer.SetActive(false);
             if (creditsUI != null)
@@ -481,16 +547,7 @@ namespace WhisperingWilds.Editor
                 SaveSeqFrame("developer_credits");
             }
 
-            // Frame 11: Account / Sign In Screen
-            closeAll();
-            if (menuContainer != null) menuContainer.SetActive(false);
-            if (loginUI != null)
-            {
-                loginUI.SetVisible(true);
-                SaveSeqFrame("account_signin");
-            }
-
-            // Frame 12: Quit Confirmation Dialog
+            // Frame 15: Quit Confirmation Dialog
             closeAll();
             if (menuContainer != null) menuContainer.SetActive(false);
             if (confirmDialog != null)

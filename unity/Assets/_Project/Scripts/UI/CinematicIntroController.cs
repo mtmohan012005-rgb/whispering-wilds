@@ -45,16 +45,17 @@ namespace WhisperingWilds.UI
         [SerializeField] private GameObject introMist;
 
         [Header("Timing")]
+        // Historical default totalDuration = 7f; tuned to 9.5f for smooth cinematic pacing
         [Tooltip("Total duration of the cinematic intro in seconds")]
-        [SerializeField] private float totalDuration = 7f;
+        [SerializeField] private float totalDuration = 9.5f;
         [Tooltip("Time when title starts fading in")]
         [SerializeField] private float titleFadeInStart = 1.5f;
         [Tooltip("Time when title is fully visible")]
         [SerializeField] private float titleFadeInEnd = 3f;
         [Tooltip("Time when intro fades to main menu")]
-        [SerializeField] private float menuFadeStart = 5.5f;
+        [SerializeField] private float menuFadeStart = 7.8f;
         [Tooltip("Time when intro completes and menu appears")]
-        [SerializeField] private float menuFadeEnd = 7f;
+        [SerializeField] private float menuFadeEnd = 9.5f;
 
         [Header("Camera Movement")]
         [Tooltip("Starting camera position offset")]
@@ -201,8 +202,8 @@ namespace WhisperingWilds.UI
 
         private IEnumerator IntroSafetyTimeout()
         {
-            // Wait 10 unscaled seconds
-            float timeout = 10f;
+            // Wait 14 unscaled seconds (safety threshold exceeding 9.5s total duration)
+            float timeout = 14f;
             while (timeout > 0f)
             {
                 yield return null;
@@ -426,8 +427,8 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 2: Show skip text early (0.5-5s)
-                if (elapsed >= 0.5f && elapsed < 5f)
+                // Phase 2: Show skip text early (0.5-7.2s)
+                if (elapsed >= 0.5f && elapsed < 7.2f)
                 {
                     float t = Mathf.Clamp01((elapsed - 0.5f) / 0.5f);
                     if (introSkipText != null)
@@ -435,14 +436,14 @@ namespace WhisperingWilds.UI
                         introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.7f);
                     }
                 }
-                else if (elapsed >= 5f && introSkipText != null)
+                else if (elapsed >= 7.2f && introSkipText != null)
                 {
-                    float t = Mathf.Clamp01(1f - (elapsed - 5f) / 0.5f);
+                    float t = Mathf.Clamp01(1f - (elapsed - 7.2f) / 0.5f);
                     introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.7f);
                 }
 
-                // Phase 3: Temple Reveal & Bell Chime (1.5-4.5s)
-                if (elapsed >= 1.5f && elapsed < 5.5f)
+                // Phase 3: Temple Reveal & Bell Chime (1.5-7.8s)
+                if (elapsed >= 1.5f && elapsed < 7.8f)
                 {
                     // Resonant temple bell chime at temple reveal
                     if (!_bellPlayed && elapsed >= 1.6f)
@@ -457,7 +458,7 @@ namespace WhisperingWilds.UI
                     // Temple layer dissolves in and zooms slowly
                     if (introTempleLayer != null)
                     {
-                        float templeT = Mathf.Clamp01((elapsed - 1.5f) / 2.0f);
+                        float templeT = Mathf.Clamp01((elapsed - 1.5f) / 2.2f);
                         templeT = SmoothStep(templeT);
                         var templeImg = introTempleLayer.GetComponent<Image>();
                         if (templeImg != null)
@@ -467,16 +468,16 @@ namespace WhisperingWilds.UI
                         var templeRect = introTempleLayer.GetComponent<RectTransform>();
                         if (templeRect != null)
                         {
-                            float z = 1.0f + ((elapsed - 1.5f) / 4.0f) * 0.04f;
+                            float z = 1.0f + ((elapsed - 1.5f) / 6.3f) * 0.04f;
                             templeRect.localScale = new Vector3(z, z, 1f);
                         }
                     }
                 }
 
-                // Phase 4: Camera movement & background transition (1-4s)
-                if (elapsed >= 1f && elapsed < 4f && introCamera != null)
+                // Phase 4: Camera movement & background transition (1-6.5s)
+                if (elapsed >= 1f && elapsed < 6.5f && introCamera != null)
                 {
-                    float t = (elapsed - 1f) / 3f;
+                    float t = (elapsed - 1f) / 5.5f;
                     t = SmoothStep(t);
 
                     Vector3 pos = Vector3.Lerp(cameraStartOffset, cameraEndOffset, t);
@@ -496,7 +497,7 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 5: Title fade in & Tamil subtitle reveal (1.5-3s)
+                // Phase 5: Title fade in & Tamil subtitle reveal (1.5-3s), stays visible until menuFadeStart
                 if (elapsed >= titleFadeInStart && elapsed < titleFadeInEnd)
                 {
                     float t = (elapsed - titleFadeInStart) / (titleFadeInEnd - titleFadeInStart);
@@ -512,7 +513,7 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 6: Fade to menu (5.5-7s)
+                // Phase 6: Fade to menu (7.8-9.5s)
                 if (elapsed >= menuFadeStart && elapsed < menuFadeEnd)
                 {
                     float t = (elapsed - menuFadeStart) / (menuFadeEnd - menuFadeStart);
@@ -619,10 +620,24 @@ namespace WhisperingWilds.UI
             // Reset fog
             RenderSettings.fog = false;
 
-            // Show main menu root
+            // Show main menu root & notify TitleMenuController to trigger the entrance animation
             if (menuRoot != null)
             {
                 menuRoot.SetActive(true);
+            }
+
+            if (titleMenuController != null)
+            {
+                titleMenuController.OnIntroCompleted();
+            }
+            else if (menuRoot != null)
+            {
+                var anim = menuRoot.GetComponentInChildren<MainMenuAnimator>() ?? FindAnyObjectByType<MainMenuAnimator>();
+                if (anim != null)
+                {
+                    anim.ResetAnimationState();
+                    anim.PlayEntrance();
+                }
             }
 
             Debug.Log("<color=#FFD700><b>[CinematicIntro]</b></color> Intro completed, showing main menu");

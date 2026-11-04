@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -482,6 +482,10 @@ namespace WhisperingWilds.Editor
                 serializedMenuAnim.FindProperty("subtitleText").objectReferenceValue = subtitleText;
                 serializedMenuAnim.FindProperty("menuContainer").objectReferenceValue = menuContainer;
                 serializedMenuAnim.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
+                if (serializedMenuAnim.FindProperty("accountControl") != null)
+                    serializedMenuAnim.FindProperty("accountControl").objectReferenceValue = accountControlObj;
+                if (serializedMenuAnim.FindProperty("footerText") != null)
+                    serializedMenuAnim.FindProperty("footerText").objectReferenceValue = footerObj.GetComponent<Text>();
                 serializedMenuAnim.FindProperty("menuBackground").objectReferenceValue = menuBgImg;
                 serializedMenuAnim.FindProperty("menuMistLayer1").objectReferenceValue = menuMist1Obj;
                 serializedMenuAnim.FindProperty("menuMistLayer2").objectReferenceValue = menuMist2Obj;
@@ -505,7 +509,7 @@ namespace WhisperingWilds.Editor
                 loginBgRect.anchorMax = Vector2.one;
                 loginBgRect.offsetMin = Vector2.zero;
                 loginBgRect.offsetMax = Vector2.zero;
-                loginBg.GetComponent<Image>().color = new Color(0.04f, 0.05f, 0.07f, 0.94f);
+                loginBg.GetComponent<Image>().color = new Color(0.04f, 0.05f, 0.07f, 0.70f);
 
                 // Subtle Dravidian temple hero backdrop
                 var loginHeroArt = new GameObject("LoginHeroBackdrop", typeof(RectTransform), typeof(Image));
@@ -960,6 +964,11 @@ namespace WhisperingWilds.Editor
                 serializedLoginUI.FindProperty("forgotPasswordPanel").objectReferenceValue = forgotPasswordPanel;
                 serializedLoginUI.FindProperty("resetPasswordPanel").objectReferenceValue = resetPasswordPanel;
                 serializedLoginUI.FindProperty("signedInPanel").objectReferenceValue = signedInPanel;
+                var loginCg = loginUIObj.GetComponent<CanvasGroup>() ?? loginUIObj.AddComponent<CanvasGroup>();
+                if (serializedLoginUI.FindProperty("mainCanvasGroup") != null)
+                    serializedLoginUI.FindProperty("mainCanvasGroup").objectReferenceValue = loginCg;
+                if (serializedLoginUI.FindProperty("cardContainerRect") != null)
+                    serializedLoginUI.FindProperty("cardContainerRect").objectReferenceValue = cardRect;
                 serializedLoginUI.ApplyModifiedProperties();
 
                 // Bind to TitleMenuController via SerializedObject
@@ -989,6 +998,8 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("loginUI").objectReferenceValue = loginUI;
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
+                if (serializedTitle.FindProperty("menuRoot") != null)
+                    serializedTitle.FindProperty("menuRoot").objectReferenceValue = menuRoot;
                 if (serializedTitle.FindProperty("menuContainer") != null)
                     serializedTitle.FindProperty("menuContainer").objectReferenceValue = menuContainer;
                 serializedTitle.FindProperty("mainMenuAnimator").objectReferenceValue = menuAnimator;
@@ -996,6 +1007,11 @@ namespace WhisperingWilds.Editor
                 if (ambientClip != null)
                 {
                     serializedTitle.FindProperty("menuAmbienceClip").objectReferenceValue = ambientClip;
+                }
+                var uiClickClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Resources/Audio/ui_click.wav");
+                if (uiClickClip != null && serializedTitle.FindProperty("clickClip") != null)
+                {
+                    serializedTitle.FindProperty("clickClip").objectReferenceValue = uiClickClip;
                 }
                 serializedTitle.ApplyModifiedProperties();
 
