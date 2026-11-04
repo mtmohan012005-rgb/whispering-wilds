@@ -10,18 +10,23 @@ using WhisperingWilds.Localization;
 namespace WhisperingWilds.UI
 {
     /// <summary>
-    /// STEP 61 — Cinematic introduction sequence for The Whispering Wilds.
+    /// STEP 61 & AAA REDESIGN — Cinematic introduction sequence for The Whispering Wilds (காட்டு வழி • தடம்).
     /// 
-    /// Plays a 20-30 second atmospheric opening before the main menu:
-    /// 1. Fade from black with atmospheric gradient background
-    /// 2. Reveal Tamil Nadu landscape at dawn with fog and mist
-    /// 3. Camera moves toward a mysterious trail
-    /// 4. Title fades in with Tamil subtitle
-    /// 5. Transition to main menu
+    /// Plays an atmospheric opening sequence before the main menu:
+    /// 1. Fade from black with atmospheric dawn gradient background
+    /// 2. Morning birds & distant temple ambience begin playing
+    /// 3. Reveal Tamil Nadu Western Ghats landscape at dawn with fog and mist
+    /// 4. Temple reveal: ancient Dravidian stone sanctum emerges from the morning mist
+    /// 5. Resonant temple bell chimes as the ancient granite Gopuram is unveiled
+    /// 6. Game title fades in with golden sunrise glow: THE WHISPERING WILDS
+    /// 7. Tamil subtitle revealed: காட்டு வழி • தடம்
+    /// 8. Camera slowly moves forward, mist drifts across depth layers
+    /// 9. Seamless transition into the interactive main menu
     /// 
     /// Supports skip via keyboard, mouse, or controller.
     /// Plays by default on every launch unless the player explicitly disables it
     /// via the WW_PlayIntroOnStartup preference or the -forceIntro launch argument.
+    /// Operates on unscaled real time so the intro advances even when Time.timeScale = 0.
     /// </summary>
     public class CinematicIntroController : MonoBehaviour
     {
@@ -36,6 +41,8 @@ namespace WhisperingWilds.UI
         [Header("STEP 69 — Additional Visual Layers")]
         [SerializeField] private GameObject introSkyGradient;
         [SerializeField] private GameObject introTreeline;
+        [SerializeField] private GameObject introTempleLayer;
+        [SerializeField] private GameObject introMist;
 
         [Header("Timing")]
         [Tooltip("Total duration of the cinematic intro in seconds")]
@@ -65,6 +72,12 @@ namespace WhisperingWilds.UI
         [Tooltip("Background fade color")]
         [SerializeField] private Color backgroundColor = new Color(0.02f, 0.03f, 0.05f);
 
+        [Header("Audio")]
+        [SerializeField] private AudioSource introAudioSource;
+        [SerializeField] private AudioClip templeBellClip;
+        [SerializeField] private AudioClip templeAmbienceClip;
+        [SerializeField] private AudioClip birdsClip;
+
         [Header("References")]
         [SerializeField] private Camera introCamera;
         [SerializeField] private GameObject menuRoot;
@@ -73,6 +86,7 @@ namespace WhisperingWilds.UI
         private bool _skipped = false;
         private bool _isPlaying = false;
         private float _elapsedTime = 0f;
+        private bool _bellPlayed = false;
         private Coroutine _introCoroutine;
         private Vector3 _originalCameraPos;
         private Quaternion _originalCameraRot;
@@ -85,7 +99,7 @@ namespace WhisperingWilds.UI
             // Default is 1 (play intro). Player can disable it via settings.
             // Also support -forceIntro launch argument for QA/debug testing.
             bool playIntro = PlayerPrefs.GetInt("WW_PlayIntroOnStartup", 1) == 1;
-            
+
             // Check for -forceIntro launch argument (debug/QA only)
             string[] args = System.Environment.GetCommandLineArgs();
             for (int i = 0; i < args.Length; i++)
@@ -96,7 +110,7 @@ namespace WhisperingWilds.UI
                     break;
                 }
             }
-            
+
             // Legacy support: if WW_IntroPlayed is set but WW_PlayIntroOnStartup is not,
             // default to playing the intro (the new behavior).
             if (!playIntro && PlayerPrefs.HasKey("WW_IntroPlayed") && !PlayerPrefs.HasKey("WW_PlayIntroOnStartup"))
@@ -104,12 +118,14 @@ namespace WhisperingWilds.UI
                 // Old build set WW_IntroPlayed=1. New build should play by default.
                 playIntro = true;
             }
-            
+
             Debug.Log($"<color=#FFD700><b>[CinematicIntro]</b></color> PlayIntroOnStartup={playIntro}");
         }
 
         private void Start()
         {
+            EnsureAudioClips();
+
             // Determine whether to play the intro
             bool playIntro = PlayerPrefs.GetInt("WW_PlayIntroOnStartup", 1) == 1;
 
@@ -146,16 +162,43 @@ namespace WhisperingWilds.UI
             }
 
             // STEP 78: Safety timeout — if the intro coroutine never starts or gets stuck
-            // (e.g. due to a missing reference or exception), force-show the menu after 10s
-            // so the player is never stranded on a blank screen.
+            // force-show the menu after 10s so the player is never stranded on a blank screen.
             StartCoroutine(IntroSafetyTimeout());
         }
 
-        /// <summary>
-        /// Safety net: if the intro is still playing after 10 seconds of unscaled time,
-        /// force-complete it and show the menu. This prevents a stuck coroutine or missing
-        /// reference from leaving the player on a blank screen indefinitely.
-        /// </summary>
+        private void EnsureAudioClips()
+        {
+            if (introAudioSource == null)
+            {
+                introAudioSource = GetComponent<AudioSource>();
+                if (introAudioSource == null)
+                {
+                    introAudioSource = gameObject.AddComponent<AudioSource>();
+                }
+            }
+            if (introAudioSource != null)
+            {
+                introAudioSource.playOnAwake = false;
+                introAudioSource.spatialBlend = 0f;
+            }
+
+            if (templeBellClip == null)
+            {
+                templeBellClip = Resources.Load<AudioClip>("Audio/temple_bell")
+                    ?? Resources.Load<AudioClip>("temple_bell");
+            }
+            if (templeAmbienceClip == null)
+            {
+                templeAmbienceClip = Resources.Load<AudioClip>("Audio/temple_ambience")
+                    ?? Resources.Load<AudioClip>("temple_ambience");
+            }
+            if (birdsClip == null)
+            {
+                birdsClip = Resources.Load<AudioClip>("Audio/birds")
+                    ?? Resources.Load<AudioClip>("birds");
+            }
+        }
+
         private IEnumerator IntroSafetyTimeout()
         {
             // Wait 10 unscaled seconds
@@ -182,11 +225,6 @@ namespace WhisperingWilds.UI
             }
         }
 
-        /// <summary>
-        /// Detects any key or button press, compatible with both the legacy Input Manager
-        /// and the new Input System. The project uses the Input System package, so the
-        /// legacy UnityEngine.Input API throws InvalidOperationException at runtime.
-        /// </summary>
         private static bool IsAnyKeyOrButtonPressed()
         {
 #if ENABLE_INPUT_SYSTEM
@@ -207,8 +245,7 @@ namespace WhisperingWilds.UI
 
         private void SetupIntroVisuals()
         {
-            // Setup background — start with a visible dark color so the first frame is not blank
-            // during shader compilation. The intro coroutine will animate it from here.
+            // Setup background — start with dark color so first frame is not blank
             if (introBackground != null)
             {
                 var bgImage = introBackground.GetComponent<Image>();
@@ -218,7 +255,22 @@ namespace WhisperingWilds.UI
                 }
             }
 
-            // STEP 69: Setup sky gradient and treeline for visual depth
+            // Temple layer for ancient Dravidian reveal
+            if (introTempleLayer != null)
+            {
+                var templeImg = introTempleLayer.GetComponent<Image>();
+                if (templeImg != null)
+                {
+                    templeImg.color = new Color(1f, 1f, 1f, 0f); // Start hidden
+                }
+                var templeRect = introTempleLayer.GetComponent<RectTransform>();
+                if (templeRect != null)
+                {
+                    templeRect.localScale = Vector3.one;
+                }
+            }
+
+            // Sky gradient and treeline for visual depth
             if (introSkyGradient != null)
             {
                 var skyImg = introSkyGradient.GetComponent<Image>();
@@ -250,26 +302,26 @@ namespace WhisperingWilds.UI
             if (introTitleGroup != null)
             {
                 introTitleGroup.SetActive(true);
-                introTitleGroup.SetActive(false); // Start hidden
             }
 
             if (introTitleText != null)
             {
-                LocalizationManager mgr = LocalizationManager.Instance;
-                introTitleText.text = mgr != null ? mgr.GetForDisplay("menu.title") : "THE WHISPERING WILDS";
+                LocalizedFontProvider.Apply(introTitleText);
+                introTitleText.text = "THE WHISPERING WILDS";
                 introTitleText.color = new Color(1f, 0.85f, 0.35f, 0f); // Start invisible
             }
 
             if (introSubtitleText != null)
             {
-                LocalizationManager mgr = LocalizationManager.Instance;
-                introSubtitleText.text = mgr != null ? mgr.GetForDisplay("menu.subtitle") : "A Living Exploration & Cultural Investigation of Tamil Nadu";
-                introSubtitleText.color = new Color(0.8f, 0.85f, 0.9f, 0f); // Start invisible
+                LocalizedFontProvider.Apply(introSubtitleText);
+                introSubtitleText.text = "காட்டு வழி • தடம்";
+                introSubtitleText.color = new Color(0.70f, 0.88f, 0.78f, 0f); // Start invisible
             }
 
             // Setup skip text
             if (introSkipText != null)
             {
+                LocalizedFontProvider.Apply(introSkipText);
                 LocalizationManager mgr = LocalizationManager.Instance;
                 introSkipText.text = mgr != null ? mgr.GetForDisplay("intro.skip") : "Press Any Key to Skip";
                 introSkipText.color = new Color(0.6f, 0.65f, 0.7f, 0f);
@@ -290,10 +342,8 @@ namespace WhisperingWilds.UI
             RenderSettings.fogColor = dawnFogColor;
             RenderSettings.fogDensity = 0.02f;
 
-            // STEP 78: Make intro visuals active immediately so the first rendered frame
-            // is not blank during HDRP shader compilation. StartIntro() will also call
-            // SetActive(true), but this ensures visibility even before the coroutine starts.
             if (introBackground != null) introBackground.SetActive(true);
+            if (introTempleLayer != null) introTempleLayer.SetActive(true);
             if (introSkyGradient != null) introSkyGradient.SetActive(true);
             if (introTreeline != null) introTreeline.SetActive(true);
             if (introVignette != null) introVignette.SetActive(true);
@@ -306,20 +356,32 @@ namespace WhisperingWilds.UI
             _isPlaying = true;
             _skipped = false;
             _elapsedTime = 0f;
+            _bellPlayed = false;
 
-            // Show intro elements immediately so the first frame is not blank
             if (introBackground != null) introBackground.SetActive(true);
+            if (introTempleLayer != null) introTempleLayer.SetActive(true);
             if (introSkyGradient != null) introSkyGradient.SetActive(true);
             if (introTreeline != null) introTreeline.SetActive(true);
             if (introVignette != null) introVignette.SetActive(true);
             if (introTitleGroup != null) introTitleGroup.SetActive(true);
             if (introSkipText != null) introSkipText.gameObject.SetActive(true);
 
-            // Do NOT mark the intro as played yet — it hasn't finished.
-            // The flag is set in CompleteIntro() so a crash during the intro
-            // does not permanently skip it on the next launch.
+            // Play ambient temple soundscape
+            if (introAudioSource != null)
+            {
+                if (templeAmbienceClip != null)
+                {
+                    introAudioSource.clip = templeAmbienceClip;
+                    introAudioSource.loop = true;
+                    introAudioSource.volume = 0.35f;
+                    introAudioSource.Play();
+                }
+                if (birdsClip != null)
+                {
+                    introAudioSource.PlayOneShot(birdsClip, 0.40f);
+                }
+            }
 
-            // Start the intro coroutine
             if (_introCoroutine != null) StopCoroutine(_introCoroutine);
             _introCoroutine = StartCoroutine(PlayIntro());
         }
@@ -340,15 +402,11 @@ namespace WhisperingWilds.UI
 
             while (elapsed < totalDuration && _isPlaying && !_skipped)
             {
-                // STEP 69: Use unscaled delta time so the intro advances even when
-                // Time.timeScale is 0 (MainMenu state). This is the root cause fix for
-                // the stuck intro — the game pauses time at the menu, but the intro
-                // coroutine must use real-world time.
+                // STEP 69: Use unscaled delta time so the intro advances even when Time.timeScale is 0
                 elapsed += Time.unscaledDeltaTime;
                 _elapsedTime = elapsed;
 
-                // Phase 1: Fade in background (0-1.5s)
-                // Quick transition from deep night to dawn mist so the player sees something immediately
+                // Phase 1: Fade in background & mist (0-1.5s)
                 if (elapsed < 1.5f)
                 {
                     float t = elapsed / 1.5f;
@@ -362,16 +420,13 @@ namespace WhisperingWilds.UI
                             bgImage.color = new Color(bg.r, bg.g, bg.b, t);
                         }
                     }
-                    // Animate fog density: thick at start, thinning
                     if (introCamera != null)
                     {
-                        float fogT = t;
-                        RenderSettings.fogDensity = Mathf.Lerp(fogStartDensity, fogEndDensity, fogT);
+                        RenderSettings.fogDensity = Mathf.Lerp(fogStartDensity, fogEndDensity, t);
                     }
                 }
 
-                // Phase 2: Show skip text immediately (0.5-5s)
-                // Player should know they can skip within the first second
+                // Phase 2: Show skip text early (0.5-5s)
                 if (elapsed >= 0.5f && elapsed < 5f)
                 {
                     float t = Mathf.Clamp01((elapsed - 0.5f) / 0.5f);
@@ -382,13 +437,43 @@ namespace WhisperingWilds.UI
                 }
                 else if (elapsed >= 5f && introSkipText != null)
                 {
-                    // Fade out skip text as menu transition begins
                     float t = Mathf.Clamp01(1f - (elapsed - 5f) / 0.5f);
                     introSkipText.color = new Color(0.6f, 0.65f, 0.7f, t * 0.7f);
                 }
 
-                // Phase 3: Camera movement & background transition (1-4s)
-                // Camera slowly pushes forward while background shifts to sunrise tones
+                // Phase 3: Temple Reveal & Bell Chime (1.5-4.5s)
+                if (elapsed >= 1.5f && elapsed < 5.5f)
+                {
+                    // Resonant temple bell chime at temple reveal
+                    if (!_bellPlayed && elapsed >= 1.6f)
+                    {
+                        _bellPlayed = true;
+                        if (introAudioSource != null && templeBellClip != null)
+                        {
+                            introAudioSource.PlayOneShot(templeBellClip, 0.75f);
+                        }
+                    }
+
+                    // Temple layer dissolves in and zooms slowly
+                    if (introTempleLayer != null)
+                    {
+                        float templeT = Mathf.Clamp01((elapsed - 1.5f) / 2.0f);
+                        templeT = SmoothStep(templeT);
+                        var templeImg = introTempleLayer.GetComponent<Image>();
+                        if (templeImg != null)
+                        {
+                            templeImg.color = new Color(1f, 1f, 1f, templeT * 0.95f);
+                        }
+                        var templeRect = introTempleLayer.GetComponent<RectTransform>();
+                        if (templeRect != null)
+                        {
+                            float z = 1.0f + ((elapsed - 1.5f) / 4.0f) * 0.04f;
+                            templeRect.localScale = new Vector3(z, z, 1f);
+                        }
+                    }
+                }
+
+                // Phase 4: Camera movement & background transition (1-4s)
                 if (elapsed >= 1f && elapsed < 4f && introCamera != null)
                 {
                     float t = (elapsed - 1f) / 3f;
@@ -400,7 +485,6 @@ namespace WhisperingWilds.UI
                     introCamera.transform.position = _originalCameraPos + pos;
                     introCamera.transform.rotation = Quaternion.Euler(rot);
 
-                    // Background transitions from dawn mist to sunrise
                     if (introBackground != null)
                     {
                         var bgImage = introBackground.GetComponent<Image>();
@@ -412,8 +496,7 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 4: Title fade in (1.5-3s)
-                // Title appears early so the player knows what game they're launching
+                // Phase 5: Title fade in & Tamil subtitle reveal (1.5-3s)
                 if (elapsed >= titleFadeInStart && elapsed < titleFadeInEnd)
                 {
                     float t = (elapsed - titleFadeInStart) / (titleFadeInEnd - titleFadeInStart);
@@ -425,24 +508,31 @@ namespace WhisperingWilds.UI
                     }
                     if (introSubtitleText != null)
                     {
-                        introSubtitleText.color = new Color(0.8f, 0.85f, 0.9f, t * 0.8f);
+                        introSubtitleText.color = new Color(0.70f, 0.88f, 0.78f, t * 0.95f);
                     }
                 }
 
-                // Phase 5: Fade to menu (5.5-7s)
+                // Phase 6: Fade to menu (5.5-7s)
                 if (elapsed >= menuFadeStart && elapsed < menuFadeEnd)
                 {
                     float t = (elapsed - menuFadeStart) / (menuFadeEnd - menuFadeStart);
                     t = SmoothStep(t);
 
-                    // Fade out intro elements
                     if (introTitleText != null)
                     {
                         introTitleText.color = new Color(1f, 0.85f, 0.35f, 1f - t);
                     }
                     if (introSubtitleText != null)
                     {
-                        introSubtitleText.color = new Color(0.8f, 0.85f, 0.9f, (1f - t) * 0.8f);
+                        introSubtitleText.color = new Color(0.70f, 0.88f, 0.78f, (1f - t) * 0.95f);
+                    }
+                    if (introTempleLayer != null)
+                    {
+                        var templeImg = introTempleLayer.GetComponent<Image>();
+                        if (templeImg != null)
+                        {
+                            templeImg.color = new Color(1f, 1f, 1f, (1f - t) * 0.95f);
+                        }
                     }
                     if (introVignette != null)
                     {
@@ -452,7 +542,6 @@ namespace WhisperingWilds.UI
                             vigImage.color = new Color(0f, 0f, 0f, 0.6f * (1f - t));
                         }
                     }
-                    // Fade out background
                     if (introBackground != null)
                     {
                         var bgImage = introBackground.GetComponent<Image>();
@@ -463,7 +552,7 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 6: Complete intro and show menu
+                // Phase 7: Complete intro and show menu
                 if (elapsed >= menuFadeEnd)
                 {
                     CompleteIntro();
@@ -473,7 +562,6 @@ namespace WhisperingWilds.UI
                 yield return null;
             }
 
-            // If loop ended without completing (shouldn't happen normally)
             if (_isPlaying && !_skipped)
             {
                 CompleteIntro();
@@ -493,29 +581,30 @@ namespace WhisperingWilds.UI
                 _introCoroutine = null;
             }
 
-            // Instantly complete the intro
             CompleteIntro();
         }
 
         private void CompleteIntro()
         {
-            // Idempotent: safe to call multiple times.
             if (!_isPlaying && menuRoot != null && menuRoot.activeSelf)
             {
-                // Already completed and menu is visible — nothing to do.
                 return;
             }
 
             _isPlaying = false;
 
-            // STEP 61: Do NOT persist the old intro-played flag. The intro plays by default
-            // on every launch unless the player explicitly disables WW_PlayIntroOnStartup in
-            // settings. This ensures the intro appears on subsequent launches as intended.
+            // Stop intro audio
+            if (introAudioSource != null && introAudioSource.isPlaying)
+            {
+                introAudioSource.Stop();
+            }
 
-            // Hide intro elements
+            // Hide intro visual elements
             if (introBackground != null) introBackground.SetActive(false);
+            if (introTempleLayer != null) introTempleLayer.SetActive(false);
             if (introSkyGradient != null) introSkyGradient.SetActive(false);
             if (introTreeline != null) introTreeline.SetActive(false);
+            if (introMist != null) introMist.SetActive(false);
             if (introVignette != null) introVignette.SetActive(false);
             if (introTitleGroup != null) introTitleGroup.SetActive(false);
             if (introSkipText != null) introSkipText.gameObject.SetActive(false);
@@ -530,7 +619,7 @@ namespace WhisperingWilds.UI
             // Reset fog
             RenderSettings.fog = false;
 
-            // Show main menu
+            // Show main menu root
             if (menuRoot != null)
             {
                 menuRoot.SetActive(true);
@@ -544,29 +633,22 @@ namespace WhisperingWilds.UI
             return t * t * (3f - 2f * t);
         }
 
-        /// <summary>
-        /// Replay the cinematic intro (for testing or optional replay feature).
-        /// </summary>
         public void ReplayIntro()
         {
             if (_isPlaying) return;
 
-            // STEP 61: Ensure the intro preference is enabled so a subsequent launch
-            // will show the intro again.
             PlayerPrefs.SetInt("WW_PlayIntroOnStartup", 1);
             PlayerPrefs.Save();
 
-            // Reset state
             _skipped = false;
             _elapsedTime = 0f;
+            _bellPlayed = false;
 
-            // Hide main menu
             if (menuRoot != null)
             {
                 menuRoot.SetActive(false);
             }
 
-            // Setup and start intro
             SetupIntroVisuals();
             StartIntro();
         }
@@ -579,9 +661,12 @@ namespace WhisperingWilds.UI
                 _introCoroutine = null;
             }
             _isPlaying = false;
-
-            // Reset fog
             RenderSettings.fog = false;
+
+            if (introAudioSource != null && introAudioSource.isPlaying)
+            {
+                introAudioSource.Stop();
+            }
         }
     }
 }

@@ -204,6 +204,21 @@ namespace WhisperingWilds.Editor
                 introBgObj.GetComponent<Image>().color = new Color(0.01f, 0.02f, 0.03f, 0f);
                 introBgObj.SetActive(false);
 
+                // Intro Dravidian temple sanctum layer for dramatic sunrise reveal
+                var introTempleObj = new GameObject("IntroTempleLayer", typeof(RectTransform), typeof(Image));
+                introTempleObj.transform.SetParent(canvasObj.transform, false);
+                var introTempleRect = introTempleObj.GetComponent<RectTransform>();
+                introTempleRect.anchorMin = Vector2.zero;
+                introTempleRect.anchorMax = Vector2.one;
+                introTempleRect.offsetMin = Vector2.zero;
+                introTempleRect.offsetMax = Vector2.zero;
+                var introTempleImg = introTempleObj.GetComponent<Image>();
+                var templeSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/Intro_Temple_Dawn.png");
+                if (templeSprite != null) introTempleImg.sprite = templeSprite;
+                introTempleImg.color = new Color(1f, 1f, 1f, 0f);
+                introTempleImg.raycastTarget = false;
+                introTempleObj.SetActive(false);
+
                 // Dawn sky gradient overlay
                 var skyGradientObj = new GameObject("IntroSkyGradient", typeof(RectTransform), typeof(Image));
                 skyGradientObj.transform.SetParent(canvasObj.transform, false);
@@ -265,54 +280,63 @@ namespace WhisperingWilds.Editor
                 menuRootRect.offsetMin = Vector2.zero;
                 menuRootRect.offsetMax = Vector2.zero;
 
-                // App Logo above Game Title
+                // --- TOP-LEFT AREA: Branding, Title, and Tamil Subtitle ---
+                var brandHeaderObj = new GameObject("BrandHeader", typeof(RectTransform));
+                brandHeaderObj.transform.SetParent(menuRoot.transform, false);
+                var brandHeaderRect = brandHeaderObj.GetComponent<RectTransform>();
+                brandHeaderRect.anchorMin = new Vector2(0.06f, 0.84f);
+                brandHeaderRect.anchorMax = new Vector2(0.48f, 0.94f);
+                brandHeaderRect.offsetMin = Vector2.zero;
+                brandHeaderRect.offsetMax = Vector2.zero;
+
+                // App Logo
                 var logoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
                 if (logoSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
-                    logoObj.transform.SetParent(menuRoot.transform, false);
+                    logoObj.transform.SetParent(brandHeaderObj.transform, false);
                     var logoRect = logoObj.GetComponent<RectTransform>();
-                    logoRect.anchorMin = new Vector2(0.5f, 0.88f);
-                    logoRect.anchorMax = new Vector2(0.5f, 0.88f);
-                    logoRect.pivot = new Vector2(0.5f, 0.5f);
-                    logoRect.anchoredPosition = Vector2.zero;
-                    logoRect.sizeDelta = new Vector2(120f, 120f);
+                    logoRect.anchorMin = new Vector2(0f, 0.5f);
+                    logoRect.anchorMax = new Vector2(0f, 0.5f);
+                    logoRect.pivot = new Vector2(0f, 0.5f);
+                    logoRect.anchoredPosition = new Vector2(0f, 0f);
+                    logoRect.sizeDelta = new Vector2(76f, 76f);
                     var logoImg = logoObj.GetComponent<Image>();
                     logoImg.sprite = logoSprite;
                     logoImg.preserveAspect = true;
                     logoImg.raycastTarget = false;
                 }
 
-                // Game Title & Tamil Subtitle â€” STEP 71: Centered in upper half of screen
-                var titleObj = CreateText("GameTitle", menuRoot.transform, new Vector2(0f, 0.72f), new Vector2(1f, 0.72f), Vector2.zero, new Vector2(1400, 100), font, 56, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f));
+                // Game Title & Tamil Subtitle
+                var titleObj = CreateText("GameTitle", brandHeaderObj.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, 16f), new Vector2(650f, 44f), font, 36, TextAnchor.MiddleLeft, new Color(1f, 0.85f, 0.35f));
                 var titleText = titleObj.GetComponent<Text>();
                 titleText.text = "THE WHISPERING WILDS";
-                titleText.lineSpacing = 1.2f;
+                titleText.lineSpacing = 1.1f;
                 titleText.supportRichText = false;
 
                 // Subtitle
-                var subtitleObj = CreateText("GameSubtitle", menuRoot.transform, new Vector2(0f, 0.62f), new Vector2(1f, 0.62f), Vector2.zero, new Vector2(1000, 40), font, 22, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f));
+                var subtitleObj = CreateText("GameSubtitle", brandHeaderObj.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, -18f), new Vector2(650f, 30f), font, 18, TextAnchor.MiddleLeft, new Color(0.70f, 0.88f, 0.78f));
                 var subtitleText = subtitleObj.GetComponent<Text>();
-                subtitleText.text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
+                subtitleText.text = "காட்டு வழி • தடம்";
 
-                // Menu Buttons Container â€” STEP 71: Centered vertically and horizontally
+                // --- LEFT-CENTER: Clean, elegant vertical navigation menu ---
                 var menuContainer = new GameObject("MenuContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
                 menuContainer.transform.SetParent(menuRoot.transform, false);
                 var menuRect = menuContainer.GetComponent<RectTransform>();
-                menuRect.anchorMin = new Vector2(0.5f, 0.5f);
-                menuRect.anchorMax = new Vector2(0.5f, 0.5f);
-                menuRect.pivot = new Vector2(0.5f, 0.5f);
+                menuRect.anchorMin = new Vector2(0.06f, 0.5f);
+                menuRect.anchorMax = new Vector2(0.06f, 0.5f);
+                menuRect.pivot = new Vector2(0f, 0.5f);
                 menuRect.anchoredPosition = new Vector2(0f, -40f);
                 menuRect.sizeDelta = new Vector2(380, 440);
 
                 var layout = menuContainer.GetComponent<VerticalLayoutGroup>();
-                layout.spacing = 12f;
+                layout.spacing = 14f;
                 layout.childControlWidth = true;
                 layout.childControlHeight = true;
                 layout.childForceExpandWidth = true;
                 layout.childForceExpandHeight = true;
-                layout.childAlignment = TextAnchor.MiddleCenter;
-                layout.padding = new RectOffset(10, 10, 10, 10);
+                layout.childAlignment = TextAnchor.MiddleLeft;
+                layout.padding = new RectOffset(6, 6, 6, 6);
 
                 // Top-Right Account / Sign In Control
                 var accountControlObj = new GameObject("AccountControl", typeof(RectTransform));
@@ -340,12 +364,12 @@ namespace WhisperingWilds.Editor
                 // 4. SETTINGS — audio, display, quality, controls, accessibility.
                 // 5. DEVELOPER CREDITS — solo developer Mohanraj.
                 // 6. QUIT GAME — exit with confirmation dialog.
-                var btnBegin = CreateButton("Btn_BeginGame", menuContainer.transform, font, "BEGIN GAME", new Color(0.12f, 0.42f, 0.32f, 1f));
-                var btnPrevious = CreateButton("Btn_PreviousJourney", menuContainer.transform, font, "PREVIOUS JOURNEY", new Color(0.15f, 0.30f, 0.42f, 1f));
-                var btnBackups = CreateButton("Btn_BackupsSaves", menuContainer.transform, font, "BACKUPS & SAVES", new Color(0.18f, 0.28f, 0.38f, 1f));
-                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "SETTINGS", new Color(0.20f, 0.30f, 0.38f, 1f));
-                var btnCredits = CreateButton("Btn_Credits", menuContainer.transform, font, "DEVELOPER CREDITS", new Color(0.24f, 0.32f, 0.28f, 1f));
-                var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "QUIT GAME", new Color(0.45f, 0.18f, 0.18f, 1f));
+                var btnBegin = CreateButton("Btn_BeginGame", menuContainer.transform, font, "🧭  BEGIN GAME", new Color(0.12f, 0.42f, 0.32f, 1f));
+                var btnPrevious = CreateButton("Btn_PreviousJourney", menuContainer.transform, font, "📜  PREVIOUS JOURNEY", new Color(0.15f, 0.30f, 0.42f, 1f));
+                var btnBackups = CreateButton("Btn_BackupsSaves", menuContainer.transform, font, "💾  BACKUPS & SAVES", new Color(0.18f, 0.28f, 0.38f, 1f));
+                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "⚙  SETTINGS", new Color(0.20f, 0.30f, 0.38f, 1f));
+                var btnCredits = CreateButton("Btn_Credits", menuContainer.transform, font, "🎖  DEVELOPER CREDITS", new Color(0.24f, 0.32f, 0.28f, 1f));
+                var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "🚪  QUIT GAME", new Color(0.45f, 0.18f, 0.18f, 1f));
 
                 // Add MenuButtonAnimator to all 6 main menu buttons
                 foreach (var btnGo in new[] { btnBegin, btnPrevious, btnBackups, btnSettings, btnCredits, btnQuit })
@@ -353,7 +377,10 @@ namespace WhisperingWilds.Editor
                     btnGo.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
                 }
 
-                var ruleObj = CreateText("RuleNoticeText", menuRoot.transform, new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(1000, 60), font, 16, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f));
+                var footerObj = CreateText("FooterText", menuRoot.transform, new Vector2(0f, 0.04f), new Vector2(1f, 0.04f), Vector2.zero, new Vector2(1400f, 30f), font, 14, TextAnchor.MiddleCenter, new Color(0.78f, 0.82f, 0.88f, 0.75f));
+                footerObj.GetComponent<Text>().text = "Explore • Discover • Survive   |   Version v1.0.2   |   A Solo Adventure by Mohanraj";
+
+                var ruleObj = CreateText("RuleNoticeText", menuRoot.transform, new Vector2(0.5f, 0.08f), new Vector2(0.5f, 0.08f), Vector2.zero, new Vector2(1000, 30), font, 14, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f, 0f));
 
                 // Modal panels under menuRoot
                 var gameModeSelectionObj = BuildGameModeSelectionPanel(menuRoot.transform, font);
@@ -432,6 +459,21 @@ namespace WhisperingWilds.Editor
                 serializedIntro.FindProperty("introCamera").objectReferenceValue = camObj.GetComponent<Camera>();
                 serializedIntro.FindProperty("introSkyGradient").objectReferenceValue = skyGradientObj;
                 serializedIntro.FindProperty("introTreeline").objectReferenceValue = treelineObj;
+                if (serializedIntro.FindProperty("introTempleLayer") != null)
+                    serializedIntro.FindProperty("introTempleLayer").objectReferenceValue = introTempleObj;
+
+                var bellClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Ambience/temple_bell.wav");
+                if (bellClip != null && serializedIntro.FindProperty("templeBellClip") != null)
+                    serializedIntro.FindProperty("templeBellClip").objectReferenceValue = bellClip;
+
+                var ambClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Ambience/temple_ambience.wav");
+                if (ambClip != null && serializedIntro.FindProperty("templeAmbienceClip") != null)
+                    serializedIntro.FindProperty("templeAmbienceClip").objectReferenceValue = ambClip;
+
+                var birdClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Ambience/birds.wav");
+                if (birdClip != null && serializedIntro.FindProperty("birdsClip") != null)
+                    serializedIntro.FindProperty("birdsClip").objectReferenceValue = birdClip;
+
                 serializedIntro.ApplyModifiedProperties();
 
                 // STEP 70: Wire MainMenuAnimator references
@@ -947,6 +989,8 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("loginUI").objectReferenceValue = loginUI;
                 serializedTitle.FindProperty("confirmationDialog").objectReferenceValue = confirmDialog;
                 serializedTitle.FindProperty("cinematicIntro").objectReferenceValue = introCtrl;
+                if (serializedTitle.FindProperty("menuContainer") != null)
+                    serializedTitle.FindProperty("menuContainer").objectReferenceValue = menuContainer;
                 serializedTitle.FindProperty("mainMenuAnimator").objectReferenceValue = menuAnimator;
                 var ambientClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Ambience/temple_ambience.wav");
                 if (ambientClip != null)
@@ -988,21 +1032,41 @@ namespace WhisperingWilds.Editor
 
         private static GameObject CreateButton(string name, Transform parent, Font font, string label, Color btnColor)
         {
-            var btnObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            var btnObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(Outline));
             btnObj.transform.SetParent(parent, false);
             var rect = btnObj.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0, 48); // Width controlled by VerticalLayoutGroup
+            rect.sizeDelta = new Vector2(0, 52); // Comfortable AAA height
 
             var img = btnObj.GetComponent<Image>();
-            img.color = btnColor;
+            // Dark smoked glass tint
+            img.color = new Color(Mathf.Clamp01(btnColor.r * 0.30f + 0.07f), Mathf.Clamp01(btnColor.g * 0.30f + 0.09f), Mathf.Clamp01(btnColor.b * 0.30f + 0.12f), 0.92f);
+
+            var outline = btnObj.GetComponent<Outline>();
+            outline.effectColor = new Color(0.82f, 0.68f, 0.32f, 0.45f); // Antique gold border
+            outline.effectDistance = new Vector2(1.5f, -1.5f);
 
             var btn = btnObj.GetComponent<Button>();
             var colors = btn.colors;
-            colors.highlightedColor = btnColor * 1.25f;
-            colors.pressedColor = btnColor * 0.8f;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.2f, 1.15f, 1.05f, 1f);
+            colors.pressedColor = new Color(0.85f, 0.85f, 0.85f, 1f);
             btn.colors = colors;
 
-            var textObj = CreateText("Label", btnObj.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, font, 18, TextAnchor.MiddleCenter, Color.white);
+            // Left Gold Accent Indicator
+            var leftAccent = new GameObject("LeftAccent", typeof(RectTransform), typeof(Image));
+            leftAccent.transform.SetParent(btnObj.transform, false);
+            var laRect = leftAccent.GetComponent<RectTransform>();
+            laRect.anchorMin = new Vector2(0f, 0.15f);
+            laRect.anchorMax = new Vector2(0f, 0.85f);
+            laRect.pivot = new Vector2(0f, 0.5f);
+            laRect.anchoredPosition = new Vector2(4f, 0f);
+            laRect.sizeDelta = new Vector2(4f, 0f);
+            var laImg = leftAccent.GetComponent<Image>();
+            laImg.color = new Color(1.0f, 0.88f, 0.42f, 0.95f);
+            laImg.raycastTarget = false;
+            leftAccent.SetActive(false);
+
+            var textObj = CreateText("Label", btnObj.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, font, 18, TextAnchor.MiddleCenter, new Color(0.94f, 0.92f, 0.84f, 1f));
             textObj.GetComponent<Text>().text = label;
 
             return btnObj;
@@ -1010,7 +1074,7 @@ namespace WhisperingWilds.Editor
 
         private static GameObject CreateButton(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 sizeDelta, Font font, string label, Color btnColor)
         {
-            var btnObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button));
+            var btnObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(Outline));
             btnObj.transform.SetParent(parent, false);
             var rect = btnObj.GetComponent<RectTransform>();
             rect.anchorMin = anchorMin;
@@ -1019,15 +1083,33 @@ namespace WhisperingWilds.Editor
             rect.sizeDelta = sizeDelta;
 
             var img = btnObj.GetComponent<Image>();
-            img.color = btnColor;
+            img.color = new Color(Mathf.Clamp01(btnColor.r * 0.30f + 0.07f), Mathf.Clamp01(btnColor.g * 0.30f + 0.09f), Mathf.Clamp01(btnColor.b * 0.30f + 0.12f), 0.92f);
+
+            var outline = btnObj.GetComponent<Outline>();
+            outline.effectColor = new Color(0.82f, 0.68f, 0.32f, 0.45f);
+            outline.effectDistance = new Vector2(1.5f, -1.5f);
 
             var btn = btnObj.GetComponent<Button>();
             var colors = btn.colors;
-            colors.highlightedColor = btnColor * 1.25f;
-            colors.pressedColor = btnColor * 0.8f;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1.2f, 1.15f, 1.05f, 1f);
+            colors.pressedColor = new Color(0.85f, 0.85f, 0.85f, 1f);
             btn.colors = colors;
 
-            var textObj = CreateText("Label", btnObj.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, font, 18, TextAnchor.MiddleCenter, Color.white);
+            var leftAccent = new GameObject("LeftAccent", typeof(RectTransform), typeof(Image));
+            leftAccent.transform.SetParent(btnObj.transform, false);
+            var laRect = leftAccent.GetComponent<RectTransform>();
+            laRect.anchorMin = new Vector2(0f, 0.15f);
+            laRect.anchorMax = new Vector2(0f, 0.85f);
+            laRect.pivot = new Vector2(0f, 0.5f);
+            laRect.anchoredPosition = new Vector2(4f, 0f);
+            laRect.sizeDelta = new Vector2(4f, 0f);
+            var laImg = leftAccent.GetComponent<Image>();
+            laImg.color = new Color(1.0f, 0.88f, 0.42f, 0.95f);
+            laImg.raycastTarget = false;
+            leftAccent.SetActive(false);
+
+            var textObj = CreateText("Label", btnObj.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, font, 18, TextAnchor.MiddleCenter, new Color(0.94f, 0.92f, 0.84f, 1f));
             textObj.GetComponent<Text>().text = label;
 
             return btnObj;
@@ -1104,7 +1186,7 @@ namespace WhisperingWilds.Editor
             rect.offsetMax = Vector2.zero;
 
             var bg = root.GetComponent<Image>();
-            bg.color = new Color(0.04f, 0.06f, 0.08f, 0.97f);
+            bg.color = new Color(0.04f, 0.06f, 0.09f, 0.72f);
 
             var ui = root.AddComponent<SettingsMenuUI>();
 
@@ -1656,7 +1738,7 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             rect.offsetMax = Vector2.zero;
 
             var bg = root.GetComponent<Image>();
-            bg.color = new Color(0.04f, 0.06f, 0.08f, 0.97f);
+            bg.color = new Color(0.04f, 0.06f, 0.09f, 0.72f);
 
             var ui = root.AddComponent<SavedGamesUI>();
 
@@ -1738,7 +1820,7 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             rect.offsetMax = Vector2.zero;
 
             var bg = root.GetComponent<Image>();
-            bg.color = new Color(0.03f, 0.05f, 0.07f, 0.97f);
+            bg.color = new Color(0.04f, 0.06f, 0.09f, 0.72f);
 
             var ui = root.AddComponent<CreditsUI>();
 
@@ -1827,7 +1909,7 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             rect.offsetMax = Vector2.zero;
 
             var bg = root.GetComponent<Image>();
-            bg.color = new Color(0.03f, 0.05f, 0.07f, 0.97f);
+            bg.color = new Color(0.04f, 0.06f, 0.09f, 0.72f);
 
             var ui = root.AddComponent<GameModeSelectionUI>();
 
@@ -1951,7 +2033,7 @@ if (managersObj.GetComponent<SettingsMenuController>() == null) managersObj.AddC
             rect.offsetMax = Vector2.zero;
 
             var bg = root.GetComponent<Image>();
-            bg.color = new Color(0.03f, 0.05f, 0.07f, 0.97f);
+            bg.color = new Color(0.04f, 0.06f, 0.09f, 0.72f);
 
             var ui = root.AddComponent<SaveManagementUI>();
 

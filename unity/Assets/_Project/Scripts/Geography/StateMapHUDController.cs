@@ -285,7 +285,11 @@ namespace WhisperingWilds.Geography
             // 3. Hover Tooltip
             if (!string.IsNullOrEmpty(hoveredRegionName))
             {
-                Vector3 mouse = Input.mousePosition;
+                #if ENABLE_INPUT_SYSTEM
+            Vector3 mouse = UnityEngine.InputSystem.Mouse.current != null ? (Vector3)UnityEngine.InputSystem.Mouse.current.position.ReadValue() : Vector3.zero;
+#else
+            Vector3 mouse = Input.mousePosition;
+#endif
                 GUI.Box(new Rect(mouse.x + 15, screenH - mouse.y - 25, 240, 28), hoveredRegionName, _panelStyle);
             }
 

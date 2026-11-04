@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.Localization;
@@ -47,7 +48,7 @@ namespace WhisperingWilds.UI
 
         private void Update()
         {
-            if (IsVisible() && Input.GetKeyDown(KeyCode.Escape))
+            if (IsVisible() && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 SetVisible(false);
             }

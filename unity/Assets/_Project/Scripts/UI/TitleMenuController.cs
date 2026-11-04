@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using WhisperingWilds.Core;
 using WhisperingWilds.Campaign;
 using WhisperingWilds.Localization;
@@ -70,6 +71,9 @@ namespace WhisperingWilds.UI
         [Header("Animation")]
         [SerializeField] private MainMenuAnimator mainMenuAnimator;
 
+        [Header("Menu Navigation Container")]
+        [SerializeField] private GameObject menuContainer;
+
         private CampaignFlow campaignFlow;
 
         private void Awake()
@@ -103,6 +107,18 @@ namespace WhisperingWilds.UI
             ApplyLocalizedLabels();
             UpdateAccountBadge();
 
+            bool anyModalOpen = (gameModeSelectionUI != null && gameModeSelectionUI.IsVisible())
+                || (savedGamesUI != null && savedGamesUI.gameObject.activeSelf)
+                || (saveManagementUI != null && saveManagementUI.IsVisible())
+                || (settingsMenu != null && settingsMenu.gameObject.activeSelf)
+                || (creditsUI != null && creditsUI.gameObject.activeSelf)
+                || (loginUI != null && loginUI.gameObject.activeSelf)
+                || (confirmationDialog != null && confirmationDialog.IsVisible);
+
+            if (menuContainer != null && menuContainer.activeSelf == anyModalOpen)
+            {
+                menuContainer.SetActive(!anyModalOpen);
+            }
             // Check if continue/previous journey should be enabled
             UpdateJourneyButtonsInteractable();
 
@@ -129,7 +145,8 @@ namespace WhisperingWilds.UI
             UpdateAccountBadge();
 
             // ESC closes any open panel safely
-            if (Input.GetKeyDown(KeyCode.Escape))
+            var kb = Keyboard.current;
+            if (kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 HandleEscapeKey();
             }
@@ -492,6 +509,11 @@ namespace WhisperingWilds.UI
             if (loginUI == null) loginUI = FindAnyObjectByType<LoginUI>();
             if (confirmationDialog == null) confirmationDialog = FindAnyObjectByType<ConfirmationDialog>();
             if (mainMenuAnimator == null) mainMenuAnimator = FindAnyObjectByType<MainMenuAnimator>();
+            if (menuContainer == null)
+            {
+                var mc = transform.Find("MenuRoot/MenuContainer");
+                if (mc != null) menuContainer = mc.gameObject;
+            }
         }
 
         public void ApplyLocalizedLabels()
