@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,7 +44,7 @@ namespace WhisperingWilds.Localization
         private static readonly List<LocalizationEntry> Entries = new List<LocalizationEntry>
         {
             // ---- Title menu -------------------------------------------------
-            new LocalizationEntry("menu.login",           "Login",                "உள்ந்நுழைவு"),
+            new LocalizationEntry("menu.login",           "Login",                "உள்நுழைவு"),
             new LocalizationEntry("menu.new_game",        "New Game",            "புதிய விளையாட்டு"),
             new LocalizationEntry("menu.continue",        "Continue",             "தொடரவும்"),
             new LocalizationEntry("menu.settings",        "Settings",             "அமைப்புகள்"),
@@ -53,8 +53,8 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("menu.apply",           "Apply",                "பயன்படுத்து"),
             new LocalizationEntry("menu.title",           "THE WHISPERING WILDS", "காட்டு வழி • தடம்"),
             new LocalizationEntry("menu.subtitle",        "A Living Exploration & Cultural Investigation of Tamil Nadu", "தமிழ்நாட்டின் வாழ்வியல் ஆய்வும் கலாச்சார கண்டறியும் பயணம்"),
-            new LocalizationEntry("menu.new_game_confirm", "Starting a New Game will erase your current save and progress. Continue?",
-                                                        "புதிய விளையாட்டு தொடங்குதலுந் உம்க் தற்போதிக் சேவ் மற்றும் முன்னேற்வை நீக்கிடும். தொடரவா?"),
+            new LocalizationEntry("menu.new_game_confirm", "Start a new game? Unsaved progress will be lost.",
+                                                        "புதிய ஆட்டத்தைத் தொடங்கவா? சேமிக்கப்படாத முன்னேற்றம் இழக்கப்படும்."),
             new LocalizationEntry("menu.coop",            "Co-op Expedition",     "கூட்டுப் பயணம்"),
             new LocalizationEntry("menu.saved_games",     "Load Game",            "விளையாட்டை ஏற்று"),
             new LocalizationEntry("menu.load_game",       "Load Game",            "விளையாட்டை ஏற்று"),
@@ -116,7 +116,7 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("objective.quest_complete", "Quest Complete!",        "முழுமையான தேடல் முடிந்தது!"),
             new LocalizationEntry("objective.stage_label",    "Stage {0}: {1}",         "நிலை {0}: {1}"),
             new LocalizationEntry("region.travel_prompt",     "Travel to {0}",          "{0} நோக்கிப் பயணம்"),
-            new LocalizationEntry("menu.new_game_confirm",    "Start a new game? Unsaved progress will be lost.", "புதிய ஆட்டத்தைத் தொடங்கவா? சேமிக்கப்படாத முன்னேற்றம் இழக்கப்படும்."),
+
 
             // ---- Guided Introduction Tutorial ---------------------------------
             new LocalizationEntry("tutorial.title",          "EXPLORER GUIDE",          "ஆய்வாளர் வழிகாட்டி"),
@@ -291,7 +291,7 @@ new LocalizationEntry("talk.ammu", "Talk to Ammu", "அம்மு பேசு
 new LocalizationEntry("talk.balan", "Talk to Balan", "பாலன் பேசுவதற்கு"),
 new LocalizationEntry("talk.devi", "Talk to Devi", "தேவி பேசுவதற்கு"),
 new LocalizationEntry("talk.gopi", "Talk to Gopi", "கோபி பேசுவதற்கு"),
-new LocalizationEntry("talk.hari", "Talk to Hari", "ஙரி பேசுவதற்கு"),
+new LocalizationEntry("talk.hari", "Talk to Hari", "ஹரி பேசுவதற்கு"),
 new LocalizationEntry("talk.kannammal", "Talk to Kannammal", "கண்ணம்மாள் பேசுவதற்கு"),
 new LocalizationEntry("talk.radha", "Talk to Radha", "ராதா பேசுவதற்கு"),
 new LocalizationEntry("talk.ravi", "Talk to Ravi", "ரவி பேசுவதற்கு"),
@@ -365,7 +365,7 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("crafting.unavailable", "Crafting is unavailable in this region.", "இந்தப் பகுதியில் தயாரிப்பு இல்லை."),
 
             // ---- Region display names ----------------------------------------
-            new LocalizationEntry("region.chennai",      "Chennai George Town",  "சென்னை ஜார்ஜன் டவுன்"),
+            new LocalizationEntry("region.chennai",      "Chennai George Town",  "சென்னை ஜார்ஜ் டவுன்"),
             new LocalizationEntry("region.pichavaram",   "Pichavaram Wetlands", "பிச்சாவரம் ஈரநிலங்கள்"),
             new LocalizationEntry("region.thanjavur",    "Thanjavur Delta",      "தஞ்சாவூர் குடாநாங்கில்"),
             new LocalizationEntry("region.chettinad",    "Chettinad Mansion",    "செட்டிநாடு அரண்மனை"),
@@ -376,7 +376,7 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("place.coimbatore",         "Coimbatore",         "கோயம்புத்தூர்"),
             new LocalizationEntry("place.thanjavur",          "Thanjavur",          "தஞ்சாவூர்"),
             new LocalizationEntry("place.mamallapuram",       "Mamallapuram",       "மாமல்லபுரம்"),
-            new LocalizationEntry("place.mahabalipuram",      "Mahabalipuram",      "மகாலபுரம்"),
+            new LocalizationEntry("place.mahabalipuram",      "Mahabalipuram",      "மகாபலிபுரம்"),
             new LocalizationEntry("place.pichavaram",         "Pichavaram",         "பிச்சாவரம்"),
             new LocalizationEntry("place.chettinad",          "Chettinad",          "செட்டிநாடு"),
             new LocalizationEntry("place.nilgiris",           "Nilgiris",           "நீலகிரி"),
