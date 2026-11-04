@@ -187,7 +187,7 @@ async function testRoomJoin() {
             
             socket.on('joinedSuccess', (payload) => {
                 assert(/^[A-HJ-NP-Z2-9]{6}$/.test(payload.roomCode),
-                    `Server issued six-character code (${payload.roomCode})`);
+                    `Server issued six-digit numeric code (${payload.roomCode})`);
                 assert(payload.isHost === true, 'Creator is host');
                 socket.disconnect();
                 resolve();

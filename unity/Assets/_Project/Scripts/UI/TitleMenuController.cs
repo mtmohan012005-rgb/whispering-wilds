@@ -10,31 +10,55 @@ using WhisperingWilds.Audio;
 namespace WhisperingWilds.UI
 {
     /// <summary>
-    /// Title menu controller for The Whispering Wilds.
+    /// Title menu controller for The Whispering Wilds (காட்டு வழி • தடம்).
     ///
-    /// Manages the main menu with New Game, Continue, Settings, and Quit actions.
-    /// Integrates with CinematicIntroController for the opening sequence.
+    /// Professional Cinematic PC Game Interface:
+    /// 1. BEGIN GAME — opens Game Mode Selection (Solo vs Multiplayer)
+    /// 2. PREVIOUS JOURNEY — inspect and continue/load existing campaign
+    /// 3. BACKUPS & SAVES — local and cloud save management
+    /// 4. SETTINGS — audio, display, quality, controls, accessibility
+    /// 5. DEVELOPER CREDITS — solo developer Mohanraj
+    /// 6. QUIT GAME — confirmation dialog before exit
+    ///
+    /// Top-Right: ACCOUNT / SIGN IN badge showing signed-in status or Guest.
+    /// Does not force account login for solo offline gameplay.
     /// </summary>
+    [DisallowMultipleComponent]
     public class TitleMenuController : MonoBehaviour
     {
-        [Header("Menu Buttons")]
-        [SerializeField] private Button loginButton;
-        [SerializeField] private Button newGameButton;
-        [SerializeField] private Button coopButton;
-        [SerializeField] private Button continueButton;
+        public static TitleMenuController Instance { get; private set; }
+
+        [Header("Menu Buttons (Section 1 Structure)")]
+        [SerializeField] private Button beginGameButton;
+        [SerializeField] private Button previousJourneyButton;
+        [SerializeField] private Button backupsSavesButton;
         [SerializeField] private Button settingsButton;
-        [SerializeField] private Button savedGamesButton;
         [SerializeField] private Button creditsButton;
         [SerializeField] private Button quitButton;
 
+        [Header("Legacy Button Aliases (Backward Compatibility)")]
+        [SerializeField] private Button newGameButton;
+        [SerializeField] private Button continueButton;
+        [SerializeField] private Button coopButton;
+        [SerializeField] private Button savedGamesButton;
+        [SerializeField] private Button loginButton;
+
+        [Header("Top-Right Account Control")]
+        [SerializeField] private Button accountButton;
+        [SerializeField] private Text accountStatusText;
+
         [Header("Panels")]
-        [SerializeField] private SettingsMenuUI settingsMenu;
-        [SerializeField] private LoginUI loginUI;
+        [SerializeField] private GameModeSelectionUI gameModeSelectionUI;
         [SerializeField] private SavedGamesUI savedGamesUI;
+        [SerializeField] private SaveManagementUI saveManagementUI;
+        [SerializeField] private SettingsMenuUI settingsMenu;
         [SerializeField] private CreditsUI creditsUI;
+        [SerializeField] private LoginUI loginUI;
         [SerializeField] private ConfirmationDialog confirmationDialog;
 
-        [Header("Info Displays")]
+        [Header("Title Labels")]
+        [SerializeField] private Text titleText;
+        [SerializeField] private Text subtitleText;
         [SerializeField] private Text ruleNoticeText;
 
         [Header("Audio")]
@@ -43,10 +67,15 @@ namespace WhisperingWilds.UI
         [Header("Cinematic Intro")]
         [SerializeField] private CinematicIntroController cinematicIntro;
 
-        [Header("STEP 70 — Menu Animation")]
+        [Header("Animation")]
         [SerializeField] private MainMenuAnimator mainMenuAnimator;
 
         private CampaignFlow campaignFlow;
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         private void Start()
         {
@@ -60,43 +89,26 @@ namespace WhisperingWilds.UI
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
-            EnsureMenuArtwork();
-            EnsureCoopButton();
-            EnsureSavedGamesButton();
-            EnsureCreditsButton();
             EnsurePanels();
+            BindButtonListeners();
 
-            if (loginButton != null) loginButton.onClick.AddListener(OnLoginClicked);
-            if (newGameButton != null) newGameButton.onClick.AddListener(OnNewGameClicked);
-            if (coopButton != null) coopButton.onClick.AddListener(OnCoopClicked);
-            if (continueButton != null)
-            {
-                continueButton.onClick.AddListener(OnContinueClicked);
-                // Continue is offered only when the save actually parses. A corrupt file must not
-                // present a button that silently drops the player into a fresh campaign.
-                continueButton.interactable = CampaignFlow.CanContinue();
-            }
-            if (savedGamesButton != null)
-            {
-                savedGamesButton.onClick.AddListener(OnSavedGamesClicked);
-                savedGamesButton.interactable = CampaignFlow.CanContinue();
-            }
-            if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
-            if (creditsButton != null) creditsButton.onClick.AddListener(OnCreditsClicked);
-            if (quitButton != null) quitButton.onClick.AddListener(OnQuitClicked);
-
-            if (settingsMenu != null) settingsMenu.SetVisible(false);
-            if (loginUI != null) loginUI.SetVisible(false);
+            // Hide modal panels on start
+            if (gameModeSelectionUI != null) gameModeSelectionUI.SetVisible(false);
             if (savedGamesUI != null) savedGamesUI.SetVisible(false);
+            if (saveManagementUI != null) saveManagementUI.SetVisible(false);
+            if (settingsMenu != null) settingsMenu.SetVisible(false);
             if (creditsUI != null) creditsUI.SetVisible(false);
+            if (loginUI != null) loginUI.SetVisible(false);
 
             ApplyLocalizedLabels();
+            UpdateAccountBadge();
 
-            // STEP 70: Start the menu entrance animation after a short delay to ensure
-            // the scene is fully initialized and MainMenuAnimator is discoverable.
+            // Check if continue/previous journey should be enabled
+            UpdateJourneyButtonsInteractable();
+
             StartCoroutine(StartMenuAnimationDelayed());
 
-            // Play gentle title ambience
+            // Play gentle temple ambience
             if (AudioManager.Instance != null)
             {
                 if (menuAmbienceClip != null)
@@ -111,9 +123,114 @@ namespace WhisperingWilds.UI
             }
         }
 
+        private void Update()
+        {
+            // Update account badge when sign-in state changes
+            UpdateAccountBadge();
+
+            // ESC closes any open panel safely
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                HandleEscapeKey();
+            }
+        }
+
+        private void BindButtonListeners()
+        {
+            // 1. Begin Game
+            Button btnBegin = beginGameButton != null ? beginGameButton : newGameButton;
+            if (btnBegin != null)
+            {
+                btnBegin.onClick.RemoveAllListeners();
+                btnBegin.onClick.AddListener(OnBeginGameClicked);
+            }
+
+            // 2. Previous Journey
+            Button btnPrev = previousJourneyButton != null ? previousJourneyButton : continueButton;
+            if (btnPrev != null)
+            {
+                btnPrev.onClick.RemoveAllListeners();
+                btnPrev.onClick.AddListener(OnPreviousJourneyClicked);
+            }
+
+            // 3. Backups & Saves
+            Button btnBackups = backupsSavesButton != null ? backupsSavesButton : savedGamesButton;
+            if (btnBackups != null)
+            {
+                btnBackups.onClick.RemoveAllListeners();
+                btnBackups.onClick.AddListener(OnBackupsSavesClicked);
+            }
+
+            // 4. Settings
+            if (settingsButton != null)
+            {
+                settingsButton.onClick.RemoveAllListeners();
+                settingsButton.onClick.AddListener(OnSettingsClicked);
+            }
+
+            // 5. Credits
+            if (creditsButton != null)
+            {
+                creditsButton.onClick.RemoveAllListeners();
+                creditsButton.onClick.AddListener(OnCreditsClicked);
+            }
+
+            // 6. Quit Game
+            if (quitButton != null)
+            {
+                quitButton.onClick.RemoveAllListeners();
+                quitButton.onClick.AddListener(OnQuitClicked);
+            }
+
+            // Account / Sign In control
+            Button btnAcc = accountButton != null ? accountButton : loginButton;
+            if (btnAcc != null)
+            {
+                btnAcc.onClick.RemoveAllListeners();
+                btnAcc.onClick.AddListener(OnAccountClicked);
+            }
+        }
+
+        private void UpdateJourneyButtonsInteractable()
+        {
+            bool hasValidSave = CampaignFlow.CanContinue() || SaveSystem.HasValidSave();
+
+            Button btnPrev = previousJourneyButton != null ? previousJourneyButton : continueButton;
+            if (btnPrev != null)
+            {
+                btnPrev.interactable = hasValidSave;
+            }
+
+            if (continueButton != null && continueButton != btnPrev)
+            {
+                continueButton.interactable = hasValidSave;
+            }
+        }
+
+        public void UpdateAccountBadge()
+        {
+            if (accountStatusText == null) return;
+
+            LocalizedFontProvider.Apply(accountStatusText);
+            LocalizationManager mgr = LocalizationManager.Instance;
+
+            AuthService auth = AuthService.Instance;
+            if (auth != null && auth.IsSignedIn && auth.CurrentUser != null)
+            {
+                string name = !string.IsNullOrEmpty(auth.CurrentUser.displayName)
+                    ? auth.CurrentUser.displayName
+                    : (!string.IsNullOrEmpty(auth.CurrentUser.email) ? auth.CurrentUser.email : "Account");
+                accountStatusText.text = $"👤 {name}";
+            }
+            else
+            {
+                string guestLabel = mgr != null ? mgr.GetForDisplay("menu.account_guest") : "Guest (Offline)";
+                accountStatusText.text = $"👤 {guestLabel}";
+            }
+        }
+
         private System.Collections.IEnumerator StartMenuAnimationDelayed()
         {
-            // Wait a couple of frames to let all scene objects finish Awake/Start
             yield return null;
             yield return null;
 
@@ -122,313 +239,146 @@ namespace WhisperingWilds.UI
             {
                 animator = FindAnyObjectByType<MainMenuAnimator>();
             }
+
             if (animator != null)
             {
-                Debug.Log("<color=#FFD700><b>[TitleMenuController]</b></color> Starting MainMenuAnimator entrance animation");
                 animator.PlayEntrance();
+            }
+        }
+
+        // ====================================================================
+        // BUTTON HANDLERS
+        // ====================================================================
+
+        /// <summary>
+        /// 1. BEGIN GAME: Opens cinematic Game Mode Selection (Solo vs Multiplayer).
+        /// </summary>
+        public void OnBeginGameClicked()
+        {
+            CloseAllModals();
+            if (gameModeSelectionUI != null)
+            {
+                gameModeSelectionUI.SetVisible(true);
             }
             else
             {
-                Debug.LogWarning("<color=#FF6666><b>[TitleMenuController]</b></color> MainMenuAnimator not found after delay — menu entrance animation will not play");
+                // Fallback: check confirmation before starting new game
+                OnNewGameClicked();
             }
-        }
-
-        private void OnEnable()
-        {
-            if (LocalizationManager.Instance != null)
-            {
-                LocalizationManager.Instance.OnLanguageChanged += OnLanguageChanged;
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (LocalizationManager.Instance != null)
-            {
-                LocalizationManager.Instance.OnLanguageChanged -= OnLanguageChanged;
-            }
-
-            // STEP 70: Stop menu animations when leaving the title screen
-            MainMenuAnimator anim = mainMenuAnimator;
-            if (anim == null) anim = FindAnyObjectByType<MainMenuAnimator>();
-            if (anim != null)
-            {
-                anim.StopAnimations();
-            }
-
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.StopAmbient();
-            }
-        }
-
-        private void OnLanguageChanged(Language language)
-        {
-            ApplyLocalizedLabels();
         }
 
         /// <summary>
-        /// Rewrites every title-screen label from its localization key. Buttons are labelled
-        /// through their child Text, matching how <c>BuildBootScene</c> constructs them.
+        /// 2. PREVIOUS JOURNEY: Opens SavedGamesUI to inspect and continue save.
         /// </summary>
-        public void ApplyLocalizedLabels()
+        public void OnPreviousJourneyClicked()
         {
-            SetButtonLabel(loginButton, "menu.login");
-            SetButtonLabel(newGameButton, "menu.new_game");
-            SetButtonLabel(coopButton, "menu.coop");
-            SetButtonLabel(continueButton, "menu.continue");
-            SetButtonLabel(savedGamesButton, "menu.load_game");
-            SetButtonLabel(settingsButton, "menu.settings");
-            SetButtonLabel(creditsButton, "menu.credits");
-            SetButtonLabel(quitButton, "menu.exit_game");
-
-            LocalizationManager mgr = LocalizationManager.Instance;
-
-            // The title and subtitle are authored as localization rows so English mode shows
-            // only English and Tamil mode only Tamil, instead of the baked bilingual line.
-            SetLabel(LocalizedFontProvider.Font, "GameTitle", () => mgr != null ? mgr.GetForDisplay("menu.title") : "THE WHISPERING WILDS");
-            SetLabel(LocalizedFontProvider.Font, "GameSubtitle", () => mgr != null ? mgr.GetForDisplay("menu.subtitle") : string.Empty);
-
-            if (ruleNoticeText != null)
-            {
-                LocalizedFontProvider.Apply(ruleNoticeText);
-                if (mgr != null) ruleNoticeText.text = mgr.Get("hud.rule_notice");
-            }
-        }
-
-        private static void SetLabel(UnityEngine.Font font, string objectName, Func<string> resolve)
-        {
-            Text label = null;
-            var root = Camera.main != null ? Camera.main.transform.root : null;
-            if (root != null)
-            {
-                var t = FindDeepChild(root, objectName);
-                if (t != null) label = t.GetComponent<Text>();
-            }
-            if (label == null)
-            {
-                var go = GameObject.Find(objectName);
-                if (go != null) label = go.GetComponent<Text>();
-            }
-            if (label == null) return;
-            LocalizedFontProvider.Apply(label);
-            label.text = resolve();
-            label.resizeTextForBestFit = false;
-        }
-
-        private static Transform FindDeepChild(Transform root, string name)
-        {
-            for (int i = 0; i < root.childCount; i++)
-            {
-                Transform child = root.GetChild(i);
-                if (child.name == name) return child;
-                Transform nested = FindDeepChild(child, name);
-                if (nested != null) return nested;
-            }
-            return null;
-        }
-
-        private void SetButtonLabel(Button button, string key)
-        {
-            if (button == null) return;
-            Text label = button.GetComponentInChildren<Text>(true);
-            if (label == null) return;
-
-            LocalizedFontProvider.Apply(label);
-            LocalizationManager mgr = LocalizationManager.Instance;
-
-            // Never leak the internal "missing." identifier or the raw key to the player.
-            label.text = mgr != null ? mgr.GetForDisplay(key) : string.Empty;
-        }
-
-        
-        /// <summary>
-        /// Ensures the title screen displays the high-fidelity background image showing
-        /// the main characters and iconic Tamil Nadu landscapes (Mamallapuram Shore)
-        /// and positions the AppLogo sprite above the title text.
-        /// </summary>
-        public void EnsureMenuArtwork()
-        {
-            var menuBg = GameObject.Find("MenuBackground");
-            if (menuBg != null)
-            {
-                var bgImage = menuBg.GetComponent<Image>();
-                if (bgImage != null)
-                {
-                    var bgSprite = Resources.Load<Sprite>("UI/MainMenuBackground");
-                    if (bgSprite != null)
-                    {
-                        bgImage.sprite = bgSprite;
-                        bgImage.color = Color.white;
-                    }
-                }
-            }
-
-            var rootTransform = transform;
-            var menuRoot = rootTransform.Find("MenuRoot");
-            if (menuRoot != null && menuRoot.Find("AppLogo") == null)
-            {
-                var logoSprite = Resources.Load<Sprite>("UI/AppLogo");
-                if (logoSprite != null)
-                {
-                    var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
-                    logoObj.transform.SetParent(menuRoot, false);
-                    var logoRect = logoObj.GetComponent<RectTransform>();
-                    logoRect.anchorMin = new Vector2(0.5f, 0.88f);
-                    logoRect.anchorMax = new Vector2(0.5f, 0.88f);
-                    logoRect.pivot = new Vector2(0.5f, 0.5f);
-                    logoRect.anchoredPosition = Vector2.zero;
-                    logoRect.sizeDelta = new Vector2(120f, 120f);
-
-                    var logoImg = logoObj.GetComponent<Image>();
-                    logoImg.sprite = logoSprite;
-                    logoImg.preserveAspect = true;
-                    logoImg.raycastTarget = false;
-                    logoObj.transform.SetSiblingIndex(0);
-                }
-            }
-        }
-
-        
-        private void EnsureSavedGamesButton()
-        {
-            if (savedGamesButton != null || continueButton == null) return;
-
-            savedGamesButton = Instantiate(continueButton, continueButton.transform.parent, false);
-            savedGamesButton.name = "Btn_SavedGames";
-            savedGamesButton.onClick.RemoveAllListeners();
-            savedGamesButton.onClick.AddListener(OnSavedGamesClicked);
-            savedGamesButton.interactable = CampaignFlow.CanContinue();
-            savedGamesButton.transform.SetSiblingIndex(continueButton.transform.GetSiblingIndex() + 1);
-
-            RectTransform container = savedGamesButton.transform.parent as RectTransform;
-            if (container != null)
-            {
-                container.sizeDelta = new Vector2(container.sizeDelta.x, container.sizeDelta.y + 52f);
-            }
-        }
-
-        private void EnsureCreditsButton()
-        {
-            if (creditsButton != null || settingsButton == null) return;
-
-            creditsButton = Instantiate(settingsButton, settingsButton.transform.parent, false);
-            creditsButton.name = "Btn_Credits";
-            creditsButton.onClick.RemoveAllListeners();
-            creditsButton.onClick.AddListener(OnCreditsClicked);
-            creditsButton.transform.SetSiblingIndex(settingsButton.transform.GetSiblingIndex() + 1);
-
-            RectTransform container = creditsButton.transform.parent as RectTransform;
-            if (container != null)
-            {
-                container.sizeDelta = new Vector2(container.sizeDelta.x, container.sizeDelta.y + 52f);
-            }
-        }
-
-        private void EnsurePanels()
-        {
-            if (savedGamesUI == null)
-            {
-                savedGamesUI = FindAnyObjectByType<SavedGamesUI>();
-            }
-            if (creditsUI == null)
-            {
-                creditsUI = FindAnyObjectByType<CreditsUI>();
-            }
-        }
-
-        public void OnSavedGamesClicked()
-        {
+            CloseAllModals();
             if (savedGamesUI != null)
             {
                 savedGamesUI.SetVisible(true);
-                return;
-            }
-            var sg = FindAnyObjectByType<SavedGamesUI>();
-            if (sg != null)
-            {
-                sg.SetVisible(true);
             }
             else
             {
-                Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> SavedGamesUI is not assigned.");
+                OnContinueClicked();
             }
         }
 
+        /// <summary>
+        /// 3. BACKUPS & SAVES: Opens local and cloud save management screen.
+        /// </summary>
+        public void OnBackupsSavesClicked()
+        {
+            CloseAllModals();
+            if (saveManagementUI != null)
+            {
+                saveManagementUI.SetVisible(true);
+            }
+            else if (savedGamesUI != null)
+            {
+                savedGamesUI.SetVisible(true);
+            }
+        }
+
+        /// <summary>
+        /// 4. SETTINGS: Opens settings screen.
+        /// </summary>
+        public void OnSettingsClicked()
+        {
+            CloseAllModals();
+            if (settingsMenu != null)
+            {
+                settingsMenu.SetVisible(true);
+            }
+        }
+
+        /// <summary>
+        /// 5. DEVELOPER CREDITS: Opens credits screen.
+        /// </summary>
         public void OnCreditsClicked()
         {
+            CloseAllModals();
             if (creditsUI != null)
             {
                 creditsUI.SetVisible(true);
-                return;
             }
-            var cr = FindAnyObjectByType<CreditsUI>();
-            if (cr != null)
+        }
+
+        /// <summary>
+        /// 6. QUIT GAME: Shows quit confirmation dialog.
+        /// </summary>
+        public void OnQuitClicked()
+        {
+            ConfirmationDialog dialog = confirmationDialog != null ? confirmationDialog : ConfirmationDialog.Instance;
+            if (dialog != null)
             {
-                cr.SetVisible(true);
+                dialog.Show("dialog.quit_confirm", ExecuteQuit, null);
             }
             else
             {
-                Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> CreditsUI is not assigned.");
+                ExecuteQuit();
             }
         }
 
-        private void EnsureCoopButton()
+        private void ExecuteQuit()
         {
-            if (coopButton != null || newGameButton == null) return;
-
-            coopButton = Instantiate(newGameButton, newGameButton.transform.parent, false);
-            coopButton.name = "Button_Coop";
-            coopButton.onClick.RemoveAllListeners();
-            coopButton.onClick.AddListener(OnCoopClicked);
-            coopButton.transform.SetSiblingIndex(newGameButton.transform.GetSiblingIndex() + 1);
-
-            RectTransform container = coopButton.transform.parent as RectTransform;
-            if (container != null)
-            {
-                container.sizeDelta = new Vector2(container.sizeDelta.x, container.sizeDelta.y + 52f);
-            }
+            Debug.Log("<color=#FFAA00><b>[TitleMenuController]</b></color> Quitting game...");
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
 
-        public void OnCoopClicked()
+        /// <summary>
+        /// TOP-RIGHT ACCOUNT: Opens login / account screen.
+        /// </summary>
+        public void OnAccountClicked()
         {
-            CoopLobbyUI.Show();
-        }
-
-        public void OnLoginClicked()
-        {
+            CloseAllModals();
             if (loginUI != null)
             {
                 loginUI.SetVisible(true);
-                return;
             }
-            Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> LoginUI is not assigned on the title screen.");
         }
 
+        // Legacy Aliases
         public void OnNewGameClicked()
         {
-            // If a valid save exists, ask the player to confirm before overwriting it.
             if (SaveSystem.HasValidSave())
             {
-                ConfirmationDialog dialog = confirmationDialog != null
-                    ? confirmationDialog
-                    : ConfirmationDialog.Instance;
-
+                ConfirmationDialog dialog = confirmationDialog != null ? confirmationDialog : ConfirmationDialog.Instance;
                 if (dialog != null)
                 {
-                    dialog.Show("menu.new_game_confirm", () => ExecuteNewGame(), null);
+                    dialog.Show("menu.new_game_confirm", ExecuteNewGame, null);
                     return;
                 }
             }
-
-            // No dialog available or no save — proceed directly.
             ExecuteNewGame();
         }
 
         private void ExecuteNewGame()
         {
             RealtimeManager.Instance?.EnterSoloMode();
-            Debug.Log("<color=#00FF88><b>[Whispering Wilds]</b></color> Starting New Game -> Loading Chennai George Town...");
+            Debug.Log("<color=#00FF88><b>[TitleMenuController]</b></color> Starting New Game -> Chennai George Town...");
 
             if (campaignFlow != null)
             {
@@ -436,7 +386,6 @@ namespace WhisperingWilds.UI
                 return;
             }
 
-            // Fallback when the flow component is absent from the scene.
             CampaignFlow.ResetCampaignForNewGame();
             SaveSystem.DeleteSave();
             SaveManager.PendingSaveToRestore = null;
@@ -449,8 +398,6 @@ namespace WhisperingWilds.UI
             RealtimeManager.Instance?.EnterSoloMode();
             if (campaignFlow != null)
             {
-                // ContinueGame returns false when the save is missing or corrupt; the player stays
-                // on the menu with an explanation instead of losing the run.
                 campaignFlow.ContinueGame();
                 return;
             }
@@ -466,26 +413,131 @@ namespace WhisperingWilds.UI
             CampaignFlow.RequestCampaignEntry(save.currentRegionId);
         }
 
-        public void OnSettingsClicked()
+        public void OnCoopClicked()
         {
-            // Previously this only re-applied the stored settings and logged; there was no
-            // screen to change them from. Now it opens the real settings panel.
-            if (settingsMenu != null)
+            CloseAllModals();
+            CoopLobbyUI.Show();
+        }
+
+        public void OnLoginClicked()
+        {
+            OnAccountClicked();
+        }
+
+        public void OnSavedGamesClicked()
+        {
+            OnPreviousJourneyClicked();
+        }
+
+        private void HandleEscapeKey()
+        {
+            if (gameModeSelectionUI != null && gameModeSelectionUI.IsVisible())
             {
-                settingsMenu.SetVisible(true);
+                gameModeSelectionUI.SetVisible(false);
+                return;
+            }
+            if (saveManagementUI != null && saveManagementUI.IsVisible())
+            {
+                saveManagementUI.SetVisible(false);
+                return;
+            }
+            if (savedGamesUI != null && savedGamesUI.gameObject.activeSelf)
+            {
+                savedGamesUI.SetVisible(false);
+                return;
+            }
+            if (settingsMenu != null && settingsMenu.gameObject.activeSelf)
+            {
+                settingsMenu.SetVisible(false);
+                return;
+            }
+            if (creditsUI != null && creditsUI.gameObject.activeSelf)
+            {
+                creditsUI.SetVisible(false);
+                return;
+            }
+            if (loginUI != null && loginUI.gameObject.activeSelf)
+            {
+                loginUI.SetVisible(false);
+                return;
+            }
+            if (confirmationDialog != null && confirmationDialog.IsVisible)
+            {
+                confirmationDialog.Dismiss();
                 return;
             }
 
-            Debug.LogWarning("<color=#FFCC00><b>[Whispering Wilds]</b></color> SettingsMenuUI is not assigned on the title screen.");
+            // If no modal is open, pressing ESC on main menu prompts quit confirmation
+            OnQuitClicked();
         }
 
-        public void OnQuitClicked()
+        public void CloseAllModals()
         {
-            Debug.Log("<color=#FFAA00><b>[Whispering Wilds]</b></color> Quitting game...");
-            Application.Quit();
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
+            if (gameModeSelectionUI != null) gameModeSelectionUI.SetVisible(false);
+            if (savedGamesUI != null) savedGamesUI.SetVisible(false);
+            if (saveManagementUI != null) saveManagementUI.SetVisible(false);
+            if (settingsMenu != null) settingsMenu.SetVisible(false);
+            if (creditsUI != null) creditsUI.SetVisible(false);
+            if (loginUI != null) loginUI.SetVisible(false);
+            if (confirmationDialog != null) confirmationDialog.Dismiss();
+        }
+
+        private void EnsurePanels()
+        {
+            if (gameModeSelectionUI == null) gameModeSelectionUI = FindAnyObjectByType<GameModeSelectionUI>();
+            if (savedGamesUI == null) savedGamesUI = FindAnyObjectByType<SavedGamesUI>();
+            if (saveManagementUI == null) saveManagementUI = FindAnyObjectByType<SaveManagementUI>();
+            if (settingsMenu == null) settingsMenu = FindAnyObjectByType<SettingsMenuUI>();
+            if (creditsUI == null) creditsUI = FindAnyObjectByType<CreditsUI>();
+            if (loginUI == null) loginUI = FindAnyObjectByType<LoginUI>();
+            if (confirmationDialog == null) confirmationDialog = FindAnyObjectByType<ConfirmationDialog>();
+            if (mainMenuAnimator == null) mainMenuAnimator = FindAnyObjectByType<MainMenuAnimator>();
+        }
+
+        public void ApplyLocalizedLabels()
+        {
+            LocalizationManager mgr = LocalizationManager.Instance;
+            if (mgr == null) return;
+
+            // Main Title
+            if (titleText != null)
+            {
+                LocalizedFontProvider.Apply(titleText);
+                titleText.text = mgr.GetForDisplay("menu.title");
+            }
+            if (subtitleText != null)
+            {
+                LocalizedFontProvider.Apply(subtitleText);
+                subtitleText.text = mgr.GetForDisplay("menu.subtitle");
+            }
+
+            // Buttons
+            SetButtonLabel(beginGameButton, mgr.GetForDisplay("menu.begin_game"));
+            SetButtonLabel(newGameButton, mgr.GetForDisplay("menu.begin_game"));
+
+            SetButtonLabel(previousJourneyButton, mgr.GetForDisplay("menu.previous_journey"));
+            SetButtonLabel(continueButton, mgr.GetForDisplay("menu.previous_journey"));
+
+            SetButtonLabel(backupsSavesButton, mgr.GetForDisplay("menu.backups_saves"));
+            SetButtonLabel(savedGamesButton, mgr.GetForDisplay("menu.backups_saves"));
+
+            SetButtonLabel(settingsButton, mgr.GetForDisplay("menu.settings"));
+            SetButtonLabel(creditsButton, mgr.GetForDisplay("menu.credits"));
+            SetButtonLabel(quitButton, mgr.GetForDisplay("menu.quit"));
+
+            UpdateAccountBadge();
+            UpdateJourneyButtonsInteractable();
+        }
+
+        private static void SetButtonLabel(Button button, string text)
+        {
+            if (button == null) return;
+            var label = button.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                LocalizedFontProvider.Apply(label);
+                label.text = text;
+            }
         }
     }
 }

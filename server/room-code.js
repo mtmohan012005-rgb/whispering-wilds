@@ -1,47 +1,68 @@
 // ============================================================================
-// THE WHISPERING WILDS - SERVER-GENERATED INVITE CODES
+// THE WHISPERING WILDS - SERVER-GENERATED NUMERIC INVITE CODES
 // ============================================================================
 //
-// Codes are exactly six characters drawn from an ambiguity-reduced alphabet
-// (no I, O, 0 or 1). Generation uses crypto.randomInt so codes are not
-// predictable from Math.random(). Codes identify rooms only; they are never
-// authentication credentials.
+// Host-generated room codes are exactly six numeric digits (000000-999999).
+// Join input accepts 4 to 6 numeric digits. Letters, symbols, empty codes,
+// and codes longer than 6 digits are strictly rejected.
+// Generation uses crypto.randomInt for cryptographically secure randomness.
+// Codes identify rooms only; they are never authentication credentials.
 // ============================================================================
 
 const crypto = require('crypto');
 
-const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const ROOM_CODE_ALPHABET = '0123456789';
 const ROOM_CODE_LENGTH = 6;
-const ROOM_CODE_PATTERN = /^[A-HJ-NP-Z2-9]{6}$/;
+const HOST_ROOM_CODE_PATTERN = /^\d{6}$/;
+const JOIN_ROOM_CODE_PATTERN = /^\d{4,6}$/;
+const ROOM_CODE_PATTERN = JOIN_ROOM_CODE_PATTERN;
 
+/**
+ * Generate a cryptographically secure six-digit numeric room code.
+ */
 function generateRoomCode() {
-    let code = '';
-    for (let i = 0; i < ROOM_CODE_LENGTH; i++) {
-        code += ROOM_CODE_ALPHABET[crypto.randomInt(0, ROOM_CODE_ALPHABET.length)];
-    }
-    return code;
+    return crypto.randomInt(0, 1000000).toString().padStart(ROOM_CODE_LENGTH, '0');
 }
 
 /**
- * Trim surrounding whitespace, uppercase, and return the canonical code.
- * Returns null when the input is not a syntactically valid room code.
+ * Trim surrounding whitespace and validate numeric invite code.
+ * Accepts 4 to 6 digits for join input.
+ * Rejects letters, symbols, whitespace-only, empty codes, and codes longer than 6 digits.
+ * Returns canonical digit string or null when invalid.
  * Never substitutes a default room.
  */
 function normalizeRoomCode(raw) {
+    if (typeof raw === 'number' && Number.isInteger(raw)) {
+        raw = raw.toString();
+    }
     if (typeof raw !== 'string') return null;
-    const normalized = raw.trim().toUpperCase();
-    return ROOM_CODE_PATTERN.test(normalized) ? normalized : null;
+    const normalized = raw.trim();
+    return JOIN_ROOM_CODE_PATTERN.test(normalized) ? normalized : null;
 }
 
+/**
+ * Check if the input is a valid join room code (4 to 6 digits).
+ */
 function isValidRoomCode(raw) {
     return normalizeRoomCode(raw) !== null;
+}
+
+/**
+ * Check if the input is a valid host-generated room code (strictly 6 digits).
+ */
+function isValidGeneratedRoomCode(raw) {
+    if (typeof raw !== 'string') return false;
+    return HOST_ROOM_CODE_PATTERN.test(raw.trim());
 }
 
 module.exports = {
     ROOM_CODE_ALPHABET,
     ROOM_CODE_LENGTH,
+    HOST_ROOM_CODE_PATTERN,
+    JOIN_ROOM_CODE_PATTERN,
     ROOM_CODE_PATTERN,
     generateRoomCode,
     normalizeRoomCode,
-    isValidRoomCode
+    isValidRoomCode,
+    isValidGeneratedRoomCode
 };

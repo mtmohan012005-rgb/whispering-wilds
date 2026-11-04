@@ -98,20 +98,23 @@ async function joinRoom(socket, code, playerName) {
 }
 
 async function testCodeFormat() {
-    console.log('\n[Test] Server-generated invite code format');
+    console.log('\n[Test] Server-generated numeric invite code format');
     const codes = new Set();
     for (let i = 0; i < 500; i++) {
         const code = roomCode.generateRoomCode();
-        assert.match(code, /^[A-HJ-NP-Z2-9]{6}$/, `unexpected code ${code}`);
+        assert.match(code, /^\d{6}$/, `unexpected code ${code}`);
         assert.strictEqual(code.length, 6);
-        assert.ok(!/[IO01]/.test(code), `ambiguous character in ${code}`);
         codes.add(code);
     }
     check(codes.size > 480, `generated ${codes.size}/500 distinct codes`);
-    check(roomCode.normalizeRoomCode('  ab3d9z ') === 'AB3D9Z', 'normalises trim + case');
-    check(roomCode.normalizeRoomCode('AB3D9I') === null, 'rejects ambiguous I');
-    check(roomCode.normalizeRoomCode('AB3D9') === null, 'rejects five characters');
-    check(roomCode.normalizeRoomCode('AB3D9Z0') === null, 'rejects seven characters');
+    check(roomCode.normalizeRoomCode('  123456 ') === '123456', 'normalises trim 6 digits');
+    check(roomCode.normalizeRoomCode('1234') === '1234', 'accepts 4 digits');
+    check(roomCode.normalizeRoomCode('12345') === '12345', 'accepts 5 digits');
+    check(roomCode.normalizeRoomCode('123456') === '123456', 'accepts 6 digits');
+    check(roomCode.normalizeRoomCode('123') === null, 'rejects three digits (< 4)');
+    check(roomCode.normalizeRoomCode('1234567') === null, 'rejects seven digits (> 6)');
+    check(roomCode.normalizeRoomCode('12a456') === null, 'rejects letters');
+    check(roomCode.normalizeRoomCode('12#456') === null, 'rejects symbols');
     check(roomCode.normalizeRoomCode('CHENNAI_EXP') === null, 'rejects legacy default room');
     check(roomCode.normalizeRoomCode(null) === null, 'rejects non-string input');
 }
@@ -122,7 +125,7 @@ async function testCreateAndJoin() {
     const hostJoined = await createRoom(host, 'HostPlayer', 5);
 
     check(hostJoined.roomCode === hostJoined.roomCode.toUpperCase(), 'code is uppercase');
-    check(/^[A-HJ-NP-Z2-9]{6}$/.test(hostJoined.roomCode), `six-character code (${hostJoined.roomCode})`);
+    check(/^\d{6}$/.test(hostJoined.roomCode), `six-digit numeric code (${hostJoined.roomCode})`);
     check(hostJoined.isHost === true, 'creator is host');
     check(hostJoined.role === 'HOST', 'creator role is HOST');
     check(hostJoined.maxPlayers === 5, 'default cap is five');
@@ -151,7 +154,7 @@ async function testInvalidAndMissingRooms() {
     check(invalidPayload.code === 'INVALID_ROOM_CODE', 'short code rejected');
 
     const missing = once(socket, 'joinRejected');
-    socket.emit('joinRoom', { roomCode: 'ZZZZZZ', playerName: 'Nope' });
+    socket.emit('joinRoom', { roomCode: '999999', playerName: 'Nope' });
     const missingPayload = await missing;
     check(missingPayload.code === 'ROOM_NOT_FOUND', 'unknown but valid code rejected');
 
@@ -160,7 +163,7 @@ async function testInvalidAndMissingRooms() {
     const stillMissing = once(retry, 'roomNotFound', 1200)
         .then(() => true)
         .catch(() => false);
-    retry.emit('joinRoom', { roomCode: 'ZZZZZZ', playerName: 'Nope' });
+    retry.emit('joinRoom', { roomCode: '999999', playerName: 'Nope' });
     check((await stillMissing) === true, 'join never auto-creates a room');
 
     const legacySocket = await connectClient();
@@ -189,7 +192,7 @@ async function testFailedJoinPreservesMembership() {
     a1.on('roomRoster', onOldRoomRoster);
 
     const notFound = once(a2, 'joinRejected');
-    a2.emit('joinRoom', { roomCode: 'ZZZZZZ', playerName: 'KeepA2' });
+    a2.emit('joinRoom', { roomCode: '999999', playerName: 'KeepA2' });
     check((await notFound).code === 'ROOM_NOT_FOUND', 'missing code rejected');
 
     const peerMove = once(a1, 'playerMoved');

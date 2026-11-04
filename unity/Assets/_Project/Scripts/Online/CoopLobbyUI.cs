@@ -18,7 +18,7 @@ namespace WhisperingWilds.Online
     public class CoopLobbyUI : MonoBehaviour
     {
         private const string PlayerNameKey = "ww.coop.playerName";
-        private const string CodePattern = "^[A-HJ-NP-Z2-9]{6}$";
+        private const string CodePattern = @"^\d{4,6}$";
 
         private static readonly Color PanelColor = new Color(0.055f, 0.09f, 0.08f, 0.97f);
         private static readonly Color FieldColor = new Color(0.10f, 0.16f, 0.14f, 1f);
@@ -81,7 +81,7 @@ namespace WhisperingWilds.Online
         {
             if (instance != null) return instance;
             var go = new GameObject("CoopLobbyUI");
-            DontDestroyOnLoad(go);
+            if (Application.isPlaying) DontDestroyOnLoad(go);
             instance = go.AddComponent<CoopLobbyUI>();
             return instance;
         }
@@ -95,7 +95,7 @@ namespace WhisperingWilds.Online
             }
 
             instance = this;
-            DontDestroyOnLoad(gameObject);
+            if (Application.isPlaying) DontDestroyOnLoad(gameObject);
             playerName = PlayerPrefs.GetString(PlayerNameKey, "Explorer");
             if (string.IsNullOrWhiteSpace(playerName)) playerName = "Explorer";
             BuildUI();
@@ -241,7 +241,7 @@ namespace WhisperingWilds.Online
             string code = (codeField != null ? codeField.text : string.Empty).Trim().ToUpperInvariant();
             if (!Regex.IsMatch(code, CodePattern))
             {
-                statusOverride = Localize("coop.invalid_code", "Enter a valid six-character code.");
+                statusOverride = Localize("coop.invalid_code", "Enter a valid 4 to 6-digit numeric code.");
                 Refresh();
                 return;
             }
@@ -346,7 +346,7 @@ namespace WhisperingWilds.Online
         {
             if (titleLabel != null) titleLabel.text = Localize("coop.title", "Co-op Expedition");
             if (nameLabel != null) nameLabel.text = Localize("coop.name", "Explorer name");
-            if (codeLabel != null) codeLabel.text = Localize("coop.code", "Six-character invite code");
+            if (codeLabel != null) codeLabel.text = Localize("coop.code", "Invite Code (4–6 digits)");
             if (hostButtonLabel != null) hostButtonLabel.text = Localize("coop.host", "Host Expedition");
             if (joinButtonLabel != null) joinButtonLabel.text = Localize("coop.join", "Join Expedition");
             if (soloButtonLabel != null) soloButtonLabel.text = Localize("coop.solo", "Play Offline (Solo)");
@@ -420,10 +420,11 @@ namespace WhisperingWilds.Online
             Place(hostButton.GetComponent<RectTransform>(), 20f, 188f, 400f, 46f);
             hostButton.onClick.AddListener(OnHostClicked);
 
-            codeLabel = NewText("CodeLabel", offlineRect, "Six-character invite code", 14, FontStyle.Bold, TextColor, TextAnchor.MiddleLeft);
+            codeLabel = NewText("CodeLabel", offlineRect, "Invite Code (4–6 digits)", 14, FontStyle.Bold, TextColor, TextAnchor.MiddleLeft);
             Place(codeLabel.rectTransform, 20f, 250f, 400f, 24f);
 
-            codeField = NewInput("CodeField", offlineRect, "ABC234", 6);
+            codeField = NewInput("CodeField", offlineRect, "123456", 6);
+            codeField.characterValidation = InputField.CharacterValidation.Integer;
             codeField.characterLimit = 6;
             codeField.onValueChanged.AddListener(_ => Refresh());
             Place(codeField.GetComponent<RectTransform>(), 20f, 276f, 400f, 44f);
@@ -540,7 +541,7 @@ namespace WhisperingWilds.Online
             field.placeholder = hint;
             field.lineType = InputField.LineType.SingleLine;
             field.characterLimit = limit;
-            field.contentType = InputField.ContentType.Alphanumeric;
+            field.contentType = InputField.ContentType.Standard;
             return field;
         }
 

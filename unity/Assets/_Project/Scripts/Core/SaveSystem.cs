@@ -635,7 +635,7 @@ namespace WhisperingWilds.Core
         /// Reads and validates a save file. Never throws: a malformed file is reported as invalid
         /// so the caller can fall back to the backup.
         /// </summary>
-        private static bool TryReadValid(string path, out GameSaveData data, out string error)
+        public static bool TryReadValid(string path, out GameSaveData data, out string error)
         {
             data = null;
             error = null;
