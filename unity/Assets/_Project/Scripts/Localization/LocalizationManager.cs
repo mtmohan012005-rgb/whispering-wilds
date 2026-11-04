@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -159,6 +159,8 @@ namespace WhisperingWilds.Localization
 
             // ---- Cinematic intro ---------------------------------------------
             new LocalizationEntry("intro.skip",           "Press Any Key to Skip", "வெளியேறவென எந்த விசையையும் அழுத்தவும்"),
+            new LocalizationEntry("intro.skip_btn",       "SKIP INTRO",            "\u0B85\u0BB1\u0BBF\u0BAE\u0BC1\u0B95\u0BA4\u0BCD\u0BA4\u0BC8\u0BA4\u0BCD \u0BA4\u0BB5\u0BBF\u0BB0\u0BCD"),
+            new LocalizationEntry("title.start",          "START",                 "\u0BA4\u0BCA\u0B9F\u0B99\u0BCD\u0B95\u0BC1"),
             new LocalizationEntry("intro.replay",         "Replay Intro",          "மீண்டும் காட்டு"),
 
             // ---- Settings ----------------------------------------------------

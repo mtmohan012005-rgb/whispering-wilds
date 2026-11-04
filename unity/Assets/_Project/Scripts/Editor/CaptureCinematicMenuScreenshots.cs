@@ -155,10 +155,19 @@ namespace WhisperingWilds.Editor
             }
             CaptureView("00_intro_temple_reveal", resolutions, cam, docsDir, brainDir);
 
-            // 00b. Intro - Title & Tamil Subtitle Reveal
+            // 00b. Intro - Title & Tamil Subtitle Reveal with START Button
             if (introTitleGroup != null)
             {
                 introTitleGroup.SetActive(true);
+                var cg = introTitleGroup.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 1f;
+                var startBtn = introTitleGroup.transform.Find("Btn_TitleStart")?.gameObject;
+                if (startBtn != null)
+                {
+                    startBtn.SetActive(true);
+                    var startCg = startBtn.GetComponent<CanvasGroup>();
+                    if (startCg != null) startCg.alpha = 1f;
+                }
                 var tt = introTitleGroup.transform.Find("IntroTitleText")?.GetComponent<Text>();
                 if (tt != null) tt.color = new Color(1f, 0.85f, 0.35f, 1f);
                 var st = introTitleGroup.transform.Find("IntroSubtitleText")?.GetComponent<Text>();
@@ -374,8 +383,8 @@ namespace WhisperingWilds.Editor
                 UnityEngine.Object.DestroyImmediate(tex);
 
                 string fileName = $"seq_{frame:D2}_{stepName}.png";
-                File.WriteAllBytes(Path.Combine(seqDir, fileName), pngBytes);
-                File.WriteAllBytes(Path.Combine(brainDir, fileName), pngBytes);
+                SafeWriteAllBytes(Path.Combine(seqDir, fileName), pngBytes);
+                SafeWriteAllBytes(Path.Combine(brainDir, fileName), pngBytes);
                 Debug.Log($"[Sequence] Captured frame {frame}: {fileName}");
                 frame++;
             }
@@ -398,10 +407,19 @@ namespace WhisperingWilds.Editor
             }
             SaveSeqFrame("intro_temple_reveal");
 
-            // Frame 3: Intro - Title Reveal (English & Tamil)
+            // Frame 3: Intro - Title Reveal (English & Tamil) with START button
             if (introTitleGroup != null)
             {
                 introTitleGroup.SetActive(true);
+                var cg = introTitleGroup.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 1f;
+                var startBtn = introTitleGroup.transform.Find("Btn_TitleStart")?.gameObject;
+                if (startBtn != null)
+                {
+                    startBtn.SetActive(true);
+                    var startCg = startBtn.GetComponent<CanvasGroup>();
+                    if (startCg != null) startCg.alpha = 1f;
+                }
                 var tt = introTitleGroup.transform.Find("IntroTitleText")?.GetComponent<Text>();
                 if (tt != null) tt.color = new Color(1f, 0.85f, 0.35f, 1f);
                 var st = introTitleGroup.transform.Find("IntroSubtitleText")?.GetComponent<Text>();
@@ -587,10 +605,46 @@ namespace WhisperingWilds.Editor
                 string docsPath = Path.Combine(docsDir, fileName);
                 string brainPath = Path.Combine(brainDir, fileName);
 
-                File.WriteAllBytes(docsPath, pngBytes);
-                File.WriteAllBytes(brainPath, pngBytes);
+                SafeWriteAllBytes(docsPath, pngBytes);
+                SafeWriteAllBytes(brainPath, pngBytes);
 
                 Debug.Log($"[CaptureCinematicMenuScreenshots] Saved {fileName} ({pngBytes.Length:N0} bytes)");
+            }
+        }
+
+        private static void SafeWriteAllBytes(string path, byte[] bytes)
+        {
+            if (string.IsNullOrEmpty(path)) return;
+            string dir = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            for (int attempt = 0; attempt < 5; attempt++)
+            {
+                try
+                {
+                    using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+                    {
+                        fs.Write(bytes, 0, bytes.Length);
+                        fs.Flush();
+                    }
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    if (attempt == 4)
+                    {
+                        Debug.LogWarning($"[CaptureCinematicMenuScreenshots] Warning: could not write {path} after 5 attempts: {ex.Message}");
+                    }
+                    System.Threading.Thread.Sleep(100);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[CaptureCinematicMenuScreenshots] Exception writing {path}: {ex.Message}");
+                    return;
+                }
             }
         }
     }
