@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -159,6 +159,8 @@ namespace WhisperingWilds.Localization
 
             // ---- Cinematic intro ---------------------------------------------
             new LocalizationEntry("intro.skip",           "Press Any Key to Skip", "வெளியேறவென எந்த விசையையும் அழுத்தவும்"),
+            new LocalizationEntry("intro.skip_btn",       "SKIP INTRO",            "\u0B85\u0BB1\u0BBF\u0BAE\u0BC1\u0B95\u0BA4\u0BCD\u0BA4\u0BC8\u0BA4\u0BCD \u0BA4\u0BB5\u0BBF\u0BB0\u0BCD"),
+            new LocalizationEntry("title.start",          "START",                 "\u0BA4\u0BCA\u0B9F\u0B99\u0BCD\u0B95\u0BC1"),
             new LocalizationEntry("intro.replay",         "Replay Intro",          "மீண்டும் காட்டு"),
 
             // ---- Settings ----------------------------------------------------
@@ -525,6 +527,8 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("vendor.not_enough_stock", "Vendor out of stock",      "வணிகர் இருப்பு இல்லை"),
             new LocalizationEntry("vendor.inventory_full",   "Inventory full",           "பொருளடக்கம் நிரம்பியது"),
             new LocalizationEntry("vendor.item_not_bought",  "Vendor does not buy this", "வணிகர் இதை வாங்குவதில்லை"),
+            new LocalizationEntry("30", "30", "30"),
+            new LocalizationEntry("1366 x 768", "1366 x 768", "1366 x 768"),
         };
 
         private static readonly Dictionary<string, LocalizationEntry> Lookup = BuildLookup();

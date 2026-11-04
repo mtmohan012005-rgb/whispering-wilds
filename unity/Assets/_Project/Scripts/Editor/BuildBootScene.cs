@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -403,57 +403,101 @@ namespace WhisperingWilds.Editor
                 var confirmDialogObj = BuildConfirmationDialog(menuRoot.transform, font);
                 var confirmDialog = confirmDialogObj.GetComponent<ConfirmationDialog>();
 
-                // --- 4. Intro title group (cinematic title/subtitle) ---
-                var introGroup = new GameObject("IntroTitleGroup", typeof(RectTransform));
+                // --- 4. Intro title group & Centered Title Card (THE WHISPERING WILDS â€¢ Kattu Vazhi Thadam + START Button) ---
+                var introGroup = new GameObject("IntroTitleGroup", typeof(RectTransform), typeof(CanvasGroup));
                 introGroup.transform.SetParent(canvasObj.transform, false);
                 var introGroupRect = introGroup.GetComponent<RectTransform>();
-                introGroupRect.anchorMin = Vector2.zero;
-                introGroupRect.anchorMax = Vector2.one;
-                introGroupRect.offsetMin = Vector2.zero;
-                introGroupRect.offsetMax = Vector2.zero;
+                introGroupRect.anchorMin = new Vector2(0.5f, 0.5f);
+                introGroupRect.anchorMax = new Vector2(0.5f, 0.5f);
+                introGroupRect.pivot = new Vector2(0.5f, 0.5f);
+                introGroupRect.anchoredPosition = Vector2.zero;
+                introGroupRect.sizeDelta = new Vector2(920f, 420f);
+                var introCanvasGroup = introGroup.GetComponent<CanvasGroup>();
+                introCanvasGroup.alpha = 1f;
+                introCanvasGroup.interactable = true;
+                introCanvasGroup.blocksRaycasts = true;
                 introGroup.SetActive(false);
 
+                // Radial Antique Gold Halo Glow behind centered title card
+                var glowMoteSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/GlowMote.png");
+                var titleBackGlowObj = new GameObject("TitleBackGlow", typeof(RectTransform), typeof(Image));
+                titleBackGlowObj.transform.SetParent(introGroup.transform, false);
+                var glowRect = titleBackGlowObj.GetComponent<RectTransform>();
+                glowRect.anchorMin = new Vector2(0.5f, 0.5f);
+                glowRect.anchorMax = new Vector2(0.5f, 0.5f);
+                glowRect.pivot = new Vector2(0.5f, 0.5f);
+                glowRect.anchoredPosition = new Vector2(0f, 0f);
+                glowRect.sizeDelta = new Vector2(740f, 380f);
+                var glowImg = titleBackGlowObj.GetComponent<Image>();
+                if (glowMoteSprite != null) glowImg.sprite = glowMoteSprite;
+                glowImg.color = new Color(0.96f, 0.82f, 0.38f, 0.18f);
+                glowImg.raycastTarget = false;
+
+                // English Game Title â€” Centered horizontally & vertically
                 var introTitleObj = CreateText("IntroTitleText", introGroup.transform,
-                    new Vector2(0.1f, 0.35f), new Vector2(0.9f, 0.65f), Vector2.zero, Vector2.zero,
-                    font, 56, TextAnchor.MiddleCenter, new Color(1f, 0.85f, 0.35f, 0f));
-                introTitleObj.GetComponent<Text>().text = "THE WHISPERING WILDS";
-                introTitleObj.GetComponent<Text>().supportRichText = false;
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 44f), new Vector2(880f, 68f),
+                    font, 54, TextAnchor.MiddleCenter, new Color(0.96f, 0.83f, 0.40f, 0f));
+                var introTitleTextComp = introTitleObj.GetComponent<Text>();
+                introTitleTextComp.text = "THE WHISPERING WILDS";
+                introTitleTextComp.fontStyle = FontStyle.Normal;
+                introTitleTextComp.lineSpacing = 1.15f;
+                introTitleTextComp.supportRichText = false;
 
+                // Tamil Subtitle â€” Centered directly beneath English title
                 var introSubtitleObj = CreateText("IntroSubtitleText", introGroup.transform,
-                    new Vector2(0.15f, 0.25f), new Vector2(0.85f, 0.75f), Vector2.zero, Vector2.zero,
-                    font, 22, TextAnchor.MiddleCenter, new Color(0.8f, 0.85f, 0.9f, 0f));
-                introSubtitleObj.GetComponent<Text>().text = "A Living Exploration & Cultural Investigation of Tamil Nadu";
-                introSubtitleObj.GetComponent<Text>().supportRichText = false;
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -14f), new Vector2(720f, 42f),
+                    font, 26, TextAnchor.MiddleCenter, new Color(0.65f, 0.89f, 0.79f, 0f));
+                var introSubtitleTextComp = introSubtitleObj.GetComponent<Text>();
+                introSubtitleTextComp.text = "\u0B95\u0BBE\u0B9F\u0BCD\u0B9F\u0BC1 \u0BB5\u0BB4\u0BBF \u2022 \u0BA4\u0B9F\u0BAE\u0BCD";
+                introSubtitleTextComp.fontStyle = FontStyle.Normal;
+                introSubtitleTextComp.supportRichText = false;
 
-                // --- 5. Skip hint text ---
-                var skipObj = CreateText("IntroSkipText", canvasObj.transform,
-                    new Vector2(0.2f, 0.05f), new Vector2(0.8f, 0.05f), Vector2.zero, new Vector2(600, 30),
-                    font, 14, TextAnchor.MiddleCenter, new Color(0.6f, 0.65f, 0.7f, 0f));
-                skipObj.GetComponent<Text>().text = "Press Any Key to Skip";
-                skipObj.GetComponent<Text>().supportRichText = false;
-                skipObj.SetActive(false);
+                // Title Screen Primary START Button â€” Centered below subtitle with gold outline
+                var startBtnObj = CreateButton("Btn_TitleStart", introGroup.transform,
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -96f), new Vector2(250f, 54f),
+                    font, "\u25B6  START", new Color(0.12f, 0.42f, 0.32f, 1f));
+                var startBtn = startBtnObj.GetComponent<Button>();
+                var startBtnAnimator = startBtnObj.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+                var startBtnCg = startBtnObj.AddComponent<CanvasGroup>();
+                startBtnCg.alpha = 0f;
+                startBtnCg.interactable = false;
+                startBtnCg.blocksRaycasts = false;
+
+                // --- 5. Skip Intro Button (translucent pill in bottom right) ---
+                var skipBtnObj = CreateButton("IntroSkipText", canvasObj.transform,
+                    new Vector2(0.88f, 0.08f), new Vector2(0.88f, 0.08f), Vector2.zero, new Vector2(170f, 40f),
+                    font, "\u23ED  SKIP INTRO", new Color(0.18f, 0.24f, 0.30f, 0.85f));
+                var skipBtn = skipBtnObj.GetComponent<Button>();
+                var skipBtnCg = skipBtnObj.AddComponent<CanvasGroup>();
+                skipBtnCg.alpha = 0f;
+                var skipTextComp = skipBtnObj.GetComponentInChildren<Text>();
+                skipBtnObj.SetActive(false);
 
                 // STEP 70: MainMenuAnimator â€” orchestrates title, subtitle, button, and background animation.
-                // Parented to the canvas so it persists in the scene hierarchy and is discoverable by FindObjectOfType.
                 var menuAnimatorObj = new GameObject("MainMenuAnimator");
                 menuAnimatorObj.transform.SetParent(canvasObj.transform, false);
                 var menuAnimator = menuAnimatorObj.AddComponent<WhisperingWilds.UI.MainMenuAnimator>();
 
-                // Cinematic intro controller, placed on its own GameObject so it can manage
-                // the intro sequence before the title menu becomes interactive.
+                // Cinematic intro controller
                 var introObj = new GameObject("CinematicIntro");
                 var introCtrl = introObj.AddComponent<CinematicIntroController>();
-                // The intro needs references to all its visual elements and the menu root group
-                // so it can hide only the menu during the intro and reveal it when finished.
-                // The canvas itself stays active so intro visuals (which are canvas children)
-                // remain visible throughout the sequence.
                 var serializedIntro = new SerializedObject(introCtrl);
                 serializedIntro.FindProperty("introBackground").objectReferenceValue = introBgObj;
                 serializedIntro.FindProperty("introVignette").objectReferenceValue = vignetteObj;
                 serializedIntro.FindProperty("introTitleGroup").objectReferenceValue = introGroup;
-                serializedIntro.FindProperty("introTitleText").objectReferenceValue = introTitleObj.GetComponent<Text>();
-                serializedIntro.FindProperty("introSubtitleText").objectReferenceValue = introSubtitleObj.GetComponent<Text>();
-                serializedIntro.FindProperty("introSkipText").objectReferenceValue = skipObj.GetComponent<Text>();
+                serializedIntro.FindProperty("introTitleText").objectReferenceValue = introTitleTextComp;
+                serializedIntro.FindProperty("introSubtitleText").objectReferenceValue = introSubtitleTextComp;
+                serializedIntro.FindProperty("introSkipText").objectReferenceValue = skipTextComp;
+                if (serializedIntro.FindProperty("startButton") != null)
+                    serializedIntro.FindProperty("startButton").objectReferenceValue = startBtn;
+                if (serializedIntro.FindProperty("titleCardCanvasGroup") != null)
+                    serializedIntro.FindProperty("titleCardCanvasGroup").objectReferenceValue = introCanvasGroup;
+                if (serializedIntro.FindProperty("titleBackGlow") != null)
+                    serializedIntro.FindProperty("titleBackGlow").objectReferenceValue = glowImg;
+                if (serializedIntro.FindProperty("titleCardContainer") != null)
+                    serializedIntro.FindProperty("titleCardContainer").objectReferenceValue = introGroup;
+                if (serializedIntro.FindProperty("introSkipButton") != null)
+                    serializedIntro.FindProperty("introSkipButton").objectReferenceValue = skipBtn;
                 serializedIntro.FindProperty("menuRoot").objectReferenceValue = menuRoot;
                 serializedIntro.FindProperty("titleMenuController").objectReferenceValue = titleCtrl;
                 serializedIntro.FindProperty("introCamera").objectReferenceValue = camObj.GetComponent<Camera>();
@@ -473,6 +517,10 @@ namespace WhisperingWilds.Editor
                 var birdClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/Ambience/birds.wav");
                 if (birdClip != null && serializedIntro.FindProperty("birdsClip") != null)
                     serializedIntro.FindProperty("birdsClip").objectReferenceValue = birdClip;
+
+                var introClickClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Resources/Audio/ui_click.wav");
+                if (introClickClip != null && serializedIntro.FindProperty("clickClip") != null)
+                    serializedIntro.FindProperty("clickClip").objectReferenceValue = introClickClip;
 
                 serializedIntro.ApplyModifiedProperties();
 
@@ -496,7 +544,7 @@ namespace WhisperingWilds.Editor
                 serializedMenuAnim.ApplyModifiedProperties();
 
                 // STEP 73: Create PRO LoginUI panel with cinematic Dravidian split-screen experience
-                var loginUIObj = new GameObject("LoginUI");
+                var loginUIObj = new GameObject("LoginUI", typeof(CanvasGroup));
                 loginUIObj.transform.SetParent(canvasObj.transform, false);
                 var loginUI = loginUIObj.AddComponent<WhisperingWilds.UI.LoginUI>();
                 loginUIObj.SetActive(false);
@@ -964,7 +1012,8 @@ namespace WhisperingWilds.Editor
                 serializedLoginUI.FindProperty("forgotPasswordPanel").objectReferenceValue = forgotPasswordPanel;
                 serializedLoginUI.FindProperty("resetPasswordPanel").objectReferenceValue = resetPasswordPanel;
                 serializedLoginUI.FindProperty("signedInPanel").objectReferenceValue = signedInPanel;
-                var loginCg = loginUIObj.GetComponent<CanvasGroup>() ?? loginUIObj.AddComponent<CanvasGroup>();
+                var loginCg = loginUIObj.GetComponent<CanvasGroup>();
+                if (loginCg == null) loginCg = loginUIObj.AddComponent<CanvasGroup>();
                 loginCg.alpha = 0f;
                 loginCg.interactable = false;
                 loginCg.blocksRaycasts = false;
