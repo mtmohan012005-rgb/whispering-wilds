@@ -25,18 +25,18 @@ namespace WhisperingWilds.UI
     {
         [Header("Visual Settings")]
         [Tooltip("Scale multiplier when hovered")]
-        [SerializeField] private float hoverScale = 1.04f;
+        [SerializeField] private float hoverScale = 1.025f;
         [Tooltip("Scale multiplier when pressed")]
-        [SerializeField] private float pressScale = 0.97f;
+        [SerializeField] private float pressScale = 0.98f;
         [Tooltip("How quickly the button scales to its target")]
-        [SerializeField] private float transitionSpeed = 14f;
+        [SerializeField] private float transitionSpeed = 12f;
 
         [Header("Colors")]
-        [SerializeField] private Color normalBorderColor = new Color(0.82f, 0.68f, 0.32f, 0.40f);
-        [SerializeField] private Color hoverBorderColor = new Color(1.0f, 0.88f, 0.42f, 1.0f);
-        [SerializeField] private Color pressedBorderColor = new Color(1.0f, 0.95f, 0.60f, 1.0f);
-        [SerializeField] private Color normalTextColor = new Color(0.92f, 0.88f, 0.78f, 0.95f);
-        [SerializeField] private Color hoverTextColor = new Color(1.0f, 0.96f, 0.80f, 1.0f);
+        [SerializeField] private Color normalBorderColor = new Color(0.831f, 0.686f, 0.216f, 0.45f);
+        [SerializeField] private Color hoverBorderColor = new Color(0.95f, 0.82f, 0.38f, 1.0f);
+        [SerializeField] private Color pressedBorderColor = new Color(1.0f, 0.90f, 0.55f, 1.0f);
+        [SerializeField] private Color normalTextColor = new Color(0.949f, 0.910f, 0.835f, 0.96f);
+        [SerializeField] private Color hoverTextColor = new Color(1.0f, 0.97f, 0.90f, 1.0f);
 
         [Header("Audio")]
         [SerializeField] private AudioClip hoverClip;
@@ -74,7 +74,7 @@ namespace WhisperingWilds.UI
             {
                 _outline = gameObject.AddComponent<Outline>();
                 _outline.effectColor = normalBorderColor;
-                _outline.effectDistance = new Vector2(1.5f, -1.5f);
+                _outline.effectDistance = new Vector2(1f, -1f);
                 _outline.useGraphicAlpha = true;
             }
         }

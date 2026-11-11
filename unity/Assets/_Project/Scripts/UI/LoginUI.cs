@@ -27,7 +27,7 @@ namespace WhisperingWilds.UI
     /// 2. Create Account (with Password Strength meter, Requirements, Show/Hide password)
     /// 3. Forgot Password (account enumeration protected recovery dispatch)
     /// 4. Reset Password (token validation, new password update)
-    /// 5. Signed-In Account View (Explorer identity, cloud save sync status, sign out)
+    /// 5. Signed-In Account View (Explorer identity, account status, sign out)
     /// 6. Guest / Play Offline exploration mode
     ///
     /// Never persists plaintext passwords or raw session tokens to PlayerPrefs.
@@ -110,6 +110,9 @@ namespace WhisperingWilds.UI
         private bool _isRegPasswordVisible;
         private bool _isResetPasswordVisible;
         private bool _buttonsHooked;
+        private bool _isOffline;
+        private bool _networkChecked;
+        private Text _networkStatusText;
 
         public event Action<bool, string> OnSignInResult;
         public event Action OnBackToMenu;
@@ -140,9 +143,108 @@ namespace WhisperingWilds.UI
                 _buttonsHooked = true;
             }
 
+            CheckNetworkStatus();
+
             if (AuthService.Instance != null && AuthService.Instance.IsSignedIn)
             {
                 ShowSignedIn();
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the auth backend is reachable and updates UI accordingly.
+        /// When offline, shows a friendly banner and disables online-only buttons.
+        /// Uses a ping coroutine to actually test the connection instead of just checking the URL.
+        /// </summary>
+        private void CheckNetworkStatus()
+        {
+            if (_networkChecked) return; // Already checked
+            _networkChecked = true;
+
+            if (AuthService.Instance == null || string.IsNullOrWhiteSpace(AuthService.Instance.BaseUrl))
+            {
+                _isOffline = true;
+                SetSignInStatusOffline();
+                return;
+            }
+
+            // Start an async ping to check if the server is actually reachable
+            if (!gameObject.activeInHierarchy)
+            {
+                _isOffline = false;
+                SetSignInStatusOnline();
+                return;
+            }
+
+            StartCoroutine(PingServerAndUpdateStatus());
+        }
+
+        private System.Collections.IEnumerator PingServerAndUpdateStatus()
+        {
+            if (AuthService.Instance == null) yield break;
+
+            string url = AuthService.Instance.BaseUrl.TrimEnd('/');
+            const int timeout = 3;
+
+            using (var uwr = new UnityEngine.Networking.UnityWebRequest(url, "GET"))
+            {
+                uwr.downloadHandler = new UnityEngine.Networking.DownloadHandlerBuffer();
+                uwr.timeout = timeout;
+
+                yield return uwr.SendWebRequest();
+
+                bool reachable = !uwr.isNetworkError && !uwr.isHttpError;
+                _isOffline = !reachable;
+
+                if (_isOffline)
+                {
+                    SetSignInStatusOffline();
+                }
+                else
+                {
+                    SetSignInStatusOnline();
+                }
+            }
+        }
+
+        private void SetSignInStatusOffline()
+        {
+            if (signInButton != null) signInButton.interactable = false;
+            if (registerButton != null) registerButton.interactable = false;
+            if (forgotPasswordButton != null) forgotPasswordButton.interactable = false;
+            if (sendRecoveryButton != null) sendRecoveryButton.interactable = false;
+            if (resetPasswordButton != null) resetPasswordButton.interactable = false;
+
+            if (signInStatusText != null)
+            {
+                signInStatusText.text = "Server unavailable — use Play Offline to start exploring";
+                signInStatusText.color = new Color(0.95f, 0.75f, 0.2f);
+            }
+
+            if (registerStatusText != null)
+            {
+                registerStatusText.text = "Server unavailable — registration disabled";
+                registerStatusText.color = new Color(0.95f, 0.75f, 0.2f);
+            }
+
+            if (_networkStatusText != null)
+            {
+                _networkStatusText.text = "Server unavailable — Play Offline to start exploring";
+                _networkStatusText.color = new Color(0.95f, 0.75f, 0.2f);
+            }
+        }
+
+        private void SetSignInStatusOnline()
+        {
+            if (signInButton != null) signInButton.interactable = true;
+            if (registerButton != null) registerButton.interactable = true;
+            if (forgotPasswordButton != null) forgotPasswordButton.interactable = true;
+            if (sendRecoveryButton != null) sendRecoveryButton.interactable = true;
+            if (resetPasswordButton != null) resetPasswordButton.interactable = true;
+
+            if (_networkStatusText != null)
+            {
+                _networkStatusText.text = "";
             }
         }
 
@@ -317,6 +419,7 @@ namespace WhisperingWilds.UI
             }
 
             ApplyLocalizedLabels();
+            CheckNetworkStatus();
             if (AuthService.Instance != null && AuthService.Instance.IsSignedIn)
             {
                 ShowSignedIn();
@@ -434,6 +537,7 @@ namespace WhisperingWilds.UI
             if (visible)
             {
                 ApplyLocalizedLabels();
+                CheckNetworkStatus();
                 if (AuthService.Instance != null && AuthService.Instance.IsSignedIn)
                 {
                     ShowSignedIn();
@@ -456,6 +560,18 @@ namespace WhisperingWilds.UI
             ClearStatusTexts();
             LoadRememberedEmail();
             UpdatePasswordVisibilityVisuals();
+
+            // Re-apply offline status after clearing
+            if (_isOffline)
+            {
+                SetSignInStatusOffline();
+            }
+
+            // Find and cache the network status text if not already cached
+            if (_networkStatusText == null)
+            {
+                _networkStatusText = transform.Find("CardContainer/SignInPanel/NetworkStatus")?.GetComponent<Text>();
+            }
         }
 
         public void ShowRegister()
@@ -520,7 +636,7 @@ namespace WhisperingWilds.UI
                 }
                 if (accountStatusLabel != null)
                 {
-                    string status = mgr != null ? mgr.GetForDisplay("login.cloud_sync_active") : "Cloud save & expedition sync active";
+                    string status = mgr != null ? mgr.GetForDisplay("login.cloud_sync_active") : "Account connected";
                     accountStatusLabel.text = $"â€¢ {status}";
                 }
             }
@@ -754,6 +870,12 @@ namespace WhisperingWilds.UI
 
         private void OnSignInClicked()
         {
+            if (_isOffline)
+            {
+                SetStatus(signInStatusText, "Server is unavailable. Click Play Offline to start exploring!", false);
+                return;
+            }
+
             if (AuthService.Instance == null)
             {
                 SetStatus(signInStatusText, "Authentication service is unavailable.", false);
