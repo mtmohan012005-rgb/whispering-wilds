@@ -102,10 +102,15 @@ private void InitializeSources()
         public void ApplyVolumes()
         {
             if (ambientSource == null && gameObject != null) InitializeSources();
-            if (ambientSource != null) ambientSource.volume = ambientVolume * masterVolume;
-            if (uiSource != null) uiSource.volume = uiVolume * masterVolume;
-            if (musicSourceA != null) musicSourceA.volume = musicSourceA.isPlaying ? musicVolume * masterVolume : musicSourceA.volume;
-            if (musicSourceB != null) musicSourceB.volume = musicSourceB.isPlaying ? musicVolume * masterVolume : musicSourceB.volume;
+            float master = Mathf.Clamp01(masterVolume);
+            if (ambientSource != null) ambientSource.volume = Mathf.Clamp01(ambientVolume) * master;
+            if (uiSource != null) uiSource.volume = Mathf.Clamp01(uiVolume) * master;
+
+            // Keep the active music source at the target music level; inactive/fading source is managed by crossfade.
+            if (activeMusicSource != null && activeMusicSource.isPlaying && musicCrossfadeRoutine == null)
+            {
+                activeMusicSource.volume = Mathf.Clamp01(musicVolume) * master;
+            }
         }
 
         /// <summary>Plays an ambient loop through the ambient bus, honouring the ambient + master volumes.</summary>
@@ -125,33 +130,75 @@ private void InitializeSources()
         public void PlayMusic(AudioClip clip, float fadeDuration = 1.5f)
         {
             if (clip == null) return;
-            if (activeMusicSource.clip == clip && activeMusicSource.isPlaying) return;
+            if (activeMusicSource == null || musicSourceA == null || musicSourceB == null) InitializeSources();
+            if (activeMusicSource != null && activeMusicSource.clip == clip && activeMusicSource.isPlaying) return;
 
             if (musicCrossfadeRoutine != null) StopCoroutine(musicCrossfadeRoutine);
             musicCrossfadeRoutine = StartCoroutine(CrossfadeMusicRoutine(clip, fadeDuration));
         }
 
-        private IEnumerator CrossfadeMusicRoutine(AudioClip newClip, float duration)
+        public void StopMusic(float fadeDuration = 0.5f)
         {
-            AudioSource oldSource = activeMusicSource;
-            AudioSource newSource = (activeMusicSource == musicSourceA) ? musicSourceB : musicSourceA;
+            if (musicCrossfadeRoutine != null) StopCoroutine(musicCrossfadeRoutine);
+            musicCrossfadeRoutine = StartCoroutine(FadeOutMusicRoutine(fadeDuration));
+        }
 
-            newSource.clip = newClip;
-            newSource.volume = 0f;
-            newSource.Play();
-
+        private IEnumerator FadeOutMusicRoutine(float duration)
+        {
+            AudioSource a = musicSourceA;
+            AudioSource b = musicSourceB;
+            float startA = a != null ? a.volume : 0f;
+            float startB = b != null ? b.volume : 0f;
             float elapsed = 0f;
+            duration = Mathf.Max(0.01f, duration);
             while (elapsed < duration)
             {
-                elapsed += Time.deltaTime;
-                float t = elapsed / duration;
-                newSource.volume = t * musicVolume * masterVolume;
-                oldSource.volume = (1f - t) * musicVolume * masterVolume;
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                if (a != null) a.volume = Mathf.Lerp(startA, 0f, t);
+                if (b != null) b.volume = Mathf.Lerp(startB, 0f, t);
+                yield return null;
+            }
+            if (a != null) a.Stop();
+            if (b != null) b.Stop();
+            if (a != null) a.clip = null;
+            if (b != null) b.clip = null;
+            activeMusicSource = musicSourceA;
+            musicCrossfadeRoutine = null;
+        }
+
+        private IEnumerator CrossfadeMusicRoutine(AudioClip newClip, float duration)
+        {
+            AudioSource oldSource = activeMusicSource != null ? activeMusicSource : musicSourceA;
+            AudioSource newSource = (oldSource == musicSourceA) ? musicSourceB : musicSourceA;
+
+            newSource.clip = newClip;
+            newSource.loop = true;
+            newSource.volume = 0f;
+            if (!newSource.isPlaying) newSource.Play();
+
+            float oldStart = (oldSource != null && oldSource.isPlaying) ? oldSource.volume : 0f;
+            float target = Mathf.Clamp01(musicVolume) * Mathf.Clamp01(masterVolume);
+            float elapsed = 0f;
+            duration = Mathf.Max(0.01f, duration);
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime; // menu-safe (Time.timeScale may be 0)
+                float t = Mathf.Clamp01(elapsed / duration);
+                newSource.volume = t * target;
+                if (oldSource != null && oldSource.isPlaying) oldSource.volume = Mathf.Lerp(oldStart, 0f, t);
                 yield return null;
             }
 
-            oldSource.Stop();
+            newSource.volume = target;
+            if (oldSource != null && oldSource != newSource)
+            {
+                oldSource.Stop();
+                oldSource.clip = null;
+            }
             activeMusicSource = newSource;
+            musicCrossfadeRoutine = null;
         }
 
         public void PlaySFX(AudioClip clip, Vector3 position, float volumeMultiplier = 1f)

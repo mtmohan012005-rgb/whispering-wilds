@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="icTitle">
+  <title id="icTitle">The Whispering Wilds - single-colour icon</title>
+  <defs>
+    <clipPath id="mClip"><rect x="0" y="0" width="512" height="512" rx="96"/></clipPath>
+    <path id="mW" d="M0,0 L31,0 L50,58 L66,0 L92,0 L108,58 L127,0 L158,0 L127,100 L99,100 L79,40 L59,100 L31,100 Z"/>
+    <path id="mRidge" d="M0,430 L0,360 L70,332 L130,356 L190,314 L256,350 L322,314 L382,356 L442,332 L512,360 L512,512 L0,512 Z"/>
+  </defs>
+  <g clip-path="url(#mClip)" fill="#D4AF37">
+    <rect width="512" height="512" fill="#04100B"/>
+    <g transform="translate(77,145) scale(2.263)">
+      <use href="#mW"/>
+    </g>
+    <use href="#mRidge" opacity="0.35"/>
+    <rect x="11" y="11" width="490" height="490" rx="88" fill="none" stroke="#D4AF37" stroke-width="4" opacity="0.8"/>
+  </g>
+</svg>

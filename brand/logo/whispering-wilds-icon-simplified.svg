@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="icTitle icDesc">
+  <title id="icTitle">The Whispering Wilds - simplified application icon</title>
+  <desc id="icDesc">Simplified square icon for small sizes. Bold gold W monogram on a deep forest field with subtle ridge and teal keyline for legibility at 16-64px.</desc>
+  <defs>
+    <linearGradient id="sField" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#04100B"/>
+      <stop offset="1" stop-color="#0A1C14"/>
+    </linearGradient>
+    <linearGradient id="sGold" x1="0.1" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#F6DE95"/>
+      <stop offset="0.45" stop-color="#D4AF37"/>
+      <stop offset="1" stop-color="#A8641A"/>
+    </linearGradient>
+    <clipPath id="sClip"><rect x="0" y="0" width="512" height="512" rx="96"/></clipPath>
+    <path id="sRidge" d="M0,430 L0,360 L70,332 L130,356 L190,314 L256,350 L322,314 L382,356 L442,332 L512,360 L512,512 L0,512 Z"/>
+    <path id="sW" d="M0,0 L31,0 L50,58 L66,0 L92,0 L108,58 L127,0 L158,0 L127,100 L99,100 L79,40 L59,100 L31,100 Z"/>
+  </defs>
+  <g clip-path="url(#sClip)">
+    <rect width="512" height="512" fill="url(#sField)"/>
+    <ellipse cx="256" cy="330" rx="220" ry="180" fill="#D4AF37" opacity="0.12"/>
+    <g transform="translate(77,145) scale(2.263)">
+      <use href="#sW" fill="#04100B" opacity="0.45" transform="translate(0,5)"/>
+      <use href="#sW" fill="url(#sGold)"/>
+      <use href="#sW" fill="none" stroke="#FFF4CD" stroke-width="1.4" opacity="0.35" transform="translate(0,-1)"/>
+    </g>
+    <use href="#sRidge" fill="#123021" opacity="0.95"/>
+    <rect x="11" y="11" width="490" height="490" rx="88" fill="none" stroke="#2EC4B6" stroke-width="3" opacity="0.55"/>
+  </g>
+</svg>

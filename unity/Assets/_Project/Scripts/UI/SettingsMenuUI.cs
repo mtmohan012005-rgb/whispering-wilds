@@ -77,6 +77,10 @@ namespace WhisperingWilds.UI
         [SerializeField] private Text ambienceVolValueText;
         [SerializeField] private Text dialogueVolValueText;
         [SerializeField] private Text uiVolValueText;
+        [SerializeField] private Button masterMuteButton;
+        [SerializeField] private Button musicMuteButton;
+        [SerializeField] private Button sfxMuteButton;
+        [SerializeField] private Button ambienceMuteButton;
 
         [Header("Controls Page")]
         [SerializeField] private GameObject controlsPage;
@@ -112,7 +116,17 @@ namespace WhisperingWilds.UI
         public void SetVisible(bool visible)
         {
             _visible = visible;
-            if (panelRoot != null) panelRoot.SetActive(visible);
+            var root = panelRoot != null ? panelRoot : gameObject;
+            root.SetActive(visible);
+
+            var cg = root.GetComponent<CanvasGroup>();
+            if (cg == null) cg = GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = visible ? 1f : 0f;
+                cg.interactable = visible;
+                cg.blocksRaycasts = visible;
+            }
 
             if (visible)
             {
@@ -125,6 +139,8 @@ namespace WhisperingWilds.UI
             else
             {
                 RestoreCursor();
+                if (TitleMenuController.Instance != null)
+                    TitleMenuController.Instance.OnSubmenuClosed();
             }
         }
 
@@ -148,6 +164,10 @@ namespace WhisperingWilds.UI
         private UnityEngine.Events.UnityAction _onFrameLimitRight;
         private UnityEngine.Events.UnityAction _onQualityLeft;
         private UnityEngine.Events.UnityAction _onQualityRight;
+        private UnityEngine.Events.UnityAction _onMasterMute;
+        private UnityEngine.Events.UnityAction _onMusicMute;
+        private UnityEngine.Events.UnityAction _onSfxMute;
+        private UnityEngine.Events.UnityAction _onAmbienceMute;
 
         private bool _buttonsHooked;
 
@@ -214,6 +234,10 @@ namespace WhisperingWilds.UI
             _onFrameLimitRight = () => CycleFrameLimit(1);
             _onQualityLeft = () => CycleQuality(-1);
             _onQualityRight = () => CycleQuality(1);
+            _onMasterMute = ToggleMasterMute;
+            _onMusicMute = ToggleMusicMute;
+            _onSfxMute = ToggleSfxMute;
+            _onAmbienceMute = ToggleAmbienceMute;
 
             if (languageTabButton != null) languageTabButton.onClick.AddListener(_onLanguageTab);
             if (displayTabButton != null) displayTabButton.onClick.AddListener(_onDisplayTab);
@@ -233,6 +257,11 @@ namespace WhisperingWilds.UI
             if (frameLimitRightButton != null) frameLimitRightButton.onClick.AddListener(_onFrameLimitRight);
             if (qualityLeftButton != null) qualityLeftButton.onClick.AddListener(_onQualityLeft);
             if (qualityRightButton != null) qualityRightButton.onClick.AddListener(_onQualityRight);
+
+            if (masterMuteButton != null) masterMuteButton.onClick.AddListener(_onMasterMute);
+            if (musicMuteButton != null) musicMuteButton.onClick.AddListener(_onMusicMute);
+            if (sfxMuteButton != null) sfxMuteButton.onClick.AddListener(_onSfxMute);
+            if (ambienceMuteButton != null) ambienceMuteButton.onClick.AddListener(_onAmbienceMute);
         }
 
         private void UnhookButtons()
@@ -255,6 +284,11 @@ namespace WhisperingWilds.UI
             if (frameLimitRightButton != null) frameLimitRightButton.onClick.RemoveListener(_onFrameLimitRight);
             if (qualityLeftButton != null) qualityLeftButton.onClick.RemoveListener(_onQualityLeft);
             if (qualityRightButton != null) qualityRightButton.onClick.RemoveListener(_onQualityRight);
+
+            if (masterMuteButton != null) masterMuteButton.onClick.RemoveListener(_onMasterMute);
+            if (musicMuteButton != null) musicMuteButton.onClick.RemoveListener(_onMusicMute);
+            if (sfxMuteButton != null) sfxMuteButton.onClick.RemoveListener(_onSfxMute);
+            if (ambienceMuteButton != null) ambienceMuteButton.onClick.RemoveListener(_onAmbienceMute);
 
             _buttonsHooked = false;
         }
@@ -429,6 +463,38 @@ namespace WhisperingWilds.UI
             if (s == null) return;
             s.uiVolume = Mathf.Clamp01(s.uiVolume + delta);
             s.SaveSettings();
+            RefreshAll();
+        }
+
+        public void ToggleMasterMute()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.ToggleMasterMute();
+            RefreshAll();
+        }
+
+        public void ToggleMusicMute()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.ToggleMusicMute();
+            RefreshAll();
+        }
+
+        public void ToggleAmbienceMute()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.ToggleAmbienceMute();
+            RefreshAll();
+        }
+
+        public void ToggleSfxMute()
+        {
+            var s = SettingsMenuController.Instance;
+            if (s == null) return;
+            s.ToggleSfxMute();
             RefreshAll();
         }
 
@@ -630,12 +696,31 @@ namespace WhisperingWilds.UI
             var s = SettingsMenuController.Instance;
             if (s == null) return;
 
-            if (masterVolValueText != null) masterVolValueText.text = $"{Mathf.RoundToInt(s.masterVolume * 100)}%";
-            if (musicVolValueText != null) musicVolValueText.text = $"{Mathf.RoundToInt(s.musicVolume * 100)}%";
-            if (sfxVolValueText != null) sfxVolValueText.text = $"{Mathf.RoundToInt(s.sfxVolume * 100)}%";
-            if (ambienceVolValueText != null) ambienceVolValueText.text = $"{Mathf.RoundToInt(s.ambienceVolume * 100)}%";
+            SetAudioValueText(masterVolValueText, s.masterVolume, s.muteMaster);
+            SetAudioValueText(musicVolValueText, s.musicVolume, s.muteMusic);
+            SetAudioValueText(sfxVolValueText, s.sfxVolume, s.muteSfx);
+            SetAudioValueText(ambienceVolValueText, s.ambienceVolume, s.muteAmbience);
             if (dialogueVolValueText != null) dialogueVolValueText.text = $"{Mathf.RoundToInt(s.dialogueVolume * 100)}%";
             if (uiVolValueText != null) uiVolValueText.text = $"{Mathf.RoundToInt(s.uiVolume * 100)}%";
+
+            UpdateMuteButtonLabel(masterMuteButton, s.muteMaster);
+            UpdateMuteButtonLabel(musicMuteButton, s.muteMusic);
+            UpdateMuteButtonLabel(sfxMuteButton, s.muteSfx);
+            UpdateMuteButtonLabel(ambienceMuteButton, s.muteAmbience);
+        }
+
+        private static void SetAudioValueText(Text label, float value, bool muted)
+        {
+            if (label == null) return;
+            int pct = Mathf.RoundToInt(Mathf.Clamp01(value) * 100f);
+            label.text = muted ? $"Muted ({pct}%)" : $"{pct}%";
+        }
+
+        private static void UpdateMuteButtonLabel(Button button, bool muted)
+        {
+            if (button == null) return;
+            var txt = button.GetComponentInChildren<Text>(true);
+            if (txt != null) txt.text = muted ? "Unmute" : "Mute";
         }
 
         private void RefreshControlsValues()

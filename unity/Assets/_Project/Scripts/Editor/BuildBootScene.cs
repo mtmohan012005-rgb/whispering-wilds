@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -280,105 +280,146 @@ namespace WhisperingWilds.Editor
                 menuRootRect.offsetMin = Vector2.zero;
                 menuRootRect.offsetMax = Vector2.zero;
 
-                // --- TOP-LEFT AREA: Branding, Title, and Tamil Subtitle ---
+                // --- TOP-LEFT AREA: Brand and Title (left-aligned cinematic menu) ---
                 var brandHeaderObj = new GameObject("BrandHeader", typeof(RectTransform));
                 brandHeaderObj.transform.SetParent(menuRoot.transform, false);
                 var brandHeaderRect = brandHeaderObj.GetComponent<RectTransform>();
-                brandHeaderRect.anchorMin = new Vector2(0.06f, 0.84f);
-                brandHeaderRect.anchorMax = new Vector2(0.48f, 0.94f);
+                brandHeaderRect.anchorMin = new Vector2(0.065f, 0.80f);
+                brandHeaderRect.anchorMax = new Vector2(0.50f, 0.94f);
+                brandHeaderRect.pivot = new Vector2(0f, 1f);
                 brandHeaderRect.offsetMin = Vector2.zero;
                 brandHeaderRect.offsetMax = Vector2.zero;
 
-                // App Logo
-                var logoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
-                if (logoSprite != null)
+                // App Logo - use square emblem/icon in menu (never squeeze horizontal wordmark into square)
+                float titleXOffset = 0f;
+                var menuIconSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppIcon.png")
+                    ?? AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
+                if (menuIconSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
                     logoObj.transform.SetParent(brandHeaderObj.transform, false);
                     var logoRect = logoObj.GetComponent<RectTransform>();
-                    logoRect.anchorMin = new Vector2(0f, 0.5f);
-                    logoRect.anchorMax = new Vector2(0f, 0.5f);
-                    logoRect.pivot = new Vector2(0f, 0.5f);
+                    logoRect.anchorMin = new Vector2(0f, 1f);
+                    logoRect.anchorMax = new Vector2(0f, 1f);
+                    logoRect.pivot = new Vector2(0f, 1f);
                     logoRect.anchoredPosition = new Vector2(0f, 0f);
-                    logoRect.sizeDelta = new Vector2(76f, 76f);
+                    logoRect.sizeDelta = new Vector2(72f, 72f);
                     var logoImg = logoObj.GetComponent<Image>();
-                    logoImg.sprite = logoSprite;
+                    logoImg.sprite = menuIconSprite;
                     logoImg.preserveAspect = true;
                     logoImg.raycastTarget = false;
+                    titleXOffset = 86f;
                 }
 
-                // Game Title & Tamil Subtitle
-                var titleObj = CreateText("GameTitle", brandHeaderObj.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, 16f), new Vector2(650f, 44f), font, 36, TextAnchor.MiddleLeft, new Color(1f, 0.85f, 0.35f));
+                // English Game Title - antique gold, bold, premium cinematic typography
+                // Keep complete branding inside screen: left-aligned pivot within BrandHeader (anchored ~5-6% from left).
+                var titleObj = CreateText("GameTitle", brandHeaderObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(titleXOffset, 0f), new Vector2(760f, 56f), font, 44, TextAnchor.UpperLeft, new Color(0.831f, 0.686f, 0.216f, 1f));
+                var titleRect = titleObj.GetComponent<RectTransform>();
+                if (titleRect != null) titleRect.pivot = new Vector2(0f, 1f);
                 var titleText = titleObj.GetComponent<Text>();
                 titleText.text = "THE WHISPERING WILDS";
+                titleText.fontStyle = FontStyle.Bold;
                 titleText.lineSpacing = 1.1f;
                 titleText.supportRichText = false;
+                titleText.raycastTarget = false;
+                titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                titleText.verticalOverflow = VerticalWrapMode.Overflow;
+                titleText.resizeTextForBestFit = true;
+                titleText.resizeTextMinSize = 30;
+                titleText.resizeTextMaxSize = 44;
 
-                // Subtitle
-                var subtitleObj = CreateText("GameSubtitle", brandHeaderObj.transform, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(90f, -18f), new Vector2(650f, 30f), font, 18, TextAnchor.MiddleLeft, new Color(0.70f, 0.88f, 0.78f));
+                // Tamil Subtitle - directly below English title (complete, visible)
+                var subtitleObj = CreateText("GameSubtitle", brandHeaderObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(titleXOffset, -52f), new Vector2(760f, 40f), font, 24, TextAnchor.UpperLeft, new Color(0.949f, 0.910f, 0.835f, 0.94f));
+                var subtitleRect = subtitleObj.GetComponent<RectTransform>();
+                if (subtitleRect != null) subtitleRect.pivot = new Vector2(0f, 1f);
                 var subtitleText = subtitleObj.GetComponent<Text>();
-                subtitleText.text = "காட்டு வழி • தடம்";
+                subtitleText.text = "\u0B95\u0BBE\u0B9F\u0BCD\u0B9F\u0BC1 \u0BB5\u0BB4\u0BBF \u2022 \u0BA4\u0B9F\u0BAE\u0BCD";
+                subtitleText.supportRichText = false;
+                subtitleText.raycastTarget = false;
+                subtitleText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                subtitleText.verticalOverflow = VerticalWrapMode.Overflow;
+                subtitleText.resizeTextForBestFit = true;
+                subtitleText.resizeTextMinSize = 16;
+                subtitleText.resizeTextMaxSize = 24;
 
-                // --- LEFT-CENTER: Clean, elegant vertical navigation menu ---
+                // --- LEFT-CENTER: Main navigation (left-aligned cinematic menu) ---
                 var menuContainer = new GameObject("MenuContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
                 menuContainer.transform.SetParent(menuRoot.transform, false);
                 var menuRect = menuContainer.GetComponent<RectTransform>();
-                menuRect.anchorMin = new Vector2(0.06f, 0.5f);
-                menuRect.anchorMax = new Vector2(0.06f, 0.5f);
+                menuRect.anchorMin = new Vector2(0.065f, 0.5f);
+                menuRect.anchorMax = new Vector2(0.065f, 0.5f);
                 menuRect.pivot = new Vector2(0f, 0.5f);
                 menuRect.anchoredPosition = new Vector2(0f, -40f);
-                menuRect.sizeDelta = new Vector2(380, 440);
+                menuRect.sizeDelta = new Vector2(360f, 400f);
 
                 var layout = menuContainer.GetComponent<VerticalLayoutGroup>();
-                layout.spacing = 14f;
+                layout.spacing = 11f;
                 layout.childControlWidth = true;
-                layout.childControlHeight = true;
+                layout.childControlHeight = false;
                 layout.childForceExpandWidth = true;
-                layout.childForceExpandHeight = true;
-                layout.childAlignment = TextAnchor.MiddleLeft;
-                layout.padding = new RectOffset(6, 6, 6, 6);
+                layout.childForceExpandHeight = false;
+                layout.childAlignment = TextAnchor.UpperLeft;
+                layout.padding = new RectOffset(0, 0, 0, 0);
 
-                // Top-Right Account / Sign In Control
+                // Top-Right Account / Sign In Control (compact dark glass, subtle gold outline)
                 var accountControlObj = new GameObject("AccountControl", typeof(RectTransform));
                 accountControlObj.transform.SetParent(menuRoot.transform, false);
                 var accountControlRect = accountControlObj.GetComponent<RectTransform>();
                 accountControlRect.anchorMin = new Vector2(1f, 1f);
                 accountControlRect.anchorMax = new Vector2(1f, 1f);
                 accountControlRect.pivot = new Vector2(1f, 1f);
-                accountControlRect.anchoredPosition = new Vector2(-40f, -40f);
-                accountControlRect.sizeDelta = new Vector2(250f, 44f);
+                accountControlRect.anchoredPosition = new Vector2(-32f, -28f);
+                accountControlRect.sizeDelta = new Vector2(260f, 42f);
 
-                var btnAccount = CreateButton("Btn_AccountSignIn", accountControlObj.transform, font, "👤 Guest (Offline)", new Color(0.10f, 0.20f, 0.18f, 0.95f));
+                var btnAccount = CreateButton("Btn_AccountSignIn", accountControlObj.transform, font, "Guest (Offline)", new Color(0.10f, 0.12f, 0.14f, 1f));
                 var btnAccountRect = btnAccount.GetComponent<RectTransform>();
                 btnAccountRect.anchorMin = Vector2.zero;
                 btnAccountRect.anchorMax = Vector2.one;
                 btnAccountRect.sizeDelta = Vector2.zero;
                 btnAccountRect.anchoredPosition = Vector2.zero;
+                var btnAccountImg = btnAccount.GetComponent<Image>();
+                if (btnAccountImg != null) btnAccountImg.color = new Color(0.08f, 0.10f, 0.12f, 0.78f);
+                var btnAccountOutline = btnAccount.GetComponent<Outline>();
+                if (btnAccountOutline != null) btnAccountOutline.effectColor = new Color(0.831f, 0.686f, 0.216f, 0.45f);
                 btnAccount.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
                 var accountStatusText = btnAccount.GetComponentInChildren<Text>();
-
-                // Professional Main Menu Buttons (Section 1 Structure):
-                // 1. BEGIN GAME — start a new journey (opens Mode Selection).
-                // 2. PREVIOUS JOURNEY — continue or load an existing campaign.
-                // 3. BACKUPS & SAVES — local and cloud save management.
-                // 4. SETTINGS — audio, display, quality, controls, accessibility.
-                // 5. DEVELOPER CREDITS — solo developer Mohanraj.
-                // 6. QUIT GAME — exit with confirmation dialog.
-                var btnBegin = CreateButton("Btn_BeginGame", menuContainer.transform, font, "🧭  BEGIN GAME", new Color(0.12f, 0.42f, 0.32f, 1f));
-                var btnPrevious = CreateButton("Btn_PreviousJourney", menuContainer.transform, font, "📜  PREVIOUS JOURNEY", new Color(0.15f, 0.30f, 0.42f, 1f));
-                var btnBackups = CreateButton("Btn_BackupsSaves", menuContainer.transform, font, "💾  BACKUPS & SAVES", new Color(0.18f, 0.28f, 0.38f, 1f));
-                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "⚙  SETTINGS", new Color(0.20f, 0.30f, 0.38f, 1f));
-                var btnCredits = CreateButton("Btn_Credits", menuContainer.transform, font, "🎖  DEVELOPER CREDITS", new Color(0.24f, 0.32f, 0.28f, 1f));
-                var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "🚪  QUIT GAME", new Color(0.45f, 0.18f, 0.18f, 1f));
-
-                // Add MenuButtonAnimator to all 6 main menu buttons
-                foreach (var btnGo in new[] { btnBegin, btnPrevious, btnBackups, btnSettings, btnCredits, btnQuit })
+                if (accountStatusText != null)
                 {
-                    btnGo.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+                    accountStatusText.fontSize = 15;
+                    accountStatusText.alignment = TextAnchor.MiddleCenter;
+                    accountStatusText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                    accountStatusText.verticalOverflow = VerticalWrapMode.Truncate;
+                    accountStatusText.color = new Color(0.949f, 0.910f, 0.835f, 0.95f);
                 }
 
-                var footerObj = CreateText("FooterText", menuRoot.transform, new Vector2(0f, 0.04f), new Vector2(1f, 0.04f), Vector2.zero, new Vector2(1400f, 30f), font, 14, TextAnchor.MiddleCenter, new Color(0.78f, 0.82f, 0.88f, 0.75f));
-                footerObj.GetComponent<Text>().text = "Explore • Discover • Survive   |   Version v1.0.2   |   A Solo Adventure by Mohanraj";
+                // Professional Main Menu Buttons (exact order):
+                // 1. BEGIN GAME
+                // 2. CONTINUE JOURNEY
+                // 3. BACKUPS & SAVES
+                // 4. SETTINGS
+                // 5. DEVELOPER CREDITS
+                // 6. QUIT GAME
+                var btnBegin = CreateButton("Btn_BeginGame", menuContainer.transform, font, "BEGIN GAME", new Color(0.12f, 0.42f, 0.32f, 1f));
+                var btnPrevious = CreateButton("Btn_PreviousJourney", menuContainer.transform, font, "CONTINUE JOURNEY", new Color(0.10f, 0.14f, 0.16f, 1f));
+                var btnBackups = CreateButton("Btn_BackupsSaves", menuContainer.transform, font, "BACKUPS & SAVES", new Color(0.10f, 0.14f, 0.16f, 1f));
+                var btnSettings = CreateButton("Btn_Settings", menuContainer.transform, font, "SETTINGS", new Color(0.10f, 0.14f, 0.16f, 1f));
+                var btnCredits = CreateButton("Btn_Credits", menuContainer.transform, font, "DEVELOPER CREDITS", new Color(0.10f, 0.14f, 0.16f, 1f));
+                var btnQuit = CreateButton("Btn_Quit", menuContainer.transform, font, "QUIT GAME", new Color(0.10f, 0.14f, 0.16f, 1f));
+
+                ConfigureMainMenuButton(btnBegin, true);
+                ConfigureMainMenuButton(btnPrevious, false);
+                ConfigureMainMenuButton(btnBackups, false);
+                ConfigureMainMenuButton(btnSettings, false);
+                ConfigureMainMenuButton(btnCredits, false);
+                ConfigureMainMenuButton(btnQuit, false);
+
+                // Footer: bottom-center, smaller less prominent typography (version + small tagline)
+                var footerObj = CreateText("FooterText", menuRoot.transform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(1200f, 24f), font, 12, TextAnchor.MiddleCenter, new Color(0.949f, 0.910f, 0.835f, 0.55f));
+                var footerRect = footerObj.GetComponent<RectTransform>();
+                if (footerRect != null) footerRect.pivot = new Vector2(0.5f, 0f);
+                var footerTextComp = footerObj.GetComponent<Text>();
+                footerTextComp.text = "v1.0.2  |  A cinematic journey through ancient Tamil Nadu";
+                footerTextComp.raycastTarget = false;
 
                 var ruleObj = CreateText("RuleNoticeText", menuRoot.transform, new Vector2(0.5f, 0.08f), new Vector2(0.5f, 0.08f), Vector2.zero, new Vector2(1000, 30), font, 14, TextAnchor.MiddleCenter, new Color(1f, 0.7f, 0.2f, 0f));
 
@@ -433,24 +474,35 @@ namespace WhisperingWilds.Editor
                 glowImg.color = new Color(0.96f, 0.82f, 0.38f, 0.18f);
                 glowImg.raycastTarget = false;
 
-                // English Game Title â€” Centered horizontally & vertically
+
+                // English Game Title - Centered horizontally & vertically (complete, no clipping)
                 var introTitleObj = CreateText("IntroTitleText", introGroup.transform,
-                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 44f), new Vector2(880f, 68f),
-                    font, 54, TextAnchor.MiddleCenter, new Color(0.96f, 0.83f, 0.40f, 0f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 48f), new Vector2(900f, 76f),
+                    font, 56, TextAnchor.MiddleCenter, new Color(0.96f, 0.83f, 0.40f, 0f));
                 var introTitleTextComp = introTitleObj.GetComponent<Text>();
                 introTitleTextComp.text = "THE WHISPERING WILDS";
-                introTitleTextComp.fontStyle = FontStyle.Normal;
-                introTitleTextComp.lineSpacing = 1.15f;
+                introTitleTextComp.fontStyle = FontStyle.Bold;
+                introTitleTextComp.lineSpacing = 1.1f;
                 introTitleTextComp.supportRichText = false;
+                introTitleTextComp.horizontalOverflow = HorizontalWrapMode.Overflow;
+                introTitleTextComp.verticalOverflow = VerticalWrapMode.Overflow;
+                introTitleTextComp.resizeTextForBestFit = true;
+                introTitleTextComp.resizeTextMinSize = 36;
+                introTitleTextComp.resizeTextMaxSize = 56;
 
-                // Tamil Subtitle â€” Centered directly beneath English title
+                // Tamil Subtitle - Centered directly beneath English title
                 var introSubtitleObj = CreateText("IntroSubtitleText", introGroup.transform,
-                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -14f), new Vector2(720f, 42f),
-                    font, 26, TextAnchor.MiddleCenter, new Color(0.65f, 0.89f, 0.79f, 0f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -12f), new Vector2(760f, 46f),
+                    font, 28, TextAnchor.MiddleCenter, new Color(0.65f, 0.89f, 0.79f, 0f));
                 var introSubtitleTextComp = introSubtitleObj.GetComponent<Text>();
                 introSubtitleTextComp.text = "\u0B95\u0BBE\u0B9F\u0BCD\u0B9F\u0BC1 \u0BB5\u0BB4\u0BBF \u2022 \u0BA4\u0B9F\u0BAE\u0BCD";
                 introSubtitleTextComp.fontStyle = FontStyle.Normal;
                 introSubtitleTextComp.supportRichText = false;
+                introSubtitleTextComp.horizontalOverflow = HorizontalWrapMode.Overflow;
+                introSubtitleTextComp.verticalOverflow = VerticalWrapMode.Overflow;
+                introSubtitleTextComp.resizeTextForBestFit = true;
+                introSubtitleTextComp.resizeTextMinSize = 18;
+                introSubtitleTextComp.resizeTextMaxSize = 28;
 
                 // Title Screen Primary START Button â€” Centered below subtitle with gold outline
                 var startBtnObj = CreateButton("Btn_TitleStart", introGroup.transform,
@@ -585,17 +637,19 @@ namespace WhisperingWilds.Editor
                 brandRect.offsetMin = Vector2.zero;
                 brandRect.offsetMax = Vector2.zero;
 
-                // App Logo
+                // Full horizontal brand artwork in login branding panel (preserve aspect ratio)
                 var loginLogoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
                 if (loginLogoSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
                     logoObj.transform.SetParent(brandPanel.transform, false);
                     var logoRect = logoObj.GetComponent<RectTransform>();
-                    logoRect.anchorMin = new Vector2(0.5f, 0.82f);
-                    logoRect.anchorMax = new Vector2(0.5f, 0.82f);
+                    logoRect.anchorMin = new Vector2(0.5f, 0.84f);
+                    logoRect.anchorMax = new Vector2(0.5f, 0.84f);
                     logoRect.pivot = new Vector2(0.5f, 0.5f);
-                    logoRect.sizeDelta = new Vector2(260f, 110f);
+                    logoRect.anchoredPosition = Vector2.zero;
+                    // 1600x560 native aspect -> fit within panel width while preserving ratio
+                    logoRect.sizeDelta = new Vector2(360f, 126f);
                     var logoImg = logoObj.GetComponent<Image>();
                     logoImg.sprite = loginLogoSprite;
                     logoImg.preserveAspect = true;
@@ -668,21 +722,28 @@ namespace WhisperingWilds.Editor
 
                 // Sign In Header
                 var signInTitle = CreateText("SignInTitle", signInPanel.transform,
-                    new Vector2(0.5f, 0.93f), new Vector2(0.5f, 0.93f), Vector2.zero, new Vector2(400f, 36f),
+                    new Vector2(0.5f, 0.94f), new Vector2(0.5f, 0.94f), Vector2.zero, new Vector2(400f, 36f),
                     font, 24, TextAnchor.MiddleCenter, new Color(0.95f, 0.82f, 0.38f));
+
+                // Network status banner (shown when server is unavailable)
+                var networkStatusText = CreateText("NetworkStatus", signInPanel.transform,
+                    new Vector2(0.5f, 0.87f), new Vector2(0.5f, 0.87f), Vector2.zero, new Vector2(380f, 28f),
+                    font, 12, TextAnchor.MiddleCenter, new Color(0.95f, 0.75f, 0.2f));
+                networkStatusText.GetComponent<Text>().text = "";
+                networkStatusText.GetComponent<Text>().raycastTarget = false;
 
                 // Email field
                 var emailField = CreateInputField("EmailField", signInPanel.transform,
-                    new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(380f, 42f), font, "Email Address");
+                    new Vector2(0.5f, 0.76f), new Vector2(0.5f, 0.76f), Vector2.zero, new Vector2(380f, 42f), font, "Email Address");
 
                 // Password field
                 var passwordField = CreateInputField("PasswordField", signInPanel.transform,
-                    new Vector2(0.44f, 0.66f), new Vector2(0.44f, 0.66f), Vector2.zero, new Vector2(310f, 42f), font, "Password");
+                    new Vector2(0.44f, 0.64f), new Vector2(0.44f, 0.64f), Vector2.zero, new Vector2(310f, 42f), font, "Password");
                 passwordField.GetComponent<InputField>().contentType = InputField.ContentType.Password;
 
                 // Toggle Password Visibility Button
                 var togglePasswordBtn = CreateButton("TogglePasswordBtn", signInPanel.transform,
-                    new Vector2(0.90f, 0.66f), new Vector2(0.90f, 0.66f), Vector2.zero, new Vector2(60f, 42f),
+                    new Vector2(0.90f, 0.64f), new Vector2(0.90f, 0.64f), Vector2.zero, new Vector2(60f, 42f),
                     font, "SHOW", new Color(0.18f, 0.22f, 0.28f));
                 var passwordEyeText = togglePasswordBtn.GetComponentInChildren<Text>();
                 passwordEyeText.fontSize = 11;
@@ -691,8 +752,8 @@ namespace WhisperingWilds.Editor
                 var rememberRow = new GameObject("RememberRow", typeof(RectTransform), typeof(Toggle));
                 rememberRow.transform.SetParent(signInPanel.transform, false);
                 var remRect = rememberRow.GetComponent<RectTransform>();
-                remRect.anchorMin = new Vector2(0.05f, 0.55f);
-                remRect.anchorMax = new Vector2(0.50f, 0.55f);
+                remRect.anchorMin = new Vector2(0.05f, 0.53f);
+                remRect.anchorMax = new Vector2(0.50f, 0.53f);
                 remRect.sizeDelta = new Vector2(180f, 26f);
                 var remToggle = rememberRow.GetComponent<Toggle>();
 
@@ -724,7 +785,7 @@ namespace WhisperingWilds.Editor
 
                 // Forgot Password button
                 var forgotPasswordBtn = CreateButton("ForgotPasswordBtn", signInPanel.transform,
-                    new Vector2(0.76f, 0.55f), new Vector2(0.76f, 0.55f), Vector2.zero, new Vector2(140f, 26f),
+                    new Vector2(0.76f, 0.53f), new Vector2(0.76f, 0.53f), Vector2.zero, new Vector2(140f, 26f),
                     font, "Forgot Password?", new Color(0f, 0f, 0f, 0f));
                 var forgotBtnText = forgotPasswordBtn.GetComponentInChildren<Text>();
                 forgotBtnText.fontSize = 12;
@@ -732,20 +793,20 @@ namespace WhisperingWilds.Editor
 
                 // Sign In button (Deep Forest Green)
                 var signInBtn = CreateButton("SignInButton", signInPanel.transform,
-                    new Vector2(0.5f, 0.42f), new Vector2(0.5f, 0.42f), Vector2.zero, new Vector2(380f, 44f),
+                    new Vector2(0.5f, 0.38f), new Vector2(0.5f, 0.38f), Vector2.zero, new Vector2(380f, 48f),
                     font, "Sign In", new Color(0.12f, 0.38f, 0.26f));
                 var signInBtnText = signInBtn.GetComponentInChildren<Text>();
-                signInBtnText.fontSize = 17;
+                signInBtnText.fontSize = 18;
                 signInBtnText.color = new Color(0.96f, 0.92f, 0.82f);
 
                 // Sign In status text
                 var signInStatus = CreateText("SignInStatus", signInPanel.transform,
-                    new Vector2(0.5f, 0.32f), new Vector2(0.5f, 0.32f), Vector2.zero, new Vector2(380f, 32f),
+                    new Vector2(0.5f, 0.26f), new Vector2(0.5f, 0.26f), Vector2.zero, new Vector2(380f, 36f),
                     font, 13, TextAnchor.MiddleCenter, Color.gray);
 
                 // Switch to register button
                 var switchToRegBtn = CreateButton("SwitchToRegisterBtn", signInPanel.transform,
-                    new Vector2(0.5f, 0.20f), new Vector2(0.5f, 0.20f), Vector2.zero, new Vector2(380f, 38f),
+                    new Vector2(0.5f, 0.12f), new Vector2(0.5f, 0.12f), Vector2.zero, new Vector2(380f, 38f),
                     font, "Don't have an account? Sign up", new Color(0.16f, 0.20f, 0.25f));
 
                 // --- 2. Register Panel ---
@@ -942,8 +1003,11 @@ namespace WhisperingWilds.Editor
                     font, "Back", new Color(0.20f, 0.24f, 0.30f));
 
                 var guestBtn = CreateButton("GuestButton", loginUIObj.transform,
-                    new Vector2(0.97f, 0.94f), new Vector2(0.97f, 0.94f), new Vector2(-95f, 0f), new Vector2(180f, 38f),
-                    font, "Play Offline (Guest)", new Color(0.15f, 0.32f, 0.45f));
+                    new Vector2(0.97f, 0.94f), new Vector2(0.97f, 0.94f), new Vector2(-95f, 0f), new Vector2(200f, 44f),
+                    font, "Play Offline", new Color(0.12f, 0.42f, 0.28f));
+                var guestBtnText = guestBtn.GetComponentInChildren<Text>();
+                guestBtnText.fontSize = 15;
+                guestBtnText.color = new Color(0.96f, 0.92f, 0.82f);
 
                 // Loading Spinner Indicator
                 var spinnerObj = new GameObject("LoadingSpinner", typeof(RectTransform), typeof(Image));
@@ -1035,6 +1099,14 @@ namespace WhisperingWilds.Editor
                 serializedTitle.FindProperty("accountButton").objectReferenceValue = btnAccount.GetComponent<Button>();
                 serializedTitle.FindProperty("accountStatusText").objectReferenceValue = accountStatusText;
 
+                // Title labels
+                if (serializedTitle.FindProperty("titleText") != null)
+                    serializedTitle.FindProperty("titleText").objectReferenceValue = titleText;
+                if (serializedTitle.FindProperty("subtitleText") != null)
+                    serializedTitle.FindProperty("subtitleText").objectReferenceValue = subtitleText;
+                if (serializedTitle.FindProperty("ruleNoticeText") != null)
+                    serializedTitle.FindProperty("ruleNoticeText").objectReferenceValue = ruleObj.GetComponent<Text>();
+
                 // Legacy aliases
                 serializedTitle.FindProperty("newGameButton").objectReferenceValue = btnBegin.GetComponent<Button>();
                 serializedTitle.FindProperty("continueButton").objectReferenceValue = btnPrevious.GetComponent<Button>();
@@ -1080,6 +1152,88 @@ namespace WhisperingWilds.Editor
             }
         }
 
+
+        /// <summary>
+        /// Applies premium main-menu visual treatment: fixed preferred height, smoked-charcoal background,
+        /// antique-gold border/accent, warm-ivory text, and left-aligned label layout.
+        /// </summary>
+        private static void ConfigureMainMenuButton(GameObject btnObj, bool isPrimary)
+        {
+            if (btnObj == null) return;
+
+            var le = btnObj.GetComponent<LayoutElement>();
+            if (le == null) le = btnObj.AddComponent<LayoutElement>();
+            le.preferredHeight = 51f;
+            le.minHeight = 50f;
+            le.flexibleHeight = 0f;
+
+            var img = btnObj.GetComponent<Image>();
+            if (img != null)
+            {
+                // Translucent smoked charcoal; Begin Game gets a slightly stronger jade/gold treatment.
+                img.color = isPrimary
+                    ? new Color(0.11f, 0.20f, 0.17f, 0.88f)
+                    : new Color(0.10f, 0.12f, 0.14f, 0.82f);
+            }
+
+            var outline = btnObj.GetComponent<Outline>();
+            if (outline != null)
+            {
+                outline.effectColor = new Color(0.831f, 0.686f, 0.216f, 0.45f); // antique gold
+                outline.effectDistance = new Vector2(1f, -1f);
+            }
+
+            var label = btnObj.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                label.alignment = TextAnchor.MiddleLeft;
+                label.fontSize = 18;
+                label.color = new Color(0.949f, 0.910f, 0.835f, 0.96f); // warm ivory
+                label.raycastTarget = false;
+                var labelRect = label.GetComponent<RectTransform>();
+                if (labelRect != null)
+                {
+                    labelRect.anchorMin = Vector2.zero;
+                    labelRect.anchorMax = Vector2.one;
+                    labelRect.offsetMin = new Vector2(22f, 0f);
+                    labelRect.offsetMax = new Vector2(-14f, 0f);
+                }
+            }
+
+            var accent = btnObj.transform.Find("LeftAccent");
+            if (accent != null)
+            {
+                var accentRect = accent.GetComponent<RectTransform>();
+                if (accentRect != null)
+                {
+                    accentRect.anchorMin = new Vector2(0f, 0.18f);
+                    accentRect.anchorMax = new Vector2(0f, 0.82f);
+                    accentRect.pivot = new Vector2(0f, 0.5f);
+                    accentRect.anchoredPosition = new Vector2(6f, 0f);
+                    accentRect.sizeDelta = new Vector2(3f, 0f);
+                }
+                var accentImg = accent.GetComponent<Image>();
+                if (accentImg != null) accentImg.color = new Color(0.831f, 0.686f, 0.216f, 0.95f);
+                accent.gameObject.SetActive(false);
+            }
+
+            var btn = btnObj.GetComponent<Button>();
+            if (btn != null)
+            {
+                // Keep Unity Button transitions subtle; MenuButtonAnimator provides premium interaction feedback.
+                var colors = btn.colors;
+                colors.normalColor = Color.white;
+                colors.highlightedColor = new Color(1.06f, 1.04f, 1.0f, 1f);
+                colors.pressedColor = new Color(0.94f, 0.92f, 0.90f, 1f);
+                colors.selectedColor = colors.highlightedColor;
+                colors.disabledColor = new Color(0.6f, 0.6f, 0.6f, 0.55f);
+                colors.fadeDuration = 0.08f;
+                btn.colors = colors;
+            }
+
+            var animator = btnObj.GetComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+            if (animator == null) animator = btnObj.AddComponent<WhisperingWilds.UI.MenuButtonAnimator>();
+        }
         private static GameObject CreateText(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 sizeDelta, Font font, int fontSize, TextAnchor alignment, Color color)
         {
             var textObj = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
@@ -1359,51 +1513,67 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             // Audio page
             var audioPage = CreatePage("Page_Audio", root.transform);
-            var aTitle = CreateText("Title", audioPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+            var aTitle = CreateText("Title", audioPage.transform, new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
 
             Text masterVolValue, musicVolValue, sfxVolValue, ambienceVolValue, dialogueVolValue, uiVolValue;
             Button masterVolLeft, masterVolRight, musicVolLeft, musicVolRight, sfxVolLeft, sfxVolRight;
             Button ambienceVolLeft, ambienceVolRight, dialogueVolLeft, dialogueVolRight, uiVolLeft, uiVolRight;
 
-            masterVolValue = CreateRowValue("Row_MasterVol", audioPage.transform, font, 0.68f);
-            masterVolLeft = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.68f, "<");
-            masterVolRight = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.68f, ">");
+            Button masterMuteBtn, musicMuteBtn, sfxMuteBtn, ambienceMuteBtn;
+
+            CreateRowLabel("Row_MasterVol", audioPage.transform, font, 0.72f, "Master Volume");
+            masterVolValue = CreateRowValue("Row_MasterVol", audioPage.transform, font, 0.72f);
+            masterVolLeft = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, "<");
+            masterVolRight = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, ">");
+            masterMuteBtn = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, "Mute");
             SetNavigation(masterVolLeft, masterVolRight, masterVolLeft, masterVolRight);
 
-            musicVolValue = CreateRowValue("Row_MusicVol", audioPage.transform, font, 0.58f);
-            musicVolLeft = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.58f, "<");
-            musicVolRight = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.58f, ">");
+            CreateRowLabel("Row_MusicVol", audioPage.transform, font, 0.62f, "Music Volume");
+            musicVolValue = CreateRowValue("Row_MusicVol", audioPage.transform, font, 0.62f);
+            musicVolLeft = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, "<");
+            musicVolRight = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, ">");
+            musicMuteBtn = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, "Mute");
             SetNavigation(musicVolLeft, musicVolRight, musicVolLeft, musicVolRight);
 
-            sfxVolValue = CreateRowValue("Row_SfxVol", audioPage.transform, font, 0.48f);
-            sfxVolLeft = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.48f, "<");
-            sfxVolRight = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.48f, ">");
+            CreateRowLabel("Row_SfxVol", audioPage.transform, font, 0.52f, "SFX Volume");
+            sfxVolValue = CreateRowValue("Row_SfxVol", audioPage.transform, font, 0.52f);
+            sfxVolLeft = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, "<");
+            sfxVolRight = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, ">");
+            sfxMuteBtn = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, "Mute");
             SetNavigation(sfxVolLeft, sfxVolRight, sfxVolLeft, sfxVolRight);
 
-            ambienceVolValue = CreateRowValue("Row_AmbienceVol", audioPage.transform, font, 0.38f);
-            ambienceVolLeft = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.38f, "<");
-            ambienceVolRight = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.38f, ">");
+            CreateRowLabel("Row_AmbienceVol", audioPage.transform, font, 0.42f, "Ambience Volume");
+            ambienceVolValue = CreateRowValue("Row_AmbienceVol", audioPage.transform, font, 0.42f);
+            ambienceVolLeft = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, "<");
+            ambienceVolRight = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, ">");
+            ambienceMuteBtn = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, "Mute");
             SetNavigation(ambienceVolLeft, ambienceVolRight, ambienceVolLeft, ambienceVolRight);
 
-            dialogueVolValue = CreateRowValue("Row_DialogueVol", audioPage.transform, font, 0.28f);
-            dialogueVolLeft = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.28f, "<");
-            dialogueVolRight = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.28f, ">");
+            CreateRowLabel("Row_DialogueVol", audioPage.transform, font, 0.32f, "Dialogue Volume");
+            dialogueVolValue = CreateRowValue("Row_DialogueVol", audioPage.transform, font, 0.32f);
+            dialogueVolLeft = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.32f, "<");
+            dialogueVolRight = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.32f, ">");
             SetNavigation(dialogueVolLeft, dialogueVolRight, dialogueVolLeft, dialogueVolRight);
 
-            uiVolValue = CreateRowValue("Row_UiVol", audioPage.transform, font, 0.18f);
-            uiVolLeft = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.18f, "<");
-            uiVolRight = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.18f, ">");
+            CreateRowLabel("Row_UiVol", audioPage.transform, font, 0.22f, "UI Volume");
+            uiVolValue = CreateRowValue("Row_UiVol", audioPage.transform, font, 0.22f);
+            uiVolLeft = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.22f, "<");
+            uiVolRight = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.22f, ">");
             SetNavigation(uiVolLeft, uiVolRight, uiVolLeft, uiVolRight);
 
             // Wire audio buttons to SettingsMenuUI methods
             masterVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMasterVolume(-0.05f));
             masterVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMasterVolume(0.05f));
+            masterMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleMasterMute);
             musicVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMusicVolume(-0.05f));
             musicVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMusicVolume(0.05f));
+            musicMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleMusicMute);
             sfxVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustSfxVolume(-0.05f));
             sfxVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustSfxVolume(0.05f));
+            sfxMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleSfxMute);
             ambienceVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustAmbienceVolume(-0.05f));
             ambienceVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustAmbienceVolume(0.05f));
+            ambienceMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleAmbienceMute);
             dialogueVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustDialogueVolume(-0.05f));
             dialogueVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustDialogueVolume(0.05f));
             uiVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustUiVolume(-0.05f));
@@ -1411,29 +1581,35 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             // Controls page
             var controlsPage = CreatePage("Page_Controls", root.transform);
-            var cTitle = CreateText("Title", controlsPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+            var cTitle = CreateText("Title", controlsPage.transform, new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
 
             Text mouseSensValue, invertYValue, invertXValue, cameraSmoothingValue, sprintModeValue, crouchModeValue;
             Button mouseSensLeft, mouseSensRight, invertYToggle, invertXToggle, sprintToggle, crouchToggle, resetControlsBtn;
 
-            mouseSensValue = CreateRowValue("Row_MouseSens", controlsPage.transform, font, 0.70f);
-            mouseSensLeft = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.70f, "<");
-            mouseSensRight = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.70f, ">");
+            CreateRowLabel("Row_MouseSens", controlsPage.transform, font, 0.72f, "Mouse Sensitivity");
+            mouseSensValue = CreateRowValue("Row_MouseSens", controlsPage.transform, font, 0.72f);
+            mouseSensLeft = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.72f, "<");
+            mouseSensRight = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.72f, ">");
             SetNavigation(mouseSensLeft, mouseSensRight, mouseSensLeft, mouseSensRight);
 
-            invertYValue = CreateRowValue("Row_InvertY", controlsPage.transform, font, 0.60f);
-            invertYToggle = CreateRowButton("Row_InvertY", controlsPage.transform, font, 0.60f, "Toggle");
+            CreateRowLabel("Row_InvertY", controlsPage.transform, font, 0.62f, "Invert Y");
+            invertYValue = CreateRowValue("Row_InvertY", controlsPage.transform, font, 0.62f);
+            invertYToggle = CreateRowButton("Row_InvertY", controlsPage.transform, font, 0.62f, "Toggle");
 
-            invertXValue = CreateRowValue("Row_InvertX", controlsPage.transform, font, 0.50f);
-            invertXToggle = CreateRowButton("Row_InvertX", controlsPage.transform, font, 0.50f, "Toggle");
+            CreateRowLabel("Row_InvertX", controlsPage.transform, font, 0.52f, "Invert X");
+            invertXValue = CreateRowValue("Row_InvertX", controlsPage.transform, font, 0.52f);
+            invertXToggle = CreateRowButton("Row_InvertX", controlsPage.transform, font, 0.52f, "Toggle");
 
-            cameraSmoothingValue = CreateRowValue("Row_CameraSmooth", controlsPage.transform, font, 0.40f);
+            CreateRowLabel("Row_CameraSmooth", controlsPage.transform, font, 0.42f, "Camera Smoothing");
+            cameraSmoothingValue = CreateRowValue("Row_CameraSmooth", controlsPage.transform, font, 0.42f);
 
-            sprintModeValue = CreateRowValue("Row_SprintMode", controlsPage.transform, font, 0.30f);
-            sprintToggle = CreateRowButton("Row_SprintMode", controlsPage.transform, font, 0.30f, "Toggle");
+            CreateRowLabel("Row_SprintMode", controlsPage.transform, font, 0.32f, "Sprint Mode");
+            sprintModeValue = CreateRowValue("Row_SprintMode", controlsPage.transform, font, 0.32f);
+            sprintToggle = CreateRowButton("Row_SprintMode", controlsPage.transform, font, 0.32f, "Toggle");
 
-            crouchModeValue = CreateRowValue("Row_CrouchMode", controlsPage.transform, font, 0.20f);
-            crouchToggle = CreateRowButton("Row_CrouchMode", controlsPage.transform, font, 0.20f, "Toggle");
+            CreateRowLabel("Row_CrouchMode", controlsPage.transform, font, 0.22f, "Crouch Mode");
+            crouchModeValue = CreateRowValue("Row_CrouchMode", controlsPage.transform, font, 0.22f);
+            crouchToggle = CreateRowButton("Row_CrouchMode", controlsPage.transform, font, 0.22f, "Toggle");
 
             var resetControlsBtnObj = CreateButton("Btn_ResetControls", controlsPage.transform, font, "Reset Defaults", new Color(0.4f, 0.24f, 0.24f));
             resetControlsBtn = resetControlsBtnObj.GetComponent<Button>();
@@ -1455,28 +1631,34 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             // Accessibility page
             var accessibilityPage = CreatePage("Page_Accessibility", root.transform);
-            var acTitle = CreateText("Title", accessibilityPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+            var acTitle = CreateText("Title", accessibilityPage.transform, new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
 
             Text subtitlesValue, subtitleBgValue, subtitleSizeValue, screenShakeValue, motionBlurValue, colorblindValue;
             Button subtitlesToggle, subtitleBgToggle, subtitleSizeCycle, screenShakeToggle, motionBlurToggle, colorblindCycle;
 
-            subtitlesValue = CreateRowValue("Row_Subtitles", accessibilityPage.transform, font, 0.70f);
-            subtitlesToggle = CreateRowButton("Row_Subtitles", accessibilityPage.transform, font, 0.70f, "Toggle");
+            CreateRowLabel("Row_Subtitles", accessibilityPage.transform, font, 0.72f, "Subtitles");
+            subtitlesValue = CreateRowValue("Row_Subtitles", accessibilityPage.transform, font, 0.72f);
+            subtitlesToggle = CreateRowButton("Row_Subtitles", accessibilityPage.transform, font, 0.72f, "Toggle");
 
-            subtitleBgValue = CreateRowValue("Row_SubtitleBg", accessibilityPage.transform, font, 0.60f);
-            subtitleBgToggle = CreateRowButton("Row_SubtitleBg", accessibilityPage.transform, font, 0.60f, "Toggle");
+            CreateRowLabel("Row_SubtitleBg", accessibilityPage.transform, font, 0.62f, "Subtitle Background");
+            subtitleBgValue = CreateRowValue("Row_SubtitleBg", accessibilityPage.transform, font, 0.62f);
+            subtitleBgToggle = CreateRowButton("Row_SubtitleBg", accessibilityPage.transform, font, 0.62f, "Toggle");
 
-            subtitleSizeValue = CreateRowValue("Row_SubtitleSize", accessibilityPage.transform, font, 0.50f);
-            subtitleSizeCycle = CreateRowButton("Row_SubtitleSize", accessibilityPage.transform, font, 0.50f, "Cycle");
+            CreateRowLabel("Row_SubtitleSize", accessibilityPage.transform, font, 0.52f, "Subtitle Size");
+            subtitleSizeValue = CreateRowValue("Row_SubtitleSize", accessibilityPage.transform, font, 0.52f);
+            subtitleSizeCycle = CreateRowButton("Row_SubtitleSize", accessibilityPage.transform, font, 0.52f, "Cycle");
 
-            screenShakeValue = CreateRowValue("Row_ScreenShake", accessibilityPage.transform, font, 0.40f);
-            screenShakeToggle = CreateRowButton("Row_ScreenShake", accessibilityPage.transform, font, 0.40f, "Toggle");
+            CreateRowLabel("Row_ScreenShake", accessibilityPage.transform, font, 0.42f, "Screen Shake");
+            screenShakeValue = CreateRowValue("Row_ScreenShake", accessibilityPage.transform, font, 0.42f);
+            screenShakeToggle = CreateRowButton("Row_ScreenShake", accessibilityPage.transform, font, 0.42f, "Toggle");
 
-            motionBlurValue = CreateRowValue("Row_MotionBlur", accessibilityPage.transform, font, 0.30f);
-            motionBlurToggle = CreateRowButton("Row_MotionBlur", accessibilityPage.transform, font, 0.30f, "Toggle");
+            CreateRowLabel("Row_MotionBlur", accessibilityPage.transform, font, 0.32f, "Motion Blur");
+            motionBlurValue = CreateRowValue("Row_MotionBlur", accessibilityPage.transform, font, 0.32f);
+            motionBlurToggle = CreateRowButton("Row_MotionBlur", accessibilityPage.transform, font, 0.32f, "Toggle");
 
-            colorblindValue = CreateRowValue("Row_Colorblind", accessibilityPage.transform, font, 0.20f);
-            colorblindCycle = CreateRowButton("Row_Colorblind", accessibilityPage.transform, font, 0.20f, "Cycle");
+            CreateRowLabel("Row_Colorblind", accessibilityPage.transform, font, 0.22f, "Colorblind Mode");
+            colorblindValue = CreateRowValue("Row_Colorblind", accessibilityPage.transform, font, 0.22f);
+            colorblindCycle = CreateRowButton("Row_Colorblind", accessibilityPage.transform, font, 0.22f, "Cycle");
 
             // Wire accessibility buttons
             subtitlesToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleSubtitles);
@@ -1542,6 +1724,10 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             so.FindProperty("ambienceVolValueText").objectReferenceValue = ambienceVolValue;
             so.FindProperty("dialogueVolValueText").objectReferenceValue = dialogueVolValue;
             so.FindProperty("uiVolValueText").objectReferenceValue = uiVolValue;
+            so.FindProperty("masterMuteButton").objectReferenceValue = masterMuteBtn.GetComponent<Button>();
+            so.FindProperty("musicMuteButton").objectReferenceValue = musicMuteBtn.GetComponent<Button>();
+            so.FindProperty("sfxMuteButton").objectReferenceValue = sfxMuteBtn.GetComponent<Button>();
+            so.FindProperty("ambienceMuteButton").objectReferenceValue = ambienceMuteBtn.GetComponent<Button>();
 
             // Controls page bindings
             so.FindProperty("controlsPage").objectReferenceValue = controlsPage;
@@ -1590,31 +1776,109 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             return page;
         }
 
+        private static void ConfigureRow(Transform row, float y)
+        {
+            var rect = row.GetComponent<RectTransform>();
+            // Full-width row band with consistent height and padding.
+            rect.anchorMin = new Vector2(0.06f, y);
+            rect.anchorMax = new Vector2(0.94f, y);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(0f, 46f);
+        }
+
         private static Text CreateRowLabel(string rowName, Transform parent, Font font, float y, string label)
         {
-            var text = CreateText("Label", parent, new Vector2(0f, y), new Vector2(0f, y), new Vector2(90f, 0f), new Vector2(420f, 44f), font, 20, TextAnchor.MiddleLeft, new Color(0.85f, 0.88f, 0.92f));
-            text.GetComponent<Text>().text = label;
-            text.transform.SetParent(FindRow(parent, rowName), false);
-            return text.GetComponent<Text>();
+            var row = FindRow(parent, rowName);
+            ConfigureRow(row, y);
+            var textObj = CreateText("Label", row, new Vector2(0f, 0f), new Vector2(0.45f, 1f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleLeft, new Color(0.85f, 0.88f, 0.92f));
+            var text = textObj.GetComponent<Text>();
+            text.text = label;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            var rt = textObj.GetComponent<RectTransform>();
+            rt.offsetMin = new Vector2(8f, 2f);
+            rt.offsetMax = new Vector2(-8f, -2f);
+            return text;
+        }
+
+        private static bool IsAudioMuteRow(string rowName)
+        {
+            return rowName == "Row_MasterVol" || rowName == "Row_MusicVol" || rowName == "Row_SfxVol" || rowName == "Row_AmbienceVol";
         }
 
         private static Text CreateRowValue(string rowName, Transform parent, Font font, float y)
         {
-            var text = CreateText("Value", parent, new Vector2(1f, y), new Vector2(1f, y), new Vector2(-230f, 0f), new Vector2(340f, 44f), font, 20, TextAnchor.MiddleCenter, new Color(1f, 0.95f, 0.75f));
-            text.transform.SetParent(FindRow(parent, rowName), false);
-            return text.GetComponent<Text>();
+            var row = FindRow(parent, rowName);
+            ConfigureRow(row, y);
+            bool hasMute = IsAudioMuteRow(rowName);
+            // Value sits in the center of the control cluster.
+            // Stepper rows: [ < ] value [ > ] (and optional [Mute] at far right for audio)
+            float xMin = hasMute ? 0.50f : 0.58f;
+            float xMax = hasMute ? 0.68f : 0.82f;
+            var textObj = CreateText("Value", row, new Vector2(xMin, 0f), new Vector2(xMax, 1f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleCenter, new Color(1f, 0.95f, 0.75f));
+            var text = textObj.GetComponent<Text>();
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            var rt = textObj.GetComponent<RectTransform>();
+            rt.offsetMin = new Vector2(4f, 2f);
+            rt.offsetMax = new Vector2(-4f, -2f);
+            return text;
         }
 
         private static Button CreateRowButton(string rowName, Transform parent, Font font, float y, string label)
         {
-            var btn = CreateButton("Toggle", parent, font, label, new Color(0.2f, 0.3f, 0.4f));
-            btn.transform.SetParent(FindRow(parent, rowName), false);
+            var row = FindRow(parent, rowName);
+            ConfigureRow(row, y);
+
+            bool isLeft = label == "<";
+            bool isRight = label == ">";
+            bool isMute = string.Equals(label, "Mute", StringComparison.OrdinalIgnoreCase) || string.Equals(label, "Unmute", StringComparison.OrdinalIgnoreCase);
+            bool hasMuteLayout = IsAudioMuteRow(rowName);
+            string objName = isLeft ? "Btn_Left" : isRight ? "Btn_Right" : isMute ? "Btn_Mute" : "Btn_Action";
+
+            var btn = CreateButton(objName, row, font, label, isMute ? new Color(0.35f, 0.22f, 0.22f) : new Color(0.2f, 0.3f, 0.4f));
             var rect = btn.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(1f, 0.5f);
-            rect.anchorMax = new Vector2(1f, 0.5f);
-            rect.pivot = new Vector2(1f, 0.5f);
-            rect.anchoredPosition = new Vector2(-30f, 0f);
-            rect.sizeDelta = new Vector2(150f, 40f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+
+            if (isLeft)
+            {
+                float x = hasMuteLayout ? 0.43f : 0.50f;
+                rect.anchorMin = new Vector2(x, 0.5f);
+                rect.anchorMax = new Vector2(x, 0.5f);
+                rect.sizeDelta = new Vector2(44f, 36f);
+            }
+            else if (isRight)
+            {
+                float x = hasMuteLayout ? 0.75f : 0.90f;
+                rect.anchorMin = new Vector2(x, 0.5f);
+                rect.anchorMax = new Vector2(x, 0.5f);
+                rect.sizeDelta = new Vector2(44f, 36f);
+            }
+            else if (isMute)
+            {
+                rect.anchorMin = new Vector2(0.92f, 0.5f);
+                rect.anchorMax = new Vector2(0.92f, 0.5f);
+                rect.sizeDelta = new Vector2(84f, 34f);
+            }
+            else
+            {
+                // Single action/toggle button aligned at right side of row.
+                rect.anchorMin = new Vector2(0.90f, 0.5f);
+                rect.anchorMax = new Vector2(0.90f, 0.5f);
+                rect.sizeDelta = new Vector2(110f, 36f);
+            }
+            rect.anchoredPosition = Vector2.zero;
+
+            var btnText = btn.GetComponentInChildren<Text>();
+            if (btnText != null)
+            {
+                btnText.alignment = TextAnchor.MiddleCenter;
+                btnText.resizeTextForBestFit = true;
+                btnText.resizeTextMinSize = 12;
+                btnText.resizeTextMaxSize = 18;
+            }
+
             return btn.GetComponent<Button>();
         }
 

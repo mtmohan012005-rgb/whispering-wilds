@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,22 +44,22 @@ namespace WhisperingWilds.Localization
         private static readonly List<LocalizationEntry> Entries = new List<LocalizationEntry>
         {
             // ---- Title menu -------------------------------------------------
-            new LocalizationEntry("menu.login",           "Login",                "உள்ந்நுழைவு"),
+            new LocalizationEntry("menu.login",           "Login",                "உள்நுழைவு"),
             new LocalizationEntry("menu.new_game",        "New Game",            "புதிய விளையாட்டு"),
             new LocalizationEntry("menu.continue",        "Continue",             "தொடரவும்"),
-            new LocalizationEntry("menu.settings",        "Settings",             "அமைப்புகள்"),
-            new LocalizationEntry("menu.quit",            "Quit",                 "வெளியேறு"),
+            new LocalizationEntry("menu.settings",        "SETTINGS",             "\u0B85\u0BAE\u0BC8\u0BAA\u0BCD\u0BAA\u0BC1\u0B95\u0BB3\u0BCD"),
+            new LocalizationEntry("menu.quit",            "QUIT GAME",            "\u0BB5\u0BC6\u0BB3\u0BBF\u0BAF\u0BC7\u0BB1\u0BC1"),
             new LocalizationEntry("menu.back",            "Back",                 "பின்செல்"),
             new LocalizationEntry("menu.apply",           "Apply",                "பயன்படுத்து"),
             new LocalizationEntry("menu.title",           "THE WHISPERING WILDS", "காட்டு வழி • தடம்"),
             new LocalizationEntry("menu.subtitle",        "A Living Exploration & Cultural Investigation of Tamil Nadu", "தமிழ்நாட்டின் வாழ்வியல் ஆய்வும் கலாச்சார கண்டறியும் பயணம்"),
-            new LocalizationEntry("menu.new_game_confirm", "Starting a New Game will erase your current save and progress. Continue?",
-                                                        "புதிய விளையாட்டு தொடங்குதலுந் உம்க் தற்போதிக் சேவ் மற்றும் முன்னேற்வை நீக்கிடும். தொடரவா?"),
+            new LocalizationEntry("menu.new_game_confirm", "Start a new game? Unsaved progress will be lost.",
+                                                        "புதிய ஆட்டத்தைத் தொடங்கவா? சேமிக்கப்படாத முன்னேற்றம் இழக்கப்படும்."),
             new LocalizationEntry("menu.coop",            "Co-op Expedition",     "கூட்டுப் பயணம்"),
             new LocalizationEntry("menu.saved_games",     "Load Game",            "விளையாட்டை ஏற்று"),
             new LocalizationEntry("menu.load_game",       "Load Game",            "விளையாட்டை ஏற்று"),
             new LocalizationEntry("menu.exit_game",       "Exit Game",            "வெளியேறு"),
-            new LocalizationEntry("menu.credits",         "Credits",              "பங்களிப்பாளர்கள்"),
+            new LocalizationEntry("menu.credits",         "DEVELOPER CREDITS",    "\u0B89\u0BB0\u0BC1\u0BB5\u0BBE\u0B95\u0BCD\u0B95\u0BC1\u0BA8\u0BB0\u0BCD \u0BA8\u0BA9\u0BCD\u0BB1\u0BBF\u0B95\u0BB3\u0BCD"),
             new LocalizationEntry("menu.guest",           "Play Offline / Guest", "விருந்தினராக தொடரவும்"),
             new LocalizationEntry("saved_games.title",    "Saved Campaigns",      "சேமிக்கப்பட்ட பயணங்கள்"),
             new LocalizationEntry("saved_games.no_saves", "No saved campaigns found.", "சேமிக்கப்பட்ட பயணங்கள் ஏதுமில்லை."),
@@ -69,9 +69,9 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("saved_games.quests_done", "Quests Completed",  "முடிக்கப்பட்ட பணிகள்"),
             new LocalizationEntry("credits.title",        "Credits & Heritage Acknowledgements", "பங்களிப்பாளர்கள் & கலாச்சார நன்றிகள்"),
             // ---- Redesigned Main Menu, Mode Selection & Management ----------
-            new LocalizationEntry("menu.begin_game",       "BEGIN GAME",           "விளையாட்டைத் தொடங்கு"),
-            new LocalizationEntry("menu.previous_journey", "PREVIOUS JOURNEY",     "முந்தைய பயணம்"),
-            new LocalizationEntry("menu.backups_saves",    "BACKUPS & SAVES",      "காப்புப்பிரதிகள் & சேமிப்புகள்"),
+            new LocalizationEntry("menu.begin_game",       "BEGIN GAME",           "\u0BB5\u0BBF\u0BB3\u0BC8\u0BAF\u0BBE\u0B9F\u0BCD\u0B9F\u0BC8\u0BA4\u0BCD \u0BA4\u0BCA\u0B9F\u0B99\u0BCD\u0B95\u0BC1"),
+            new LocalizationEntry("menu.previous_journey", "CONTINUE JOURNEY",     "\u0BAA\u0BAF\u0BA3\u0BA4\u0BCD\u0BA4\u0BC8\u0BA4\u0BCD \u0BA4\u0BCA\u0B9F\u0BB0\u0BB5\u0BC1\u0BAE\u0BCD"),
+            new LocalizationEntry("menu.backups_saves",    "BACKUPS & SAVES",      "\u0B95\u0BBE\u0BAA\u0BCD\u0BAA\u0BC1\u0BAA\u0BCD\u0BAA\u0BBF\u0BB0\u0BA4\u0BBF\u0B95\u0BB3\u0BCD & \u0B9A\u0BC7\u0BAE\u0BBF\u0BAA\u0BCD\u0BAA\u0BC1\u0B95\u0BB3\u0BCD"),
             new LocalizationEntry("menu.account_signin",   "ACCOUNT / SIGN IN",    "கணக்கு / உள்நுழைவு"),
             new LocalizationEntry("menu.account_guest",    "Guest (Offline)",      "விருந்தினர் (ஆஃப்லைன்)"),
             new LocalizationEntry("gamemode.title",        "EXPEDITION MODE",      "பயண முறை"),
@@ -116,7 +116,7 @@ namespace WhisperingWilds.Localization
             new LocalizationEntry("objective.quest_complete", "Quest Complete!",        "முழுமையான தேடல் முடிந்தது!"),
             new LocalizationEntry("objective.stage_label",    "Stage {0}: {1}",         "நிலை {0}: {1}"),
             new LocalizationEntry("region.travel_prompt",     "Travel to {0}",          "{0} நோக்கிப் பயணம்"),
-            new LocalizationEntry("menu.new_game_confirm",    "Start a new game? Unsaved progress will be lost.", "புதிய ஆட்டத்தைத் தொடங்கவா? சேமிக்கப்படாத முன்னேற்றம் இழக்கப்படும்."),
+
 
             // ---- Guided Introduction Tutorial ---------------------------------
             new LocalizationEntry("tutorial.title",          "EXPLORER GUIDE",          "ஆய்வாளர் வழிகாட்டி"),
@@ -291,7 +291,7 @@ new LocalizationEntry("talk.ammu", "Talk to Ammu", "அம்மு பேசு
 new LocalizationEntry("talk.balan", "Talk to Balan", "பாலன் பேசுவதற்கு"),
 new LocalizationEntry("talk.devi", "Talk to Devi", "தேவி பேசுவதற்கு"),
 new LocalizationEntry("talk.gopi", "Talk to Gopi", "கோபி பேசுவதற்கு"),
-new LocalizationEntry("talk.hari", "Talk to Hari", "ஙரி பேசுவதற்கு"),
+new LocalizationEntry("talk.hari", "Talk to Hari", "ஹரி பேசுவதற்கு"),
 new LocalizationEntry("talk.kannammal", "Talk to Kannammal", "கண்ணம்மாள் பேசுவதற்கு"),
 new LocalizationEntry("talk.radha", "Talk to Radha", "ராதா பேசுவதற்கு"),
 new LocalizationEntry("talk.ravi", "Talk to Ravi", "ரவி பேசுவதற்கு"),
@@ -365,7 +365,7 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("crafting.unavailable", "Crafting is unavailable in this region.", "இந்தப் பகுதியில் தயாரிப்பு இல்லை."),
 
             // ---- Region display names ----------------------------------------
-            new LocalizationEntry("region.chennai",      "Chennai George Town",  "சென்னை ஜார்ஜன் டவுன்"),
+            new LocalizationEntry("region.chennai",      "Chennai George Town",  "சென்னை ஜார்ஜ் டவுன்"),
             new LocalizationEntry("region.pichavaram",   "Pichavaram Wetlands", "பிச்சாவரம் ஈரநிலங்கள்"),
             new LocalizationEntry("region.thanjavur",    "Thanjavur Delta",      "தஞ்சாவூர் குடாநாங்கில்"),
             new LocalizationEntry("region.chettinad",    "Chettinad Mansion",    "செட்டிநாடு அரண்மனை"),
@@ -376,7 +376,7 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("place.coimbatore",         "Coimbatore",         "கோயம்புத்தூர்"),
             new LocalizationEntry("place.thanjavur",          "Thanjavur",          "தஞ்சாவூர்"),
             new LocalizationEntry("place.mamallapuram",       "Mamallapuram",       "மாமல்லபுரம்"),
-            new LocalizationEntry("place.mahabalipuram",      "Mahabalipuram",      "மகாலபுரம்"),
+            new LocalizationEntry("place.mahabalipuram",      "Mahabalipuram",      "மகாபலிபுரம்"),
             new LocalizationEntry("place.pichavaram",         "Pichavaram",         "பிச்சாவரம்"),
             new LocalizationEntry("place.chettinad",          "Chettinad",          "செட்டிநாடு"),
             new LocalizationEntry("place.nilgiris",           "Nilgiris",           "நீலகிரி"),
@@ -478,7 +478,7 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
 
             // ---- Login / Account Modal (PRO Experience) -----------------------
             new LocalizationEntry("login.title",            "EXPLORER AUTHENTICATION", "ஆய்வாளர் உள்நுழைவு"),
-            new LocalizationEntry("login.subtitle",         "Connect your explorer profile to sync cloud saves, discoveries, and co-op journeys across Tamil Nadu", "உங்கள் ஆய்வாளர் கணக்கை இணைத்து மேகக்கணி சேமிப்புகள், கலாச்சார கண்டுபிடிப்புகள் மற்றும் கூட்டு பயணங்களை ஒத்திசைக்கவும்"),
+            new LocalizationEntry("login.subtitle",         "Sign in to your explorer profile to access your account and continue your journey across Tamil Nadu", "உங்கள் ஆய்வாளர் கணக்கை இணைத்து மேகக்கணி சேமிப்புகள், கலாச்சார கண்டுபிடிப்புகள் மற்றும் கூட்டு பயணங்களை ஒத்திசைக்கவும்"),
             new LocalizationEntry("login.sign_in",          "Sign In",              "உள்நுழைவு"),
             new LocalizationEntry("login.sign_out",         "Sign Out",             "வெளியேறு"),
             new LocalizationEntry("login.back",             "Back",                 "பின்செல்"),
@@ -505,7 +505,7 @@ new LocalizationEntry("talk.resident_12", "Talk to the Fisherman", "மீனவ
             new LocalizationEntry("login.password_requirements", "Password must have at least 8 characters, uppercase, lowercase, and numbers", "குறைந்தது 8 எழுத்துகள், பெரிய/சிறிய எழுத்து மற்றும் எண் தேவை"),
             new LocalizationEntry("login.guest_mode",       "Play Offline (Guest)", "இணையமில்லாப் பயணம் (விருந்தினர்)"),
             new LocalizationEntry("login.account_status",   "Explorer Status: Authenticated", "ஆய்வாளர் நிலை: அங்கீகரிக்கப்பட்டது"),
-            new LocalizationEntry("login.cloud_sync_active", "Cloud save & expedition sync active", "மேகக்கணி சேமிப்பு ஒத்திசைவு செயலில் உள்ளது"),
+            new LocalizationEntry("login.cloud_sync_active", "Account connected", "மேகக்கணி சேமிப்பு ஒத்திசைவு செயலில் உள்ளது"),
             new LocalizationEntry("login.connecting",       "Connecting to server...", "இணைக்கிறது..."),
             new LocalizationEntry("login.forgot_desc",      "Enter your registered email to receive password reset instructions.", "கடவுச்சொல் மீட்டமைப்பு வழிமுறைகளைப் பெற பதிவுசெய்த மின்னஞ்சலை உள்ளிடவும்."),
             new LocalizationEntry("login.reset_desc",       "Enter the recovery token from your email and your new password.", "மின்னஞ்சலில் பெறப்பட்ட மீட்புக் குறியீடு மற்றும் புதிய கடவுச்சொல்லை உள்ளிடவும்."),
