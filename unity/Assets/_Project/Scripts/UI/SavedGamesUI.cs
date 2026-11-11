@@ -36,12 +36,26 @@ namespace WhisperingWilds.UI
             gameObject.SetActive(false);
         }
 
+        public bool IsVisible() => gameObject.activeInHierarchy;
+
         public void SetVisible(bool visible)
         {
             gameObject.SetActive(visible);
+            var cg = GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = visible ? 1f : 0f;
+                cg.interactable = visible;
+                cg.blocksRaycasts = visible;
+            }
             if (visible)
             {
                 RefreshSaveInfo();
+            }
+            else
+            {
+                if (TitleMenuController.Instance != null)
+                    TitleMenuController.Instance.OnSubmenuClosed();
             }
         }
 

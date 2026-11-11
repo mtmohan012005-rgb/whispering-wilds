@@ -112,7 +112,17 @@ namespace WhisperingWilds.UI
         public void SetVisible(bool visible)
         {
             _visible = visible;
-            if (panelRoot != null) panelRoot.SetActive(visible);
+            var root = panelRoot != null ? panelRoot : gameObject;
+            root.SetActive(visible);
+
+            var cg = root.GetComponent<CanvasGroup>();
+            if (cg == null) cg = GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = visible ? 1f : 0f;
+                cg.interactable = visible;
+                cg.blocksRaycasts = visible;
+            }
 
             if (visible)
             {
@@ -125,6 +135,8 @@ namespace WhisperingWilds.UI
             else
             {
                 RestoreCursor();
+                if (TitleMenuController.Instance != null)
+                    TitleMenuController.Instance.OnSubmenuClosed();
             }
         }
 

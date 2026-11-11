@@ -114,18 +114,8 @@ namespace WhisperingWilds.UI
             ApplyLocalizedLabels();
             UpdateAccountBadge();
 
-            bool anyModalOpen = (gameModeSelectionUI != null && gameModeSelectionUI.IsVisible())
-                || (savedGamesUI != null && savedGamesUI.gameObject.activeSelf)
-                || (saveManagementUI != null && saveManagementUI.IsVisible())
-                || (settingsMenu != null && settingsMenu.gameObject.activeSelf)
-                || (creditsUI != null && creditsUI.gameObject.activeSelf)
-                || (loginUI != null && loginUI.gameObject.activeSelf)
-                || (confirmationDialog != null && confirmationDialog.IsVisible);
-
-            if (menuContainer != null && menuContainer.activeSelf == anyModalOpen)
-            {
-                menuContainer.SetActive(!anyModalOpen);
-            }
+            bool anyModalOpen = IsSubmenuOpen();
+            SetMainMenuVisible(!anyModalOpen, instant: true);
             // Check if continue/previous journey should be enabled
             UpdateJourneyButtonsInteractable();
 
@@ -340,16 +330,10 @@ namespace WhisperingWilds.UI
             {
                 menuRoot.SetActive(true);
             }
-            if (menuContainer != null)
+            // Only show main menu buttons if no submenu is currently open.
+            if (!IsSubmenuOpen())
             {
-                menuContainer.SetActive(true);
-                var cg = menuContainer.GetComponent<CanvasGroup>();
-                if (cg != null)
-                {
-                    cg.alpha = 1f;
-                    cg.interactable = true;
-                    cg.blocksRaycasts = true;
-                }
+                SetMainMenuVisible(true, instant: true);
             }
 
             // Smooth crossfade from intro music to main menu music on the music bus.
@@ -396,18 +380,110 @@ namespace WhisperingWilds.UI
         /// <summary>
         /// 1. BEGIN GAME: Opens cinematic Game Mode Selection (Solo vs Multiplayer).
         /// </summary>
-        public void OnBeginGameClicked()
+        private bool IsSubmenuOpen()
         {
-            CloseAllModals();
-            if (gameModeSelectionUI != null)
+            return (gameModeSelectionUI != null && gameModeSelectionUI.IsVisible())
+                || (savedGamesUI != null && savedGamesUI.IsVisible())
+                || (saveManagementUI != null && saveManagementUI.IsVisible())
+                || (settingsMenu != null && settingsMenu.IsVisible)
+                || (creditsUI != null && creditsUI.IsVisible())
+                || (loginUI != null && loginUI.gameObject.activeSelf)
+                || (confirmationDialog != null && confirmationDialog.IsVisible);
+        }
+
+        private void SetMainMenuVisible(bool visible, bool instant = false)
+        {
+            if (menuContainer == null)
             {
-                gameModeSelectionUI.SetVisible(true);
+                // Fallback: keep menuRoot active but prevent interaction when hidden if needed.
+                if (menuRoot != null)
+                {
+                    var rootCg = menuRoot.GetComponent<CanvasGroup>();
+                    if (rootCg != null)
+                    {
+                        rootCg.interactable = visible;
+                        rootCg.blocksRaycasts = visible;
+                    }
+                }
+                return;
+            }
+
+            var cg = menuContainer.GetComponent<CanvasGroup>();
+            if (cg == null) cg = menuContainer.AddComponent<CanvasGroup>();
+
+            if (instant)
+            {
+                menuContainer.SetActive(visible);
+                cg.alpha = visible ? 1f : 0f;
+                cg.interactable = visible;
+                cg.blocksRaycasts = visible;
+                return;
+            }
+
+            if (visible)
+            {
+                menuContainer.SetActive(true);
+                cg.alpha = 1f;
+                cg.interactable = true;
+                cg.blocksRaycasts = true;
             }
             else
             {
-                // Fallback: check confirmation before starting new game
-                OnNewGameClicked();
+                cg.alpha = 0f;
+                cg.interactable = false;
+                cg.blocksRaycasts = false;
+                menuContainer.SetActive(false);
             }
+        }
+
+        private void OpenSubmenu(Action openAction)
+        {
+            CloseAllModals(restoreMainMenu: false);
+            SetMainMenuVisible(false, instant: true);
+            openAction?.Invoke();
+
+            // Safety: if nothing ended up visible, restore menu.
+            if (!IsSubmenuOpen())
+            {
+                SetMainMenuVisible(true, instant: true);
+            }
+        }
+
+        /// <summary>
+        /// Called by submenu panels when they close so the main menu can be restored.
+        /// </summary>
+        public void OnSubmenuClosed()
+        {
+            // Defer one frame to allow panel SetActive(false) to apply.
+            if (isActiveAndEnabled) StartCoroutine(RestoreMenuIfNoSubmenuOpen());
+            else if (!IsSubmenuOpen()) SetMainMenuVisible(true, instant: true);
+        }
+
+        private System.Collections.IEnumerator RestoreMenuIfNoSubmenuOpen()
+        {
+            yield return null;
+            if (!IsSubmenuOpen())
+            {
+                SetMainMenuVisible(true, instant: true);
+                UpdateJourneyButtonsInteractable();
+                RestoreFocus();
+            }
+        }
+
+        public void OnBeginGameClicked()
+        {
+            OpenSubmenu(() =>
+            {
+                if (gameModeSelectionUI != null)
+                {
+                    gameModeSelectionUI.SetVisible(true);
+                }
+                else
+                {
+                    // Fallback: check confirmation before starting new game
+                    OnNewGameClicked();
+                }
+            });
         }
 
         /// <summary>
@@ -415,15 +491,17 @@ namespace WhisperingWilds.UI
         /// </summary>
         public void OnPreviousJourneyClicked()
         {
-            CloseAllModals();
-            if (savedGamesUI != null)
+            OpenSubmenu(() =>
             {
-                savedGamesUI.SetVisible(true);
-            }
-            else
-            {
-                OnContinueClicked();
-            }
+                if (savedGamesUI != null)
+                {
+                    savedGamesUI.SetVisible(true);
+                }
+                else
+                {
+                    OnContinueClicked();
+                }
+            });
         }
 
         /// <summary>
@@ -431,15 +509,17 @@ namespace WhisperingWilds.UI
         /// </summary>
         public void OnBackupsSavesClicked()
         {
-            CloseAllModals();
-            if (saveManagementUI != null)
+            OpenSubmenu(() =>
             {
-                saveManagementUI.SetVisible(true);
-            }
-            else if (savedGamesUI != null)
-            {
-                savedGamesUI.SetVisible(true);
-            }
+                if (saveManagementUI != null)
+                {
+                    saveManagementUI.SetVisible(true);
+                }
+                else if (savedGamesUI != null)
+                {
+                    savedGamesUI.SetVisible(true);
+                }
+            });
         }
 
         /// <summary>
@@ -447,11 +527,13 @@ namespace WhisperingWilds.UI
         /// </summary>
         public void OnSettingsClicked()
         {
-            CloseAllModals();
-            if (settingsMenu != null)
+            OpenSubmenu(() =>
             {
-                settingsMenu.SetVisible(true);
-            }
+                if (settingsMenu != null)
+                {
+                    settingsMenu.SetVisible(true);
+                }
+            });
         }
 
         /// <summary>
@@ -459,11 +541,13 @@ namespace WhisperingWilds.UI
         /// </summary>
         public void OnCreditsClicked()
         {
-            CloseAllModals();
-            if (creditsUI != null)
+            OpenSubmenu(() =>
             {
-                creditsUI.SetVisible(true);
-            }
+                if (creditsUI != null)
+                {
+                    creditsUI.SetVisible(true);
+                }
+            });
         }
 
         /// <summary>
@@ -502,7 +586,8 @@ namespace WhisperingWilds.UI
             _isTransitioning = true;
             PlayClickSound();
 
-            CloseAllModals();
+            // Close other submenus but keep menu hidden for login transition flow.
+            CloseAllModals(restoreMainMenu: false);
 
             if (menuContainer != null)
             {
@@ -518,6 +603,7 @@ namespace WhisperingWilds.UI
                     else
                     {
                         _isTransitioning = false;
+                        SetMainMenuVisible(true, instant: true);
                     }
                 }));
             }
@@ -533,6 +619,7 @@ namespace WhisperingWilds.UI
                 else
                 {
                     _isTransitioning = false;
+                    SetMainMenuVisible(true, instant: true);
                 }
             }
         }
@@ -553,14 +640,14 @@ namespace WhisperingWilds.UI
                         {
                             _isTransitioning = false;
                             UpdateAccountBadge();
-                            RestoreFocus();
+                            OnSubmenuClosed();
                         }));
                     }
                     else
                     {
                         _isTransitioning = false;
                         UpdateAccountBadge();
-                        RestoreFocus();
+                        OnSubmenuClosed();
                     }
                 });
             }
@@ -573,14 +660,14 @@ namespace WhisperingWilds.UI
                     {
                         _isTransitioning = false;
                         UpdateAccountBadge();
-                        RestoreFocus();
+                        OnSubmenuClosed();
                     }));
                 }
                 else
                 {
                     _isTransitioning = false;
                     UpdateAccountBadge();
-                    RestoreFocus();
+                    OnSubmenuClosed();
                 }
             }
         }
@@ -723,26 +810,31 @@ namespace WhisperingWilds.UI
             if (gameModeSelectionUI != null && gameModeSelectionUI.IsVisible())
             {
                 gameModeSelectionUI.SetVisible(false);
+                OnSubmenuClosed();
                 return;
             }
             if (saveManagementUI != null && saveManagementUI.IsVisible())
             {
                 saveManagementUI.SetVisible(false);
+                OnSubmenuClosed();
                 return;
             }
-            if (savedGamesUI != null && savedGamesUI.gameObject.activeSelf)
+            if (savedGamesUI != null && savedGamesUI.IsVisible())
             {
                 savedGamesUI.SetVisible(false);
+                OnSubmenuClosed();
                 return;
             }
-            if (settingsMenu != null && settingsMenu.gameObject.activeSelf)
+            if (settingsMenu != null && settingsMenu.IsVisible)
             {
                 settingsMenu.SetVisible(false);
+                OnSubmenuClosed();
                 return;
             }
-            if (creditsUI != null && creditsUI.gameObject.activeSelf)
+            if (creditsUI != null && creditsUI.IsVisible())
             {
                 creditsUI.SetVisible(false);
+                OnSubmenuClosed();
                 return;
             }
             if (loginUI != null && loginUI.gameObject.activeSelf)
@@ -753,6 +845,7 @@ namespace WhisperingWilds.UI
             if (confirmationDialog != null && confirmationDialog.IsVisible)
             {
                 confirmationDialog.Dismiss();
+                if (!IsSubmenuOpen()) SetMainMenuVisible(true, instant: true);
                 return;
             }
 
@@ -760,7 +853,7 @@ namespace WhisperingWilds.UI
             OnQuitClicked();
         }
 
-        public void CloseAllModals()
+        public void CloseAllModals(bool restoreMainMenu = true)
         {
             if (gameModeSelectionUI != null) gameModeSelectionUI.SetVisible(false);
             if (savedGamesUI != null) savedGamesUI.SetVisible(false);
@@ -772,6 +865,11 @@ namespace WhisperingWilds.UI
                 loginUI.SetVisible(false);
             }
             if (confirmationDialog != null) confirmationDialog.Dismiss();
+
+            if (restoreMainMenu && !IsSubmenuOpen())
+            {
+                SetMainMenuVisible(true, instant: true);
+            }
         }
 
         private void EnsurePanels()
