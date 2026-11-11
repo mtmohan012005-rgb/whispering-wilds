@@ -290,10 +290,11 @@ namespace WhisperingWilds.Editor
                 brandHeaderRect.offsetMin = Vector2.zero;
                 brandHeaderRect.offsetMax = Vector2.zero;
 
-                // App Logo
+                // App Logo - use square emblem/icon in menu (never squeeze horizontal wordmark into square)
                 float titleXOffset = 0f;
-                var logoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
-                if (logoSprite != null)
+                var menuIconSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppIcon.png")
+                    ?? AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
+                if (menuIconSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
                     logoObj.transform.SetParent(brandHeaderObj.transform, false);
@@ -304,7 +305,7 @@ namespace WhisperingWilds.Editor
                     logoRect.anchoredPosition = new Vector2(0f, 0f);
                     logoRect.sizeDelta = new Vector2(72f, 72f);
                     var logoImg = logoObj.GetComponent<Image>();
-                    logoImg.sprite = logoSprite;
+                    logoImg.sprite = menuIconSprite;
                     logoImg.preserveAspect = true;
                     logoImg.raycastTarget = false;
                     titleXOffset = 86f;
@@ -636,17 +637,19 @@ namespace WhisperingWilds.Editor
                 brandRect.offsetMin = Vector2.zero;
                 brandRect.offsetMax = Vector2.zero;
 
-                // App Logo
+                // Full horizontal brand artwork in login branding panel (preserve aspect ratio)
                 var loginLogoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Resources/UI/AppLogo.png");
                 if (loginLogoSprite != null)
                 {
                     var logoObj = new GameObject("AppLogo", typeof(RectTransform), typeof(Image));
                     logoObj.transform.SetParent(brandPanel.transform, false);
                     var logoRect = logoObj.GetComponent<RectTransform>();
-                    logoRect.anchorMin = new Vector2(0.5f, 0.82f);
-                    logoRect.anchorMax = new Vector2(0.5f, 0.82f);
+                    logoRect.anchorMin = new Vector2(0.5f, 0.84f);
+                    logoRect.anchorMax = new Vector2(0.5f, 0.84f);
                     logoRect.pivot = new Vector2(0.5f, 0.5f);
-                    logoRect.sizeDelta = new Vector2(260f, 110f);
+                    logoRect.anchoredPosition = Vector2.zero;
+                    // 1600x560 native aspect -> fit within panel width while preserving ratio
+                    logoRect.sizeDelta = new Vector2(360f, 126f);
                     var logoImg = logoObj.GetComponent<Image>();
                     logoImg.sprite = loginLogoSprite;
                     logoImg.preserveAspect = true;
