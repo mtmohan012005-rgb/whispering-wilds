@@ -60,6 +60,12 @@ if (_instance == null)
         public float dialogueVolume = 1.0f;
         public float uiVolume = 0.85f;
 
+        [Header("Audio Mutes")]
+        public bool muteMaster = false;
+        public bool muteMusic = false;
+        public bool muteAmbience = false;
+        public bool muteSfx = false;
+
         [Header("Controls & Camera")]
         public float mouseSensitivity = 1.0f;
         public float mouseSensitivityY = 1.0f;
@@ -115,6 +121,11 @@ if (_instance == null)
             dialogueVolume = PlayerPrefs.GetFloat("WW_VolDialogue", 1.0f);
             uiVolume = PlayerPrefs.GetFloat("WW_VolUI", 0.85f);
 
+            muteMaster = PlayerPrefs.GetInt("WW_MuteMaster", 0) == 1;
+            muteMusic = PlayerPrefs.GetInt("WW_MuteMusic", 0) == 1;
+            muteAmbience = PlayerPrefs.GetInt("WW_MuteAmbience", 0) == 1;
+            muteSfx = PlayerPrefs.GetInt("WW_MuteSFX", 0) == 1;
+
             mouseSensitivity = PlayerPrefs.GetFloat("WW_MouseSens", 1.0f);
             mouseSensitivityY = PlayerPrefs.GetFloat("WW_MouseSensY", mouseSensitivity);
             gamepadSensitivity = PlayerPrefs.GetFloat("WW_GamepadSens", 2.0f);
@@ -162,6 +173,11 @@ if (_instance == null)
             uiVolume = ui;
             SaveSettings();
         }
+
+        public void ToggleMasterMute() { muteMaster = !muteMaster; SaveSettings(); }
+        public void ToggleMusicMute() { muteMusic = !muteMusic; SaveSettings(); }
+        public void ToggleAmbienceMute() { muteAmbience = !muteAmbience; SaveSettings(); }
+        public void ToggleSfxMute() { muteSfx = !muteSfx; SaveSettings(); }
 
         /// <summary>
         /// Applies and persists the accessibility options (subtitles, motion reduction, shake).
@@ -232,6 +248,11 @@ if (_instance == null)
             PlayerPrefs.SetFloat("WW_VolDialogue", dialogueVolume);
             PlayerPrefs.SetFloat("WW_VolUI", uiVolume);
 
+            PlayerPrefs.SetInt("WW_MuteMaster", muteMaster ? 1 : 0);
+            PlayerPrefs.SetInt("WW_MuteMusic", muteMusic ? 1 : 0);
+            PlayerPrefs.SetInt("WW_MuteAmbience", muteAmbience ? 1 : 0);
+            PlayerPrefs.SetInt("WW_MuteSFX", muteSfx ? 1 : 0);
+
             PlayerPrefs.SetFloat("WW_MouseSens", mouseSensitivity);
             PlayerPrefs.SetFloat("WW_MouseSensY", mouseSensitivityY);
             PlayerPrefs.SetFloat("WW_GamepadSens", gamepadSensitivity);
@@ -281,13 +302,13 @@ if (_instance == null)
                 }
             }
 
-            // Audio: Push live mixer state to all 6 buses
-if (AudioManager.Instance != null)
+            // Audio: Push live mixer state to all 6 buses (apply mutes without overwriting stored volume values)
+            if (AudioManager.Instance != null)
             {
-                AudioManager.Instance.SetMasterVolume(masterVolume);
-                AudioManager.Instance.SetMusicVolume(musicVolume);
-                AudioManager.Instance.SetSFXVolume(sfxVolume);
-                AudioManager.Instance.SetAmbientVolume(ambienceVolume);
+                AudioManager.Instance.SetMasterVolume(muteMaster ? 0f : masterVolume);
+                AudioManager.Instance.SetMusicVolume(muteMusic ? 0f : musicVolume);
+                AudioManager.Instance.SetSFXVolume(muteSfx ? 0f : sfxVolume);
+                AudioManager.Instance.SetAmbientVolume(muteAmbience ? 0f : ambienceVolume);
                 AudioManager.Instance.SetVoiceVolume(dialogueVolume);
                 AudioManager.Instance.SetUiVolume(uiVolume);
             }

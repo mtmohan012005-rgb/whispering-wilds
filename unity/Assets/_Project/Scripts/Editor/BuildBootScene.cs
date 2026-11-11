@@ -1519,28 +1519,34 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             Button masterVolLeft, masterVolRight, musicVolLeft, musicVolRight, sfxVolLeft, sfxVolRight;
             Button ambienceVolLeft, ambienceVolRight, dialogueVolLeft, dialogueVolRight, uiVolLeft, uiVolRight;
 
+            Button masterMuteBtn, musicMuteBtn, sfxMuteBtn, ambienceMuteBtn;
+
             CreateRowLabel("Row_MasterVol", audioPage.transform, font, 0.72f, "Master Volume");
             masterVolValue = CreateRowValue("Row_MasterVol", audioPage.transform, font, 0.72f);
             masterVolLeft = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, "<");
             masterVolRight = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, ">");
+            masterMuteBtn = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, "Mute");
             SetNavigation(masterVolLeft, masterVolRight, masterVolLeft, masterVolRight);
 
             CreateRowLabel("Row_MusicVol", audioPage.transform, font, 0.62f, "Music Volume");
             musicVolValue = CreateRowValue("Row_MusicVol", audioPage.transform, font, 0.62f);
             musicVolLeft = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, "<");
             musicVolRight = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, ">");
+            musicMuteBtn = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, "Mute");
             SetNavigation(musicVolLeft, musicVolRight, musicVolLeft, musicVolRight);
 
             CreateRowLabel("Row_SfxVol", audioPage.transform, font, 0.52f, "SFX Volume");
             sfxVolValue = CreateRowValue("Row_SfxVol", audioPage.transform, font, 0.52f);
             sfxVolLeft = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, "<");
             sfxVolRight = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, ">");
+            sfxMuteBtn = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, "Mute");
             SetNavigation(sfxVolLeft, sfxVolRight, sfxVolLeft, sfxVolRight);
 
             CreateRowLabel("Row_AmbienceVol", audioPage.transform, font, 0.42f, "Ambience Volume");
             ambienceVolValue = CreateRowValue("Row_AmbienceVol", audioPage.transform, font, 0.42f);
             ambienceVolLeft = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, "<");
             ambienceVolRight = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, ">");
+            ambienceMuteBtn = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, "Mute");
             SetNavigation(ambienceVolLeft, ambienceVolRight, ambienceVolLeft, ambienceVolRight);
 
             CreateRowLabel("Row_DialogueVol", audioPage.transform, font, 0.32f, "Dialogue Volume");
@@ -1558,12 +1564,16 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             // Wire audio buttons to SettingsMenuUI methods
             masterVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMasterVolume(-0.05f));
             masterVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMasterVolume(0.05f));
+            masterMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleMasterMute);
             musicVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMusicVolume(-0.05f));
             musicVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustMusicVolume(0.05f));
+            musicMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleMusicMute);
             sfxVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustSfxVolume(-0.05f));
             sfxVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustSfxVolume(0.05f));
+            sfxMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleSfxMute);
             ambienceVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustAmbienceVolume(-0.05f));
             ambienceVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustAmbienceVolume(0.05f));
+            ambienceMuteBtn.GetComponent<Button>().onClick.AddListener(ui.ToggleAmbienceMute);
             dialogueVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustDialogueVolume(-0.05f));
             dialogueVolRight.GetComponent<Button>().onClick.AddListener(() => ui.AdjustDialogueVolume(0.05f));
             uiVolLeft.GetComponent<Button>().onClick.AddListener(() => ui.AdjustUiVolume(-0.05f));
@@ -1714,6 +1724,10 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             so.FindProperty("ambienceVolValueText").objectReferenceValue = ambienceVolValue;
             so.FindProperty("dialogueVolValueText").objectReferenceValue = dialogueVolValue;
             so.FindProperty("uiVolValueText").objectReferenceValue = uiVolValue;
+            so.FindProperty("masterMuteButton").objectReferenceValue = masterMuteBtn.GetComponent<Button>();
+            so.FindProperty("musicMuteButton").objectReferenceValue = musicMuteBtn.GetComponent<Button>();
+            so.FindProperty("sfxMuteButton").objectReferenceValue = sfxMuteBtn.GetComponent<Button>();
+            so.FindProperty("ambienceMuteButton").objectReferenceValue = ambienceMuteBtn.GetComponent<Button>();
 
             // Controls page bindings
             so.FindProperty("controlsPage").objectReferenceValue = controlsPage;
@@ -1788,12 +1802,21 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             return text;
         }
 
+        private static bool IsAudioMuteRow(string rowName)
+        {
+            return rowName == "Row_MasterVol" || rowName == "Row_MusicVol" || rowName == "Row_SfxVol" || rowName == "Row_AmbienceVol";
+        }
+
         private static Text CreateRowValue(string rowName, Transform parent, Font font, float y)
         {
             var row = FindRow(parent, rowName);
             ConfigureRow(row, y);
-            // Value sits in the center of the right-side control cluster: [ < ] value [ > ] or [ value ] [Toggle]
-            var textObj = CreateText("Value", row, new Vector2(0.58f, 0f), new Vector2(0.82f, 1f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleCenter, new Color(1f, 0.95f, 0.75f));
+            bool hasMute = IsAudioMuteRow(rowName);
+            // Value sits in the center of the control cluster.
+            // Stepper rows: [ < ] value [ > ] (and optional [Mute] at far right for audio)
+            float xMin = hasMute ? 0.50f : 0.58f;
+            float xMax = hasMute ? 0.68f : 0.82f;
+            var textObj = CreateText("Value", row, new Vector2(xMin, 0f), new Vector2(xMax, 1f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleCenter, new Color(1f, 0.95f, 0.75f));
             var text = textObj.GetComponent<Text>();
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Truncate;
@@ -1810,34 +1833,42 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             bool isLeft = label == "<";
             bool isRight = label == ">";
-            string objName = isLeft ? "Btn_Left" : isRight ? "Btn_Right" : "Btn_Action";
+            bool isMute = string.Equals(label, "Mute", StringComparison.OrdinalIgnoreCase) || string.Equals(label, "Unmute", StringComparison.OrdinalIgnoreCase);
+            bool hasMuteLayout = IsAudioMuteRow(rowName);
+            string objName = isLeft ? "Btn_Left" : isRight ? "Btn_Right" : isMute ? "Btn_Mute" : "Btn_Action";
 
-            var btn = CreateButton(objName, row, font, label, new Color(0.2f, 0.3f, 0.4f));
+            var btn = CreateButton(objName, row, font, label, isMute ? new Color(0.35f, 0.22f, 0.22f) : new Color(0.2f, 0.3f, 0.4f));
             var rect = btn.GetComponent<RectTransform>();
             rect.pivot = new Vector2(0.5f, 0.5f);
 
             if (isLeft)
             {
-                rect.anchorMin = new Vector2(0.50f, 0.5f);
-                rect.anchorMax = new Vector2(0.50f, 0.5f);
-                rect.anchoredPosition = new Vector2(0f, 0f);
+                float x = hasMuteLayout ? 0.43f : 0.50f;
+                rect.anchorMin = new Vector2(x, 0.5f);
+                rect.anchorMax = new Vector2(x, 0.5f);
                 rect.sizeDelta = new Vector2(44f, 36f);
             }
             else if (isRight)
             {
-                rect.anchorMin = new Vector2(0.90f, 0.5f);
-                rect.anchorMax = new Vector2(0.90f, 0.5f);
-                rect.anchoredPosition = new Vector2(0f, 0f);
+                float x = hasMuteLayout ? 0.75f : 0.90f;
+                rect.anchorMin = new Vector2(x, 0.5f);
+                rect.anchorMax = new Vector2(x, 0.5f);
                 rect.sizeDelta = new Vector2(44f, 36f);
+            }
+            else if (isMute)
+            {
+                rect.anchorMin = new Vector2(0.92f, 0.5f);
+                rect.anchorMax = new Vector2(0.92f, 0.5f);
+                rect.sizeDelta = new Vector2(84f, 34f);
             }
             else
             {
                 // Single action/toggle button aligned at right side of row.
                 rect.anchorMin = new Vector2(0.90f, 0.5f);
                 rect.anchorMax = new Vector2(0.90f, 0.5f);
-                rect.anchoredPosition = new Vector2(0f, 0f);
                 rect.sizeDelta = new Vector2(110f, 36f);
             }
+            rect.anchoredPosition = Vector2.zero;
 
             var btnText = btn.GetComponentInChildren<Text>();
             if (btnText != null)
