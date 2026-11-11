@@ -64,6 +64,7 @@ namespace WhisperingWilds.UI
 
         [Header("Audio")]
         [SerializeField] private AudioClip menuAmbienceClip;
+        [SerializeField] private AudioClip menuMusicClip;
 
         [Header("Cinematic Intro")]
         [SerializeField] private CinematicIntroController cinematicIntro;
@@ -139,18 +140,53 @@ namespace WhisperingWilds.UI
                 StartCoroutine(StartMenuAnimationDelayed());
             }
 
-            // Play gentle temple ambience
+            // Ensure audio systems are present and start menu ambience/music from boot.
+            EnsureAudioSystemsInitialized();
+
             if (AudioManager.Instance != null)
             {
+                // Ensure an AudioListener exists so audio is audible.
+                if (FindAnyObjectByType<AudioListener>() == null && Camera.main != null)
+                {
+                    Camera.main.gameObject.AddComponent<AudioListener>();
+                }
+                else if (FindAnyObjectByType<AudioListener>() == null)
+                {
+                    var listenerGo = new GameObject("MainAudioListener");
+                    listenerGo.AddComponent<AudioListener>();
+                }
+
+                // Menu ambient bed (independent of music bus)
+                if (menuAmbienceClip == null)
+                {
+                    menuAmbienceClip = Resources.Load<AudioClip>("Audio/Ambience/temple_ambience")
+                        ?? Resources.Load<AudioClip>("Audio/temple_ambience")
+                        ?? Resources.Load<AudioClip>("temple_ambience");
+                }
                 if (menuAmbienceClip != null)
                 {
                     AudioManager.Instance.PlayAmbient(menuAmbienceClip);
                 }
-                else
+
+                // Menu music (music bus) - if intro is not playing, start/crossfade to menu theme.
+                if (menuMusicClip == null)
                 {
-                    var clip = Resources.Load<AudioClip>("Audio/Ambience/temple_ambience");
-                    if (clip != null) AudioManager.Instance.PlayAmbient(clip);
+                    menuMusicClip = Resources.Load<AudioClip>("Audio/Music/bgm_main_menu")
+                        ?? Resources.Load<AudioClip>("Audio/Music/Region/bgm_main_menu")
+                        ?? Resources.Load<AudioClip>("bgm_main_menu");
                 }
+                bool introPlaying = cinematicIntro != null && cinematicIntro.IsPlaying;
+                if (!introPlaying && menuMusicClip != null)
+                {
+                    AudioManager.Instance.PlayMusic(menuMusicClip, 1.5f);
+                }
+            }
+
+            // Environmental soundscape (ambience layers). Avoid routing BGM through ambience for menu.
+            if (RegionalSoundscapeManager.Instance != null)
+            {
+                // Keep regional ambience system initialized; menu uses AudioManager for ambience/music separation.
+                RegionalSoundscapeManager.Instance.EnsureInitialized();
             }
         }
 
@@ -313,6 +349,21 @@ namespace WhisperingWilds.UI
                     cg.alpha = 1f;
                     cg.interactable = true;
                     cg.blocksRaycasts = true;
+                }
+            }
+
+            // Smooth crossfade from intro music to main menu music on the music bus.
+            if (AudioManager.Instance != null)
+            {
+                if (menuMusicClip == null)
+                {
+                    menuMusicClip = Resources.Load<AudioClip>("Audio/Music/bgm_main_menu")
+                        ?? Resources.Load<AudioClip>("Audio/Music/Region/bgm_main_menu")
+                        ?? Resources.Load<AudioClip>("bgm_main_menu");
+                }
+                if (menuMusicClip != null)
+                {
+                    AudioManager.Instance.PlayMusic(menuMusicClip, 2.0f);
                 }
             }
 
@@ -555,14 +606,21 @@ namespace WhisperingWilds.UI
             if (cg == null) cg = menuContainer.AddComponent<CanvasGroup>();
 
             var rt = menuContainer.GetComponent<RectTransform>();
-            Vector2 basePos = new Vector2(60f, -40f);
+            // Preserve the menu's designed anchored position (set by layout/scene) instead of forcing
+            // a hard-coded offset that can push the menu off-screen at different resolutions.
+            Vector2 basePos = rt.anchoredPosition;
+            if (show && Mathf.Abs(basePos.x) < 0.01f && Mathf.Abs(basePos.y) < 0.01f)
+            {
+                // Fallback only when the container has no meaningful position yet.
+                basePos = new Vector2(0f, -40f);
+            }
 
             float duration = 0.25f;
             float elapsed = 0f;
             float startAlpha = cg.alpha;
             float endAlpha = show ? 1f : 0f;
-            Vector2 startPos = rt.anchoredPosition;
-            Vector2 endPos = show ? basePos : (basePos + new Vector2(-30f, 0f));
+            Vector2 startPos = show ? basePos + new Vector2(-30f, 0f) : rt.anchoredPosition;
+            Vector2 endPos = show ? basePos : basePos + new Vector2(-30f, 0f);
 
             cg.interactable = false;
             cg.blocksRaycasts = false;
@@ -735,6 +793,36 @@ namespace WhisperingWilds.UI
             {
                 var mc = transform.Find("MenuRoot/MenuContainer");
                 if (mc != null) menuContainer = mc.gameObject;
+            }
+        }
+
+        private static void EnsureAudioSystemsInitialized()
+        {
+            if (AudioManager.Instance == null)
+            {
+                var existing = FindAnyObjectByType<AudioManager>();
+                if (existing == null)
+                {
+                    var audioGo = new GameObject("AudioManager");
+                    DontDestroyOnLoad(audioGo);
+                    audioGo.AddComponent<AudioManager>();
+                }
+            }
+
+            if (RegionalSoundscapeManager.Instance == null)
+            {
+                var existing = FindAnyObjectByType<RegionalSoundscapeManager>();
+                if (existing == null)
+                {
+                    var soundscapeGo = new GameObject("RegionalSoundscapeManager");
+                    DontDestroyOnLoad(soundscapeGo);
+                    var soundscape = soundscapeGo.AddComponent<RegionalSoundscapeManager>();
+                    soundscape.EnsureInitialized();
+                }
+                else
+                {
+                    existing.EnsureInitialized();
+                }
             }
         }
 

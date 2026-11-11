@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 namespace WhisperingWilds.Audio
 {
@@ -68,6 +69,7 @@ namespace WhisperingWilds.Audio
         {
             InitializeSources();
             EnsureDefaultProfiles();
+            AutoLoadAudioClips();
         }
 
         private void Awake()
@@ -128,6 +130,52 @@ namespace WhisperingWilds.Audio
                     displayName = name,
                     baseVolume = 0.85f
                 });
+            }
+        }
+
+        /// <summary>
+        /// Automatically loads audio clips from the Resources folder at runtime.
+        /// Loads environmental ambience clips (not music) so the music bus remains independent.
+        /// </summary>
+        private void AutoLoadAudioClips()
+        {
+            int loaded = 0;
+
+            foreach (var profile in regionalProfiles)
+            {
+                // Primary environmental ambience (kept on ambience/soundscape sources, separate from music bus)
+                if (profile.primaryAmbienceClip == null)
+                {
+                    // Prefer explicit ambience clips; do not load BGM here to preserve music/ambience separation.
+                    string ambiencePrimary = profile.regionId == "chennai" ? "Audio/Ambience/temple_ambience" : "Audio/Ambience/birds";
+                    profile.primaryAmbienceClip = Resources.Load<AudioClip>(ambiencePrimary)
+                        ?? Resources.Load<AudioClip>(ambiencePrimary.Replace("Audio/Ambience/", "Audio/"))
+                        ?? Resources.Load<AudioClip>(ambiencePrimary.Replace("Audio/Ambience/", ""));
+
+                    if (profile.primaryAmbienceClip != null)
+                    {
+                        loaded++;
+                    }
+                }
+
+                // Secondary ambience layer
+                if (profile.secondaryAmbienceClip == null)
+                {
+                    string ambienceName = profile.regionId == "chennai" ? "birds" : "temple_ambience";
+                    profile.secondaryAmbienceClip = Resources.Load<AudioClip>($"Audio/Ambience/{ambienceName}")
+                        ?? Resources.Load<AudioClip>($"Audio/{ambienceName}")
+                        ?? Resources.Load<AudioClip>(ambienceName);
+
+                    if (profile.secondaryAmbienceClip != null)
+                    {
+                        loaded++;
+                    }
+                }
+            }
+
+            if (loaded > 0)
+            {
+                Debug.Log($"[SoundscapeManager] Auto-loaded {loaded} ambience clips from Resources folder.");
             }
         }
 

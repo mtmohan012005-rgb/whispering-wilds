@@ -5,6 +5,7 @@ using UnityEngine.UI;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
+using WhisperingWilds.Audio;
 using WhisperingWilds.Localization;
 
 namespace WhisperingWilds.UI
@@ -95,6 +96,7 @@ namespace WhisperingWilds.UI
         [SerializeField] private AudioClip templeAmbienceClip;
         [SerializeField] private AudioClip birdsClip;
         [SerializeField] private AudioClip clickClip;
+        [SerializeField] private AudioClip introMusicClip;
 
         [Header("References")]
         [SerializeField] private Camera introCamera;
@@ -240,6 +242,12 @@ namespace WhisperingWilds.UI
                 clickClip = Resources.Load<AudioClip>("Audio/ui_click")
                     ?? Resources.Load<AudioClip>("ui_click");
             }
+            if (introMusicClip == null)
+            {
+                introMusicClip = Resources.Load<AudioClip>("Audio/Music/bgm_intro_cinematic")
+                    ?? Resources.Load<AudioClip>("Audio/Music/Region/bgm_intro_cinematic")
+                    ?? Resources.Load<AudioClip>("bgm_intro_cinematic");
+            }
         }
 
         private IEnumerator IntroSafetyTimeout()
@@ -314,7 +322,8 @@ namespace WhisperingWilds.UI
                 var bgImage = introBackground.GetComponent<Image>();
                 if (bgImage != null)
                 {
-                    bgImage.color = new Color(0.01f, 0.02f, 0.03f, 1f);
+                    // Start fully black for a clean fade-in from black.
+                    bgImage.color = new Color(0f, 0f, 0f, 1f);
                 }
             }
 
@@ -463,7 +472,7 @@ namespace WhisperingWilds.UI
             if (introVignette != null) introVignette.SetActive(true);
             if (introTitleGroup != null) introTitleGroup.SetActive(true);
 
-            // Ambient soundscape
+            // Ambient soundscape (separate from music bus)
             if (introAudioSource != null)
             {
                 if (templeAmbienceClip != null)
@@ -476,6 +485,16 @@ namespace WhisperingWilds.UI
                 if (birdsClip != null)
                 {
                     introAudioSource.PlayOneShot(birdsClip, 0.40f);
+                }
+            }
+
+            // Cinematic intro music on the music bus (independent from ambience/master/music settings)
+            if (AudioManager.Instance != null)
+            {
+                if (introMusicClip == null) EnsureAudioClips();
+                if (introMusicClip != null)
+                {
+                    AudioManager.Instance.PlayMusic(introMusicClip, 2.0f);
                 }
             }
 
@@ -580,46 +599,55 @@ namespace WhisperingWilds.UI
                     }
                 }
 
-                // Phase 5: Centered Title Card & Tamil Subtitle Reveal (starts at titleFadeInStart = 1.5s)
-                if (elapsed >= titleFadeInStart && elapsed < titleFadeInEnd + 2.0f)
+                // Phase 5: Centered Title Card & Tamil Subtitle Reveal (starts at titleFadeInStart)
+                if (elapsed >= titleFadeInStart)
                 {
-                    float titleT = SmoothStep(Mathf.Clamp01((elapsed - titleFadeInStart) / (titleFadeInEnd - titleFadeInStart)));
+                    float titleT = SmoothStep(Mathf.Clamp01((elapsed - titleFadeInStart) / Mathf.Max(0.01f, titleFadeInEnd - titleFadeInStart)));
                     if (introTitleText != null)
                     {
-                        introTitleText.color = new Color(0.96f, 0.83f, 0.40f, titleT);
+                        // Subtle golden reveal shimmer.
+                        float shimmer = 1f + Mathf.Sin(elapsed * 2.2f) * 0.015f * titleT;
+                        introTitleText.color = new Color(0.96f * shimmer, 0.83f * shimmer, 0.40f, titleT);
                     }
                     if (titleBackGlow != null)
                     {
-                        titleBackGlow.color = new Color(0.96f, 0.82f, 0.38f, titleT * 0.18f);
+                        float glowPulse = 0.16f + Mathf.Sin(elapsed * 1.4f) * 0.03f;
+                        titleBackGlow.color = new Color(0.96f, 0.82f, 0.38f, Mathf.Clamp01(titleT) * glowPulse);
                     }
 
-                    // Staggered Tamil Subtitle (~0.5s after title starts)
+                    // Staggered Tamil Subtitle (~0.5s after title starts), smooth fade.
                     float subStart = titleFadeInStart + 0.5f;
                     if (elapsed >= subStart)
                     {
-                        float subT = SmoothStep(Mathf.Clamp01((elapsed - subStart) / 1.5f));
+                        float subT = SmoothStep(Mathf.Clamp01((elapsed - subStart) / 1.4f));
                         if (introSubtitleText != null)
                         {
-                            introSubtitleText.color = new Color(0.65f, 0.89f, 0.79f, subT * 0.95f);
+                            introSubtitleText.color = new Color(0.65f, 0.89f, 0.79f, subT * 0.96f);
                         }
                     }
                 }
 
-                // Phase 6: Reveal START Button (t >= startButtonRevealTime = 7.8s)
+                // Phase 6: Reveal START Button with smooth fade + scale (t >= startButtonRevealTime)
                 if (elapsed >= startButtonRevealTime)
                 {
-                    float startBtnT = SmoothStep(Mathf.Clamp01((elapsed - startButtonRevealTime) / 1.2f));
+                    float startBtnT = SmoothStep(Mathf.Clamp01((elapsed - startButtonRevealTime) / 1.0f));
                     if (startButton != null)
                     {
                         var cg = startButton.GetComponent<CanvasGroup>();
                         if (cg != null)
                         {
                             cg.alpha = startBtnT;
-                            if (startBtnT >= 0.95f)
+                            if (startBtnT >= 0.98f)
                             {
                                 cg.interactable = true;
                                 cg.blocksRaycasts = true;
                             }
+                        }
+                        var btnRect = startButton.GetComponent<RectTransform>();
+                        if (btnRect != null)
+                        {
+                            float s = Mathf.Lerp(0.92f, 1f, startBtnT);
+                            btnRect.localScale = new Vector3(s, s, 1f);
                         }
                     }
 
@@ -671,6 +699,12 @@ namespace WhisperingWilds.UI
                     cg.interactable = true;
                     cg.blocksRaycasts = true;
                 }
+                var btnRect = startButton.GetComponent<RectTransform>();
+                if (btnRect != null)
+                {
+                    btnRect.localScale = Vector3.one;
+                }
+                startButton.interactable = true;
             }
             SetSkipAlpha(0f);
         }
@@ -757,8 +791,20 @@ namespace WhisperingWilds.UI
         /// </summary>
         public void OnStartButtonClicked()
         {
+            // Prevent double-click / repeated triggers during transition.
             if (_currentPhase != IntroPhase.TitleScreenReady) return;
             _currentPhase = IntroPhase.TransitioningToMenu;
+
+            if (startButton != null)
+            {
+                startButton.interactable = false;
+                var startCg = startButton.GetComponent<CanvasGroup>();
+                if (startCg != null)
+                {
+                    startCg.interactable = false;
+                    startCg.blocksRaycasts = false;
+                }
+            }
 
             // Play quiet UI click audio
             if (clickClip != null && introAudioSource != null)
@@ -831,7 +877,7 @@ namespace WhisperingWilds.UI
             _isPlaying = false;
             _currentPhase = IntroPhase.Completed;
 
-            // Stop ambient intro loop
+            // Stop ambient intro loop (ambience source only; music bus hands off via AudioManager crossfade)
             if (introAudioSource != null && introAudioSource.isPlaying)
             {
                 introAudioSource.Stop();
