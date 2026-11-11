@@ -310,21 +310,36 @@ namespace WhisperingWilds.Editor
                     titleXOffset = 86f;
                 }
 
-                // English Game Title - antique gold, bold, ~42px
-                var titleObj = CreateText("GameTitle", brandHeaderObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(titleXOffset, -6f), new Vector2(700f, 48f), font, 42, TextAnchor.UpperLeft, new Color(0.831f, 0.686f, 0.216f, 1f));
+                // English Game Title - antique gold, bold, premium cinematic typography
+                // Keep complete branding inside screen: left-aligned pivot within BrandHeader (anchored ~5-6% from left).
+                var titleObj = CreateText("GameTitle", brandHeaderObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(titleXOffset, 0f), new Vector2(760f, 56f), font, 44, TextAnchor.UpperLeft, new Color(0.831f, 0.686f, 0.216f, 1f));
+                var titleRect = titleObj.GetComponent<RectTransform>();
+                if (titleRect != null) titleRect.pivot = new Vector2(0f, 1f);
                 var titleText = titleObj.GetComponent<Text>();
                 titleText.text = "THE WHISPERING WILDS";
                 titleText.fontStyle = FontStyle.Bold;
                 titleText.lineSpacing = 1.1f;
                 titleText.supportRichText = false;
                 titleText.raycastTarget = false;
+                titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                titleText.verticalOverflow = VerticalWrapMode.Overflow;
+                titleText.resizeTextForBestFit = true;
+                titleText.resizeTextMinSize = 30;
+                titleText.resizeTextMaxSize = 44;
 
-                // Tamil Subtitle - directly below English title
-                var subtitleObj = CreateText("GameSubtitle", brandHeaderObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(titleXOffset, -52f), new Vector2(700f, 34f), font, 22, TextAnchor.UpperLeft, new Color(0.949f, 0.910f, 0.835f, 0.92f));
+                // Tamil Subtitle - directly below English title (complete, visible)
+                var subtitleObj = CreateText("GameSubtitle", brandHeaderObj.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(titleXOffset, -52f), new Vector2(760f, 40f), font, 24, TextAnchor.UpperLeft, new Color(0.949f, 0.910f, 0.835f, 0.94f));
+                var subtitleRect = subtitleObj.GetComponent<RectTransform>();
+                if (subtitleRect != null) subtitleRect.pivot = new Vector2(0f, 1f);
                 var subtitleText = subtitleObj.GetComponent<Text>();
                 subtitleText.text = "\u0B95\u0BBE\u0B9F\u0BCD\u0B9F\u0BC1 \u0BB5\u0BB4\u0BBF \u2022 \u0BA4\u0B9F\u0BAE\u0BCD";
                 subtitleText.supportRichText = false;
                 subtitleText.raycastTarget = false;
+                subtitleText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                subtitleText.verticalOverflow = VerticalWrapMode.Overflow;
+                subtitleText.resizeTextForBestFit = true;
+                subtitleText.resizeTextMinSize = 16;
+                subtitleText.resizeTextMaxSize = 24;
 
                 // --- LEFT-CENTER: Main navigation (left-aligned cinematic menu) ---
                 var menuContainer = new GameObject("MenuContainer", typeof(RectTransform), typeof(VerticalLayoutGroup));
@@ -458,24 +473,35 @@ namespace WhisperingWilds.Editor
                 glowImg.color = new Color(0.96f, 0.82f, 0.38f, 0.18f);
                 glowImg.raycastTarget = false;
 
-                // English Game Title â€” Centered horizontally & vertically
+
+                // English Game Title - Centered horizontally & vertically (complete, no clipping)
                 var introTitleObj = CreateText("IntroTitleText", introGroup.transform,
-                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 44f), new Vector2(880f, 68f),
-                    font, 54, TextAnchor.MiddleCenter, new Color(0.96f, 0.83f, 0.40f, 0f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 48f), new Vector2(900f, 76f),
+                    font, 56, TextAnchor.MiddleCenter, new Color(0.96f, 0.83f, 0.40f, 0f));
                 var introTitleTextComp = introTitleObj.GetComponent<Text>();
                 introTitleTextComp.text = "THE WHISPERING WILDS";
-                introTitleTextComp.fontStyle = FontStyle.Normal;
-                introTitleTextComp.lineSpacing = 1.15f;
+                introTitleTextComp.fontStyle = FontStyle.Bold;
+                introTitleTextComp.lineSpacing = 1.1f;
                 introTitleTextComp.supportRichText = false;
+                introTitleTextComp.horizontalOverflow = HorizontalWrapMode.Overflow;
+                introTitleTextComp.verticalOverflow = VerticalWrapMode.Overflow;
+                introTitleTextComp.resizeTextForBestFit = true;
+                introTitleTextComp.resizeTextMinSize = 36;
+                introTitleTextComp.resizeTextMaxSize = 56;
 
-                // Tamil Subtitle â€” Centered directly beneath English title
+                // Tamil Subtitle - Centered directly beneath English title
                 var introSubtitleObj = CreateText("IntroSubtitleText", introGroup.transform,
-                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -14f), new Vector2(720f, 42f),
-                    font, 26, TextAnchor.MiddleCenter, new Color(0.65f, 0.89f, 0.79f, 0f));
+                    new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -12f), new Vector2(760f, 46f),
+                    font, 28, TextAnchor.MiddleCenter, new Color(0.65f, 0.89f, 0.79f, 0f));
                 var introSubtitleTextComp = introSubtitleObj.GetComponent<Text>();
                 introSubtitleTextComp.text = "\u0B95\u0BBE\u0B9F\u0BCD\u0B9F\u0BC1 \u0BB5\u0BB4\u0BBF \u2022 \u0BA4\u0B9F\u0BAE\u0BCD";
                 introSubtitleTextComp.fontStyle = FontStyle.Normal;
                 introSubtitleTextComp.supportRichText = false;
+                introSubtitleTextComp.horizontalOverflow = HorizontalWrapMode.Overflow;
+                introSubtitleTextComp.verticalOverflow = VerticalWrapMode.Overflow;
+                introSubtitleTextComp.resizeTextForBestFit = true;
+                introSubtitleTextComp.resizeTextMinSize = 18;
+                introSubtitleTextComp.resizeTextMaxSize = 28;
 
                 // Title Screen Primary START Button â€” Centered below subtitle with gold outline
                 var startBtnObj = CreateButton("Btn_TitleStart", introGroup.transform,
