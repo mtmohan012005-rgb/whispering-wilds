@@ -1513,40 +1513,46 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             // Audio page
             var audioPage = CreatePage("Page_Audio", root.transform);
-            var aTitle = CreateText("Title", audioPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+            var aTitle = CreateText("Title", audioPage.transform, new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
 
             Text masterVolValue, musicVolValue, sfxVolValue, ambienceVolValue, dialogueVolValue, uiVolValue;
             Button masterVolLeft, masterVolRight, musicVolLeft, musicVolRight, sfxVolLeft, sfxVolRight;
             Button ambienceVolLeft, ambienceVolRight, dialogueVolLeft, dialogueVolRight, uiVolLeft, uiVolRight;
 
-            masterVolValue = CreateRowValue("Row_MasterVol", audioPage.transform, font, 0.68f);
-            masterVolLeft = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.68f, "<");
-            masterVolRight = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.68f, ">");
+            CreateRowLabel("Row_MasterVol", audioPage.transform, font, 0.72f, "Master Volume");
+            masterVolValue = CreateRowValue("Row_MasterVol", audioPage.transform, font, 0.72f);
+            masterVolLeft = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, "<");
+            masterVolRight = CreateRowButton("Row_MasterVol", audioPage.transform, font, 0.72f, ">");
             SetNavigation(masterVolLeft, masterVolRight, masterVolLeft, masterVolRight);
 
-            musicVolValue = CreateRowValue("Row_MusicVol", audioPage.transform, font, 0.58f);
-            musicVolLeft = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.58f, "<");
-            musicVolRight = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.58f, ">");
+            CreateRowLabel("Row_MusicVol", audioPage.transform, font, 0.62f, "Music Volume");
+            musicVolValue = CreateRowValue("Row_MusicVol", audioPage.transform, font, 0.62f);
+            musicVolLeft = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, "<");
+            musicVolRight = CreateRowButton("Row_MusicVol", audioPage.transform, font, 0.62f, ">");
             SetNavigation(musicVolLeft, musicVolRight, musicVolLeft, musicVolRight);
 
-            sfxVolValue = CreateRowValue("Row_SfxVol", audioPage.transform, font, 0.48f);
-            sfxVolLeft = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.48f, "<");
-            sfxVolRight = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.48f, ">");
+            CreateRowLabel("Row_SfxVol", audioPage.transform, font, 0.52f, "SFX Volume");
+            sfxVolValue = CreateRowValue("Row_SfxVol", audioPage.transform, font, 0.52f);
+            sfxVolLeft = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, "<");
+            sfxVolRight = CreateRowButton("Row_SfxVol", audioPage.transform, font, 0.52f, ">");
             SetNavigation(sfxVolLeft, sfxVolRight, sfxVolLeft, sfxVolRight);
 
-            ambienceVolValue = CreateRowValue("Row_AmbienceVol", audioPage.transform, font, 0.38f);
-            ambienceVolLeft = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.38f, "<");
-            ambienceVolRight = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.38f, ">");
+            CreateRowLabel("Row_AmbienceVol", audioPage.transform, font, 0.42f, "Ambience Volume");
+            ambienceVolValue = CreateRowValue("Row_AmbienceVol", audioPage.transform, font, 0.42f);
+            ambienceVolLeft = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, "<");
+            ambienceVolRight = CreateRowButton("Row_AmbienceVol", audioPage.transform, font, 0.42f, ">");
             SetNavigation(ambienceVolLeft, ambienceVolRight, ambienceVolLeft, ambienceVolRight);
 
-            dialogueVolValue = CreateRowValue("Row_DialogueVol", audioPage.transform, font, 0.28f);
-            dialogueVolLeft = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.28f, "<");
-            dialogueVolRight = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.28f, ">");
+            CreateRowLabel("Row_DialogueVol", audioPage.transform, font, 0.32f, "Dialogue Volume");
+            dialogueVolValue = CreateRowValue("Row_DialogueVol", audioPage.transform, font, 0.32f);
+            dialogueVolLeft = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.32f, "<");
+            dialogueVolRight = CreateRowButton("Row_DialogueVol", audioPage.transform, font, 0.32f, ">");
             SetNavigation(dialogueVolLeft, dialogueVolRight, dialogueVolLeft, dialogueVolRight);
 
-            uiVolValue = CreateRowValue("Row_UiVol", audioPage.transform, font, 0.18f);
-            uiVolLeft = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.18f, "<");
-            uiVolRight = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.18f, ">");
+            CreateRowLabel("Row_UiVol", audioPage.transform, font, 0.22f, "UI Volume");
+            uiVolValue = CreateRowValue("Row_UiVol", audioPage.transform, font, 0.22f);
+            uiVolLeft = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.22f, "<");
+            uiVolRight = CreateRowButton("Row_UiVol", audioPage.transform, font, 0.22f, ">");
             SetNavigation(uiVolLeft, uiVolRight, uiVolLeft, uiVolRight);
 
             // Wire audio buttons to SettingsMenuUI methods
@@ -1565,29 +1571,35 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             // Controls page
             var controlsPage = CreatePage("Page_Controls", root.transform);
-            var cTitle = CreateText("Title", controlsPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+            var cTitle = CreateText("Title", controlsPage.transform, new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
 
             Text mouseSensValue, invertYValue, invertXValue, cameraSmoothingValue, sprintModeValue, crouchModeValue;
             Button mouseSensLeft, mouseSensRight, invertYToggle, invertXToggle, sprintToggle, crouchToggle, resetControlsBtn;
 
-            mouseSensValue = CreateRowValue("Row_MouseSens", controlsPage.transform, font, 0.70f);
-            mouseSensLeft = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.70f, "<");
-            mouseSensRight = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.70f, ">");
+            CreateRowLabel("Row_MouseSens", controlsPage.transform, font, 0.72f, "Mouse Sensitivity");
+            mouseSensValue = CreateRowValue("Row_MouseSens", controlsPage.transform, font, 0.72f);
+            mouseSensLeft = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.72f, "<");
+            mouseSensRight = CreateRowButton("Row_MouseSens", controlsPage.transform, font, 0.72f, ">");
             SetNavigation(mouseSensLeft, mouseSensRight, mouseSensLeft, mouseSensRight);
 
-            invertYValue = CreateRowValue("Row_InvertY", controlsPage.transform, font, 0.60f);
-            invertYToggle = CreateRowButton("Row_InvertY", controlsPage.transform, font, 0.60f, "Toggle");
+            CreateRowLabel("Row_InvertY", controlsPage.transform, font, 0.62f, "Invert Y");
+            invertYValue = CreateRowValue("Row_InvertY", controlsPage.transform, font, 0.62f);
+            invertYToggle = CreateRowButton("Row_InvertY", controlsPage.transform, font, 0.62f, "Toggle");
 
-            invertXValue = CreateRowValue("Row_InvertX", controlsPage.transform, font, 0.50f);
-            invertXToggle = CreateRowButton("Row_InvertX", controlsPage.transform, font, 0.50f, "Toggle");
+            CreateRowLabel("Row_InvertX", controlsPage.transform, font, 0.52f, "Invert X");
+            invertXValue = CreateRowValue("Row_InvertX", controlsPage.transform, font, 0.52f);
+            invertXToggle = CreateRowButton("Row_InvertX", controlsPage.transform, font, 0.52f, "Toggle");
 
-            cameraSmoothingValue = CreateRowValue("Row_CameraSmooth", controlsPage.transform, font, 0.40f);
+            CreateRowLabel("Row_CameraSmooth", controlsPage.transform, font, 0.42f, "Camera Smoothing");
+            cameraSmoothingValue = CreateRowValue("Row_CameraSmooth", controlsPage.transform, font, 0.42f);
 
-            sprintModeValue = CreateRowValue("Row_SprintMode", controlsPage.transform, font, 0.30f);
-            sprintToggle = CreateRowButton("Row_SprintMode", controlsPage.transform, font, 0.30f, "Toggle");
+            CreateRowLabel("Row_SprintMode", controlsPage.transform, font, 0.32f, "Sprint Mode");
+            sprintModeValue = CreateRowValue("Row_SprintMode", controlsPage.transform, font, 0.32f);
+            sprintToggle = CreateRowButton("Row_SprintMode", controlsPage.transform, font, 0.32f, "Toggle");
 
-            crouchModeValue = CreateRowValue("Row_CrouchMode", controlsPage.transform, font, 0.20f);
-            crouchToggle = CreateRowButton("Row_CrouchMode", controlsPage.transform, font, 0.20f, "Toggle");
+            CreateRowLabel("Row_CrouchMode", controlsPage.transform, font, 0.22f, "Crouch Mode");
+            crouchModeValue = CreateRowValue("Row_CrouchMode", controlsPage.transform, font, 0.22f);
+            crouchToggle = CreateRowButton("Row_CrouchMode", controlsPage.transform, font, 0.22f, "Toggle");
 
             var resetControlsBtnObj = CreateButton("Btn_ResetControls", controlsPage.transform, font, "Reset Defaults", new Color(0.4f, 0.24f, 0.24f));
             resetControlsBtn = resetControlsBtnObj.GetComponent<Button>();
@@ -1609,28 +1621,34 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
 
             // Accessibility page
             var accessibilityPage = CreatePage("Page_Accessibility", root.transform);
-            var acTitle = CreateText("Title", accessibilityPage.transform, new Vector2(0.5f, 0.78f), new Vector2(0.5f, 0.78f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
+            var acTitle = CreateText("Title", accessibilityPage.transform, new Vector2(0.5f, 0.84f), new Vector2(0.5f, 0.84f), Vector2.zero, new Vector2(640f, 56f), font, 30, TextAnchor.MiddleCenter, new Color(1f, 0.9f, 0.7f));
 
             Text subtitlesValue, subtitleBgValue, subtitleSizeValue, screenShakeValue, motionBlurValue, colorblindValue;
             Button subtitlesToggle, subtitleBgToggle, subtitleSizeCycle, screenShakeToggle, motionBlurToggle, colorblindCycle;
 
-            subtitlesValue = CreateRowValue("Row_Subtitles", accessibilityPage.transform, font, 0.70f);
-            subtitlesToggle = CreateRowButton("Row_Subtitles", accessibilityPage.transform, font, 0.70f, "Toggle");
+            CreateRowLabel("Row_Subtitles", accessibilityPage.transform, font, 0.72f, "Subtitles");
+            subtitlesValue = CreateRowValue("Row_Subtitles", accessibilityPage.transform, font, 0.72f);
+            subtitlesToggle = CreateRowButton("Row_Subtitles", accessibilityPage.transform, font, 0.72f, "Toggle");
 
-            subtitleBgValue = CreateRowValue("Row_SubtitleBg", accessibilityPage.transform, font, 0.60f);
-            subtitleBgToggle = CreateRowButton("Row_SubtitleBg", accessibilityPage.transform, font, 0.60f, "Toggle");
+            CreateRowLabel("Row_SubtitleBg", accessibilityPage.transform, font, 0.62f, "Subtitle Background");
+            subtitleBgValue = CreateRowValue("Row_SubtitleBg", accessibilityPage.transform, font, 0.62f);
+            subtitleBgToggle = CreateRowButton("Row_SubtitleBg", accessibilityPage.transform, font, 0.62f, "Toggle");
 
-            subtitleSizeValue = CreateRowValue("Row_SubtitleSize", accessibilityPage.transform, font, 0.50f);
-            subtitleSizeCycle = CreateRowButton("Row_SubtitleSize", accessibilityPage.transform, font, 0.50f, "Cycle");
+            CreateRowLabel("Row_SubtitleSize", accessibilityPage.transform, font, 0.52f, "Subtitle Size");
+            subtitleSizeValue = CreateRowValue("Row_SubtitleSize", accessibilityPage.transform, font, 0.52f);
+            subtitleSizeCycle = CreateRowButton("Row_SubtitleSize", accessibilityPage.transform, font, 0.52f, "Cycle");
 
-            screenShakeValue = CreateRowValue("Row_ScreenShake", accessibilityPage.transform, font, 0.40f);
-            screenShakeToggle = CreateRowButton("Row_ScreenShake", accessibilityPage.transform, font, 0.40f, "Toggle");
+            CreateRowLabel("Row_ScreenShake", accessibilityPage.transform, font, 0.42f, "Screen Shake");
+            screenShakeValue = CreateRowValue("Row_ScreenShake", accessibilityPage.transform, font, 0.42f);
+            screenShakeToggle = CreateRowButton("Row_ScreenShake", accessibilityPage.transform, font, 0.42f, "Toggle");
 
-            motionBlurValue = CreateRowValue("Row_MotionBlur", accessibilityPage.transform, font, 0.30f);
-            motionBlurToggle = CreateRowButton("Row_MotionBlur", accessibilityPage.transform, font, 0.30f, "Toggle");
+            CreateRowLabel("Row_MotionBlur", accessibilityPage.transform, font, 0.32f, "Motion Blur");
+            motionBlurValue = CreateRowValue("Row_MotionBlur", accessibilityPage.transform, font, 0.32f);
+            motionBlurToggle = CreateRowButton("Row_MotionBlur", accessibilityPage.transform, font, 0.32f, "Toggle");
 
-            colorblindValue = CreateRowValue("Row_Colorblind", accessibilityPage.transform, font, 0.20f);
-            colorblindCycle = CreateRowButton("Row_Colorblind", accessibilityPage.transform, font, 0.20f, "Cycle");
+            CreateRowLabel("Row_Colorblind", accessibilityPage.transform, font, 0.22f, "Colorblind Mode");
+            colorblindValue = CreateRowValue("Row_Colorblind", accessibilityPage.transform, font, 0.22f);
+            colorblindCycle = CreateRowButton("Row_Colorblind", accessibilityPage.transform, font, 0.22f, "Cycle");
 
             // Wire accessibility buttons
             subtitlesToggle.GetComponent<Button>().onClick.AddListener(ui.ToggleSubtitles);
@@ -1744,31 +1762,92 @@ unavail = CreateText("UnavailableNote", displayPage.transform,
             return page;
         }
 
+        private static void ConfigureRow(Transform row, float y)
+        {
+            var rect = row.GetComponent<RectTransform>();
+            // Full-width row band with consistent height and padding.
+            rect.anchorMin = new Vector2(0.06f, y);
+            rect.anchorMax = new Vector2(0.94f, y);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(0f, 46f);
+        }
+
         private static Text CreateRowLabel(string rowName, Transform parent, Font font, float y, string label)
         {
-            var text = CreateText("Label", parent, new Vector2(0f, y), new Vector2(0f, y), new Vector2(90f, 0f), new Vector2(420f, 44f), font, 20, TextAnchor.MiddleLeft, new Color(0.85f, 0.88f, 0.92f));
-            text.GetComponent<Text>().text = label;
-            text.transform.SetParent(FindRow(parent, rowName), false);
-            return text.GetComponent<Text>();
+            var row = FindRow(parent, rowName);
+            ConfigureRow(row, y);
+            var textObj = CreateText("Label", row, new Vector2(0f, 0f), new Vector2(0.45f, 1f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleLeft, new Color(0.85f, 0.88f, 0.92f));
+            var text = textObj.GetComponent<Text>();
+            text.text = label;
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            var rt = textObj.GetComponent<RectTransform>();
+            rt.offsetMin = new Vector2(8f, 2f);
+            rt.offsetMax = new Vector2(-8f, -2f);
+            return text;
         }
 
         private static Text CreateRowValue(string rowName, Transform parent, Font font, float y)
         {
-            var text = CreateText("Value", parent, new Vector2(1f, y), new Vector2(1f, y), new Vector2(-230f, 0f), new Vector2(340f, 44f), font, 20, TextAnchor.MiddleCenter, new Color(1f, 0.95f, 0.75f));
-            text.transform.SetParent(FindRow(parent, rowName), false);
-            return text.GetComponent<Text>();
+            var row = FindRow(parent, rowName);
+            ConfigureRow(row, y);
+            // Value sits in the center of the right-side control cluster: [ < ] value [ > ] or [ value ] [Toggle]
+            var textObj = CreateText("Value", row, new Vector2(0.58f, 0f), new Vector2(0.82f, 1f), Vector2.zero, Vector2.zero, font, 20, TextAnchor.MiddleCenter, new Color(1f, 0.95f, 0.75f));
+            var text = textObj.GetComponent<Text>();
+            text.horizontalOverflow = HorizontalWrapMode.Overflow;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
+            var rt = textObj.GetComponent<RectTransform>();
+            rt.offsetMin = new Vector2(4f, 2f);
+            rt.offsetMax = new Vector2(-4f, -2f);
+            return text;
         }
 
         private static Button CreateRowButton(string rowName, Transform parent, Font font, float y, string label)
         {
-            var btn = CreateButton("Toggle", parent, font, label, new Color(0.2f, 0.3f, 0.4f));
-            btn.transform.SetParent(FindRow(parent, rowName), false);
+            var row = FindRow(parent, rowName);
+            ConfigureRow(row, y);
+
+            bool isLeft = label == "<";
+            bool isRight = label == ">";
+            string objName = isLeft ? "Btn_Left" : isRight ? "Btn_Right" : "Btn_Action";
+
+            var btn = CreateButton(objName, row, font, label, new Color(0.2f, 0.3f, 0.4f));
             var rect = btn.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(1f, 0.5f);
-            rect.anchorMax = new Vector2(1f, 0.5f);
-            rect.pivot = new Vector2(1f, 0.5f);
-            rect.anchoredPosition = new Vector2(-30f, 0f);
-            rect.sizeDelta = new Vector2(150f, 40f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+
+            if (isLeft)
+            {
+                rect.anchorMin = new Vector2(0.50f, 0.5f);
+                rect.anchorMax = new Vector2(0.50f, 0.5f);
+                rect.anchoredPosition = new Vector2(0f, 0f);
+                rect.sizeDelta = new Vector2(44f, 36f);
+            }
+            else if (isRight)
+            {
+                rect.anchorMin = new Vector2(0.90f, 0.5f);
+                rect.anchorMax = new Vector2(0.90f, 0.5f);
+                rect.anchoredPosition = new Vector2(0f, 0f);
+                rect.sizeDelta = new Vector2(44f, 36f);
+            }
+            else
+            {
+                // Single action/toggle button aligned at right side of row.
+                rect.anchorMin = new Vector2(0.90f, 0.5f);
+                rect.anchorMax = new Vector2(0.90f, 0.5f);
+                rect.anchoredPosition = new Vector2(0f, 0f);
+                rect.sizeDelta = new Vector2(110f, 36f);
+            }
+
+            var btnText = btn.GetComponentInChildren<Text>();
+            if (btnText != null)
+            {
+                btnText.alignment = TextAnchor.MiddleCenter;
+                btnText.resizeTextForBestFit = true;
+                btnText.resizeTextMinSize = 12;
+                btnText.resizeTextMaxSize = 18;
+            }
+
             return btn.GetComponent<Button>();
         }
 
